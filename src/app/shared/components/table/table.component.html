@@ -1,0 +1,184 @@
+<ng-template pTemplate="header">
+  <div class="flex flex-column gap-2 p-4 pb-0 h-4rem table-header">
+    <div *ngIf="header || subheader" class="flex justify-content-between">
+      <div class="flex flex-column gap-2">
+        <span *ngIf="header" class="table-header font-bold text-md">{{ header }}</span>
+        <span *ngIf="subheader" class="table-subheader font-normal text-sm">{{ subheader }}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<div class="table-container" [ngClass]="{'mobile-table-container': isMobile}">
+  <p-table #table [value]="value" (sortFunction)="customSort($event)" [customSort]="true" [lazyLoadOnInit]="true" [scrollable]="!isMobile" styleClass="p-datatable-responsive">
+    <ng-template pTemplate="header" let-item class="header">
+      <tr>
+        <th class="cabecalho-{{col.body}}" *ngFor="let col of colunas" [style]="getHeaderStyles(col)" [pSortableColumn]="col.sortable && col.body">
+          <div class="flex justify-content-between" *ngIf="col.sortable; else headerSemOrdenacao">
+            {{ col.header }}
+            <p-sortIcon field="{{ col.body }}"></p-sortIcon>
+          </div>
+          <ng-template #headerSemOrdenacao>
+            {{ col.header }}
+          </ng-template>
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-item let-i="rowIndex">
+      <tr class="table-row grupo-card ng-star-inserted">
+        <td
+          *ngFor="let col of colunas; let isFirst = first"
+          [ngSwitch]="col.typeContent"
+          [style]="getBodyInlineStyles(col)"
+          [attr.data-label]="col.header"
+          [class.text-overflow-ellipsis]="isFirst"
+        >
+          <ng-container *ngSwitchCase="'action'">
+            <div [id]="'acoes-' + i" class="text-center align-items-center">
+              <button
+                type="button"
+                class="botao-acao text-center align-items-center"
+                aria-label="Visualizar"
+                [id]="'btn-visualizar-' + i"
+                (click)="onVisualizar(item)"
+                tooltipStyleClass="pequeno"
+                tooltipPosition="bottom"
+              >
+                <span class="material-symbols-outlined search-icon visualizar-icon" [id]="'icon-visualizar-' + i">visibility</span>
+              </button>
+              <button
+                type="button"
+                class="botao-acao ml-1"
+                aria-label="Editar"
+                [id]="'btn-editar-' + i"
+                (click)="onEditar(item)"
+                tooltipStyleClass="pequeno"
+                tooltipPosition="bottom"
+              >
+                <span class="material-symbols-outlined search-icon editar-icon" [id]="'icon-editar-' + i">edit</span>
+              </button>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'visualizar'">
+            <div [id]="'acoes-' + i" class="flex text-center justify-content-center align-items-center gap-3">
+              <button
+                type="button"
+                class="botao-acao text-center align-items-center"
+                aria-label="Visualizar"
+                [id]="'btn-visualizar-' + i"
+                (click)="onVisualizar(item)"
+              >
+                <span class="material-symbols-outlined search-icon visualizar-icon" [id]="'icon-visualizar-' + i">visibility</span>
+              </button>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'cpfCnpj'">
+            <span>{{ item[col.body] | formatarCpfCnpj  }}</span>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'acoes-personalizadas'">
+            <div [id]="'acoes-' + i" class="text-center align-items-center">
+              <button
+                type="button"
+                class="botao-acao text-center align-items-center"
+                aria-label="Visualizar"
+                [id]="'btn-visualizar-' + i"
+                (click)="onVisualizar(item)"
+                pTooltip="Visualizar Documento"
+                tooltipStyleClass="pequeno"
+                tooltipPosition="bottom"
+              >
+                <span class="pi pi-eye" style="color: var(--cor-primaria-escura);"></span>
+              </button>
+              <button
+                type="button"
+                class="botao-acao ml-1"
+                aria-label="Editar"
+                [id]="'btn-editar-' + i"
+                (click)="onEditar(item)"
+                pTooltip="Editar Documento"
+                tooltipStyleClass="pequeno"
+                tooltipPosition="bottom"
+              >
+                <span class="pi pi-pencil" style="color: var(--cor-primaria-escura);"></span>
+              </button>
+              <button
+                type="button"
+                class="botao-acao ml-1"
+                aria-label="Excluir"
+                [id]="'btn-excluir-' + i"
+                (click)="onExcluir(item)"
+                pTooltip="Excluir Documento"
+                tooltipStyleClass="pequeno"
+                tooltipPosition="bottom"
+              >
+                <span class="pi pi-trash" style="color: var(--cor-primaria-escura);"></span>
+              </button>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchDefault>
+            <ng-container *ngSwitchDefault>
+              <div class="capitalize">
+                <span
+                  *ngIf="col.cortarTexto"
+                  class="texto-quebra"
+                  [pTooltip]="item[col.body]"
+                  tooltipStyleClass="pequeno"
+                  tooltipPosition="bottom"
+                >
+                  {{ item[col.body] | cortarString : col.cortarTexto }}
+                </span>
+                <span *ngIf="!col.cortarTexto" class="texto-quebra">
+                  {{ item[col.body] }}
+                </span>
+              </div>
+            </ng-container>
+          </ng-container>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="colunas.length" class="text-center empty" id="txt-nenhum-grupo-encontrado">
+          {{ avisoEmpty() }}
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="footer" >
+      <td colspan="12" class="container-paginacao" *ngIf="buscaPaginada && shouldShowPaginator">
+      <div class="paginador justify-content-between">
+        <div class="paginador-item">
+          <span class="itens-por-pagina mr-2">Itens por página</span>
+          <p-select
+            [options]="optionsPage"
+            optionLabel="label"
+            optionValue="value"
+            [(ngModel)]="rows"
+            (onChange)="onRow()"
+            class="mr-2 custom-dropdown"
+            appendTo="body"
+          ></p-select>
+        </div>
+        <p-paginator
+          (onPageChange)="onPageChange($event)"
+          [first]="first"
+          [rows]="rows"
+          [pageLinkSize]="3"
+          [totalRecords]="totalPageRecords"
+          [showFirstLastIcon]="false"
+          class="bordas"
+          [alwaysShow]="true"
+        >
+        </p-paginator>
+      </div>
+    </td>
+    </ng-template>
+  </p-table>
+
+</div>

@@ -1,0 +1,24 @@
+label,
+.label {
+  margin-left: 10px;
+  &.required::after {
+    content: ' *';
+  }
+}
+
+:host ::ng-deep {
+  .input-form {
+    height: 48px;
+    border-radius: 10px !important;
+  }
+
+  .formulario-pequeno .card .p-card-body {
+    min-height: 600px;
+  }
+
+  #error-msg-login {
+    .text-danger {
+      padding-left: 10px;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+<app-card-centralizado type="formulario-pequeno">
+  <ng-template pTemplate="content">
+    <ng-container>
+      <h5 id="titulo" class="text-center text-xlarge-bold mt-0">Resume Registration</h5>
+    </ng-container>
+
+    <form [formGroup]="form" class="mt-6 flex flex-column justify-content-center sm:justify-content-between">
+      <div class="col-12 mb-5">
+        <span id="descricao" class="mb-3 text-medium">To resume your registration, fill in the field below.</span>
+        <br />
+      </div>
+      <div class="col-12">
+        <label htmlFor="login" id="lb-login">Indetification Number</label>
+        <br />
+        <input
+          pInputText
+          mask="000.000.000"
+          formControlName="login"
+          id="login"
+          class="w-full input-form"
+          minlength="9"
+          placeholder="Information"
+        />
+        <app-error id="error-msg-login" [control]="form.get('login')"></app-error>
+      </div>
+
+      <div class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 px-2">
+        <button
+          pButton
+          id="botao-voltar"
+          class="w-full md:w-4 btn-outline my-2 justify-content-center"
+          (click)="voltar()"
+        >
+          {{ TEXTO_ACAO.voltar }}
+        </button>
+        <button
+          id="botao-proximo"
+          pButton
+          class="w-full md:w-4 btn-fill my-2 justify-content-center"
+          (click)="salvar()"
+          [disabled]="invalidarBotao"
+        >
+          {{ TEXTO_ACAO.proximo }}
+        </button>
+      </div>
+    </form>
+  </ng-template>
+</app-card-centralizado>

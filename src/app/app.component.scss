@@ -1,0 +1,250 @@
+::ng-deep {
+  .p-drawer-header {
+    display: none !important;
+  }
+
+  .p-drawer-left {
+    width: auto !important;
+  }
+
+  .p-drawer-content {
+    padding: 0 !important;
+    overflow: auto;
+  }
+
+  .p-select-overlay {
+    border: none;
+    background: transparent !important;
+  }
+
+  .p-select-list-container {
+    background: var(--cor-branca) !important;
+    border: 1px solid #dcdcdc !important;
+    border-radius: 10px;
+
+    .p-ripple {
+      color: var(--cor-primaria) !important;
+      padding: 2px 8px !important;
+      font-size: 16px;
+
+      &:hover {
+        background: var(--cor-primaria-clara) !important;
+        color: var(--cor-branca) !important;
+      }
+    }
+
+    .p-select-option-selected {
+      background: var(--cor-primaria) !important;
+      color: var(--cor-branca) !important;
+
+      &:hover {
+        background: var(--cor-primaria-clara) !important;
+      }
+    }
+  }
+
+  // TOAST
+
+  $cor-sucesso: #00763B;
+
+
+
+  .p-toast .p-toast-message {
+    margin: 0 0 1rem 0;
+    box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.10);
+    border-radius: 15px;
+    border: 1px solid $cor-sucesso !important;
+  }
+  .p-toast .p-toast-message .p-toast-message-content {
+    padding: 12px;
+    background: #F0FDF4;
+    border-radius: 15px;
+  }
+
+  .p-toast .p-toast-message .p-toast-message-content .p-toast-message-text {
+    margin: 0 0 0 1rem;
+  }
+  .p-toast .p-toast-message .p-toast-message-content .p-toast-message-icon {
+    padding-left: 10px;
+    color: $cor-sucesso;
+
+    .p-icon {
+      width: 20px !important;
+      height: 20px !important;
+    }
+  }
+  .p-toast .p-toast-message .p-toast-message-content .p-icon:not(.p-toast-icon-close-icon) {
+    width: 24px;
+    height: 24px;
+  }
+  .p-toast .p-toast-message .p-toast-message-content .p-toast-summary {
+    font-weight: 600;
+    font-size: 18px;
+    color: $cor-sucesso;
+    font-family: var(--font-family);
+  }
+  .p-toast .p-toast-message .p-toast-message-content .p-toast-detail {
+    padding: 10px;
+    font-weight: 500;
+    font-size: 18px;
+    color: $cor-sucesso;
+  }
+  @media (max-width: 480px) {
+    .p-toast .p-toast-message .p-toast-message-content .p-toast-detail {
+      font-size: 16px;
+    }
+  }
+
+  .p-toast .p-toast-message .p-toast-close-button {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid $cor-sucesso;
+    background: transparent;
+    transition: box-shadow 0.15s;
+    color: $cor-sucesso;
+    top: 12px;
+    right: 12px;
+    position: initial;
+    margin: 0;
+  }
+  .p-toast .p-toast-message .p-toast-icon-close:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+  .p-toast .p-toast-message .p-toast-icon-close:focus-visible {
+    outline: 0 none;
+    outline-offset: 0;
+  }
+  .p-toast .p-toast-message.p-toast-message-info {
+    background: #cce5ff;
+    border: solid #b8daff;
+    border-width: 1px;
+    color: #004085;
+  }
+  .p-toast .p-toast-message.p-toast-message-info .p-toast-message-icon,
+  .p-toast .p-toast-message.p-toast-message-info .p-toast-icon-close {
+    color: #004085;
+  }
+  .p-toast .p-toast-message.p-toast-message-success {
+    background: #d4edda;
+    border: solid #c3e6cb;
+    border-width: 1px;
+    color: #00763B;
+
+    .toast-icon {
+      color: #00763B !important;
+    }
+  }
+  .p-toast .p-toast-message.p-toast-message-success .p-toast-message-icon,
+  .p-toast .p-toast-message.p-toast-message-success .p-toast-icon-close {
+    color: #00763B;
+  }
+  .p-toast .p-toast-message.p-toast-message-warn {
+    background: #fff3cd;
+    border: solid #ffeeba;
+    border-width: 1px;
+    color: #856404;
+  }
+  .p-toast .p-toast-message.p-toast-message-warn .p-toast-message-icon,
+  .p-toast .p-toast-message.p-toast-message-warn .p-toast-icon-close {
+    color: #856404;
+  }
+  .p-toast .p-toast-message.p-toast-message-error {
+    background: #f8d7da;
+    border: 1px solid #f8d7da !important;
+    border-width: 1px;
+    color: #721c24;
+  }
+
+  .p-toast .p-toast-message.p-toast-message-error .p-toast-message-icon,
+  .p-toast .p-toast-message.p-toast-message-error .p-toast-icon-close {
+    border: 1px solid #D9534F;
+    color: #D9534F !important;
+  }
+
+  .p-toast .p-toast-message.p-toast-message-error .p-toast-message-content {
+    background: #f8d7da;
+    border: 10px solid #f8d7da !important;
+    color: #9F3A38;
+  }
+
+  .p-toast .p-toast-message.p-toast-message-error .p-toast-message-content .p-toast-summary {
+    color: #D9534F;
+  }
+
+  .p-toast .p-toast-message.p-toast-message-error .p-toast-message-content .p-toast-detail {
+    color: #5E5E5E;
+  }
+
+  // DIALOGO
+  .p-dialog-close-button {
+    &:hover {
+      background: transparent !important;
+      color: var(--cor-primaria) !important;
+    }
+  }
+
+  .p-dialog  {
+    background: transparent !important;
+    border: none!important;
+    box-shadow: none!important;
+  }
+
+  .p-dialog-content{
+    overflow-x: hidden !important;
+    border-radius: 35px !important;
+    border-radius: 0px;
+  }
+
+  // DRAWER
+
+  .p-drawer {
+      background-color: var(--cor-branca) !important;
+      border: none !important;
+      height: 100vh !important;
+      overflow: hidden !important;
+      color: #212529;
+      font-size: 16px;
+      font-weight: 400;
+
+      .p-sidebar-content,
+      .p-drawer-content {
+        background-color: var(--cor-branca) !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+    }
+
+    .p-sidebar {
+      background-color: var(--cor-branca);
+
+      .p-sidebar-content {
+        padding: 0;
+      }
+    }
+
+  p-calendar.ng-invalid.ng-pristine.ng-touched .p-inputtext,
+  .ng-valid.ng-dirty.ng-touched .p-dropdown:not(.p-disabled).p-focus,
+  p-inputmask.ng-touched.ng-pristine.ng-invalid > .p-inputtext,
+  p-inputmask.ng-dirty.ng-invalid > .p-inputtext,
+  p-inputnumber.ng-touched.ng-invalid > .p-inputnumber > .p-inputtext,
+  .p-inputtext.ng-pristine.ng-invalid.ng-touched,
+  p-password.ng-touched.ng-invalid.ng-dirty .p-inputtext,
+  p-password.ng-touched.ng-invalid .p-inputtext
+  {
+    border-color: var(--cor-erro);
+  }
+
+  input {
+    border: 1px solid var(--p-inputtext-border-color);
+  }
+
+  .p-inputtext {
+    &:focus {
+      border-color: blue
+
+    }
+  }
+
+
+}

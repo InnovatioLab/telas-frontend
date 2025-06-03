@@ -1,0 +1,90 @@
+<app-card-centralizado type="formulario-login" class="formulario-login">
+  <ng-template pTemplate="content">
+    <ng-container>
+      <div class="flex justify-content-center">
+        @if (logoSrc) {
+        <img src="{{ logoSrc }}" alt="Logo" class="logo" id="logo" />
+        } @else {
+        <img src="assets/img/ematece.png" alt="EMATECE LOGO" class="imagem-logo" />
+        }
+      </div>
+
+      <div class="header-container">
+        <span id="test-descricao" class="descricao">Telas</span>
+      </div>
+    </ng-container>
+
+    <form [formGroup]="form" class="flex flex-column justify-content-center sm:justify-content-between">
+      <div class="col-12">
+        <div class="label-input">
+          <label htmlFor="login" id="lb-login">
+            <span class="material-symbols-outlined icon-custon" id="test-icon-person"> person </span>
+            Username
+          </label>
+        </div>
+        <input
+          pInputText
+          mask="CPF_CNPJ"
+          formControlName="login"
+          id="test-input-login"
+          class="w-full input-form"
+          maxlength="14"
+          (onKeyup.enter)="login()"
+          placeholder="Enter your username"
+        />
+        <app-error *ngIf="form.get('login').errors" id="error-msg-login" [control]="form.get('login')" class="error-msg"></app-error>
+      </div>
+
+      <div class="col-12">
+        <div class="label-input">
+          <label htmlFor="senha" id="lb-senha">
+            <span class="material-symbols-outlined icon-custon" id="test-icon-lock"> lock </span>
+            Password
+          </label>
+        </div>
+        <p-password
+          [toggleMask]="true"
+          [feedback]="false"
+          formControlName="senha"
+          placeholder="Enter your password"
+          class="w-full password"
+          id="test-input-senha"
+          minlength="8"
+          maxLength="32"
+          (onKeyup.enter)="login()"
+        >
+        </p-password>
+        <app-error id="error-msg-senha" [control]="form.get('senha')" class="error-msg"></app-error>
+      </div>
+      
+      <span id="test-texto-esqueceu-senha" class="ml-3 mb-3 font-normal">
+        Forgot your password?
+        <a id="test-link-clique-aqui" routerLink="/auth/recover-password">Click here.</a>
+      </span>
+
+      <div class="flex justify-content-center btn-enter">
+        <button
+          pButton
+          id="test-btn-entrar"
+          class="botao-entrar justify-content-center w-full"
+          [disabled]="habilitarBotao()"
+          (click)="login()"
+        >
+          <span *ngIf="loading" class="pi pi-spin pi-spinner mr-2"></span>
+          Login
+        </button>
+      </div>
+    </form>
+    
+    <div class="flex flex-column align-items-center mt-3">
+      <span id="test-texto-nao-possui-conta" class="text-center font-normal mb-3">
+        Don't have an account?
+        <a id="test-link-cadastre-se" routerLink="/register"> Sign up </a>
+      </span>
+
+      <a id="test-link-retomar-cadastro" routerLink="/register/resume"> Resume Registration </a>
+    </div>
+  </ng-template>
+</app-card-centralizado>
+
+<app-termos *ngIf="exibirTermos" (isAceitouTermo)="respostaTermo($event)"></app-termos>

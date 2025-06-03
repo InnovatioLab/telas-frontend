@@ -1,0 +1,32 @@
+<div class="maps-container">
+  <!-- Map -->
+  <div *ngIf="apiLoaded" class="map-wrapper">
+    <google-map
+      [height]="height"
+      [width]="width"
+      [center]="center"
+      [zoom]="zoom"
+      [options]="options"
+    >
+      <map-marker
+        *ngFor="let markerPosition of markerPositions"
+        [position]="markerPosition"
+        [options]="markerOptions"
+      ></map-marker>
+      
+      <map-marker
+        *ngFor="let marker of markersConfig; let i = index"
+        [position]="marker.position"
+        [options]="marker.options"
+        (mapClick)="onMarkerClick(points[i], $event)"
+      ></map-marker>
+    </google-map>
+  </div>
+  
+  <div *ngIf="!apiLoaded" class="loading-map">
+    <p>Loading map...</p>
+    <p *ngIf="loadError" class="text-danger">
+      {{ loadError }}
+    </p>
+  </div>
+</div>

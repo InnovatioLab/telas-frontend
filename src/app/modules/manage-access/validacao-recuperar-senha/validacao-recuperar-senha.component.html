@@ -1,0 +1,62 @@
+<ui-card-centralizado type="formulario-pequeno" *ngIf="!codigoValido">
+  <ng-template pTemplate="content">
+    <ng-container>
+      <h5 class="text-center text-xlarge-bold mt-0">Código de validação</h5>
+      <p class="text-center text-medium-medium">
+        Para recuperar sua senha, verifique seu contato principal e digite o código recebido.
+      </p>
+    </ng-container>
+    <form [formGroup]="validacaoForm" class="mt-6">
+      <div class="col-12">
+        <label htmlFor="codigo" id="lb-codigo" class="required">Código de Recuperação de Senha</label>
+        <br />
+        <input
+          type="text"
+          pInputText
+          formControlName="codigo"
+          placeholder="Informação"
+          class="w-full input-form"
+          maxlength="6"
+          minlength="6"
+          id="codigo"
+          (input)="onInput($event)"
+        />
+        <ui-error id="error-msg-login" [control]="validacaoForm.get('codigo')"></ui-error>
+      </div>
+
+      <div class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 botoes-card-pequeno">
+        <button
+          pButton
+          id="botao-voltar"
+          class="w-full md:w-4 btn-outline my-2 justify-content-center"
+          (click)="voltar()"
+        >
+          {{ TEXTO_ACAO.cancelar }}
+        </button>
+        <button
+          pButton
+          id="botao-validar"
+          class="w-full md:w-4 btn-fill my-2 justify-content-center"
+          (click)="validarCodigo()"
+        >
+          {{ TEXTO_ACAO.validar }}
+        </button>
+      </div>
+    </form>
+
+    <div class="flex flex-column gap-3 text-normal text-center">
+      <div class="flex flex-row gap-1 justify-content-center text-normal text-center">
+        Você não recebeu?
+        <button
+          pButton
+          (click)="enviarCodigo()"
+          class="link-text p-0 bg-transparent border-0 justify-content-center cursor-pointer"
+          [disabled]="inativarBotaoReenviarCodigo"
+        >
+          Reenviar Código
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ui-card-centralizado>
+<feat-redefinir-senha *ngIf="codigoValido" class="fadein animation-duration-500" />

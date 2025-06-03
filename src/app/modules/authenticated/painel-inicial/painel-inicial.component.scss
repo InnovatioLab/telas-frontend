@@ -1,0 +1,47 @@
+.painel-inicial {
+  gap: 32px;
+
+  .titulo-secao {
+    color: var(--cor-cinza-escuro);
+    font-size: 26px;
+    font-weight: 400;
+  }
+
+  .box-cards {
+    display: flex;
+    justify-content: space-between;
+
+    .cards__contagem {
+      border-radius: 15px;
+      background: var(--cor-branca);
+      box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.05);
+      display: flex;
+      max-width: 279px;
+      width: 100%;
+      max-height: 116px;
+      height: 100%;
+      padding: 14px 15px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 11px;
+
+      .legenda {
+        color: var(--cor-legenda);
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .contagem {
+        color: var(--cor-primaria-escura);
+        font-size: 32px;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .ultima-atualizacao {
+    color: var(--cor-legenda);
+    font-size: 18px;
+    font-weight: 300;
+  }
+}

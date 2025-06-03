@@ -1,0 +1,45 @@
+<div #containerTermo id="container-termo">
+  <p-dialog
+    header="Header"
+    [visible]="true"
+    closable="false"
+    showHeader="false"
+    class="pb-0"
+    [breakpoints]="{ '2000px': '841px', '575px': '90vw' }"
+  >
+    <h4 class="titulo my-4 text-center w-full sticky top-0">
+      Terms of Acceptance
+    </h4>
+    <div class="overflow-hidden">
+      <div
+        class="overflow-auto border-round content"
+        [style]="{ 'max-height': '80vh' }"
+      >
+        <div>
+          <p class="surface-overlay p-4 m-0" [innerHTML]="conteudo">
+          </p>
+        </div>
+      </div>
+    </div>
+    <div
+      class="gap-3 box-botao sticky bg-white h-full sm:mt-4 sm:px-4 flex flex-column-reverse sm:flex-row justify-content-between"
+    >
+      <button
+        pButton
+        id="btnSecundario"
+        class="w-full sm:w-4 justify-content-center btn-outline"
+        (click)="recusar()"
+      >
+        Decline
+      </button>
+      <button
+        pButton
+        id="btnPrimario"
+        class="w-full sm:w-4 justify-content-center btn-fill"
+        (click)="aceitar()"
+      >
+        Accept
+      </button>
+    </div>
+  </p-dialog>
+</div>

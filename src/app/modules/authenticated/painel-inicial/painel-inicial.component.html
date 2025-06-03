@@ -1,0 +1,26 @@
+<app-layout>
+  <div class="painel-inicial flex flex-column">
+    <h1 class="titulo-secao">Painel Inicial</h1>
+
+    <div class="box-cards">
+      <div *ngFor="let item of cardsContagem" class="cards__contagem">
+        <div class="legenda">{{ item.legenda }}</div>
+        <div class="contagem">{{ item.contagem }}</div>
+      </div>
+    </div>
+
+    <h1 class="titulo-secao">Distribuições de Documentos</h1>
+    <app-table
+      [value]="listaDistribuicao"
+      [rows]="rows"
+      [first]="first"
+      [totalRegistros]="totalRegistros"
+      [first]="primeiroRegistro"
+      (pageChange)="onPageChange($event)"
+      [colunas]="columns"
+      [buscaPaginada]="true"
+      mensagemEmpty="Nenhuma informação encontrada."
+    />
+    <span class="ultima-atualizacao">Última atualização: {{ultimaAtualizacao}}</span>
+  </div>
+</app-layout>

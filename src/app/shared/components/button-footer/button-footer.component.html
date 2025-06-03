@@ -1,0 +1,26 @@
+<div class="footer-buttons">
+  <button
+    *ngIf="txtBtnAnterior && txtBtnAnterior.trim() !== ''"
+    pButton
+    type="button"
+    class="btn-outline mr-1"
+    (click)="chamarAcaoAnterior()"
+    id="btn-anterior"
+  >
+    <span class="w-full text-center" id="txt-btn-anterior">
+      {{ txtBtnAnterior }}
+    </span>
+  </button>
+  <button
+    pButton
+    type="button"
+    class="btn-fill"
+    (click)="chamarAcaoProximo()"
+    [id]="'btn-' + txtBtnProximo"
+    [disabled]="!habilitarConcluir"
+  >
+    <span class="w-full text-center" id="txt-btn-proximo">
+      {{ txtBtnProximo }}
+    </span>
+  </button>
+</div>

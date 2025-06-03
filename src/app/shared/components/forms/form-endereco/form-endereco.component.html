@@ -1,0 +1,109 @@
+<div class="dados-endereco">
+  <div class="flex justify-content-between align-items-center">
+    <span class="titulo">Address {{index > 0 ? (index + 1) : ''}}</span>
+    <div class="address-actions" *ngIf="showRemoveButton">
+      <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-sm" 
+        (click)="removeThisAddress()" [disabled]="index === 0 && !showRemoveButton">
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="enderecoForm">
+    <div class="grid form-group">
+      <div class="col-12 md:col-4 lg:col-4">
+        <label htmlFor="zipCode" id="lb-zip-code" [class.required]="campoObrigatorio('zipCode')">ZIP Code</label>
+        <br />
+        <p-inputMask
+          mask="99999"
+          formControlName="zipCode"
+          placeholder="00000"
+          id="inp-zip-code"
+          class="w-full input-form"
+          uiValidateZipCode
+          (onComplete)="searchZipCode()"
+          (onBlur)="searchZipCode()"
+        ></p-inputMask>
+        <div *ngIf="isLoading" class="mt-1 text-sm">
+          <span>Loading address data...</span>
+        </div>
+        <app-error id="error-msg-zip-code" [control]="enderecoForm.get('zipCode')"></app-error>
+      </div>
+
+      <div class="col-12 md:col-4 lg:col-4">
+        <label htmlFor="street" id="lb-street" [class.required]="campoObrigatorio('street')">Street</label>
+        <br />
+        <input
+          type="text"
+          pInputText
+          formControlName="street"
+          placeholder="123 Main St"
+          class="w-full input-form"
+          maxlength="100"
+          id="inp-street"
+        />
+        <app-error id="error-msg-street" [control]="enderecoForm.get('street')"></app-error>
+      </div>
+
+      <div class="col-12 md:col-4 lg:col-4">
+        <label htmlFor="city" id="lb-city" [class.required]="campoObrigatorio('city')">City</label>
+        <br />
+        <input
+          type="text"
+          pInputText
+          formControlName="city"
+          placeholder="City"
+          class="w-full input-form"
+          maxlength="50"
+          id="inp-city"
+        />
+        <app-error id="error-msg-city" [control]="enderecoForm.get('city')"></app-error>
+      </div>
+
+      <!-- Segunda linha: state, country, complement -->
+      <div class="col-12 md:col-4 lg:col-4">
+        <label htmlFor="state" id="lb-state" [class.required]="campoObrigatorio('state')">State</label>
+        <br />
+        <input
+          type="text"
+          pInputText
+          formControlName="state"
+          placeholder="State"
+          class="w-full input-form"
+          maxlength="2"
+          id="inp-state"
+        />
+        <app-error id="error-msg-state" [control]="enderecoForm.get('state')"></app-error>
+      </div>
+
+      <div class="col-12 md:col-4 lg:col-4">
+        <label htmlFor="country" id="lb-country" [class.required]="campoObrigatorio('country')">Country</label>
+        <br />
+        <input
+          type="text"
+          pInputText
+          formControlName="country"
+          placeholder="Country"
+          class="w-full input-form"
+          maxlength="100"
+          id="inp-country"
+        />
+        <app-error id="error-msg-country" [control]="enderecoForm.get('country')"></app-error>
+      </div>
+
+      <div class="col-12 md:col-4 lg:col-4">
+        <label htmlFor="complement" id="lb-complement" [class.required]="campoObrigatorio('complement')">Complement</label>
+        <br />
+        <input
+          type="text"
+          pInputText
+          formControlName="complement"
+          placeholder="Complement"
+          class="w-full input-form"
+          maxlength="100"
+          id="inp-complement"
+        />
+        <app-error id="error-msg-complement" [control]="enderecoForm.get('complement')"></app-error>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,14 @@
+$width-sidebar: 90px;
+$padding-content: 54px;
+
+.layout {
+  display: flex;
+  background: var(--cor-cinza-fundo);
+}
+
+.content {
+  width: 100%;
+  padding: 54px;
+  padding-left: calc($width-sidebar + $padding-content);
+
+}

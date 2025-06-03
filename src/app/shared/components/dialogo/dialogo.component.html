@@ -1,0 +1,36 @@
+<div *ngIf="exibir" id="dialogo-container" class="dialogo-style">
+  <div class="w-full text-center flex flex-column justify-content-center">
+
+    <div class="icone-custon">
+      <span *ngIf="data.icon !== 'report'" [class]="'icon-fill material-symbols-outlined dialogo-icone ' + data.icon">
+        {{ data.icon }}
+      </span>
+      <app-icon-atencao *ngIf="data.icon === 'report'"/>
+    </div>
+    <span class="dialogo-titulo">
+      {{ data.titulo }}
+    </span>
+  </div>
+  <div
+    id="test-descricao-dialog"
+    class="w-full text-center dialogo-descricao"
+    [innerHTML]="data?.descricao"
+  ></div>
+  <div
+    id="container-acoes"
+    [style]="data?.acaoSecundaria && data?.acaoPrimaria ? 'justify-content: space-between' : 'justify-content: center'"
+  >
+    <button
+      pButton
+      id="btnSecundario"
+      class="btn-outline"
+      *ngIf="data?.acaoSecundaria"
+      (click)="data?.acaoSecundariaCallback()"
+    >
+      {{ data.acaoSecundaria }}
+    </button>
+    <button pButton id="btnPrimario" class="btn-fill" *ngIf="data?.acaoPrimaria" (click)="data?.acaoPrimariaCallback()">
+      {{ data.acaoPrimaria }}
+    </button>
+  </div>
+</div>

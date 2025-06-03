@@ -1,0 +1,35 @@
+<div class="dados-contato">
+  <span class="titulo">Contact Details</span>
+  <form [formGroup]="contatoForm">
+    <div class="grid form-group">
+      <div class="col-12 md:col-6 lg:col-3">
+        <label id="ld-numero" for="txt-numero" class="required">Phone</label>
+        <p-inputMask
+          mask="+1 999 999 9999"
+          formControlName="numeroContato"
+          placeholder="+1 508 215 8681"
+          class="w-full"
+          id="inp-numero"
+        />
+        <app-error id="error-msg-numero" [control]="contatoForm.get('numeroContato')"></app-error>
+      </div>
+      <div class="col-12 lg:col-6">
+        <label id="ld-email" for="txt-email" class="reqappred">E-mail</label>
+        <input
+          type="text"
+          pInputText
+          formControlName="email"
+          placeholder="emailexample@mail.com"
+          class="w-full input-form"
+          id="inp-email"
+          maxLength="255"
+        />
+        <app-error
+          id="error-msg-email"
+          [control]="contatoForm.get('email')"
+          *ngIf="mostrarErro(contatoForm, 'email')"
+        ></app-error>
+      </div>
+    </div>
+  </form>
+</div>

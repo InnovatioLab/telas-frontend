@@ -1,0 +1,35 @@
+label {
+  margin-left: 10px;
+  &.required::after {
+    content: ' *';
+  }
+}
+
+:host ::ng-deep {
+  .input-form {
+    height: 48px;
+    border-radius: 10px !important;
+  }
+
+  #error-msg-login {
+    .text-danger {
+      padding-left: 10px;
+    }
+  }
+}
+
+.custom-button {
+  width: 240px;   
+  height: 48px;
+  border-radius: 8px;
+
+  font-size: 16px; 
+  font-weight: 600;
+
+  &:disabled{
+    background-color: var(--color-disabled-fundo-botao);
+    color: var(--color-disabled-text-botao);
+    border: 1px solid var(--color-disabled-borda-botao);
+  }
+}
+

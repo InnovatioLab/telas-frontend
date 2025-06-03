@@ -1,0 +1,20 @@
+<p-toast id="toast">
+  <ng-template let-message pTemplate="message">
+    <div class="flex flex-column" style="flex: 1">
+      <div>
+        <div class="flex align-items-center gap-3 pl-2">
+          <span class="flex align-items-center" *ngIf="message.severity === 'success'">
+            <span class="material-symbols-outlined toast-icon"> check </span>
+          </span>
+          <span id="test-toast-titulo" class="p-toast-summary">
+            {{ message.summary }}
+          </span>
+        </div>
+        <div id="test-toast-mensagem" class="p-toast-detail">
+          {{ message.detail }}
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </ng-template>
+</p-toast>

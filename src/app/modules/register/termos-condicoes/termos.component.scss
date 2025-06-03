@@ -1,0 +1,63 @@
+:host ::ng-deep {
+  #container-termo {
+    .p-dialog .p-dialog-content {
+      padding: 0px 93px;
+      overflow: hidden;
+    }
+
+    .p-dialog .p-dialog-content:last-of-type,
+    .p-dialog {
+      border-radius: 15px;
+    }
+
+    .content {
+      padding-bottom: 20%;
+    }
+
+    .content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .content::-webkit-scrollbar-track {
+      background: #d9d9d9;
+      border-radius: 25px;
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: #adadad;
+      border-radius: 25px;
+    }
+
+    .box-botao {
+      bottom: -1px;
+      padding-top: 31px;
+      padding-bottom: 31px;
+    }
+
+    .titulo {
+      color: var(--color-dark);
+    }
+
+    @media screen and (max-width: 575px) {
+      .p-dialog .p-dialog-content {
+        padding: 0px 20px;
+      }
+
+      h4 {
+        font-size: 20px;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      button {
+        font-size: 14px;
+      }
+
+      .content {
+        padding-bottom: 45%;
+      }
+    }
+  }
+}

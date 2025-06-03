@@ -1,0 +1,154 @@
+.formulario-login{
+  .header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 67px;
+    margin-bottom: 32px;
+  }
+
+  .imagem-logo{
+    height: 88px;
+    width: 296.42px;
+    margin-bottom: 42px;
+  }
+
+  .titulo {
+    font-weight: 500;
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 10px;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    color: #16191B;
+  }
+
+  .descricao {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--cor-desabilitado);
+    text-align: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .label-input{
+    height: 45px;
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+
+    label{
+      font-weight: 400;
+      font-size: 16px;
+      color: var(--cor-cinza-escuro);
+    }
+  }
+
+  .btn-enter{
+    margin-top: 107px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .botao-entrar,
+  .btn-outline {
+    height: 47px;
+    max-width: 200px;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 15px;
+
+    font-weight: 500;
+    font-size: 18px;
+    background-color: var(--cor-primaria-escura);
+  }
+
+  .botao-entrar:disabled {
+    background-color: var(--cor-desabilitado);
+    border: none;
+    color: var(--cor-branca);
+  }
+
+  .icon-custon {
+    position: relative;
+    color: var(--cor-primaria);
+    width: 24px;
+    height: 24px;
+    top: 4px;
+    margin-right: 10px;
+  }
+
+  @media screen and (max-width: 700px) {
+    .titulo {
+      font-size: 18px;
+    }
+
+    .descricao {
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .botao-entrar,
+    .btn-outline {
+      height: 48px;
+      font-size: 16px;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .formulario-login {
+    .input-form {
+      height: 45px;
+      border-radius: 15px;
+      border-width: 1px;
+      padding: 10.5px 16px;
+    }
+
+    .p-inputmask,
+    .p-password-input{
+      height: 45px;
+      border-radius: 15px;
+      padding: 10.5px 16px;
+    }
+
+    .error-msg {
+      .text-danger {
+        padding-left: 10px;
+      }
+    }
+
+    .card .p-card .p-card-body,
+    .p-card,
+    .card .p-card .p-card-content {
+    border-radius: 35px;
+    background: var(--cor-branca);
+
+    }
+
+    .card .p-card .p-card-content {
+      @media screen and (min-width: 700px) {
+        min-height: 668px;
+        width: 602px;
+        height: auto;
+      }
+    }
+
+    .p-card-content {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+@media screen and (max-height: 800px) {
+  .formulario-login {
+    height: auto !important;
+    padding: 20px 0;
+  }
+}

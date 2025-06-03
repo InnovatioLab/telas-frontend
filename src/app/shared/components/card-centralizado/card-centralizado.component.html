@@ -1,0 +1,43 @@
+<div
+  id="card-centralizado"
+  *ngIf="exibirCardSemTipo()"
+  class="flex items-center justify-content-center bg-color-background w-full h-full px-5rem py-2rem lg:px-10rem lg:py-4rem"
+>
+  <p-card class="container">
+    <ng-content></ng-content>
+    <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+  </p-card>
+</div>
+
+<div
+  *ngIf="type === 'formulario-grande'"
+  id="card-centralizado"
+  class="formulario-grande w-full h-full flex align-items-center justify-content-center bg-color-background"
+>
+  <p-card class="card">
+    <ng-content></ng-content>
+    <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+  </p-card>
+</div>
+
+<div
+  *ngIf="type === 'formulario-pequeno'"
+  id="card-centralizado"
+  class="formulario-pequeno w-full h-full flex align-items-center justify-content-center bg-color-background"
+>
+  <p-card class="card">
+    <ng-content></ng-content>
+    <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+  </p-card>
+</div>
+
+<div
+  *ngIf="type === 'formulario-login'"
+  id="card-centralizado"
+  class="formulario-login w-full h-full flex align-items-center justify-content-center bg-color-background"
+>
+  <p-card class="card">
+    <ng-content></ng-content>
+    <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+  </p-card>
+</div>

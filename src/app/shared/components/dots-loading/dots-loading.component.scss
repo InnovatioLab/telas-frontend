@@ -1,0 +1,44 @@
+.loading-container {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.384);
+  z-index: 2000;
+}
+
+.loading-balls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  z-index: 10003;
+
+  .ball {
+    width: 15px;
+    height: 15px;
+    margin: 0 5px;
+    background-color: var(--cor-primaria);
+    border-radius: 50%;
+    animation: bounce 0.6s infinite alternate;
+    z-index: 3000;
+  }
+
+  .ball:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .ball:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes bounce {
+  to {
+    transform: translateY(-100%);
+    box-shadow: 0 0 5px 1px var(--cor-primaria), 0 0 5px 1px rgb(255, 255, 255);
+
+  }
+}

@@ -1,0 +1,41 @@
+label,
+.margin-label {
+  margin-left: 10px;
+  &.required::after {
+    content: ' *';
+  }
+}
+
+.text-caption {
+  color: var(--placeholder-color);
+}
+
+.text-error {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+:host ::ng-deep {
+  .input-form {
+    height: 48px;
+    border-radius: 10px !important;
+  }
+
+  .p-inputtext {
+    font-size: 14px;
+  }
+
+  .formulario-pequeno .card .p-card-body {
+    min-height: 600px;
+  }
+
+  #error-msg-login {
+    .text-danger {
+      padding-left: 10px;
+    }
+  }
+
+  .botoes-card-pequeno {
+    padding: 8px;
+  }
+}

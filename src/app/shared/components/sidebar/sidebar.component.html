@@ -1,0 +1,89 @@
+<div class="sidebar-container" custom-sidebar>
+  <div class="sidebar-content-compacto">
+    <div
+      (click)="aberta = true"
+      class="box-fechar flex justify-content-center align-items-center cursor-pointer"
+    >
+      <span class="material-symbols-outlined">menu</span>
+    </div>
+    <div class="box-usuario flex align-items-center justify-content-center">
+      <div class="usuario__iniciais flex justify-content-center align-items-center">
+        <span class="texto">{{tagNome()}}</span>
+      </div>
+    </div>
+
+    <div class="box-rotas flex flex-column align-items-center">
+      <ng-container *ngFor="let item of menuItems">
+        <a
+          *ngIf="item.navegacao; else semNavegacao"
+          [routerLinkActive]="'rotas__link--ativo'"
+          [routerLinkActiveOptions]="{exact: item.navegacao === '/'}"
+          [routerLink]="item.navegacao"
+          class="rotas__link w-full flex align-items-center justify-content-center"
+        >
+          <app-icon-dashboard [fill]="corIconeMenu" *ngIf="item.icon === 'dashboard'"/>
+          <app-icon-documento [fill]="corIconeMenu" *ngIf="item.icon === 'documentos'"/>
+          <app-icon-sair [fill]="corIconeMenu" *ngIf="item.icon === 'sair'"/>
+        </a>
+
+        <ng-template #semNavegacao>
+          <div
+            class="rotas__link w-full flex align-items-center justify-content-center cursor-pointer"
+            (click)="item.command && item.command()"
+          >
+            <app-icon-dashboard [fill]="corIconeMenu" *ngIf="item.icon === 'dashboard'"/>
+            <app-icon-documento [fill]="corIconeMenu" *ngIf="item.icon === 'documentos'"/>
+            <app-icon-sair [fill]="corIconeMenu" *ngIf="item.icon === 'sair'"/>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </div>
+
+  <p-drawer [(visible)]="aberta" styleClass="custom-sidebar-drawer">
+    <div class="sidebar-content">
+      <div (click)="aberta = false" class="box-fechar cursor-pointer flex justify-content-start align-items-center">
+        <span class="material-symbols-outlined">close</span>
+      </div>
+      <div class="box-usuario flex align-items-center">
+        <div class="usuario__iniciais flex justify-content-center align-items-center">
+          <span class="texto">{{tagNome()}}</span>
+        </div>
+        <div class="usuario__info">
+          <h3 class="info__nome m-0">{{usuario.nome??''}}</h3>
+          <p class="info__cargo m-0">{{usuario.tipoPerfil??''}}</p>
+        </div>
+      </div>
+
+      <div class="box-rotas flex flex-column align-items-start">
+        <ng-container *ngFor="let item of menuItems">
+          <a
+            *ngIf="item.navegacao; else semNavegacao"
+            [routerLinkActive]="'rotas__link--ativo'"
+            [routerLinkActiveOptions]="{ exact: item.navegacao === '/' }"
+            [routerLink]="item.navegacao"
+            class="rotas__link w-full flex align-items-center"
+          >
+            <app-icon-dashboard [fill]="corIconeMenu" *ngIf="item.icon === 'dashboard'" />
+            <app-icon-documento [fill]="corIconeMenu" *ngIf="item.icon === 'documentos'" />
+            <app-icon-sair [fill]="corIconeMenu" *ngIf="item.icon === 'sair'" />
+            <span class="rotas__texto">{{ item.label }}</span>
+          </a>
+
+          <ng-template #semNavegacao>
+            <div
+              class="rotas__link w-full flex align-items-center cursor-pointer"
+              (click)="item.command && item.command()"
+            >
+              <app-icon-dashboard [fill]="corIconeMenu" *ngIf="item.icon === 'dashboard'" />
+              <app-icon-documento [fill]="corIconeMenu" *ngIf="item.icon === 'documentos'" />
+              <app-icon-sair [fill]="corIconeMenu" *ngIf="item.icon === 'sair'" />
+              <span class="rotas__texto">{{ item.label }}</span>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+
+  </p-drawer>
+</div>
