@@ -8,43 +8,40 @@
   }
 
   .formulario-grande {
-    padding: 60px;
+    padding: var(--espacamento-extra-grande);
 
     .card,
     .p-card {
       width: 100%;
       height: 100%;
-
-      max-width: 1100px;
-      max-height: 930px;
-
-      font-size: 14px;
-      font-weight: 500;
-      font-family: var(--font-family);
-      border-radius: 35px;
+      max-width: var(--largura-max-card-grande);
+      max-height: var(--altura-max-card-grande);
+      font-size: var(--fonte-tamanho-padrao);
+      font-weight: var(--fonte-peso-medio);
+      font-family: var(--fonte-familia);
+      border-radius: var(--borda-raio-padrao);
     }
   }
 
   .formulario-pequeno {
     .card {
-      max-width: 600px;
+      max-width: var(--largura-min-card-pequeno);
     }
 
     .card,
     .p-card {
-      font-size: 14px;
-      font-weight: 500;
-      font-family: var(--font-family);
-      border-radius: 35px;
-
-      min-width: 600px;
+      font-size: var(--fonte-tamanho-padrao);
+      font-weight: var(--fonte-peso-medio);
+      font-family: var(--fonte-familia);
+      border-radius: var(--borda-raio-padrao);
+      min-width: var(--largura-min-card-pequeno);
 
       .p-card-body {
         padding: 0;
       }
 
       .p-card .p-card-content {
-        padding: 64px 49px;
+        padding: var(--espacamento-extra-grande) var(--espacamento-grande);
       }
 
       .p-card .p-card-body {
@@ -56,7 +53,7 @@
       @media screen and (max-width: 700px) {
         max-width: 100%;
         max-height: 100%;
-        padding: 10px;
+        padding: var(--espacamento-padrao);
         min-height: auto;
         min-width: 100%;
         overflow: auto;
@@ -67,7 +64,7 @@
         }
 
         .p-card .p-card-content {
-          padding: 20px;
+          padding: var(--espacamento-padrao);
           height: 100%;
           display: flex;
           justify-content: center;
@@ -75,7 +72,7 @@
         }
 
         form {
-          max-height: 700px;
+          max-height: var(--altura-max-form-mobile);
         }
       }
     }
@@ -83,19 +80,19 @@
 
   .formulario-login {
     .card {
-      max-width: 700px;
+      max-width: var(--largura-max-card-pequeno);
     }
 
     .card,
     .p-card {
-      min-width: 600px;
+      min-width: var(--largura-min-card-pequeno);
 
       .p-card-body {
         padding: 0;
       }
 
       .p-card .p-card-content {
-        padding: 32px 68px;
+        padding: var(--espacamento-grande) var(--espacamento-extra-grande);
       }
 
       .p-card .p-card-body {
@@ -107,7 +104,7 @@
       @media screen and (max-width: 700px) {
         max-width: 100%;
         max-height: 100%;
-        padding: 20px 10px;
+        padding: var(--espacamento-padrao) var(--espacamento-pequeno);
         min-height: auto;
         min-width: 100%;
         overflow: auto;
@@ -118,7 +115,7 @@
         }
 
         .p-card .p-card-content {
-          padding: 20px;
+          padding: var(--espacamento-padrao);
           display: flex;
           justify-content: start;
           flex-direction: column;

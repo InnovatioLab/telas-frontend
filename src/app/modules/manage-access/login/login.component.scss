@@ -26,9 +26,9 @@
   }
 
   .descricao {
-    font-size: 18px;
+    font-size: 40px;
     font-weight: 400;
-    color: var(--cor-desabilitado);
+    color: var(--cor-cinza-claro);
     text-align: center;
     display: flex;
     align-items: center;
@@ -43,7 +43,7 @@
     label{
       font-weight: 400;
       font-size: 16px;
-      color: var(--cor-cinza-escuro);
+      color: var(--cor-cinza-claro);
     }
   }
 
@@ -65,7 +65,7 @@
 
     font-weight: 500;
     font-size: 18px;
-    background-color: var(--cor-primaria-escura);
+    background-color: var(--cor-cinza-claro);
   }
 
   .botao-entrar:disabled {
@@ -76,7 +76,7 @@
 
   .icon-custon {
     position: relative;
-    color: var(--cor-primaria);
+    color: var(--cor-cinza-claro);
     width: 24px;
     height: 24px;
     top: 4px;
@@ -127,7 +127,7 @@
     .p-card,
     .card .p-card .p-card-content {
     border-radius: 35px;
-    background: var(--cor-branca);
+    background: var(--cor-primaria-escura);
 
     }
 

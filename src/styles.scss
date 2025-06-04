@@ -25,6 +25,7 @@
   --fonte-tamanho-grande: 18px;
   --fonte-tamanho-extra-grande: 24px;
   --fonte-tamanho-titulo: 26px;
+  --fonte-tamanho-h5: 30px;
   
   --fonte-peso-regular: 400;
   --fonte-peso-medio: 500;
@@ -60,13 +61,27 @@
   /* Transições */
   --transicao-padrao: all 0.3s ease;
   --transicao-rapida: all 0.15s ease;
+
+  /* Novas variáveis para padronização de dimensões específicas de componentes */
+  --largura-max-card-grande: 1100px;
+  --altura-max-card-grande: 930px;
+  --largura-max-card-pequeno: 700px;
+  --largura-min-card-pequeno: 600px;
+  --altura-max-form-mobile: 700px;
+  --largura-sidebar: 300px;
+  --largura-sidebar-compacto: 90px;
+  --altura-box-fechar: 60px;
+  --altura-box-usuario: 80px;
+  --largura-iniciais-usuario: 60px;
+  --altura-iniciais-usuario: 60px;
+  --altura-link-rotas: 60px;
 }
 
 html,
 body {
   margin: 0;
   height: 100%;
-  background-color: var(--p-surface-100);
+  background-color: var(--cor-cinza-fundo);
   color: var(--p-text-color);
 
   scrollbar-width: thin;
@@ -434,8 +449,8 @@ select {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
 }
 .p-drawer-content {
-      overflow: hidden !important;
-    }
+  overflow: hidden !important;
+}
 .p-dropdown {
   display: flex;
   align-items: center;
@@ -699,20 +714,6 @@ select {
     border-right-width: 1px;
 }
 
-.p-drawer-content {
-  overflow-y: auto !important;
-
-  scrollbar-width: none !important;
-
-  -ms-overflow-style: none !important;
-
-  &::-webkit-scrollbar {
-    width: 0 !important;
-    height: 0 !important;
-    display: none !important;
-  }
-}
-
 .hide-scrollbar {
   overflow-y: auto !important;
   scrollbar-width: none !important;
@@ -723,5 +724,91 @@ select {
     height: 0 !important;
     display: none !important;
   }
+}
+
+/* Estilos para elementos HTML básicos */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-family: var(--fonte-familia);
+  font-weight: var(--fonte-peso-medio);
+  line-height: 1.2;
+  color: var(--cor-cinza-escuro);
+}
+
+h1 {
+  font-size: 2.5rem; /* 40px */
+  font-weight: var(--fonte-peso-negrito);
+}
+
+h2 {
+  font-size: 2rem; /* 32px */
+  font-weight: var(--fonte-peso-negrito);
+}
+
+h3 {
+  font-size: 1.75rem; /* 28px */
+  font-weight: var(--fonte-peso-medio);
+}
+
+h4 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: var(--fonte-peso-medio);
+}
+
+h5 {
+  font-size: var(--fonte-tamanho-h5); /* 30px */
+  font-weight: var(--fonte-peso-negrito);
+  margin-bottom: 1rem;
+}
+
+h6 {
+  font-size: 1rem; /* 16px */
+  font-weight: var(--fonte-peso-medio);
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: var(--fonte-tamanho-medio);
+  font-weight: var(--fonte-peso-regular);
+  line-height: 1.5;
+}
+
+/* Classes de alinhamento de texto (mantidas como utilidades) */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+/* Outras classes utilitárias importantes */
+.mt-0 {
+  margin-top: 0 !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+/* Classes que precisam ser mantidas para compatibilidade */
+.text-xlarge-bold {
+  font-size: var(--fonte-tamanho-h5);
+  font-weight: var(--fonte-peso-negrito);
+}
+
+.text-medium-medium {
+  font-size: var(--fonte-tamanho-medio);
+  font-weight: var(--fonte-peso-medio);
 }
 

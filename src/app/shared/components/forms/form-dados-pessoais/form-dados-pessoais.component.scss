@@ -1,18 +1,18 @@
 .informacoes-pessoais {
-  font-family: var(--font-family);
+  font-family: var(--fonte-familia);
 
   .titulo {
     color: var(--color-text-dark);
-    font-size: 16px;
-    font-weight: 500;
+    font-size: var(--fonte-tamanho-medio);
+    font-weight: var(--fonte-peso-medio);
   }
 
   .form-group {
-    margin-top: 1rem;
-    margin-bottom: 2rem;
+    margin-top: var(--espacamento-padrao);
+    margin-bottom: var(--espacamento-grande);
 
     label {
-      margin-left: 10px;
+      margin-left: var(--espacamento-pequeno);
       &.required::after {
         content: ' *';
       }
@@ -40,22 +40,22 @@
 
 @media screen and (max-width: 768px) {
   .form-container {
-    padding: 16px;
+    padding: var(--espacamento-padrao);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--espacamento-padrao);
   }
 
   .input-group {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--espacamento-pequeno);
   }
 
   .button-group {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--espacamento-padrao);
   }
 }
