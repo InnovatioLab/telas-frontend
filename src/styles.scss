@@ -2,9 +2,10 @@
 @use 'material-symbols';
 
 :root {
-  --cor-primaria: #430092;
-  --cor-primaria-clara: #6a1dbd;
-  --cor-primaria-escura: #2d0066;
+  /* Cores */
+  --cor-primaria: #232F3E;
+  --cor-primaria-clara: #496382;
+  --cor-primaria-escura: #131921;
   --cor-cinza-fundo: #f8f9fa;
   --cor-cinza: #6c757d;
   --cor-cinza-medio: #e9ecef;
@@ -14,7 +15,51 @@
   --cor-erro: #dc3545;
   --cor-desabilitado: #696F74CC;
   --cor-branca: #FFFFFF;
-  --cor-preto-claro: #16191B
+  --cor-preto-claro: #16191B;
+  
+  /* Tipografia */
+  --fonte-familia: 'Montserrat', sans-serif;
+  --fonte-tamanho-pequeno: 12px;
+  --fonte-tamanho-padrao: 14px;
+  --fonte-tamanho-medio: 16px;
+  --fonte-tamanho-grande: 18px;
+  --fonte-tamanho-extra-grande: 24px;
+  --fonte-tamanho-titulo: 26px;
+  
+  --fonte-peso-regular: 400;
+  --fonte-peso-medio: 500;
+  --fonte-peso-negrito: 700;
+  
+  /* Dimensões */
+  --altura-input: 45px;
+  --altura-botao: 47px;
+  --altura-botao-pequeno: 36px;
+  --largura-botao-padrao: 250px;
+  --largura-botao-pequeno: 150px;
+  --largura-dropdown-trigger: 3rem;
+  
+  /* Bordas */
+  --borda-raio-padrao: 15px;
+  --borda-raio-pequeno: 8px;
+  --borda-raio-circular: 50%;
+  --borda-largura: 1px;
+  --borda-estilo: solid;
+  --borda-padrao: var(--borda-largura) var(--borda-estilo) var(--cor-cinza-medio);
+  
+  /* Espaçamentos */
+  --espacamento-pequeno: 8px;
+  --espacamento-padrao: 16px;
+  --espacamento-medio: 24px;
+  --espacamento-grande: 32px;
+  --espacamento-extra-grande: 48px;
+  
+  /* Sombras */
+  --sombra-padrao: 0 2px 12px rgba(0, 0, 0, 0.1);
+  --sombra-hover: 0 4px 15px rgba(0, 0, 0, 0.15);
+  
+  /* Transições */
+  --transicao-padrao: all 0.3s ease;
+  --transicao-rapida: all 0.15s ease;
 }
 
 html,
