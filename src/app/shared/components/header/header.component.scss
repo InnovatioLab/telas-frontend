@@ -1,10 +1,12 @@
 .header {
   width: 100%;
-  height: 80px;
+  height: var(--altura-botao);
   color: var(--cor-branca);
   background-color: var(--p-primary-color);
-  margin-bottom: 16px;
-  padding-left: 24px;
+  margin-bottom: var(--espacamento-padrao);
+  padding-left: var(--espacamento-medio);
+  font-family: var(--fonte-familia);
+  font-size: var(--fonte-tamanho-grande);
 }
 
 

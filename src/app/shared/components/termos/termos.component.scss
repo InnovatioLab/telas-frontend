@@ -13,35 +13,41 @@
 
 .termos-content {
   background-color: white;
-  border-radius: 8px;
+  border-radius: var(--borda-raio-padrao);
   width: 80%;
   max-width: 700px;
-  padding: 2rem;
+  padding: var(--espacamento-grande);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--espacamento-padrao);
   max-height: 80vh;
+  font-family: var(--fonte-familia);
+  font-size: var(--fonte-tamanho-padrao);
 }
 
 .termos-scroll {
   overflow-y: auto;
-  padding-right: 1rem;
-  margin-bottom: 1rem;
+  padding-right: var(--espacamento-padrao);
+  margin-bottom: var(--espacamento-padrao);
   max-height: 50vh;
 }
 
 .termos-actions {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--espacamento-padrao);
 }
 
 h2 {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: var(--espacamento-padrao);
+  font-size: var(--fonte-tamanho-titulo);
+  font-family: var(--fonte-familia);
 }
 
 h3 {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-top: var(--espacamento-padrao);
+  margin-bottom: var(--espacamento-pequeno);
+  font-size: var(--fonte-tamanho-grande);
+  font-family: var(--fonte-familia);
 }

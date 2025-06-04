@@ -3,27 +3,29 @@
   flex-direction: column;
   width: 100%;
   max-width: 100%;
-  transition: all 0.3s ease;
+  transition: var(--transicao-padrao);
   box-sizing: border-box;
   overflow-x: hidden;
+  font-family: var(--fonte-familia);
+  font-size: var(--fonte-tamanho-padrao);
   
   .search-bar {
-    margin-bottom: 10px;
-    padding: 10px;
+    margin-bottom: var(--espacamento-pequeno);
+    padding: var(--espacamento-padrao);
     background-color: #f8f9fa;
-    border-radius: 4px;
+    border-radius: var(--borda-raio-pequeno);
   }
   
   .map-wrapper {
-    border-radius: 8px;
+    border-radius: var(--borda-raio-padrao);
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--sombra-padrao);
     width: 100%;
-    transition: all 0.3s ease;
+    transition: var(--transicao-padrao);
     box-sizing: border-box;
     
     google-map {
-      transition: all 0.3s ease;
+      transition: var(--transicao-padrao);
       max-width: 100%;
       box-sizing: border-box;
       height: 100vh;
@@ -37,13 +39,13 @@
     justify-content: center;
     min-height: 200px;
     background-color: #f8f9fa;
-    border-radius: 4px;
-    border: 1px solid #dee2e6;
+    border-radius: var(--borda-raio-pequeno);
+    border: var(--borda-padrao);
   }
   
   .text-danger {
     color: #dc3545;
-    margin-top: 10px;
+    margin-top: var(--espacamento-pequeno);
   }
 }
 
@@ -52,7 +54,7 @@
   .maps-container {
     width: calc(100% - 280px);
     margin-left: 280px;
-    transition: all 0.3s ease;
+    transition: var(--transicao-padrao);
     box-sizing: border-box;
     overflow: visible;
   }
@@ -63,7 +65,7 @@
   .maps-container {
     width: calc(100% - 280px);
     margin-left: 280px;
-    transition: all 0.3s ease;
+    transition: var(--transicao-padrao);
     box-sizing: border-box;
     overflow: visible;
   }

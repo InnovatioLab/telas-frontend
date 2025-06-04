@@ -2,8 +2,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 10px;
-  gap: 20px;
+  padding-top: var(--espacamento-padrao);
+  gap: var(--espacamento-medio);
+  font-family: var(--fonte-familia);
 }
 
 .footer-buttons .p-button {
@@ -12,5 +13,5 @@
 
 .btn-outline,
 .btn-fill {
-  width: 310px !important;
+  width: var(--largura-botao-padrao) !important;
 }

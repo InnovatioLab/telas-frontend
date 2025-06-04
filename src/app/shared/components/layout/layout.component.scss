@@ -4,11 +4,11 @@ $padding-content: 54px;
 .layout {
   display: flex;
   background: var(--cor-cinza-fundo);
+  font-family: var(--fonte-familia);
 }
 
 .content {
   width: 100%;
-  padding: 54px;
-  padding-left: calc($width-sidebar + $padding-content);
-
+  padding: var(--espacamento-extra-grande);
+  padding-left: calc(#{$width-sidebar} + var(--espacamento-extra-grande));
 }
