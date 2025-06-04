@@ -1,0 +1,105 @@
+<app-card-centralizado type="formulario-pequeno">
+  <ng-template pTemplate="content">
+    <ng-container>
+      <h5 class="text-center text-xlarge-bold mt-0">Register Password</h5>
+    </ng-container>
+
+    <form
+      [formGroup]="alterarContatoForm"
+      class="mt-6 flex flex-column justify-content-center sm:justify-content-between"
+    >
+      <div class="col-12">
+        <label htmlFor="senha" id="lb-senha" class="required">Create Password</label>
+        <br />
+        <p-password
+          [toggleMask]="true"
+          [feedback]="false"
+          formControlName="senha"
+          placeholder="Create your password"
+          class="w-full input-form password"
+          id="senha"
+          minlength="8"
+          maxLength="32"
+          uiSenha
+        >
+          <ng-template pTemplate="hideicon">
+            <div
+              class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+              id="icone-olho-off"
+            >
+              <span class="material-symbols-outlined small text-primary"> visibility_off </span>
+              <small class="text-icon">Hide password</small>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="showicon">
+            <div
+              class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+              id="icone-olho"
+            >
+              <span class="material-symbols-outlined text-caption-small text-primary"> visibility </span>
+              <small class="text-caption-small">Show password</small>
+            </div>
+          </ng-template>
+        </p-password>
+        <app-error
+          *ngIf="alterarContatoForm.get('senha').errors"
+          id="error-msg-login"
+          [control]="alterarContatoForm.get('senha')"
+        ></app-error>
+
+        <div class="text-caption margin-label" *ngIf="alterarContatoForm.get('senha').errors">
+          Your password must contain:
+          <ul class="m-0">
+            <li>8 to 32 characters</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-12 mt-2">
+        <label htmlFor="confirmarSenha" id="lb-confirmarSenha" class="required">Confirm Password</label>
+        <br />
+        <p-password
+          [toggleMask]="true"
+          [feedback]="false"
+          formControlName="confirmarSenha"
+          placeholder="Confirm your password"
+          class="w-full input-form password"
+          id="confirmarSenha"
+          minlength="8"
+          maxLength="32"
+          [permitirColar]="false"
+          uiSenha
+        >
+          <ng-template pTemplate="hideicon">
+            <div
+              class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+              id="icone-olho-off"
+            >
+              <span class="material-symbols-outlined small text-primary"> visibility_off </span>
+              <small class="text-icon">Hide password</small>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="showicon">
+            <div
+              class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+              id="icone-olho"
+            >
+              <span class="material-symbols-outlined text-caption-small text-primary"> visibility </span>
+              <small class="text-caption-small">Show password</small>
+            </div>
+          </ng-template>
+        </p-password>
+        <app-error id="error-msg-login" [control]="alterarContatoForm.get('confirmarSenha')"></app-error>
+        <small *ngIf="exibirErroSenhaDiferente()" class="text-danger text-error margin-label">
+          {{ MENSAGENS.validacao.senhasNaoCorrespondem }}
+        </small>
+      </div>
+
+      <div class="flex justify-content-center mt-5">
+        <button pButton (click)="salvar()" class="w-full md:w-6 btn-fill my-2 justify-content-center">
+          {{ TEXTO_ACAO.salvar }}
+        </button>
+      </div>
+    </form>
+  </ng-template>
+</app-card-centralizado>

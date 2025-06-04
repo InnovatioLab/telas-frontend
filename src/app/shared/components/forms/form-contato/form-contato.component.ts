@@ -30,15 +30,29 @@ export class FormContatoComponent implements OnInit {
     }
 
     if (!this.contatoForm.get('numeroContato')) {
-      this.contatoForm.addControl('numeroContato', new FormControl('', Validators.required));
+      this.contatoForm.addControl('numeroContato', new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)
+      ]));
     } else {
-      this.contatoForm.get('numeroContato').setValidators(Validators.required);
+      this.contatoForm.get('numeroContato').setValidators([
+        Validators.required,
+        Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)
+      ]);
       this.contatoForm.get('numeroContato').updateValueAndValidity();
     }
     if (!this.contatoForm.get('email')) {
-      this.contatoForm.addControl('email', new FormControl('', [Validators.required, Validators.email]));
+      this.contatoForm.addControl('email', new FormControl('', [
+        Validators.required, 
+        Validators.email,
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+      ]));
     } else {
-      this.contatoForm.get('email').setValidators([Validators.required, Validators.email]);
+      this.contatoForm.get('email').setValidators([
+        Validators.required, 
+        Validators.email,
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+      ]);
       this.contatoForm.get('email').updateValueAndValidity();
     }
     
@@ -64,12 +78,12 @@ export class FormContatoComponent implements OnInit {
 
   private numeroValido(numero: string): boolean {
     const numeroLimpo = this.normalizarContato(numero);
-    return numeroLimpo.length === 11;
+    return numeroLimpo.length >= 10 && numeroLimpo.length <= 15 && /^[0-9]+$/.test(numeroLimpo);
   }
 
   private normalizarContato(numero: string): string {
-    const numeroLimpo = numero.replace(/\D/g, '');
-    return numeroLimpo;
+    // Remove todos os caracteres não numéricos, exceto o sinal de +
+    return numero.replace(/[^0-9+]/g, '');
   }
 
   mensagemAlertaLimparCampo(mensagem: string, campo: string) {

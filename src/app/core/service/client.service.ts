@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams, HttpBackend } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, Subject, map } from 'rxjs';
-import { ENVIRONMENT } from 'src/environments/environment-token';
 import { ResponseDTO } from '@app/model/dto/response.dto';
 import { Client } from '@app/model/client';
 import { BaseHttpService } from './base-htttp.service';
@@ -26,20 +25,17 @@ export class ClientService extends BaseHttpService<Client> {
     }
   };
 
-  protected httpClient: HttpClient;
   protected baseUrl: string;
 
   constructor() {
     const http = inject(HttpClient);
-    const baseUrl = inject(ENVIRONMENT).apiUrl + 'clients';
-    super(http, baseUrl);
-    this.httpClient = http;
-    this.baseUrl = baseUrl;
+    super(http, 'clients');
+    this.baseUrl = this.url;
   }
 
   save(perfil: ClientRequestDTO, ignorarLoading = false) {
     const deveIgnorarLoading = ignorarLoading ? { 'Ignorar-Loading-Interceptor': 'true' } : {};
-    return this.httpClient.post(`${this.baseUrl}`,
+    return this.http.post(`${this.baseUrl}`,
       perfil,
       { headers: {
         ...deveIgnorarLoading,
@@ -47,32 +43,32 @@ export class ClientService extends BaseHttpService<Client> {
   }
 
   editar(id: string, perfil: ClientRequestDTO) {
-    return this.httpClient.put<SenhaRequestDto>(`${this.baseUrl}/${id}`, perfil);
+    return this.http.put<SenhaRequestDto>(`${this.baseUrl}/${id}`, perfil);
   }
 
   criarSenha(login: string, request: SenhaRequestDto) {
-    return this.httpClient.patch<SenhaRequestDto>(`${this.baseUrl}/create-password/${login}`, request);
+    return this.http.patch<SenhaRequestDto>(`${this.baseUrl}/create-password/${login}`, request);
   }
 
   atualizardadosPerfil(id: string, client: ClientRequestDTO) {
-    return this.httpClient.put(`${this.baseUrl}/${id}`, client, this.headers);
+    return this.http.put(`${this.baseUrl}/${id}`, client, this.headers);
   }
 
   reenvioCodigo(login: string) {
-    return this.httpClient.post(`${this.baseUrl}/resend-code/${login}`, {});
+    return this.http.post(`${this.baseUrl}/resend-code/${login}`, {});
   }
 
   validarCodigo(login: string, code: string) {
     const params = new HttpParams().set('code', code);
-    return this.httpClient.patch(`${this.baseUrl}/validate-code/${login}`, null, { params });
+    return this.http.patch(`${this.baseUrl}/validate-code/${login}`, null, { params });
   }
 
   aceitarTermosDeCondicao() {
-    return this.httpClient.patch(`${this.baseUrl}/accept-terms-conditions`, null, this.headers);
+    return this.http.patch(`${this.baseUrl}/accept-terms-conditions`, null, this.headers);
   }
 
   clientExistente(login: string): Observable<ClientResponseDTO> {
-    return this.httpClient
+    return this.http
       .get<ResponseDTO<ClientResponseDTO>>(`${this.baseUrl}/identification/${login}`)
       .pipe(map((data: ResponseDTO<ClientResponseDTO>) => data.data));
   }
@@ -85,7 +81,7 @@ export class ClientService extends BaseHttpService<Client> {
     
     console.log(`Buscando cliente com ID/UUID: ${idOuUID}`);
     
-    return this.httpClient.get<ResponseDTO<T>>(`${this.baseUrl}/${idOuUID}`).pipe(
+    return this.http.get<ResponseDTO<T>>(`${this.baseUrl}/${idOuUID}`).pipe(
       map((response: ResponseDTO<T>) => {
         if (response?.data === undefined) {
           console.error('Resposta da API inválida:', response);
@@ -95,5 +91,11 @@ export class ClientService extends BaseHttpService<Client> {
         return response.data;
       })
     );
+  }
+
+  situacaoCadastroLogin(login: string): Observable<boolean> {
+    return this.http
+      .get<ResponseDTO<{ cadastroCompleto: boolean }>>(`${this.baseUrl}/situacao-cadastro/${login}`)
+      .pipe(map((data: ResponseDTO<{ cadastroCompleto: boolean }>) => data.data.cadastroCompleto));
   }
 }

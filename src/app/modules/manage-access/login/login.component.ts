@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { BaseModule } from '@app/shared/base/base.module';
 import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { validatorCpf } from '@app/utility/src/lib/validators';
-import { NgxMaskDirective } from 'ngx-mask';
 import { Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
@@ -26,7 +24,6 @@ import { Authentication } from '@app/core/service/autenthication';
       PrimengModule, 
       CardCentralizadoComponent, 
       ErrorComponent, 
-      NgxMaskDirective,
       TermosComponent
     ],
     standalone: true,
@@ -59,7 +56,7 @@ export class LoginComponent implements OnInit {
 
   iniciarFormulario(): void {
     this.form = this.formBuilder.group({
-      login: ['', [Validators.required, validatorCpf]],
+      login: ['', [Validators.required, Validators.pattern(/^\d{1,9}$/)]],
       senha: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(32)]]
     });
   }
@@ -74,7 +71,7 @@ export class LoginComponent implements OnInit {
     const { login, senha } = this.form.value;
 
     const payload: ILoginRequest = {
-      username: this.formatarCpf(login),
+      username: login, // Enviando o número de identificação diretamente
       password: senha
     };
 
@@ -163,15 +160,16 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  formatarCpf(cpf: string): string {
-    return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+  validarNumeroIdentificacao(numero: string): boolean {
+    // Verifica se o número tem entre 1 e 9 dígitos
+    return /^\d{1,9}$/.test(numero);
   }
 
   habilitarBotao(): boolean {
     return !this.form.valid || this.loading;
   }
 
-  mensagemLoginInvalidoDialog(mensagem = 'Invalid username or password'): void {
+  mensagemLoginInvalidoDialog(mensagem = 'Invalid identification number or password'): void {
     const config = DialogoUtils.criarConfig({
       titulo: 'Invalid!',
       descricao: mensagem,

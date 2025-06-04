@@ -2,19 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  CardCentralizadoComponent,
-  DialogoComponent,
-  ErrorComponent,
-  PrimengModule,
-  TermosComponent
-} from '@raizes-cearenses-nx/shared-ui';
-import { DialogoUtils, MENSAGENS, TEXTO_ACAO } from '@raizes-cearenses-nx/utility';
-import { CadastrarSenhaComponent } from '../cadastrar-senha/cadastrar-senha.component';
-import { ClientService } from '@raizes-cearenses-nx/user';
+import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { TermosComponent } from '../termos-condicoes/termos.component';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { Authentication, AuthenticationService } from '@raizes-cearenses-nx/authentication-data-access';
-import { CAMPOS_REGEX } from '@raizes-cearenses-nx/produto';
+import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
+import { ClientService } from '@app/core/service/client.service';
+import { AutenticacaoService } from '@app/core/service/autenticacao.service';
+import { Authentication } from '@app/core/service/autenthication';
+import { CadastrarSenhaComponent } from '../cadastrar-senha/cadastrar-senha.component';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
+
 
 @Component({
   selector: 'feat-validacao-cadastro',
@@ -44,12 +43,12 @@ export class ValidacaoCadastroComponent implements OnInit {
   refDialogo: DynamicDialogRef | undefined;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private service: ClientService,
-    private dialogService: DialogService,
-    private readonly authService: AuthenticationService,
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly formBuilder: FormBuilder,
+    private readonly router: Router,
+    private readonly service: ClientService,
+    private readonly dialogService: DialogService,
+    private readonly authService: AutenticacaoService,
     private readonly authentication: Authentication
   ) {
     this.validacaoForm = this.formBuilder.group({
@@ -100,7 +99,10 @@ export class ValidacaoCadastroComponent implements OnInit {
   }
 
   fazerLogin(senha: string) {
-    this.authService.login(this.clientLogin, senha).subscribe(() => {
+    this.authService.login({
+      username: this.clientLogin,
+      password: senha
+    }).subscribe(() => {
       this.authentication.pegarDadosAutenticado();
       this.exibirTermos = true;
     });

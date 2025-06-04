@@ -6,11 +6,11 @@ import { Table } from 'primeng/table';
 import { PaginatorState } from 'primeng/paginator';
 import { IColumn, TableUtils } from '@app/shared/utils/table.utils';
 import { IAcoes } from '@app/model/dto/acoes.interface';
-import { Documento } from '@app/model/dto/documento';
 import { IDocumentoDistribuicao } from '@app/model/dto/documento-distribuicao';
 import { FormatarCpfCnpjPipe } from '@app/shared/pipes/formatar-cpf-cnpj.pipe';
 import { CortarStringPipe } from '@app/shared/pipes/cortar-string.pipe';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { Client } from '@app/model/client';
 export interface IPageEvent {
   first: number;
   rows: number;
@@ -35,12 +35,12 @@ export interface IPageEvent {
 export class TableComponent {
   @ViewChild('table', { static: true }) dataTable: Table;
   @Input()
-  set value(val: Array<Documento | IDocumentoDistribuicao>) {
+  set value(val: Array<Client | IDocumentoDistribuicao>) {
     this._value = val;
     if (!this.buscaPaginada) this.getTotalRegistros();
   }
 
-  get value(): Array<Documento | IDocumentoDistribuicao> {
+  get value(): Array<Client | IDocumentoDistribuicao> {
     return this._value;
   }
 
@@ -78,7 +78,7 @@ export class TableComponent {
   @ViewChild('inputElement') inputElement!: ElementRef;
   @ViewChild('table') table!: Table;
 
-  private _value: Array<Documento | IDocumentoDistribuicao > = [];
+  private _value: Array<Client | IDocumentoDistribuicao > = [];
 
   sortField = '';
   sortOrder = 'asc';
@@ -192,10 +192,8 @@ export class TableComponent {
     this.first = event.first || 0;
     this.rows = event.rows || this.rows;
 
-    // Calcula a página atual (PrimeNG usa índice zero)
     const currentPage = event.page !== undefined ? event.page : Math.floor(this.first / this.rows);
 
-    // Emite o evento com todos os dados necessários para paginação
     this.pageChange.emit({
       page: currentPage,
       rows: this.rows,
@@ -216,15 +214,15 @@ export class TableComponent {
     }
   }
 
-  onEditar(item: Documento): void {
+  onEditar(item: Client): void {
     this.editar.emit(item.id);
   }
 
-  onVisualizar(item: Documento): void {
+  onVisualizar(item: Client): void {
     this.visualizar.emit(item.id);
   }
 
-  onExcluir(item: Documento): void {
+  onExcluir(item: Client): void {
     this.excluir.emit(item.id);
   }
 

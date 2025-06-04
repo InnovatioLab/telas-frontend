@@ -19,18 +19,20 @@
         <div class="label-input">
           <label htmlFor="login" id="lb-login">
             <span class="material-symbols-outlined icon-custon" id="test-icon-person"> person </span>
-            Username
+            Identification Number
           </label>
         </div>
         <input
+          type="text"
           pInputText
-          mask="CPF_CNPJ"
           formControlName="login"
           id="test-input-login"
           class="w-full input-form"
-          maxlength="14"
+          placeholder="Enter your identification number (up to 9 digits)"
+          maxlength="9"
+          pattern="[0-9]*"
+          inputmode="numeric"
           (onKeyup.enter)="login()"
-          placeholder="Enter your username"
         />
         <app-error *ngIf="form.get('login').errors" id="error-msg-login" [control]="form.get('login')" class="error-msg"></app-error>
       </div>

@@ -56,8 +56,12 @@ export class FormDadosPessoaisComponent implements OnInit {
   adicionarSocialMedia() {
     this.socialMediaArray.push(
       this.fb.group({
-        platform: [null], 
-        url: [null, [Validators.maxLength(200), Validators.pattern(/^(https?:\/\/).+/)]],
+        platform: [null, Validators.required], 
+        url: [null, [
+          Validators.required,
+          Validators.maxLength(200), 
+          Validators.pattern(/^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/)
+        ]],
       })
     );
   }

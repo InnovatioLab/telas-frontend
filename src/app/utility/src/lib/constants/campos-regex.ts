@@ -1,0 +1,4 @@
+export const CAMPOS_REGEX = {
+  SOMENTE_NUMEROS_INPUT: /\D/g,
+  CODIGO_SEIS_DIGITOS: /\d{6}$/
+}

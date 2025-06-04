@@ -9,13 +9,13 @@ import { AutenticacaoStorage } from './guard';
   providedIn: 'root',
 })
 export class PainelInicialService {
-  urlApi: string = environment.urlApi;
+  urlApi: string = environment.apiUrl;
   httpClient: HttpClient;
   constructor(httpClient: HttpClient) {
     this.httpClient = httpClient;
   }
 
-  private autenticado = { Authorization: `Bearer ${AutenticacaoStorage.getToken()}` };
+  private readonly autenticado = { Authorization: `Bearer ${AutenticacaoStorage.getToken()}` };
 
   pegaDistribuicaoDocumentos(): Observable<IDocumentoDistribuicao[]> {
     const headers = { headers: { ...this.autenticado } };

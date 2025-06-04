@@ -3,9 +3,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
 export class BaseHttpService<T> {
-  public url = environment.urlApi;
+  public url = environment.apiUrl;
 
-  constructor(private http: HttpClient, public rota: string) {
+  constructor(protected readonly http: HttpClient, public rota: string) {
     this.url += rota;
   }
 

@@ -1,22 +1,22 @@
 import { ErrorHandler } from '@angular/core';
 
 export class SenhaRequestDto {
-  senha: string;
-  confirmacaoSenha: string;
+  password: string;
+  confirmPassword: string;
 
-  constructor(senha: string, confirmacaoSenha: string) {
-    const isValido = this.validarSenhasIguais(senha, confirmacaoSenha);
+  constructor(password: string, confirmPassword: string) {
+    const isValido = this.validarSenhasIguais(password, confirmPassword);
 
     if (!isValido) {
       throw new ErrorHandler().handleError('Senhas não conferem');
     }
 
-    this.senha = senha;
-    this.confirmacaoSenha = confirmacaoSenha;
+    this.password = password;
+    this.confirmPassword = confirmPassword;
   }
 
-  validarSenhasIguais(senha: string, confirmacaoSenha: string): boolean {
-    if (senha !== confirmacaoSenha) {
+  validarSenhasIguais(password: string, confirmPassword: string): boolean {
+    if (password !== confirmPassword) {
       return false;
     }
 

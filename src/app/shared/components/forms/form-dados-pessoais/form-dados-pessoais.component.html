@@ -59,6 +59,8 @@
               placeholder="Select Social Media"
               class="w-full"
             ></p-dropdown>
+            <app-error *ngIf="socialMedia.get('platform')?.touched && socialMedia.get('platform')?.invalid" 
+                       [control]="socialMedia.get('platform')"></app-error>
           </div>
           <div class="col-6">
             <input
@@ -69,6 +71,8 @@
               class="w-full input-form"
               maxlength="200"
             />
+            <app-error *ngIf="socialMedia.get('url')?.touched && socialMedia.get('url')?.invalid" 
+                       [control]="socialMedia.get('url')"></app-error>
           </div>
         </div>
       </div>

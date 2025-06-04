@@ -16,6 +16,9 @@ export const MENSAGENS: MensagensConstants = {
     senhaRedefinida: 'Password successfully reset!<br/>You can access the platform with your new password.',
     cancelarRedefinirSenha:
       'Are you sure you want to cancel? This action will discard all data filled in the form.',
+    reenvioCodigoValidacao: 'A new code has been sent to your contact email! Check and try again.',
+    cadastroRealizadoSucesso: 'Registration successfully completed!<br/>Welcome to Telas',
+    naoEncontradoIdentificador: 'Identification number not found! Please check the information and try again.',
   },
   validacao: {
 
@@ -40,6 +43,9 @@ export interface MensagensConstants {
     recusarTermoMobile: string;
     cancelarRedefinirSenha: string;
     senhaRedefinida: string;
+    reenvioCodigoValidacao: string;
+    cadastroRealizadoSucesso: string;
+    naoEncontradoIdentificador: string;
   };
   validacao: {
     senhasNaoCorrespondem: string;

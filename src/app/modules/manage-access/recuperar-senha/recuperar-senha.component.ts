@@ -61,15 +61,15 @@ export class RecuperarSenhaComponent {
       return;
     }
 
-    this.buscarUsuario(this.form.get('login')?.value);
+    this.buscarClient(this.form.get('login')?.value);
   }
 
-  buscarUsuario(login: string) {
-    this.clientService.usuarioExistente(login).subscribe(resposta => {
+  buscarClient(login: string) {
+    this.clientService.buscarClient(login).subscribe(resposta => {
       if (resposta) {
         this.verificarSituacaoCadastroLogin(login);
       } else {
-        this.exibirAlerta(MENSAGENS.dialogo.naoEncontradoCpfCnpj);
+        this.exibirAlerta(MENSAGENS.dialogo.naoEncontradoIdentificador);
       }
     });
   }
@@ -85,7 +85,7 @@ export class RecuperarSenhaComponent {
   }
 
   verificarSituacaoCadastroLogin(login: string) {
-    this.userService.situacaoCadastroLogin(login).subscribe(resposta => {
+    this.clientService.situacaoCadastroLogin(login).subscribe(resposta => {
       if (resposta) {
         this.recuperarSenha();
       } else {
@@ -107,7 +107,7 @@ export class RecuperarSenhaComponent {
   }
 
   reenviarCodigo() {
-    this.userService.reenvioCodigo(this.form.get('login')?.value).subscribe(res => {
+    this.clientService.reenvioCodigo(this.form.get('login')?.value).subscribe(res => {
       if (res) {
         this.redirecionarValidacaoCadastro();
       }

@@ -132,7 +132,7 @@ export class RetomarCadastroComponent implements OnDestroy {
   }
 
   reenviarCodigo() {
-    this.clientService.reenvioCodigo(this.form.get('login')?.value).subscribe(res => {
+    this.clientService.reenvioCodigo(this.form.get('login')?.value).subscribe((res: any) => {
       if (res) {
         this.redirecionarValidacaoCadastro();
       }

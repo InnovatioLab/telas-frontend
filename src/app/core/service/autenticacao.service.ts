@@ -1,6 +1,6 @@
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { firstValueFrom, map, Observable } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import * as jwt_decode from 'jwt-decode';
@@ -36,7 +36,7 @@ export class AutenticacaoService {
   };
   httpBackend: HttpClient;
 
-  private readonly url = environment.urlApi;
+  private readonly url = environment.apiUrl + 'auth/';
 
   storege = AutenticacaoStorage
 
@@ -62,7 +62,7 @@ export class AutenticacaoService {
   }
 
   login(payload: { username: string; password: string }): Observable<any> {
-    return this.httpClient.post<{ data: string }>(`${this.url}/login`, payload)
+    return this.httpClient.post<{ data: string }>(`${this.url}login`, payload)
       .pipe(
         map((response) => {
           if (!response?.data) {
