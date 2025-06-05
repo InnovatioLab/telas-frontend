@@ -1,0 +1,351 @@
+import { Component, HostListener, ElementRef, Renderer2, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { PrimengModule } from '../../primeng/primeng.module';
+import { DialogModule } from 'primeng/dialog';
+import { ToggleComponent } from '../toogle/toogle.component';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { Subscription } from 'rxjs';
+import { SidebarService } from '@app/core/service/sidebar.service';
+import { Router } from '@angular/router';
+import { Authentication } from '@app/core/service/autenthication';
+import { AutenticacaoService } from '@app/core/service/autenticacao.service';
+import { ToggleModeService } from '@app/core/service/toggle-mode.service';
+import { DialogoComponent } from '../dialogo/dialogo.component';
+
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: string;
+  action?: string;
+}
+
+@Component({
+  selector: 'app-client-menu-side',
+  standalone: true,
+  imports: [CommonModule, PrimengModule, DialogModule, ToggleComponent],
+  providers: [DialogService, DialogoUtils],
+  templateUrl: './client-menu-side.component.html',
+  styleUrls: ['./client-menu-side.component.scss']
+})
+export class ClientMenuSideComponent implements OnInit, OnDestroy {
+  menuAberto = false;
+  menuFixo = false;
+  showPaymentModal = false;
+  private sidebarSubscription: Subscription;
+  refDialogo: DynamicDialogRef | undefined;
+  isDarkMode = false;
+
+  menuItems: MenuItem[] = [
+    { id: 'home', label: 'Home', icon: 'pi-home' },
+    { id: 'wishList', label: 'Wish list', icon: 'pi-heart' },
+    { id: 'map', label: 'My telas', icon: 'pi-map-marker' },
+    { id: 'settings', label: 'Settings', icon: 'pi-cog' },
+    { id: 'help', label: 'Help', icon: 'pi-question-circle' },
+    { id: 'logout', label: 'Logout', icon: 'pi-sign-out' },
+  ];
+
+  constructor(
+    private readonly sidebarService: SidebarService,
+    private readonly elementRef: ElementRef,
+    private readonly renderer: Renderer2,
+    private readonly router: Router,
+    private readonly authentication: Authentication,
+    private readonly authenticationService: AutenticacaoService,
+    public dialogService: DialogService,
+    private readonly toggleModeService: ToggleModeService,
+  ) {}
+
+  ngOnInit(): void {
+    this.carregarEstadoMenuFixo();
+    this.toggleModeService.theme$.subscribe((theme: string) => {
+      this.isDarkMode = theme === 'dark';
+    });
+    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(() => {
+      const isVisible = this.sidebarService.visibilidade();
+      const tipo = this.sidebarService.tipo();
+      
+      if (!this.menuFixo) {
+        if (isVisible && tipo === 'client-menu' && !this.menuAberto) {
+          this.abrirMenu();
+        } else if (!isVisible && this.menuAberto) {
+          this.fecharMenu();
+        }
+      }
+    });
+    
+    if (this.menuFixo) {
+      this.abrirMenu();
+    }
+  }
+  
+  ngOnDestroy(): void {
+    if (this.sidebarSubscription) {
+      this.sidebarSubscription.unsubscribe();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  fecharMenuComEsc(): void {
+    if (this.menuAberto && !this.menuFixo) {
+      this.toggleMenu();
+    }
+    
+    if (this.showPaymentModal) {
+      this.showPaymentModal = false;
+    }
+  }
+
+  toggleMenu(): void {
+    if (this.menuFixo && this.menuAberto) {
+      return;
+    }
+    
+    if (this.menuAberto) {
+      this.fecharMenu();
+    } else {
+      this.abrirMenu();
+    }
+  }
+  
+  toggleFixarMenu(event: Event): void {
+    event.stopPropagation();
+    
+    if (window.innerWidth <= 768) {
+      return;
+    }
+    
+    this.menuFixo = !this.menuFixo;
+    
+    this.salvarEstadoMenuFixo();
+    
+    if (this.menuFixo) {
+      this.abrirMenu();
+      this.renderer.addClass(document.body, 'menu-fixed');
+    } else {
+      this.renderer.removeClass(document.body, 'menu-fixed');
+    }
+    
+    this.ajustarEspacoMapa();
+  }
+  
+  private salvarEstadoMenuFixo(): void {
+    try {
+      localStorage.setItem('menuFixo', this.menuFixo ? 'true' : 'false');
+    } catch (e) {
+      console.error('Não foi possível salvar o estado do menu:', e);
+    }
+  }
+  
+  private carregarEstadoMenuFixo(): void {
+    try {
+      const estadoSalvo = localStorage.getItem('menuFixo');
+      if (estadoSalvo !== null) {
+        if (window.innerWidth <= 768) {
+          this.menuFixo = false;
+          localStorage.setItem('menuFixo', 'false');
+        } else {
+          this.menuFixo = estadoSalvo === 'true';
+          
+          if (this.menuFixo) {
+            this.renderer.addClass(document.body, 'menu-fixed');
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Não foi possível carregar o estado do menu:', e);
+    }
+  }
+  
+  private abrirMenu(): void {
+    this.menuAberto = true;
+    this.sidebarService.abrirMenu('client-menu');
+    
+    this.renderer.addClass(document.body, 'menu-open');
+    
+    setTimeout(() => {
+      const primeiroItem = this.elementRef.nativeElement.querySelector('.menu-item');
+      if (primeiroItem) {
+        primeiroItem.focus();
+      }
+    }, 100);
+    
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+  }
+  
+  private fecharMenu(): void {
+    if (this.menuFixo) {
+      return;
+    }
+    
+    this.menuAberto = false;
+    this.sidebarService.fechar();
+    
+    this.renderer.removeClass(document.body, 'menu-open');
+    
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+  }
+
+  selecionarOpcao(item: MenuItem): void {
+      switch (item.id) {
+      case 'payments':
+        this.abrirModalPagamento();
+        break;
+      case 'home':
+        this.navegarPaginaInicial();
+        break;
+      case 'logout':
+        this.logout();
+        break;
+      case 'settings':
+        this.navegarParaConfiguracoes();
+        break;
+      case 'wishList':
+        this.navegarParaWishList();
+        break;
+      case 'map':
+        this.navegarParaMyTelas();
+        break;
+      default:
+        break;
+    }
+  }
+
+  navegarParaWishList(): void {
+    if (this.isLogado()) {
+      this.router.navigate(['/wish-list']);
+      if (this.menuAberto) {
+        this.toggleMenu();
+      }
+    } else {
+      this.router.navigate(['/authentication/login']);
+    }
+  }
+
+  navegarParaMyTelas(): void {
+    if (this.isLogado()) {
+      this.router.navigate(['/management-profile/progress-ad']);
+      if (this.menuAberto) {
+        this.toggleMenu();
+      }
+    } else {
+      this.router.navigate(['/authentication/login']);
+    }
+  }
+
+  logout() {
+    const config = DialogoUtils.exibirAlerta('Are you sure you want to log out?', {
+      acaoPrimaria: 'Yes, log out',
+      acaoPrimariaCallback: () => {
+        this.refDialogo.close();
+        this.desconectar();
+      },
+      acaoSecundaria: 'No, stay logged in',
+      acaoSecundariaCallback: () => {
+        this.refDialogo.close();
+      }
+    });
+
+    this.refDialogo = this.dialogService.open(DialogoComponent, config);
+  }
+
+  desconectar() {
+    this.authenticationService.logout();
+    this.authentication.removerAutenticacao();
+    window.location.href = '/';
+  }
+
+  abrirModalPagamento(): void {
+    if (!this.isLogado()) {
+      this.router.navigate(['/authentication/login']);
+      return;
+    }
+    this.showPaymentModal = true;
+  }
+
+  isLogado(): boolean {
+    return this.authentication?.isLoggedIn$.getValue() || false;
+  }
+
+  navegarPaginaInicial(): void {
+    if (this.isLogado()) {
+      if (this.isAdministrador()) {
+        this.router.navigate(['/administrator']);
+      } else {
+        this.router.navigate(['/client-view']);
+      }
+    } else {
+      this.router.navigate(['/']);
+    }
+    
+    if (this.menuAberto) {
+      this.toggleMenu();
+    }
+  }
+
+  isAdministrador(): boolean {
+    return this.authentication?._clientSignal()?.role === 'ADMIN';
+  }
+
+  private ajustarEspacoMapa(): void {
+    if (this.menuAberto) {
+      this.renderer.addClass(document.body, 'menu-open');
+      if (this.menuFixo) {
+        this.renderer.addClass(document.body, 'menu-fixed');
+      }
+    } else {
+      this.renderer.removeClass(document.body, 'menu-open');
+      this.renderer.removeClass(document.body, 'menu-fixed');
+    }
+    
+    setTimeout(() => {
+      const bodyWidth = document.body.clientWidth;
+      const windowWidth = window.innerWidth;
+      
+      if (bodyWidth > windowWidth) {
+        const mapsContainer = document.querySelector('.maps-container');
+        if (mapsContainer) {
+          this.renderer.setStyle(mapsContainer, 'max-width', `${windowWidth - 20}px`);
+        }
+      }
+      
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+  }
+
+  navegarParaConfiguracoes(): void {
+    if (this.isLogado()) {
+      this.router.navigate(['/management-profile/registration-data']);
+      if (this.menuAberto) {
+        this.toggleMenu();
+      }
+    } else {
+      this.router.navigate(['/authentication/login']);
+    }
+  }
+
+  getMenuItemTooltip(item: MenuItem): string {
+    switch (item.id) {
+      case 'home':
+        return 'Go to home page';
+      case 'payments':
+        return 'Manage your payments';
+      case 'wishList':
+        return 'View your saved items';
+      case 'map':
+        return 'View your ad campaigns';
+      case 'settings':
+        return 'Change your account settings';
+      case 'help':
+        return 'Get help and support';
+      case 'logout':
+        return 'Sign out from your account';
+      default:
+        return item.label;
+    }
+  }
+}

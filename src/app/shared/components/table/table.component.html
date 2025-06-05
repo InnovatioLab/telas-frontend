@@ -39,7 +39,7 @@
               <button
                 type="button"
                 class="botao-acao text-center align-items-center"
-                aria-label="Visualizar"
+                aria-label="View"
                 [id]="'btn-visualizar-' + i"
                 (click)="onVisualizar(item)"
                 tooltipStyleClass="pequeno"
@@ -50,7 +50,7 @@
               <button
                 type="button"
                 class="botao-acao ml-1"
-                aria-label="Editar"
+                aria-label="Edit"
                 [id]="'btn-editar-' + i"
                 (click)="onEditar(item)"
                 tooltipStyleClass="pequeno"
@@ -66,7 +66,7 @@
               <button
                 type="button"
                 class="botao-acao text-center align-items-center"
-                aria-label="Visualizar"
+                aria-label="View"
                 [id]="'btn-visualizar-' + i"
                 (click)="onVisualizar(item)"
               >
@@ -85,10 +85,10 @@
               <button
                 type="button"
                 class="botao-acao text-center align-items-center"
-                aria-label="Visualizar"
+                aria-label="View"
                 [id]="'btn-visualizar-' + i"
                 (click)="onVisualizar(item)"
-                pTooltip="Visualizar Documento"
+                pTooltip="View Document"
                 tooltipStyleClass="pequeno"
                 tooltipPosition="bottom"
               >
@@ -97,10 +97,10 @@
               <button
                 type="button"
                 class="botao-acao ml-1"
-                aria-label="Editar"
+                aria-label="Edit"
                 [id]="'btn-editar-' + i"
                 (click)="onEditar(item)"
-                pTooltip="Editar Documento"
+                pTooltip="Edit Document"
                 tooltipStyleClass="pequeno"
                 tooltipPosition="bottom"
               >
@@ -109,10 +109,10 @@
               <button
                 type="button"
                 class="botao-acao ml-1"
-                aria-label="Excluir"
+                aria-label="Delete"
                 [id]="'btn-excluir-' + i"
                 (click)="onExcluir(item)"
-                pTooltip="Excluir Documento"
+                pTooltip="Delete Document"
                 tooltipStyleClass="pequeno"
                 tooltipPosition="bottom"
               >
@@ -154,7 +154,7 @@
       <td colspan="12" class="container-paginacao" *ngIf="buscaPaginada && shouldShowPaginator">
       <div class="paginador justify-content-between">
         <div class="paginador-item">
-          <span class="itens-por-pagina mr-2">Itens por página</span>
+          <span class="itens-por-pagina mr-2">Items per page</span>
           <p-select
             [options]="optionsPage"
             optionLabel="label"

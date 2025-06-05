@@ -1,0 +1,20 @@
+<div *ngIf="visible" class="point-action-menu" [style.left.px]="position.x" [style.top.px]="position.y">
+  <div class="point-menu-header">
+    <span class="point-title">{{ selectedPoint?.title || 'Ponto no Mapa' }}</span>
+    <button type="button" class="close-button" (click)="close()">
+      <i class="pi pi-times"></i>
+    </button>
+  </div>
+  
+  <div class="point-menu-options">
+    <button pButton type="button" icon="pi pi-list" label="Add to List" 
+      class="p-button-text p-button-secondary menu-option"
+      (click)="addToList()">
+    </button>
+    
+    <button pButton type="button" icon="pi pi-info-circle" label="Details" 
+      class="p-button-text p-button-primary menu-option"
+      (click)="viewDetails()">
+    </button>
+  </div>
+</div>

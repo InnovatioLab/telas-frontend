@@ -12,7 +12,7 @@ import { TermoCondicao } from '@app/model/termo-condicao';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 
 @Component({
-  selector: 'ui-termos',
+  selector: 'app-termos',
   standalone: true,
   imports: [CommonModule, PrimengModule],
   providers: [DialogService],

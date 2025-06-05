@@ -1,2 +1,2 @@
-export * from './user-authenticated.guard';
-export * from './autenticacao-storage';
+export * from './client-authenticated.guard';
+export * from './termos.guard';

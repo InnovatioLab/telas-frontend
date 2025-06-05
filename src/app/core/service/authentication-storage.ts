@@ -41,4 +41,17 @@ export class AuthenticationStorage {
     const userData = this.getDataUser();
     return userData ? JSON.parse(userData).businessName : null;
   }
+
+  static getUserId(): string | null {
+    try {
+      const userData = this.getDataUser();
+      if (!userData) return null;
+      
+      const user = JSON.parse(userData);
+      return user?.id || null;
+    } catch (error) {
+      console.error('Erro ao obter ID do usuário:', error);
+      return null;
+    }
+  }
 }

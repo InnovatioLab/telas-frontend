@@ -1,53 +1,63 @@
-.termos-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+:host ::ng-deep {
+  #container-termo {
+    .p-dialog .p-dialog-content {
+      padding: 0px 93px;
+      overflow: hidden;
+    }
 
-.termos-content {
-  background-color: white;
-  border-radius: var(--borda-raio-padrao);
-  width: 80%;
-  max-width: 700px;
-  padding: var(--espacamento-grande);
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacamento-padrao);
-  max-height: 80vh;
-  font-family: var(--fonte-familia);
-  font-size: var(--fonte-tamanho-padrao);
-}
+    .p-dialog .p-dialog-content:last-of-type,
+    .p-dialog {
+      border-radius: 15px;
+    }
 
-.termos-scroll {
-  overflow-y: auto;
-  padding-right: var(--espacamento-padrao);
-  margin-bottom: var(--espacamento-padrao);
-  max-height: 50vh;
-}
+    .content {
+      padding-bottom: 20%;
+    }
 
-.termos-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--espacamento-padrao);
-}
+    .content::-webkit-scrollbar {
+      width: 8px;
+    }
 
-h2 {
-  text-align: center;
-  margin-bottom: var(--espacamento-padrao);
-  font-size: var(--fonte-tamanho-titulo);
-  font-family: var(--fonte-familia);
-}
+    .content::-webkit-scrollbar-track {
+      background: #d9d9d9;
+      border-radius: 25px;
+    }
 
-h3 {
-  margin-top: var(--espacamento-padrao);
-  margin-bottom: var(--espacamento-pequeno);
-  font-size: var(--fonte-tamanho-grande);
-  font-family: var(--fonte-familia);
+    .content::-webkit-scrollbar-thumb {
+      background: #adadad;
+      border-radius: 25px;
+    }
+
+    .box-botao {
+      bottom: -1px;
+      padding-top: 31px;
+      padding-bottom: 31px;
+    }
+
+    .titulo {
+      color: var(--color-dark);
+    }
+
+    @media screen and (max-width: 575px) {
+      .p-dialog .p-dialog-content {
+        padding: 0px 20px;
+      }
+
+      h4 {
+        font-size: 20px;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      button {
+        font-size: 14px;
+      }
+
+      .content {
+        padding-bottom: 45%;
+      }
+    }
+  }
 }

@@ -32,9 +32,9 @@ import { AutenticacaoStorage } from '@app/core/service/guard';
 export class SidebarComponent implements OnInit {
 
   menuItems = [
-    { label: 'Painel Inicial ', icon: 'dashboard', navegacao: '/' },
-    { label: 'Documentos', icon: 'documentos', navegacao: '/documentos' },
-    { label: 'Sair', icon: 'sair', command: () => this.verificarLogout() },
+    { label: 'Dashboard', icon: 'dashboard', navegacao: '/' },
+    { label: 'Documents', icon: 'documentos', navegacao: '/documentos' },
+    { label: 'Logout', icon: 'sair', command: () => this.verificarLogout() },
   ];
 
   aberta = false;
@@ -84,7 +84,7 @@ export class SidebarComponent implements OnInit {
     const descricao = DIALOGOS.sairSistema;
 
     const config = DialogoUtils.criarConfig({
-      titulo: 'Confirmar Logout',
+      titulo: 'Confirm Logout',
       descricao: descricao,
       icon: 'report',
       acaoPrimaria: TEXTO_ACAO.simSair,

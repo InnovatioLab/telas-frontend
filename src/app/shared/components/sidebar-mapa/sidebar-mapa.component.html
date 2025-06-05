@@ -1,0 +1,89 @@
+<div class="sidebar-mapa">
+  <p-sidebar
+    [showCloseIcon]="false"
+    [(visible)]="visibilidadeSidebar"
+    position="right"
+    [dismissible]="true"
+    (onHide)="fecharSidebar()"
+    [blockScroll]="true"
+    [closeOnEscape]="false"
+  >
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center gap-2 w-full">
+        <button (click)="voltar()" class="botao-voltar flex-none cursor-pointer" pTooltip="Back" tooltipPosition="right">
+          <span class="material-symbols-outlined botao-icon"> arrow_back </span>
+        </button>
+        <div class="flex line-height-1 gap-2 justify-content-center align-items-center w-full">
+          <span class="material-symbols-outlined text-primary icone-sidebar"> location_on </span>
+          <div class="font-negrito text-center">Location</div>
+        </div>
+      </div>
+    </ng-template>
+    
+    <div class="ponto-detalhes" *ngIf="pontoSelecionado">
+      <h3 class="ponto-titulo">{{ pontoSelecionado.title || 'Selected Location' }}</h3>
+      
+      <div class="street-view-container">
+        <div *ngIf="carregandoImagem" class="street-view-loading">
+          <i class="pi pi-spin pi-spinner"></i>
+          <span>Loading view...</span>
+        </div>
+        
+        <div *ngIf="erroImagem" class="street-view-error">
+          <span class="material-symbols-outlined">image_not_supported</span>
+          <span>View not available for this location</span>
+        </div>
+        
+        <img 
+          *ngIf="streetViewUrl && !erroImagem" 
+          [src]="streetViewUrl" 
+          alt="Visualização da rua" 
+          class="street-view-image"
+          (error)="tratarErroImagem()"
+          (load)="carregandoImagem = false"
+        />
+      </div>
+      
+      <div class="ponto-info">
+        <div class="info-grupo" *ngIf="pontoSelecionado.data && pontoSelecionado.data.size">
+          <span class="material-symbols-outlined">tv</span>
+          <div class="info-detalhe">
+            <span class="info-label">Monitor Size:</span>
+            <span class="info-valor">{{ pontoSelecionado.data.size }}"</span>
+          </div>
+        </div>
+        
+        <div class="info-grupo" *ngIf="pontoSelecionado.data && pontoSelecionado.data.type">
+          <span class="material-symbols-outlined">device_hub</span>
+          <div class="info-detalhe">
+            <span class="info-label">Type:</span>
+            <span class="info-valor">{{ pontoSelecionado.data.type }}</span>
+          </div>
+        </div>
+        
+        <div class="info-grupo" *ngIf="pontoSelecionado.data && pontoSelecionado.data.distanceInKm">
+          <span class="material-symbols-outlined">route</span>
+          <div class="info-detalhe">
+            <span class="info-label">Distance:</span>
+            <span class="info-valor">{{ pontoSelecionado.data.distanceInKm.toFixed(2) }} km</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="acoes-container">
+        <button pButton type="button"
+          label="Open in Google Maps"
+          class="p-button-secondary"
+          icon="pi pi-map-marker"
+          pTooltip="Open this location in Google Maps"
+          tooltipPosition="top"
+          (click)="abrirGoogleMaps()">
+        </button>
+      </div>
+    </div>
+    
+    <div class="sem-ponto" *ngIf="!pontoSelecionado">
+      <p>No point selected.</p>
+    </div>
+  </p-sidebar>
+</div>

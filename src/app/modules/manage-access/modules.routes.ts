@@ -1,10 +1,11 @@
 import { Route } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
+import { RecuperarSenhaComponent } from './recuperar-senha/recuperar-senha.component';
 
 export const ROUTES: Route[] = [
   {
-    path: '',
+    path: 'login',
     component: LoginComponent,
     title: 'Login',
   },
@@ -13,4 +14,9 @@ export const ROUTES: Route[] = [
     component: LogoutComponent,
     title: 'Logout',
   },
+  {
+    path: 'recover-password',
+    component: RecuperarSenhaComponent,
+    title: 'Recover Password',
+  }
 ];

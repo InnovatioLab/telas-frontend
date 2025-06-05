@@ -1,0 +1,282 @@
+.footer {
+  min-height: 217px;
+  width: 100%;
+  max-width: 1320px;
+}
+
+
+.link-text {
+  font-weight: normal;
+  font-size: 16px;
+  color: #383838;
+}
+
+.email-suporte {
+  color: #383838;
+  font-weight: normal;
+}
+
+.dialog-texto-header {
+  .titulo-dialogo {
+    font-size: 22px;
+    font-weight: 500;
+  }
+
+  .box-subtitulo {
+    display: flex;
+
+    .subtitulo-dialogo {
+      font-size: 22px;
+      font-weight: 600;
+      color: #131518;
+    }
+  }
+
+  .versao-termo {
+    padding: 8px 0px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-primary);
+  }
+
+  .legenda-dialogo {
+    width: 100%;
+    font-weight: 400;
+    font-size: 16px;
+    color: #45484C;
+    text-align: center;
+    padding: 8px 40px;
+  }
+
+  .container-info {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 12px;
+  }
+}
+
+::ng-deep {
+  .container-rodape {
+    background: #f3f3f3b2;
+    row-gap: 50px;
+    
+    .p-dialog-content {
+      border-radius: 8px;
+      padding: 26px 63px;
+      min-height: 80vh !important;
+    }
+  }
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column; /* Organiza os elementos verticalmente */
+  min-width: 251px;
+}
+
+.footer-section .header-institucional {
+  width: 149px;
+  height: 40px;
+}
+
+.footer-section .header-suport {
+  width: 103px;
+  height: 40px;
+}
+
+.footer-section .header-rede-social {
+  width: 161px;
+  height: 40px;
+}
+
+.footer-section .header-realizacao {
+  width: 130px;
+  height: 40px;
+}
+
+.footer-section .titulo {
+  border-bottom: 2px solid var(--color-secondary);
+  display: inline-table;
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 14px;
+  width: 100%;
+  height: 24px;
+  text-align: center;
+  padding-bottom: 5px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  padding-inline-start: 10px;
+}
+
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+
+.sub-titulo {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  color: #383838;
+  margin-bottom: 4px !important;
+}
+
+.footer-section button {
+  text-decoration: none;
+  color: #333;
+  padding: 0px;
+  font-weight: normal;
+}
+
+.logo-ematece {
+  width: 228px;
+  height: 57px;
+  margin-bottom: 16px;
+}
+
+.logo-governo {
+  width: 251px;
+  height: 80px;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: var(--color-secondary);
+  font-size: 1.2rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.logos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rodape-container {
+  background-color: #232F3E;
+  width: 100%;
+  height: 50px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+  .rodape-container {
+    height: 60px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .footer-section {
+    width: 50%;
+    margin-bottom: 20px;
+
+    ul {
+      padding-inline-start: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .footer-section .titulo {
+    font-size: 16px;
+    text-align: start;
+    padding-inline-start: 10px;
+  }
+
+  .footer-section .header-institucional {
+    width: 100%;
+  }
+
+  .footer-section .header-suport {
+    width: 100%;
+  }
+
+  .footer-section .header-rede-social {
+    width: 100%;
+  }
+
+  .footer-section .header-realizacao {
+    width: 100%;
+  }
+
+  .logo-ematece {
+    width: 100%;
+    height: auto;
+  }
+
+  .logo-governo {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .footer-section {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 740px) {
+  .mobile-only {
+    display: block;
+  }
+
+  .footer-section {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .footer-section .header-institucional,
+  .footer-section .header-suport,
+  .footer-section .header-rede-social {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .footer-section .titulo {
+    font-size: 16px;
+    text-align: start;
+    padding-inline-start: 10px;
+    margin-bottom: 0;
+    border-bottom: none;
+  }
+
+  .logos-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .logo-ematece {
+    width: 120px;
+    height: auto;
+    margin-bottom: 0;
+  }
+
+  .logo-governo {
+    width: 120px;
+    height: auto;
+  }
+}

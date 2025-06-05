@@ -1,13 +1,12 @@
-
 import { Route } from '@angular/router';
-import { PainelInicialComponent } from './painel-inicial/painel-inicial.component';
 import { AutenticacaoLoginGuard } from '@app/core/service/guard';
+import { ClientViewComponent } from './client-view/client-view.component';
 
 export const ROUTES: Route[] = [
   {
-      path: '',
-      component: PainelInicialComponent,
-      title: 'Painel Inicial',
-      canActivate:[AutenticacaoLoginGuard]
-    },
+    path: '',
+    component: ClientViewComponent,
+    title: 'Home',
+    canActivate: [AutenticacaoLoginGuard]
+  },
 ];

@@ -13,6 +13,7 @@
       <div class="col-12 md:col-6 lg:col-3" *ngIf="exibirCampo('identificationNumber')">
         <label htmlFor="identificationNumber" id="lb-identification-number" [class.required]="campoObrigatorio('identificationNumber')">Identification Number</label>
         <br />
+        <!-- Substituindo o p-inputMask por um input normal -->
         <p-inputMask mask="999999999" formControlName="identificationNumber" placeholder="000000000" id="inp-identification-number"
           class="w-full input-form" autoClear="false"></p-inputMask>
         <app-error id="error-msg-identification-number" [control]="cadastroForm.get('identificationNumber')"></app-error>

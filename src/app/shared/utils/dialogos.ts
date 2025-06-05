@@ -1,7 +1,7 @@
 export const DIALOGOS = {
-  cancelarCadastroDocumento: 'Tem certeza que deseja cancelar? Todas as <br/> informações preenchidas serão perdidas.',
-  cancelarEdicaoDocumento: 'Tem certeza que deseja cancelar? <br/> As alterações feitas não serão salvas.',
-  erroAbrirArquivo: 'Não foi possível abrir o arquivo! <br/> Tente novamente mais tarde.',
-  excluirDocumento: 'Tem certeza que deseja excluir? <br/> Todo  o conhecimento adquirido pela a I.A sobre<br/>este documento será perdido.',
-  sairSistema: 'Tem certeza que deseja sair do sistema?',
+  cancelarCadastroDocumento: 'Are you sure you want to cancel? All filled information will be lost.',
+  cancelarEdicaoDocumento: 'Are you sure you want to cancel? Changes made will not be saved.',
+  erroAbrirArquivo: 'Could not open the file! Please try again later.',
+  excluirDocumento: 'Are you sure you want to delete? All knowledge acquired by the AI about this document will be lost.',
+  sairSistema: 'Are you sure you want to log out?',
 }

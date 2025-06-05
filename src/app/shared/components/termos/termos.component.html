@@ -1,36 +1,45 @@
-<div class="termos-container">
-  <div class="termos-content">
-    <h2>Terms and Conditions</h2>
-    
-    <div class="termos-scroll">
-      <p>
-        Please read these terms and conditions carefully before using our service.
-      </p>
-      
-      <h3>1. Acceptance of Terms</h3>
-      <p>
-        By accessing or using our service, you agree to be bound by these terms. If you disagree with any part of the terms, you may not access the service.
-      </p>
-      
-      <h3>2. User Accounts</h3>
-      <p>
-        When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our service.
-      </p>
-      
-      <h3>3. Privacy Policy</h3>
-      <p>
-        Our Privacy Policy describes how we handle the information and content you provide to us when you use our services. You understand that through your use of the services you consent to the collection and use of this information.
-      </p>
-      
-      <h3>4. Termination</h3>
-      <p>
-        We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
-      </p>
+<div #containerTermo id="container-termo">
+  <p-dialog
+    header="Header"
+    [visible]="true"
+    closable="false"
+    showHeader="false"
+    class="pb-0"
+    [breakpoints]="{ '2000px': '841px', '575px': '90vw' }"
+  >
+    <h4 class="titulo my-4 text-center w-full sticky top-0">
+      Terms of Acceptance
+    </h4>
+    <div class="overflow-hidden">
+      <div
+        class="overflow-auto border-round content"
+        [style]="{ 'max-height': '80vh' }"
+      >
+        <div>
+          <p class="surface-overlay p-4 m-0" [innerHTML]="conteudo">
+          </p>
+        </div>
+      </div>
     </div>
-    
-    <div class="termos-actions">
-      <button pButton label="Accept" class="p-button-success" (click)="aceitar()"></button>
-      <button pButton label="Decline" class="p-button-danger" (click)="rejeitar()"></button>
+    <div
+      class="gap-3 box-botao sticky bg-white h-full sm:mt-4 sm:px-4 flex flex-column-reverse sm:flex-row justify-content-between"
+    >
+      <button
+        pButton
+        id="btnSecundario"
+        class="w-full sm:w-4 justify-content-center btn-outline"
+        (click)="recusar()"
+      >
+        Decline
+      </button>
+      <button
+        pButton
+        id="btnPrimario"
+        class="w-full sm:w-4 justify-content-center btn-fill"
+        (click)="aceitar()"
+      >
+        Accept
+      </button>
     </div>
-  </div>
+  </p-dialog>
 </div>

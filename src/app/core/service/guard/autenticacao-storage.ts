@@ -24,9 +24,7 @@ export class AutenticacaoStorage {
   }
 
   static loginExpirado() {
-    localStorage.removeItem(this.storageName);
-    localStorage.removeItem(this.storageName + '_refresh');
-    localStorage.removeItem(this.storageName + '_user');
+    this.clearToken();
   }
 
   static getDataUser() {

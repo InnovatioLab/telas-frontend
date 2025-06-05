@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgxMaskDirective } from 'ngx-mask';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
@@ -22,7 +21,6 @@ import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.compone
     CardCentralizadoComponent,
     ErrorComponent,
     ReactiveFormsModule,
-    NgxMaskDirective
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: './recuperar-senha.component.html',
@@ -39,7 +37,7 @@ export class RecuperarSenhaComponent {
     private readonly fb: FormBuilder,
     private readonly router: Router,
     private readonly clientService: ClientService,
-    private authService: AutenticacaoService,
+    private readonly authService: AutenticacaoService,
     public dialogService: DialogService
   ) {
     this.form = this.fb.group({
@@ -52,7 +50,7 @@ export class RecuperarSenhaComponent {
   }
 
   voltar() {
-    this.router.navigate(['authentication/login']);
+    this.router.navigate(['/login']);
   }
 
   proximo() {
@@ -116,5 +114,11 @@ export class RecuperarSenhaComponent {
 
   redirecionarValidacaoCadastro() {
     this.router.navigate(['/register/validate', this.form.get('login')?.value]);
+  }
+
+  onlyNumbersInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '');
+    this.form.get('login').setValue(input.value);
   }
 }

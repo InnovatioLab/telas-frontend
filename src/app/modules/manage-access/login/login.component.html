@@ -32,7 +32,8 @@
           maxlength="9"
           pattern="[0-9]*"
           inputmode="numeric"
-          (onKeyup.enter)="login()"
+          (input)="onlyNumbersInput($event)"
+          (keyup.enter)="login()"
         />
         <app-error *ngIf="form.get('login').errors" id="error-msg-login" [control]="form.get('login')" class="error-msg"></app-error>
       </div>
@@ -61,7 +62,7 @@
       
       <span id="test-texto-esqueceu-senha" class="ml-3 mb-3 font-normal">
         Forgot your password?
-        <a id="test-link-clique-aqui" routerLink="/auth/recover-password">Click here.</a>
+        <a id="test-link-clique-aqui" routerLink="/recover-password">Click here.</a>
       </span>
 
       <div class="flex justify-content-center btn-enter">

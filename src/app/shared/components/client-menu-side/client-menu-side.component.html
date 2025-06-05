@@ -1,0 +1,46 @@
+<div class="menu-side-container" [ngClass]="{'active': menuAberto, 'fixed': menuFixo}">
+  <div class="menu-header">
+    <div class="menu-actions">
+      <button class="pin-btn desktop-only" (click)="toggleFixarMenu($event)" [ngClass]="{'pinned': menuFixo}"
+        aria-label="Pin/Unpin menu" pTooltip="{{menuFixo ? 'Unpin menu' : 'Pin menu'}}" tooltipPosition="right">
+        <i class="pi" [ngClass]="menuFixo ? 'pi-lock' : 'pi-unlock'" aria-hidden="true"></i>
+      </button>
+
+      <button *ngIf="!menuFixo" class="close-btn" (click)="toggleMenu()" aria-label="Close sidebar" pTooltip="Close"
+        tooltipPosition="right">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <span class="menu-title" *ngIf="!menuFixo">Menu</span>
+    <img *ngIf="menuFixo" src="assets/logo.png" alt="Logo" height="40" width="100" class="menu-logo"
+      (click)="navegarPaginaInicial()">
+  </div>
+
+  <div class="menu-content">
+    <ul class="menu-list" role="menu">
+      <li class="menu-item" *ngFor="let item of menuItems" (click)="selecionarOpcao(item)"
+        (keydown.enter)="selecionarOpcao(item)" (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
+        tabindex="0" role="menuitem" [id]="'menu-item-' + item.id" pTooltip="{{getMenuItemTooltip(item)}}"
+        tooltipPosition="right">
+        <i class="pi" [ngClass]="item.icon" aria-hidden="true"></i>
+        <span>{{item.label}}</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="menu-footer">
+    <span class="version" pTooltip="Current application version" tooltipPosition="top">v1.0.0</span>
+    <ui-toggle></ui-toggle>
+  </div>
+  <div class="menu-sidebar" [ngClass]="{'menu-aberto': menuAberto, 'menu-fixo': menuFixo}">
+</div>
+</div>
+
+<div class="menu-overlay" *ngIf="menuAberto && !menuFixo" (click)="toggleMenu()" (keydown.escape)="toggleMenu()"
+  tabindex="-1" role="presentation"></div>
+
+<p-dialog [(visible)]="showPaymentModal" [modal]="true" [style]="{width: '90%', maxWidth: '500px'}" [draggable]="false"
+  [resizable]="false" header="Pagamento" [closeOnEscape]="true" [dismissableMask]="true">
+  vai mudar
+</p-dialog>

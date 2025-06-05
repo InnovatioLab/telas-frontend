@@ -1,24 +1,25 @@
 <app-card-centralizado type="formulario-pequeno">
   <ng-template pTemplate="content">
     <ng-container>
-      <h5 id="titulo" class="text-center text-xlarge-bold mt-0">Recuperar Senha</h5>
+      <h5 id="titulo" class="text-center text-xlarge-bold mt-0">Password Recovery</h5>
     </ng-container>
 
     <form [formGroup]="form" class="mt-6 flex flex-column justify-content-center sm:justify-content-between">
       <div class="col-12 mb-5">
-        <span id="descricao" class="mb-3 text-medium label">Digite seus dados para recuperar sua senha.</span>
+        <span id="descricao" class="mb-3 text-medium label">Enter your information to recover your password.</span>
         <br />
       </div>
       <div class="col-12">
-        <label htmlFor="login" id="lb-login" class="required">CPF ou CNPJ</label>
+        <label htmlFor="login" id="lb-login" class="required">Identification Number</label>
         <br />
         <input
           pInputText
-          mask="000.000.000-00||00.000.000/0000-00"
           formControlName="login"
           id="inp-login"
           class="w-full input-form"
-          placeholder="Informação"
+          placeholder="Information"
+          maxlength="9"
+          (input)="onlyNumbersInput($event)"
         />
         <app-error id="error-msg-login" [control]="form.get('login')" *ngIf="mostrarErro('login')"></app-error>
       </div>

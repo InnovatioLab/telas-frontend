@@ -15,7 +15,7 @@ import { LoadingService } from '@app/core/service/loading.service';
 })
 export class DialogoComponent implements AfterViewInit, OnDestroy {
   data: IConfigDialogo = {
-    titulo: 'Alerta!',
+    titulo: 'Alert!',
     descricao: '',
     icon: 'report',
     acaoPrimaria: ''
@@ -26,8 +26,8 @@ export class DialogoComponent implements AfterViewInit, OnDestroy {
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
-    private cdr: ChangeDetectorRef,
-    private loadingService: LoadingService
+    private readonly cdr: ChangeDetectorRef,
+    private readonly loadingService: LoadingService
   ) {
     this.config.showHeader = false;
     this.data = this.config.data;

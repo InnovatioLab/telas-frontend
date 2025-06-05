@@ -1,7 +1,7 @@
 <div class="text-danger" *ngIf="control && control.errors && (control.dirty || control.touched)">
-  <small  *ngIf="control.errors.required"><small>Campo obrigatório não preenchido!</small></small>
-  <small  *ngIf="control.errors.email"><small>Formato de email inválido</small></small>
-  <small  *ngIf="control.errors.minlength"><small>{{'O campo deve ter no mínimo ' + control.errors.minlength.requiredLength}} caracteres</small></small>
+  <small  *ngIf="control.errors.required"><small>Required field not filled!</small></small>
+  <small  *ngIf="control.errors.email"><small>Invalid email format</small></small>
+  <small  *ngIf="control.errors.minlength"><small>{{'The field must have at least ' + control.errors.minlength.requiredLength}} characters</small></small>
   <small  *ngIf="control.errors.cpfInvalido"><small>{{control.errors.cpfInvalido}}</small></small>
   <small  *ngIf="control.errors.minDate"><small>{{control.errors.minDate.message}}</small></small>
   <small  *ngIf="control.errors.maxDate"><small>{{control.errors.maxDate.message}}</small></small>

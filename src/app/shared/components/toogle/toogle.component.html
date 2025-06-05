@@ -1,0 +1,12 @@
+<div class="toggle-container" [ngClass]="{'dark': isDarkMode}" (click)="toggleDarkMode()">
+  <div class="toggle-track">
+    <div class="toggle-indicator">
+      <span class="toggle-icon sun" *ngIf="!isDarkMode">
+        <i class="pi pi-sun"></i>
+      </span>
+      <span class="toggle-icon moon" *ngIf="isDarkMode">
+        <i class="pi pi-moon"></i>
+      </span>
+    </div>
+  </div>
+</div>
