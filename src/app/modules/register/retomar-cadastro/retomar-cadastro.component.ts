@@ -1,15 +1,14 @@
 import { CommonModule, Location } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { cnpj as cnpjValidator, cpf as cpfValidator } from 'cpf-cnpj-validator';
 import { NgxMaskDirective } from 'ngx-mask';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CardCentralizadoComponent } from '../../../shared/components/card-centralizado/card-centralizado.component';
 import { ErrorComponent } from '../../../shared/components/error/error.component';
 import { ENVIRONMENT } from 'src/environments/environment-token';
-import { getOnlyNumber, MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
+import { MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
 import { ClientService } from '@app/core/service/client.service';
 import { MensagensUtils } from '@app/utility/src/lib/utils/mensagens-utils.utils';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';

@@ -2,8 +2,9 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { Environment, ENVIRONMENT } from '@raizes-cearenses-nx/environment';
 import { MapPoint } from './map-point.interface';
+import { ENVIRONMENT } from 'src/environments/environment-token';
+import { Environment } from 'src/environments/environment';
 
 export interface MonitorMinResponseDto {
   id: string;
@@ -30,13 +31,13 @@ export interface ApiResponseDto<T> {
   providedIn: 'root'
 })
 export class SearchMonitorsService {
-  private nearestMonitorsSubject = new BehaviorSubject<MapPoint[]>([]);
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  private errorSubject = new BehaviorSubject<string | null>(null);
+  private readonly nearestMonitorsSubject = new BehaviorSubject<MapPoint[]>([]);
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
+  private readonly errorSubject = new BehaviorSubject<string | null>(null);
   private readonly storageName = 'raizes_ce_token';
 
   constructor(
-    private http: HttpClient,
+    private readonly http: HttpClient,
     @Inject(ENVIRONMENT) private readonly env: Environment
   ) {}
 
@@ -162,7 +163,7 @@ export class SearchMonitorsService {
         }
         return points;
       })
-      .catch(error => {
+      .catch((error): MapPoint[] => {
         console.error('Error searching by zip code:', error);
         this.errorSubject.next('Error searching monitors by zip code');
         return [];

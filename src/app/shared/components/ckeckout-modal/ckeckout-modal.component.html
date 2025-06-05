@@ -1,0 +1,279 @@
+<div class="checkout-modal-container">
+  <div class="checkout-header">
+    <h2 class="modal-title">{{ getStepTitle() }}</h2>
+    <div class="checkout-steps">
+      <span class="step" [ngClass]="{'active': isStepActive(steps.REVIEW), 'completed': isStepCompleted(steps.REVIEW)}">
+        <i *ngIf="isStepCompleted(steps.REVIEW)" class="pi pi-check-circle"></i>
+        <span>Items</span>
+      </span>
+      <i class="pi pi-angle-right"></i>
+      <span class="step" [ngClass]="{'active': isStepActive(steps.PAYMENT), 'completed': isStepCompleted(steps.PAYMENT)}">
+        <i *ngIf="isStepCompleted(steps.PAYMENT)" class="pi pi-check-circle"></i>
+        <span>Payment</span>
+      </span>
+      <i class="pi pi-angle-right"></i>
+      <span class="step" [ngClass]="{'active': isStepActive(steps.AD_CONTENT), 'completed': isStepCompleted(steps.AD_CONTENT)}">
+        <i *ngIf="isStepCompleted(steps.AD_CONTENT)" class="pi pi-check-circle"></i>
+        <span>Ad Content</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="checkout-content">
+    <!-- Step 1: Order Summary -->
+    <div *ngIf="currentStep === steps.REVIEW">
+      <div class="customer-info" *ngIf="clienteLogado">
+        <h3>Customer Data</h3>
+        <div class="info-row">
+          <span class="info-label">Name:</span>
+          <span class="info-value">{{clienteLogado.name || 'Not provided'}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email:</span>
+          <span class="info-value">{{clienteLogado.email || 'Not provided'}}</span>
+        </div>
+      </div>
+
+      <div class="order-items">
+        <h3>Selected Ads</h3>
+        <p-table [value]="itensCarrinho" [responsive]="true" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Location</th>
+              <th>Duration</th>
+              <th class="text-right">Unit Price</th>
+              <th class="text-right">Subtotal</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td>
+                <div class="item-name">{{item.title || 'Map Location'}}</div>
+                <div class="item-coords" *ngIf="item.latitude">
+                  Coordinates: {{item.latitude.toFixed(6)}}, {{item.longitude.toFixed(6)}}
+                </div>
+              </td>
+              <td>30 days</td>
+              <td class="text-right">{{(item.preco || 100) | formatarPreco}}</td>
+              <td class="text-right">{{(item.preco * (item.quantidadePedido || 1) || 100) | formatarPreco}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="text-center">
+                No ads selected
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    
+    <!-- Step 2: Payment -->
+    <div *ngIf="currentStep === steps.PAYMENT">
+      <div class="payment-info">
+        <h3>Payment Information</h3>
+        <p class="payment-description">
+          Please complete the payment to proceed with your ad campaign. 
+          Your payment is secured by our payment processor.
+        </p>
+        
+        <div class="payment-summary">
+          <h3>Summary</h3>
+          <div class="summary-row">
+            <span>Subtotal:</span>
+            <span>{{valorTotalPedido | formatarPreco}}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total:</span>
+            <span>{{valorTotalPedido | formatarPreco}}</span>
+          </div>
+        </div>
+        
+        <div class="payment-component">
+          <ui-payment 
+            [amount]="valorTotalPedido" 
+            [processando]="paymentProcessing"
+            (paymentSuccess)="handlePaymentSuccess($event)"
+            (paymentError)="handlePaymentError($event)">
+          </ui-payment>
+
+          <div *ngIf="paymentError" class="payment-error mt-3">
+            <div class="p-message p-message-error">
+              <div class="p-message-wrapper">
+                <span class="p-message-icon pi pi-times-circle"></span>
+                <div class="p-message-text">{{paymentError}}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="payment-status" *ngIf="paymentCompleted">
+            <div class="p-message p-message-success">
+              <div class="p-message-wrapper">
+                <span class="p-message-icon pi pi-check-circle"></span>
+                <div class="p-message-text">Payment processed successfully!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Step 3: Ad Content Form -->
+    <div *ngIf="currentStep === steps.AD_CONTENT">
+      <div class="ad-content-form" [formGroup]="adDetailsForm">
+        <h3>Ad Content</h3>
+        <p class="ad-form-description">
+          Please provide the content that will be displayed in your ads. 
+          All content will be reviewed before being displayed on our screens.
+        </p>
+        
+        <div class="form-field">
+          <label for="slogan">Slogan or Message <span class="required">*</span></label>
+          <textarea 
+            id="slogan" 
+            pInputTextarea 
+            formControlName="slogan" 
+            [rows]="3" 
+            [cols]="30"
+            placeholder="Enter a catchy slogan or message for your ad (max 100 characters)"
+            maxlength="100"
+          ></textarea>
+          <small 
+            *ngIf="adDetailsForm.get('slogan')?.invalid && adDetailsForm.get('slogan')?.touched" 
+            class="p-error"
+          >
+            Slogan is required
+          </small>
+          <small class="char-count">{{ adDetailsForm.get('slogan')?.value?.length || 0 }}/100</small>
+        </div>
+        
+        <div class="form-field">
+          <label>Advertisement Image <span class="required">*</span></label>
+          <div class="p-fileupload-content">
+            <input 
+              type="file" 
+              (change)="onAdImageChange($event)" 
+              accept="image/*" 
+              class="p-inputtext"
+              #fileInputAd
+              style="display: none"
+            >
+            <div class="upload-button-container">
+              <button 
+                pButton 
+                type="button" 
+                label="Choose Image" 
+                icon="pi pi-upload"
+                class="p-button-outlined" 
+                (click)="fileInputAd.click()"
+              ></button>
+              <span class="file-name" *ngIf="adDetailsForm.get('adImage')?.value">
+                {{ adDetailsForm.get('adImage')?.value.name }}
+              </span>
+            </div>
+            <small 
+              *ngIf="adDetailsForm.get('adImage')?.invalid && adDetailsForm.get('adImage')?.touched" 
+              class="p-error"
+            >
+              Advertisement image is required
+            </small>
+          </div>
+          
+          <div class="image-preview" *ngIf="adImagePreview">
+            <img [src]="adImagePreview" alt="Ad preview">
+          </div>
+        </div>
+        
+        <div class="form-field">
+          <label>Company Logo <span class="required">*</span></label>
+          <div class="p-fileupload-content">
+            <input 
+              type="file" 
+              (change)="onLogoChange($event)" 
+              accept="image/*" 
+              class="p-inputtext"
+              #fileInputLogo
+              style="display: none"
+            >
+            <div class="upload-button-container">
+              <button 
+                pButton 
+                type="button" 
+                label="Choose Logo" 
+                icon="pi pi-upload"
+                class="p-button-outlined" 
+                (click)="fileInputLogo.click()"
+              ></button>
+              <span class="file-name" *ngIf="adDetailsForm.get('logo')?.value">
+                {{ adDetailsForm.get('logo')?.value.name }}
+              </span>
+            </div>
+            <small 
+              *ngIf="adDetailsForm.get('logo')?.invalid && adDetailsForm.get('logo')?.touched" 
+              class="p-error"
+            >
+              Company logo is required
+            </small>
+          </div>
+          
+          <div class="logo-preview" *ngIf="logoPreview">
+            <img [src]="logoPreview" alt="Logo preview">
+          </div>
+        </div>
+        
+        <div class="ad-guidelines">
+          <h4><i class="pi pi-info-circle"></i> Guidelines for Ad Content</h4>
+          <ul>
+            <li>Advertisement image should be high quality and in landscape format (1920x1080 recommended)</li>
+            <li>Company logo should be transparent background if possible</li>
+            <li>Avoid using offensive language or imagery</li>
+            <li>Content should be clear and legible from a distance</li>
+            <li>All submitted content will be reviewed before approval</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Confirmation Step -->
+    <div *ngIf="currentStep === steps.CONFIRMATION" class="checkout-step confirmation-step">
+      <div class="confirmation-content">
+        <i class="pi pi-check-circle"></i>
+        <h2>Order Confirmed Successfully!</h2>
+        <p>Thank you for your purchase. Your ads have been scheduled and will be displayed at the selected locations.</p>
+        <p>A confirmation has been sent to your email.</p>
+        
+        <div class="order-details">
+          <p>Order Number: <strong>#{{ (Math.floor(Math.random() * 1000000)).toString().padStart(6, '0') }}</strong></p>
+          <p>Amount Paid: <strong>{{ totalAmount | formatarPreco }}</strong></p>
+        </div>
+        
+        <button pButton type="button" label="Done" class="p-button-success" (click)="finalizarPedido()"></button>
+      </div>
+    </div>
+    
+    <div *ngIf="confirming" class="processing-overlay">
+      <div class="spinner-container">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      </div>
+      <p>Finalizing your order...</p>
+    </div>
+  </div>
+
+  <div class="checkout-footer" *ngIf="currentStep !== steps.CONFIRMATION">
+    <button pButton type="button" 
+            [label]="currentStep === steps.REVIEW ? 'Back' : 'Previous'" 
+            icon="pi pi-arrow-left" 
+            class="p-button-outlined" 
+            (click)="previousStep()"
+            [disabled]="paymentProcessing || confirming"></button>
+            
+    <button pButton type="button" 
+            [label]="getButtonLabel()" 
+            icon="pi pi-arrow-right" 
+            [iconPos]="currentStep === steps.AD_CONTENT ? 'left' : 'right'"
+            [class]="currentStep === steps.AD_CONTENT ? 'p-button-success' : 'p-button-primary'"
+            (click)="currentStep === steps.PAYMENT && !paymentCompleted ? processarPagamento() : nextStep()"
+            [disabled]="(currentStep === steps.PAYMENT && !paymentCompleted && paymentProcessing) || confirming"></button>
+  </div>
+</div>

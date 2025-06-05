@@ -7,7 +7,7 @@ export const appRoutes: Routes = [
   },
   {
     path: 'app',
-    loadChildren: () => import('./modules/authenticated/modules.routes').then((mod) => mod.ROUTES),
+    loadChildren: () => import('./modules/client-authenticated/modules.routes').then((mod) => mod.ROUTES),
   },
   {
     path: 'register',
@@ -15,7 +15,7 @@ export const appRoutes: Routes = [
   },
   {
     path: 'client',
-    loadChildren: () => import('./modules/authenticated/modules.routes').then((mod) => mod.ROUTES),
+    loadChildren: () => import('./modules/client-authenticated/modules.routes').then((mod) => mod.ROUTES),
   },
   {
     path: '**',

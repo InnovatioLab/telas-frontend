@@ -48,7 +48,7 @@ export class AuthenticationStorage {
       if (!userData) return null;
       
       const user = JSON.parse(userData);
-      return user?.id || null;
+      return user?.id ?? null;
     } catch (error) {
       console.error('Erro ao obter ID do usuário:', error);
       return null;

@@ -16,7 +16,7 @@ declare global {
 }
 
 @Component({
-  selector: 'ui-maps',
+  selector: 'app-maps',
   standalone: true,
   imports: [CommonModule, GoogleMapsModule, FormsModule],
   templateUrl: './maps.component.html',
@@ -79,7 +79,7 @@ export class MapsComponent implements OnInit, OnDestroy {
   apiLoaded = false;
   loadError: string | null = null;
   
-  private subscriptions = new Subscription();
+  private readonly subscriptions = new Subscription();
   
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -87,7 +87,7 @@ export class MapsComponent implements OnInit, OnDestroy {
     private readonly sidebarService: SidebarService,
     private readonly ngZone: NgZone,
     private readonly el: ElementRef,
-    private renderer: Renderer2
+    private readonly renderer: Renderer2
   ) {
     effect(() => {
       const isVisible = this.sidebarService.visibilidade();

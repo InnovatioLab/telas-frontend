@@ -145,23 +145,23 @@ export class LoginComponent implements OnInit {
   aceitarTermos(): void {
     this.loading = true;
     this.clientService.aceitarTermosDeCondicao().subscribe({
-      next: async () => {
+      next: () => {
         this.loading = false;
         this.exibirTermos = false;
-        await this.authentication.pegarDadosAutenticado();
-        
-        const userId = AuthenticationStorage.getUserId();
-        if (userId) {
-          try {
-            const client = await firstValueFrom(this.clientService.buscarClient<Client>(userId));
-            this.redirecionarParaHome(client);
-          } catch (error) {
-            console.error('Erro ao buscar dados do cliente após aceitar termos:', error);
-            this.redirecionarParaHome(); 
+        this.authentication.pegarDadosAutenticado().then(async () => {
+          const userId = AuthenticationStorage.getUserId();
+          if (userId) {
+            try {
+              const client = await firstValueFrom(this.clientService.buscarClient<Client>(userId));
+              this.redirecionarParaHome(client);
+            } catch (error) {
+              console.error('Erro ao buscar dados do cliente após aceitar termos:', error);
+              this.redirecionarParaHome(); 
+            }
+          } else {
+            this.redirecionarParaHome();
           }
-        } else {
-          this.redirecionarParaHome();
-        }
+        });
       },
       error: (error) => {
         console.error('Erro ao aceitar termos:', error);

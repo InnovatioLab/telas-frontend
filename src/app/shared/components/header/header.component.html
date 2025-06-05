@@ -1,15 +1,361 @@
-<div class="header">
-  <div class="flex flex-row align-items-center justify-content-between">
-    <div class="flex align-items-center">
+<header class="header" [ngClass]="{'dark-header': isDarkMode}">
+  <div class="mobile-menu" *ngIf="isMobile" [ngClass]="{'is-open': isMobileMenuOpen}">
+    <div class="mobile-header-user">
+      <div class="mobile-header">
+        <div class="header-content">
+          <div class="menu-trigger" 
+               *ngIf="isLogado() && !isProfileManagementRoute()"
+               [ngClass]="{'active': menuAberto}"
+               (click)="toggleMenu()" 
+               (keydown.enter)="toggleMenu()" 
+               (keydown.space)="toggleMenu()"
+               tabindex="0"
+               role="button"
+               aria-label="Abrir menu lateral"
+               [attr.aria-expanded]="menuAberto">
+            <i class="pi pi-bars" aria-hidden="true"></i>
+          </div>
 
-      <h1>DIAMOND BLANK</h1>
+          <div class="logo-container">
+            <img 
+              (click)="navegarPaginaInicial()" 
+              (keydown.enter)="navegarPaginaInicial()" 
+              src="assets/logo.png" 
+              alt="Logo" 
+              class="imagem-logo" 
+              height="20" 
+              width="20" 
+              tabindex="0"
+            />
+          </div>
 
+          <div class="right-container">
+            <div class="auth-buttons" *ngIf="!isLogado()">
+              <button pButton class="btn-entrar" (click)="redirecionarLogin()"
+                     pTooltip="Login to your account"
+                     tooltipPosition="bottom">
+                {{ TEXTO_ACAO.entrar }}
+              </button>
+              <button pButton class="btn-cadastrar" (click)="redirecionarCadastro()"
+                     pTooltip="Create a new account"
+                     tooltipPosition="bottom">
+                {{ TEXTO_ACAO.cadastrar }}
+              </button>
+            </div>
+
+            <div class="icons-container" *ngIf="isLogado()">
+              <button (click)="abrirCheckout()" class="icon-button" id="test-btn-checkout"
+                     pTooltip="View your saved places"
+                     tooltipPosition="bottom">
+                <span class="material-symbols-outlined">shopping_basket</span>
+                <span *ngIf="itensSalvos() > 0" class="badge flex justify-content-center align-items-center absolute">
+                  {{ itensSalvos() }}</span>
+              </button>
+              
+              <button (click)="abrirNotificacoes()" class="icon-button" id="test-btn-notification"
+                     pTooltip="View notifications"
+                     tooltipPosition="bottom">
+                <span class="material-symbols-outlined">notifications</span>
+                <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
+                  {{ itensNotificacao() }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="search-container" *ngIf="isLogado()">
+          <div class="address-search-container">
+            <div class="address-search-input">
+              <input
+                type="text"
+                pInputText
+                [(ngModel)]="searchText"
+                placeholder="Search for an address"
+                maxlength="50"
+                id="inp-pesquisar"
+                (keydown.enter)="searchAddress()"
+                (ngModelChange)="onInputChange()"
+              />
+              <button
+                type="button"
+                class="botao-pesquisa"
+                [disabled]="isSearching || !searchText"
+                (click)="searchAddress()"
+                aria-label="Search"
+                pTooltip="Search address"
+                tooltipPosition="left"
+                id="btn-pesquisar"
+              >
+                <span *ngIf="isSearching" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <i *ngIf="!isSearching" class="pi pi-search search-icon"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <section class="box-actions main-actions mobile-only">
+          <ng-container *ngIf="isLogado(); else deslogado">
+            <button
+              id="link-administracao"
+              *ngIf="isAdministrador()"
+              pButton
+              [rounded]="true"
+              [text]="true"
+              (click)="redirecionarAdministracao()"
+            >
+              <span class="material-symbols-outlined icon cursor-pointer icon-fill">settings</span>
+            </button>
+            
+            <button 
+              id="test-btn-checkout-mobile" 
+              (click)="abrirCheckout()" 
+              pButton 
+              [rounded]="true" 
+              [text]="true"
+            >
+              <span class="material-symbols-outlined icon cursor-pointer">shopping_basket</span>
+              <span *ngIf="itensSalvos() > 0" class="badge flex justify-content-center align-items-center absolute">
+                {{ itensSalvos() }}</span>
+            </button>
+            
+            <button 
+              id="test-btn-notification" 
+              (click)="abrirNotificacoes()" 
+              *ngIf="isAdministrador()"
+              pButton 
+              [rounded]="true" 
+              [text]="true"
+            >
+              <span class="material-symbols-outlined icon cursor-pointer">notifications</span>
+              <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
+                {{ itensNotificacao() }}</span>
+            </button>
+
+            <ng-container *ngIf="!isAdministrador()">
+              <button 
+                id="test-btn-notification" 
+                (click)="abrirNotificacoes()" 
+                pButton 
+                [rounded]="true" 
+                [text]="true"
+              >
+                <span class="material-symbols-outlined icon cursor-pointer">notifications</span>
+                <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
+                  {{ itensNotificacao() }}</span>
+              </button>
+            </ng-container>
+          </ng-container>
+
+          <ng-template #deslogado>
+            <button id="link-login" pButton [rounded]="true" [text]="true" (click)="redirecionarLogin()">
+              {{ TEXTO_ACAO.entrar }}
+            </button>
+            <button
+              pButton
+              id="test-link-cadastro"
+              class="botao-cadastro w-11 btn-fill my-2 justify-content-center"
+              (click)="redirecionarCadastro()"
+            >
+              {{ TEXTO_ACAO.cadastrar }}
+            </button>
+          </ng-template>
+        </section>
+      </div>
     </div>
+    
+    <div class="mobile-header-admin">
+      <div class="mobile-header">
+        <div class="header-content">
+          <div class="menu-trigger" 
+               *ngIf="isLogado() && !isProfileManagementRoute()"
+               [ngClass]="{'active': menuAberto}"
+               (click)="toggleMenu()" 
+               (keydown.enter)="toggleMenu()" 
+               (keydown.space)="toggleMenu()"
+               tabindex="0"
+               role="button"
+               aria-label="Abrir menu lateral"
+               [attr.aria-expanded]="menuAberto">
+            <i class="pi pi-bars" aria-hidden="true"></i>
+          </div>
 
-    <div class="flex align-items-center">
+          <div class="logo-container">
+            <img 
+              (click)="navegarPaginaInicial()" 
+              (keydown.enter)="navegarPaginaInicial()" 
+              src="assets/logo.png" 
+              alt="Logo" 
+              class="imagem-logo" 
+              tabindex="0"
+            />
+          </div>
 
+          <div class="right-container">
+            <div class="icons-container">
+              <button (click)="abrirNotificacoes()" class="icon-button" id="test-btn-notification-admin">
+                <span class="material-symbols-outlined">notifications</span>
+                <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
+                  {{ itensNotificacao() }}</span>
+              </button>
+              
+              <button class="icon-button" (click)="redirecionarAdministracao()" id="link-administracao-mobile">
+                <span class="material-symbols-outlined">settings</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="search-container" *ngIf="isLogado()">
+          <div class="address-search-container">
+            <div class="address-search-input">
+              <input
+                type="text"
+                pInputText
+                [(ngModel)]="searchText"
+                placeholder="Search for an address"
+                maxlength="50"
+                id="inp-pesquisar-admin"
+                (keydown.enter)="searchAddress()"
+                (ngModelChange)="onInputChange()"
+              />
+              <button
+                type="button"
+                class="botao-pesquisa"
+                [disabled]="isSearching || !searchText"
+                (click)="searchAddress()"
+                aria-label="Pesquisar"
+                id="btn-pesquisar-admin"
+              >
+                <span *ngIf="isSearching" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <i *ngIf="!isSearching" class="pi pi-search search-icon"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-</div>
+  <div class="desktop-header" *ngIf="!isMobile">
+    <div class="container-header-content flex flex-column w-full">
+      <div class="header-container flex flex-row justify-content-between align-items-center w-full">
+        <section class="flex align-items-center gap-5">
+          <div class="menu-trigger-desktop" 
+               *ngIf="isLogado() && !isProfileManagementRoute()"
+               [ngClass]="{'active': menuAberto}"
+               (click)="toggleMenu()" 
+               (keydown.enter)="toggleMenu()" 
+               (keydown.space)="toggleMenu()"
+               tabindex="0"
+               role="button"
+               aria-label="Abrir menu lateral"
+               [attr.aria-expanded]="menuAberto">
+            <i class="pi pi-bars" aria-hidden="true"></i>
+          </div>
+          
+          <img (click)="navegarPaginaInicial()" 
+               (keydown.enter)="navegarPaginaInicial()" 
+               src="assets/logo.png" 
+               alt="Logo" 
+               class="imagem-logo"
+               tabindex="0" />
+        </section>
 
+        <section class="search-container-desktop" *ngIf="isLogado()">
+          <div class="address-search-container">
+            <div class="address-search-input">
+              <input
+                type="text"
+                pInputText
+                [(ngModel)]="searchText"
+                placeholder="Search for an address"
+                maxlength="50"
+                id="inp-pesquisar-desktop"
+                (keydown.enter)="searchAddress()"
+                (ngModelChange)="onInputChange()"
+              />
+              <button
+                type="button"
+                class="botao-pesquisa"
+                [disabled]="isSearching || !searchText"
+                (click)="searchAddress()"
+                aria-label="Pesquisar"
+                id="btn-pesquisar-desktop"
+              >
+                <span *ngIf="isSearching" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <i *ngIf="!isSearching" class="pi pi-search search-icon"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="box-actions main-actions desktop-only">
+          <ng-container *ngIf="isLogado(); else deslogado">
+            <button 
+              id="test-btn-checkout-desktop" 
+              (click)="abrirCheckout()" 
+              pButton 
+              [rounded]="true" 
+              [text]="true"
+              pTooltip="View your saved places" 
+              tooltipPosition="bottom"
+            >
+              <span class="material-symbols-outlined icon cursor-pointer">shopping_basket</span>
+              <span *ngIf="itensSalvos() > 0" class="badge flex justify-content-center align-items-center absolute">
+                {{ itensSalvos() }}</span>
+            </button>
+            
+            <button
+              id="link-administracao"
+              *ngIf="isAdministrador()"
+              pButton
+              [rounded]="true"
+              [text]="true"
+              (click)="redirecionarAdministracao()"
+              pTooltip="Admin settings" 
+              tooltipPosition="bottom"
+            >
+              <span class="material-symbols-outlined icon cursor-pointer icon-fill">settings</span>
+            </button>
+
+            <ng-container *ngIf="!isAdministrador()">
+              <button 
+                id="test-btn-notification" 
+                (click)="abrirNotificacoes()" 
+                pButton 
+                [rounded]="true" 
+                [text]="true"
+                pTooltip="View notifications" 
+                tooltipPosition="bottom"
+              >
+                <span class="material-symbols-outlined icon cursor-pointer">notifications</span>
+                <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
+                  {{ itensNotificacao() }}</span>
+              </button>
+            </ng-container>
+          </ng-container>
+
+          <ng-template #deslogado>
+            <button id="link-login" pButton [rounded]="true" [text]="true" (click)="redirecionarLogin()"
+                   pTooltip="Login to your account"
+                   tooltipPosition="bottom">
+              {{ TEXTO_ACAO.entrar }}
+            </button>
+            <button
+              pButton
+              id="test-link-cadastro"
+              class="botao-cadastro w-10 btn-fill my-2 justify-content-center"
+              (click)="redirecionarCadastro()"
+              pTooltip="Create a new account"
+              tooltipPosition="bottom"
+            >
+              {{ TEXTO_ACAO.cadastrar }}
+            </button>
+          </ng-template>
+        </section>
+      </div>
+    </div>
+  </div>
+</header>
+<app-checkout-list-side-bar *ngIf="isLogado()"></app-checkout-list-side-bar>
+<div class="espaco-header"></div>

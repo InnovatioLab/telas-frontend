@@ -1,7 +1,7 @@
 <app-header />
 <app-client-menu-side></app-client-menu-side>
 <ui-sidebar-mapa></ui-sidebar-mapa>
-<ui-maps [zoom]="15" height="600px" width="100%" (pointClick)="handlePointClick($event)"></ui-maps>
+<app-maps [zoom]="15" height="600px" width="100%" (pointClick)="handlePointClick($event)"></app-maps>
 <app-pop-up-add-list 
   [(visible)]="showPointMenu" 
   [position]="menuPosition" 
