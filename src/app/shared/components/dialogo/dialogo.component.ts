@@ -2,16 +2,16 @@ import { ChangeDetectorRef, Component, AfterViewInit, OnDestroy } from '@angular
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommonModule } from '@angular/common';
 import { IConfigDialogo } from '@app/shared/interfaces/dialog-config.interface';
-import { IconSairComponent } from "../../icons/atencao.icon";
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { LoadingService } from '@app/core/service/loading.service';
+import { IconAtencaoComponent } from "../../icons/atencao.icon";
 
 @Component({
   standalone: true,
   templateUrl: './dialogo.component.html',
   styleUrls: ['./dialogo.component.scss'],
   imports: [CommonModule,
-    PrimengModule, IconSairComponent]
+    PrimengModule, IconAtencaoComponent]
 })
 export class DialogoComponent implements AfterViewInit, OnDestroy {
   data: IConfigDialogo = {

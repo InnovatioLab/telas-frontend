@@ -1,5 +1,3 @@
-@import '@raizes-cearenses-nx/scss';
-
 .checkout-sidebar {
   ::ng-deep {
     .p-sidebar {
@@ -101,8 +99,7 @@
   }
   
   .botao-voltar {
-    @include button-rounded-icon;
-    
+
     .botao-icon {
       color: var(--primary-color);
     }
@@ -136,7 +133,7 @@
       .valor-total {
         font-weight: 600;
         font-size: 18px;
-        color: var(--color-primary);
+        color: var(--cor-primaria);
       }
     }
     

@@ -37,7 +37,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 15px;
-  background-color: #232f3e;
+  background-color: var(--cor-primaria);
   position: relative;
 
   .menu-title {
@@ -111,7 +111,7 @@
   .pin-btn {
     background: transparent;
     border: none;
-    color: var(--color-status-aprovado);
+    color: var(--cor-sucesso);
     cursor: pointer;
     padding: 5px;
     border-radius: 50%;
@@ -119,14 +119,14 @@
     
     &:hover {
       background-color: rgba(0, 0, 0, 0.05);
-      color: var(--color-status-aprovado);
+      color: var(--cor-sucesso);
     }
     
     &.pinned {
-      color: var(--color-status-aprovado);
+      color: var(--cor-sucesso);
       
       &:hover {
-        color: var(--color-status-aprovado);
+        color: var(--cor-sucesso);
         opacity: 0.8;
       }
     }
@@ -179,40 +179,20 @@
       padding: 12px 20px;
       display: flex;
       align-items: center;
+      color: var(--cor-primaria);
       cursor: pointer;
       transition: all 0.2s ease;
       outline: none;
 
       &:hover, &:focus {
         background-color: var(--color-text-hover, rgba(0, 0, 0, 0.05));
+        opacity: 0.8;
       }
 
-      &:focus-visible {
-        outline: 2px solid var(--color-text);
-        outline-offset: -2px;
-      }
-
-      i {
-        margin-right: 12px;
-        color: var(--color-text);
-        font-size: 16px;
-      }
 
       span {
         color: var(--color-text);
         font-size: 15px;
-      }
-
-      &#menu-item-payments {
-        color: #333;
-        
-        &:hover {
-          background-color: rgba(0, 118, 59, 0.15);
-        }
-        
-        i {
-          color: #2196F3;
-        }
       }
     }
   }
@@ -221,7 +201,7 @@
 .menu-footer {
   padding: 13px;
   text-align: center;
-  background-color: #232F3E;
+  background-color: var(--cor-primaria);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,7 +227,7 @@
 // Estilos para o modal de pagamento
 ::ng-deep {
   .p-dialog-header {
-    background-color: var(--color-primary, #00763b);
+    background-color: var(--cor-primaria);
     color: white;
     padding: 1rem;
     

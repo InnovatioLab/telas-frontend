@@ -122,7 +122,7 @@ export class SearchMonitorsService {
       }),
       catchError(error => {
         this.loadingSubject.next(false);
-        const errorMsg = error.error?.message || 'Error searching for nearby monitors';
+        const errorMsg = error.error?.message ?? 'Error searching for nearby monitors';
         this.errorSubject.next(errorMsg);
         throw error;
       })

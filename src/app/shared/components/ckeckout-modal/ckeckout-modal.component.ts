@@ -197,7 +197,7 @@ export class CkeckoutModalComponent implements OnInit {
   handlePaymentSuccess(tokenId: any): void {
     this.paymentToken = typeof tokenId === 'string' 
       ? tokenId 
-      : (tokenId?.id || tokenId?.token || 'unknown-token');
+      : (tokenId?.id ?? tokenId?.token ?? 'unknown-token');
     this.paymentCompleted = true;
     this.paymentProcessing = false;
   }

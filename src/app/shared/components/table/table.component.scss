@@ -1,4 +1,4 @@
-$primary-color: var(--cor-primaria);
+$cor-primaria: var(--cor-primaria);
 $border-staly: var(--borda-padrao);
 $padding-small: var(--espacamento-padrao);
 $padding-medium: 0px;
@@ -12,7 +12,7 @@ $font-size-small: var(--fonte-tamanho-pequeno);
 $font-weight-medium: var(--fonte-peso-medio);
 $color-disabled-fundo-botao: gray;
 $background-tabela: var(--cor-branca);
-$background-cabecalho: #F8F9FA;
+$background-cabecalho: var(--cor-cinza-fundo);
 
 /* Combinando todos os blocos ::ng-deep em um único bloco */
 ::ng-deep {
@@ -112,7 +112,7 @@ $background-cabecalho: #F8F9FA;
       padding-top: 0.4rem;
       padding-left: 0.3rem;
       padding-right: 0;
-      color: $primary-color;
+      color: $cor-primaria;
     }
   }
 
@@ -361,7 +361,7 @@ $background-cabecalho: #F8F9FA;
     background: none;
     border: none;
     cursor: pointer;
-    color: $primary-color;
+    color: $cor-primaria;
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
   }
 
@@ -374,7 +374,7 @@ $background-cabecalho: #F8F9FA;
     background: none;
     border: none;
     cursor: pointer;
-    color: $primary-color;
+    color: $cor-primaria;
   }
   
   /* Estilos para tooltips */
@@ -487,7 +487,7 @@ $background-cabecalho: #F8F9FA;
                 content: attr(data-label) !important;
                 font-weight: var(--fonte-peso-negrito) !important;
                 font-size: var(--fonte-tamanho-pequeno) !important;
-                color: var(--color-primary) !important;
+                color: var(--cor-primaria) !important;
                 flex: 0 0 40% !important;
                 text-align: left !important;
                 padding-right: var(--espacamento-pequeno) !important;
@@ -572,7 +572,7 @@ $background-cabecalho: #F8F9FA;
                       background: none !important;
                       border: none !important;
                       cursor: pointer !important;
-                      color: var(--color-primary) !important;
+                      color: var(--cor-primaria) !important;
                       padding: var(--espacamento-pequeno) !important;
                       font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48 !important;
                       position: static !important;
@@ -849,7 +849,7 @@ $background-cabecalho: #F8F9FA;
     background: none;
     border: none;
     cursor: pointer;
-    color: $primary-color;
+    color: $cor-primaria;
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
   }
 
@@ -862,12 +862,12 @@ $background-cabecalho: #F8F9FA;
     background: none;
     border: none;
     cursor: pointer;
-    color: $primary-color;
+    color: $cor-primaria;
   }
 }
 
 .botao-avaliar {
-  background: var(--color-primary);
+  background: var(--cor-primaria);
   width: var(--largura-botao-padrao);
   height: var(--altura-botao-pequeno);
   border: none;

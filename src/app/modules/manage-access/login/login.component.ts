@@ -88,6 +88,7 @@ export class LoginComponent implements OnInit {
       )
       .subscribe(response => {
         if (response) {
+          this.authentication.isLoggedIn$.next(true);
           this.verificarTermo();
         }
       });
@@ -102,6 +103,8 @@ export class LoginComponent implements OnInit {
       }
       
       const client = await firstValueFrom(this.clientService.buscarClient<Client>(userId));
+      
+      this.authentication.updateClientData(client);
       
       if (client.termAccepted) {
         this.redirecionarParaHome(client);
@@ -149,10 +152,14 @@ export class LoginComponent implements OnInit {
         this.loading = false;
         this.exibirTermos = false;
         this.authentication.pegarDadosAutenticado().then(async () => {
+          // Força a atualização do estado de autenticação
+          this.authentication.isLoggedIn$.next(true);
+          
           const userId = AuthenticationStorage.getUserId();
           if (userId) {
             try {
               const client = await firstValueFrom(this.clientService.buscarClient<Client>(userId));
+              this.authentication.updateClientData(client);
               this.redirecionarParaHome(client);
             } catch (error) {
               console.error('Erro ao buscar dados do cliente após aceitar termos:', error);

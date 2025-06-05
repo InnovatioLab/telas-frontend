@@ -28,7 +28,7 @@
 
 .botao-voltar {
   .botao-icon {
-    color: var(--color-primary);
+    color: var(--cor-primaria);
   }
 }
 
@@ -53,7 +53,7 @@
     font-size: 80px;
     width: 120px;
     height: 120px;
-    background: var(--color-background);
+    background: var(--cor-cinza-fundo);
     color: var(--color-disabled-borda-input);
     display: flex;
     align-items: center;
@@ -72,7 +72,7 @@
     padding: 0px 10px;
     font-weight: 600;
     font-size: 20px;
-    color: var(--color-primary);
+    color: var(--cor-primaria);
   }
 
   .label-descricao {
@@ -96,7 +96,7 @@
   padding: 40px 10px;
   font-weight: 600;
   font-size: 20px;
-  color: var(--color-primary);
+  color: var(--cor-primaria);
   max-width: 1028px;
 }
 
@@ -177,10 +177,10 @@
         padding: 5px 8px;
       }
       .p-dropdown .p-dropdown-label {
-        color: var(--color-primary);
+        color: var(--cor-primaria);
       }
       .p-dropdown .p-dropdown-trigger {
-        color: var(--color-primary);
+        color: var(--cor-primaria);
         width: 16px;
         height: 16px;
       }
@@ -586,7 +586,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f8f9fa;
+    background-color: var(--cor-cinza-fundo);
     border-radius: 8px;
   }
 }

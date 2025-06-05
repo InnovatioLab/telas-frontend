@@ -12,8 +12,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    background-color: var(--cor-cinza-fundo);
+    border-bottom: 1px solid var(--cor-cinza-medio);
     
     .point-title {
       font-weight: bold;

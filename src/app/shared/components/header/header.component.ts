@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { CheckoutListSideBarComponent } from '../checkout-list-side-bar/checkout-list-side-bar.component';
-import { filter, Subject, Subscription, takeUntil } from 'rxjs';
+import { filter, Subject, Subscription, takeUntil, timer } from 'rxjs';
 import { Authentication } from '@app/core/service/autenthication';
 import { GoogleMapsService } from '@app/core/service/google-maps/google-maps.service';
 import { SearchMonitorsService } from '@app/core/service/google-maps/search-monitors.service';
@@ -21,7 +21,7 @@ import { MapPoint } from '@app/core/service/google-maps/map-point.interface';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(CheckoutListSideBarComponent) checkoutSidebar: CheckoutListSideBarComponent;
   
   menuVisible = false;
@@ -62,29 +62,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.isLoggedIn = this.authentication.isTokenValido();
+    
     this.itensNotificacao = this.notificacaoState._quantidadeNotificacoes;
     this.checkScreenSize();
     this.resizeListener = () => this.checkScreenSize();
     window.addEventListener('resize', this.resizeListener);
+    if (this.isLoggedIn) {
+      this.initializeUserServices();
+    }
 
     this.authSubscription = this.authentication.isLoggedIn$.subscribe(isLoggedIn => {
-      this.isLoggedIn = isLoggedIn; 
-      this.recriarComponente();
+      this.isLoggedIn = isLoggedIn;
+      if (isLoggedIn && !this.savedPointsSubscription) {
+        this.initializeUserServices();
+      }
+      this.cdr.detectChanges();
     });
 
     this.authStateSubscription = this.authentication.authState$.subscribe(() => {
       this.isLoggedIn = this.authentication.isLoggedIn$.getValue();
-      this.recriarComponente();
+      if (this.isLoggedIn && !this.savedPointsSubscription) {
+        this.initializeUserServices();
+      }
+      this.cdr.detectChanges();
     });
-
-    if (this.authentication.isLoggedIn$.getValue()) {
-      this.isLoggedIn = true;
-      this.cdr.detectChanges(); 
-    }
-    
-    if (this.isLogado()) {
-      this.initializeUserServices();
-    }
     
     this.menuSubscription = this.sidebarService.atualizarLista.subscribe(() => {
       this.menuAberto = this.sidebarService.visibilidade() && 
@@ -97,8 +99,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
+        this.isLoggedIn = this.authentication.isTokenValido();
         this.cdr.detectChanges();
       });
+  }
+
+  ngAfterViewInit() {
+    timer(0).subscribe(() => {
+      this.isLoggedIn = this.authentication.isTokenValido();
+      if (this.isLoggedIn && !this.savedPointsSubscription) {
+        this.initializeUserServices();
+      }
+      this.cdr.detectChanges();
+    });
   }
 
   searchAddress(): void {
@@ -132,8 +145,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.googleMapsService.initGoogleMapsApi();
     this.googleMapsService.initSavedPoints();
     
+    if (this.savedPointsSubscription) {
+      this.savedPointsSubscription.unsubscribe();
+    }
+    
     this.savedPointsSubscription = this.googleMapsService.savedPoints$.subscribe(points => {
-      this.itensSalvos.set(points.length);
+      this.itensSalvos.set(points?.length || 0);
     });
     
     this.searchSubscriptions.add(
@@ -174,6 +191,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
       )
     );
+    
+    if (this.monitorSearchSubscription) {
+      this.monitorSearchSubscription.unsubscribe();
+    }
     
     this.monitorSearchSubscription = this.searchMonitorsService.error$.subscribe(error => {
       if (error) {
@@ -233,11 +254,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   isAdministrador() {
-    return this.authentication?._clientSignal()?.role === 'ADMIN';
+    return this.isLogado() && this.authentication?._clientSignal()?.role === 'ADMIN';
   }
 
   isLogado() {
-    return this.isLoggedIn;
+    return this.isLoggedIn || this.authentication.isTokenValido();
   }
 
   redirecionarLogin() {

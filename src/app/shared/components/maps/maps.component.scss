@@ -12,7 +12,7 @@
   .search-bar {
     margin-bottom: var(--espacamento-pequeno);
     padding: var(--espacamento-padrao);
-    background-color: #f8f9fa;
+    background-color: var(--cor-cinza-fundo);
     border-radius: var(--borda-raio-pequeno);
   }
   
@@ -38,13 +38,13 @@
     align-items: center;
     justify-content: center;
     min-height: 200px;
-    background-color: #f8f9fa;
+    background-color: var(--cor-cinza-fundo);
     border-radius: var(--borda-raio-pequeno);
     border: var(--borda-padrao);
   }
   
   .text-danger {
-    color: #dc3545;
+    color: var(--cor-erro);
     margin-top: var(--espacamento-pequeno);
   }
 }
