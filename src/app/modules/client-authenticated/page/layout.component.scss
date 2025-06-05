@@ -1,0 +1,14 @@
+main {
+  transition: padding-left 0.3s;
+  padding-left: 0;
+}
+
+body.menu-fixed main {
+  padding-left: 280px;
+}
+
+@media (max-width: 768px) {
+  body.menu-fixed main {
+    padding-left: 0;
+  }
+} 
