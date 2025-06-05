@@ -3,16 +3,16 @@ import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, Aft
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { CheckoutListSideBarComponent } from '../checkout-list-side-bar/checkout-list-side-bar.component';
 import { filter, Subject, Subscription, takeUntil, timer } from 'rxjs';
-import { Authentication } from '@app/core/service/autenthication';
-import { GoogleMapsService } from '@app/core/service/google-maps/google-maps.service';
-import { SearchMonitorsService } from '@app/core/service/google-maps/search-monitors.service';
-import { SidebarService } from '@app/core/service/sidebar.service';
-import { ToggleModeService } from '@app/core/service/toggle-mode.service';
-import { ToastService } from '@app/core/service/toast.service';
+import { Authentication } from '@app/core/service/auth/autenthication';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { SearchMonitorsService } from '@app/core/service/api/search-monitors.service';
+import { SidebarService } from '@app/core/service/state/sidebar.service';
+import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
+import { ToastService } from '@app/core/service/state/toast.service';
 import { NotificacaoState } from '@app/modules/notificacao/models';
-import { MapPoint } from '@app/core/service/google-maps/map-point.interface';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { CheckoutListSideBarComponent } from '../checkout-list-side-bar/checkout-list-side-bar.component';
 
 @Component({
   selector: 'app-header',

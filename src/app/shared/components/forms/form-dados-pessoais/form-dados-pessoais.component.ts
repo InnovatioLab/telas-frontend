@@ -5,10 +5,10 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { ErrorComponent } from '../../error/error.component';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { ClientService } from '@app/core/service/client.service';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { DialogoComponent } from '../../dialogo/dialogo.component';
+import { ClientService } from '@app/core/service/api/client.service';
 
 @Component({
   selector: 'ui-form-dados-pessoais',

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { GoogleMapsService } from '@app/core/service/google-maps/google-maps.service';
-import { MapPoint } from '@app/core/service/google-maps/map-point.interface';
-import { ToastService } from '@app/core/service/toast.service';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { ToastService } from '@app/core/service/state/toast.service';
 import { ClientMenuSideComponent } from '@app/shared/components/client-menu-side/client-menu-side.component';
 import { HeaderComponent } from '@app/shared/components/header/header.component';
 import { MapsComponent } from '@app/shared/components/maps/maps.component';

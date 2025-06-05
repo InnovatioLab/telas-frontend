@@ -7,12 +7,12 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { TermosComponent } from '../termos-condicoes/termos.component';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
-import { ClientService } from '@app/core/service/client.service';
-import { AutenticacaoService } from '@app/core/service/autenticacao.service';
-import { Authentication } from '@app/core/service/autenthication';
+import { Authentication } from '@app/core/service/auth/autenthication';
 import { CadastrarSenhaComponent } from '../cadastrar-senha/cadastrar-senha.component';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
+import { ClientService } from '@app/core/service/api/client.service';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 
 
 @Component({

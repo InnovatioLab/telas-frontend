@@ -4,12 +4,12 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { PrimengModule } from '../../../shared/primeng/primeng.module';
 import { Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { TermoCondicaoService } from '@app/core/service/termo-condicao.service';
 import { MENSAGENS } from '@app/utility/src';
-import { ClientService } from '@app/core/service/client.service';
-import { Authentication } from '@app/core/service/autenthication';
+import { Authentication } from '@app/core/service/auth/autenthication';
 import { TermoCondicao } from '@app/model/termo-condicao';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { TermoCondicaoService } from '@app/core/service/api/termo-condicao.service';
+import { ClientService } from '@app/core/service/api/client.service';
 
 @Component({
   selector: 'app-termos',

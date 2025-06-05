@@ -6,10 +6,10 @@ import { environment } from 'src/environments/environment';
 import * as jwt_decode from 'jwt-decode';
 import { Client } from '@app/model/client';
 import { DecodedToken } from '@app/model/dto/response/decoded-token';
-import { AuthenticationStorage } from './authentication-storage';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { ClientService } from './client.service';
-import { AutenticacaoStorage } from './guard/autenticacao-storage';
+import { AutenticacaoStorage } from '../auth/autenticacao-storage';
+import { AuthenticationStorage } from '../auth/authentication-storage';
 
 @Injectable({ providedIn: 'root' })
 export class AutenticacaoService {

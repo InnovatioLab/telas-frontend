@@ -1,6 +1,6 @@
 <app-header />
 <app-client-menu-side></app-client-menu-side>
-<ui-sidebar-mapa></ui-sidebar-mapa>
+<app-sidebar-mapa></app-sidebar-mapa>
 <app-maps [zoom]="15" height="600px" width="100%" (pointClick)="handlePointClick($event)"></app-maps>
 <app-pop-up-add-list 
   [(visible)]="showPointMenu" 
@@ -9,4 +9,4 @@
   (detailsClicked)="showPointDetails($event)"
   (addToListClicked)="addPointToList($event)">
 </app-pop-up-add-list>
-<feat-rodape />
+<app-rodape />

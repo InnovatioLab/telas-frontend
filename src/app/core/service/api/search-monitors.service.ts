@@ -2,9 +2,9 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { MapPoint } from './map-point.interface';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment';
+import { MapPoint } from '../state/map-point.interface';
 
 export interface MonitorMinResponseDto {
   id: string;

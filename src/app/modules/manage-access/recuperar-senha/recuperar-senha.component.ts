@@ -7,10 +7,10 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
-import { ClientService } from '@app/core/service/client.service';
-import { AutenticacaoService } from '@app/core/service/autenticacao.service';
 import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
+import { ClientService } from '@app/core/service/api/client.service';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 
 @Component({
   selector: 'feat-recuperar-senha',

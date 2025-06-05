@@ -6,12 +6,12 @@ import { ToggleComponent } from '../toogle/toogle.component';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { Subscription } from 'rxjs';
-import { SidebarService } from '@app/core/service/sidebar.service';
 import { Router } from '@angular/router';
-import { Authentication } from '@app/core/service/autenthication';
-import { AutenticacaoService } from '@app/core/service/autenticacao.service';
-import { ToggleModeService } from '@app/core/service/toggle-mode.service';
+import { Authentication } from '@app/core/service/auth/autenthication';
 import { DialogoComponent } from '../dialogo/dialogo.component';
+import { SidebarService } from '@app/core/service/state/sidebar.service';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
+import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
 
 interface MenuItem {
   id: string;
@@ -217,12 +217,12 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaWishList(): void {
     if (this.isLogado()) {
-      this.router.navigate(['/wish-list']);
+      this.router.navigate(['client/wish-list']);
       if (this.menuAberto) {
         this.toggleMenu();
       }
     } else {
-      this.router.navigate(['/authentication/login']);
+      this.router.navigate(['/login']);
     }
   }
 
@@ -233,7 +233,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
         this.toggleMenu();
       }
     } else {
-      this.router.navigate(['/authentication/login']);
+      this.router.navigate(['/login']);
     }
   }
 
@@ -261,7 +261,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   abrirModalPagamento(): void {
     if (!this.isLogado()) {
-      this.router.navigate(['/authentication/login']);
+      this.router.navigate(['/login']);
       return;
     }
     this.showPaymentModal = true;
@@ -276,7 +276,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       if (this.isAdministrador()) {
         this.router.navigate(['/administrator']);
       } else {
-        this.router.navigate(['/client-view']);
+        this.router.navigate(['/client']);
       }
     } else {
       this.router.navigate(['/']);
@@ -324,7 +324,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
         this.toggleMenu();
       }
     } else {
-      this.router.navigate(['/authentication/login']);
+      this.router.navigate(['/login']);
     }
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { GoogleMapsService } from './google-maps/google-maps.service';
+import { GoogleMapsService } from './google-maps.service';
 
 export interface UserLocation {
   latitude: number;

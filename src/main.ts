@@ -10,7 +10,6 @@ import { providePrimeNG } from 'primeng/config';
 import { ptBrLocale } from '@app/config/localizacao';
 import { MyPreset } from '@app/config/tema';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
-import { ToastService } from '@app/core/service/toast.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { environment } from './environments/environment';
 import { ENVIRONMENT } from './environments/environment-token';
@@ -19,6 +18,7 @@ import ptBr from '@angular/common/locales/pt';
 import { errorInterceptor } from '@app/core/interceptor/error.interceptor';
 import { loadingInterceptor } from '@app/core/interceptor/loading.interceptor';
 import { authInterceptor } from '@app/core/interceptor/autenticacao.interceptor';
+import { ToastService } from '@app/core/service/state/toast.service';
 
 registerLocaleData(ptBr);
 bootstrapApplication(AppComponent, {

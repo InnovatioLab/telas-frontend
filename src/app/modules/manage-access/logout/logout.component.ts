@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingService } from '@app/core/service/loading.service';
+import { LoadingService } from '@app/core/service/state/loading.service';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 
 @Component({
@@ -15,7 +15,8 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
 })
 export class LogoutComponent implements OnInit {
   constructor(
-    private readonly loadingService: LoadingService,
+    private readonly loadingService: LoadingService
+    ,
     private readonly router: Router,
   ) {}
 

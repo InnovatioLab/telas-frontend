@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
-import { AddressData } from '../../model/dto/request/address-data-request';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { LocalAddressResponse } from '@app/model/dto/response/local-address-response';
 import { ZipCodeResponse } from '@app/model/dto/response/zipcode-response';
+import { AddressData } from '@app/model/dto/request/address-data-request';
 
 
 

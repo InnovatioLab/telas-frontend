@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToggleModeService } from '@app/core/service/toggle-mode.service';
+import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
 
 @Component({
   selector: 'ui-toggle',

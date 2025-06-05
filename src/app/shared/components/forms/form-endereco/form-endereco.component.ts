@@ -2,12 +2,12 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ZipCodeService } from '../../../../core/service/zipcode.service';
 import { AddressData } from '../../../../model/dto/request/address-data-request';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { ErrorComponent } from '../../error/error.component';
 import { ZipCodeValidatorDirective } from '@app/core/directives/zip-code-validator.directive';
 import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
+import { ZipCodeService } from '@app/core/service/api/zipcode.service';
 
 @Component({
   selector: 'ui-form-endereco',

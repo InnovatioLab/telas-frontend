@@ -4,10 +4,10 @@ import { AbstractControl, FormGroup, FormControl, ReactiveFormsModule, Validator
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { ErrorComponent } from '../../error/error.component';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ClientService } from '@app/core/service/client.service';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { DialogoComponent } from '../../dialogo/dialogo.component';
+import { ClientService } from '@app/core/service/api/client.service';
 
 @Component({
   selector: 'ui-form-contato',

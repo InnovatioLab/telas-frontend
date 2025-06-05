@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { LoadingService } from '@app/core/service/loading.service';
+import { LoadingService } from '@app/core/service/state/loading.service';
 import { delay } from 'rxjs';
 
 @Component({

@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, Renderer2, effect, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
-import { AddressSearchResult, GoogleMapsService } from '@app/core/service/google-maps/google-maps.service';
-import { MapPoint } from '@app/core/service/google-maps/map-point.interface';
-import { SidebarService } from '@app/core/service/sidebar.service';
-import { UserLocationService } from '@app/core/service/user-location.service';
+import { AddressSearchResult, GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { UserLocationService } from '@app/core/service/api/user-location.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { SidebarService } from '@app/core/service/state/sidebar.service';
 import { Subscription } from 'rxjs';
 
 declare global {

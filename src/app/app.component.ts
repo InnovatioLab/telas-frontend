@@ -12,7 +12,7 @@ import { DIALOGOS } from './shared/utils/dialogos';
 import { TEXTO_ACAO } from './utility/src';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DialogoComponent } from './shared/components/dialogo/dialogo.component';
-import { AutenticacaoStorage } from './core/service/guard/autenticacao-storage';
+import { AutenticacaoStorage } from './core/service/auth/autenticacao-storage';
 
 @Component({
   selector: 'app-root',

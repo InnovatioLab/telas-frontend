@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { ClientService } from '@app/core/service/client.service';
 import { map, catchError, of } from 'rxjs';
-import { AuthenticationStorage } from '../authentication-storage';
+import { ClientService } from '../api/client.service';
+import { AuthenticationStorage } from '../auth/authentication-storage';
 
 @Injectable({
   providedIn: 'root'

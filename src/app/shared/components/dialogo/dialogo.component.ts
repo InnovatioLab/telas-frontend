@@ -3,8 +3,8 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommonModule } from '@angular/common';
 import { IConfigDialogo } from '@app/shared/interfaces/dialog-config.interface';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { LoadingService } from '@app/core/service/loading.service';
 import { IconAtencaoComponent } from "../../icons/atencao.icon";
+import { LoadingService } from '@app/core/service/state/loading.service';
 
 @Component({
   standalone: true,
@@ -28,6 +28,7 @@ export class DialogoComponent implements AfterViewInit, OnDestroy {
     public config: DynamicDialogConfig,
     private readonly cdr: ChangeDetectorRef,
     private readonly loadingService: LoadingService
+
   ) {
     this.config.showHeader = false;
     this.data = this.config.data;

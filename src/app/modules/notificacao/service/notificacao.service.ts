@@ -4,7 +4,7 @@ import { map, } from 'rxjs';
 import { NotificacaoResponse } from '../models/response/notificacao.response';
 import { ResponseDTO } from '../models/response/response.dto';
 import { ENVIRONMENT } from 'src/environments/environment-token';
-import { AuthenticationStorage } from '@app/core/service/authentication-storage';
+import { AuthenticationStorage } from '@app/core/service/auth/authentication-storage';
 
 @Injectable({ providedIn: 'root' })
 export class NotificacaoService {

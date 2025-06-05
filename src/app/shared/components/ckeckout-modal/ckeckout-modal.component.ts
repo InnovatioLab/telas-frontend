@@ -2,9 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output, CUSTOM_ELEMENTS_SCHEMA 
 import { CommonModule } from '@angular/common';
 import { PrimengModule } from '../../primeng/primeng.module';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MapPoint } from '@app/core/service/google-maps/map-point.interface';
-import { GoogleMapsService } from '@app/core/service/google-maps/google-maps.service';
 import { FormatarPreco } from '@app/shared/pipes/preco.pipe';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 
 enum StepEnum {
   REVIEW = 1,

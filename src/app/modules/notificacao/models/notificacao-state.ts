@@ -3,7 +3,7 @@ import { Notificacao } from './notificacao';
 import { NotificacaoService } from '../service/notificacao.service';
 import { map, Observable } from 'rxjs';
 import { Client } from '@app/model/client';
-import { Authentication } from '@app/core/service/autenthication';
+import { Authentication } from '@app/core/service/auth/autenthication';
 
 @Injectable({ providedIn: 'root' })
 export class NotificacaoState {

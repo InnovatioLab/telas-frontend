@@ -3,16 +3,16 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy, Inject } from '@a
 import { PrimengModule } from '../../primeng/primeng.module';
 import { CkeckoutModalComponent } from '../ckeckout-modal/ckeckout-modal.component';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MapPoint } from '@app/core/service/google-maps/map-point.interface';
 import { Subscription } from 'rxjs';
-import { GoogleMapsService } from '@app/core/service/google-maps/google-maps.service';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment';
-import { Authentication } from '@app/core/service/autenthication';
+import { Authentication } from '@app/core/service/auth/autenthication';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { DialogoComponent } from '../dialogo/dialogo.component';
 import { FormatarPreco } from '@app/shared/pipes/preco.pipe';
 import { ImagemCarrinhoVazioComponent } from '@app/utility/src/lib/svg/carrinho-vazio';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 
 @Component({
   selector: 'app-checkout-list-side-bar',

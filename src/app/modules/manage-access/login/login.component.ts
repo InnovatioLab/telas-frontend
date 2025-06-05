@@ -6,16 +6,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { AutenticacaoService } from '@app/core/service/autenticacao.service';
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { ClientService } from '@app/core/service/client.service';
 import { Client, Role } from '@app/model/client';
 import { ILoginRequest } from '@app/model/dto/request/login.request';
 import { finalize, catchError, of, firstValueFrom } from 'rxjs';
-import { Authentication } from '@app/core/service/autenthication';
+import { Authentication } from '@app/core/service/auth/autenthication';
 import { TermosComponent } from '@app/modules/register/termos-condicoes/termos.component';
-import { AuthenticationStorage } from '@app/core/service/authentication-storage';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
+import { ClientService } from '@app/core/service/api/client.service';
+import { AuthenticationStorage } from '@app/core/service/auth/authentication-storage';
 
 @Component({
     selector: 'app-login',

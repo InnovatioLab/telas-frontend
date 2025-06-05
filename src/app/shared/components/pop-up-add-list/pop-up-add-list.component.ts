@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { MapPoint } from '@app/core/service/google-maps/map-point.interface';
-import { GoogleMapsService } from '@app/core/service/google-maps/google-maps.service';
-import { ToastService } from '@app/core/service/toast.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { ToastService } from '@app/core/service/state/toast.service';
 
 @Component({
   selector: 'app-pop-up-add-list',

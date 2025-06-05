@@ -3,7 +3,7 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { SenhaDirective } from '@app/core/directives/senha.directive';
-import { ClientService } from '@app/core/service/client.service';
+import { ClientService } from '@app/core/service/api/client.service';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';

@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, OnInit, Inject } from '@angular/core';
 import { PrimengModule } from '../../primeng/primeng.module';
-import { MapPoint } from '@app/core/service/google-maps/map-point.interface';
 import { Subscription } from 'rxjs';
-import { GoogleMapsService } from '@app/core/service/google-maps/google-maps.service';
 import { Environment } from 'src/environments/environment';
 import { ENVIRONMENT } from 'src/environments/environment-token';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
 
 @Component({
-  selector: 'ui-sidebar-mapa',
+  selector: 'app-sidebar-mapa',
   standalone: true,
   imports: [CommonModule, PrimengModule],
   templateUrl: './sidebar-mapa.component.html',

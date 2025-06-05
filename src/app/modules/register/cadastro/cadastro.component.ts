@@ -6,7 +6,6 @@ import { MenuItem } from 'primeng/api';
 import { CLIENT_FORM } from '@app/shared/constants/campos-cadastro.constants';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ClientService } from '@app/core/service/client.service';
 import { ALL_STEPS, USER_TYPE_STEPS, userFriendlyNames } from '@app/shared/constants/etapas-cadastro.constants';
 import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { normalizePhoneNumber } from '@app/utility/src/lib/utils/normalize-inputs.utils';
@@ -19,7 +18,8 @@ import { FormDadosPessoaisComponent } from '@app/shared/components/forms/form-da
 import { ButtonFooterComponent } from '@app/shared/components/button-footer/button-footer.component';
 import { FormContatoComponent } from '@app/shared/components/forms/form-contato/form-contato.component';
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
-import { LoadingService } from '@app/core/service/loading.service';
+import { LoadingService } from '@app/core/service/state/loading.service';
+import { ClientService } from '@app/core/service/api/client.service';
 
 @Component({
   selector: 'feat-cadastro',

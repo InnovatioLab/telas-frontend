@@ -9,10 +9,10 @@ import { CardCentralizadoComponent } from '../../../shared/components/card-centr
 import { ErrorComponent } from '../../../shared/components/error/error.component';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
-import { ClientService } from '@app/core/service/client.service';
 import { MensagensUtils } from '@app/utility/src/lib/utils/mensagens-utils.utils';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { DialogoComponent } from '../../../shared/components/dialogo/dialogo.component';
+import { ClientService } from '@app/core/service/api/client.service';
 
 @Component({
   selector: 'feat-retomar-cadastro',

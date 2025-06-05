@@ -6,7 +6,7 @@ import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dy
 import { Router } from '@angular/router';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
-import { AutenticacaoService } from '../service/autenticacao.service';
+import { AutenticacaoService } from '../service/api/autenticacao.service';
 
 export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const dialogService = inject(DialogService);
