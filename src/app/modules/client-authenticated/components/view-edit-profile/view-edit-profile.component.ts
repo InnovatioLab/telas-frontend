@@ -44,6 +44,7 @@ export class ViewEditProfileComponent implements OnInit {
       websiteUrl: [''],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
+      // Campos do owner mantidos mas não exibidos na interface
       ownerFirstName: ['', Validators.required],
       ownerLastName: [''],
       ownerEmail: ['', [Validators.required, Validators.email]],
@@ -145,7 +146,7 @@ export class ViewEditProfileComponent implements OnInit {
       email: client.contact?.email || '',
       phone: client.contact?.phone || '',
       
-      // Owner info
+      // Owner info - mantidos no formulário mas não exibidos na interface
       ownerFirstName: client.owner?.firstName || '',
       ownerLastName: client.owner?.lastName || '',
       ownerEmail: client.owner?.email || '',
@@ -268,25 +269,30 @@ export class ViewEditProfileComponent implements OnInit {
       });
     }
     
+    // Construir o payload conforme esperado pela API
     const clientRequest: ClientRequestDTO = {
       businessName: formValues.businessName,
-      identificationNumber: this.clientData?.identificationNumber,
+      identificationNumber: this.clientData?.identificationNumber || '',
       industry: formValues.industry,
-      websiteUrl: formValues.websiteUrl,
+      websiteUrl: formValues.websiteUrl || '',
+      status: this.clientData?.status,
       
+      // Objeto de contato conforme esperado
       contact: {
         email: formValues.email,
         phone: formValues.phone
       },
       
+      // Objeto de proprietário usando os mesmos dados de contato
       owner: {
-        identificationNumber: this.clientData?.identificationNumber,
+        identificationNumber: this.clientData?.identificationNumber || '',
         firstName: formValues.ownerFirstName,
-        lastName: formValues.ownerLastName,
-        email: formValues.ownerEmail,
-        phone: formValues.ownerPhone
+        lastName: formValues.ownerLastName || '',
+        email: formValues.ownerEmail || formValues.email, // Usar o email do contato se o email do owner não estiver disponível
+        phone: formValues.ownerPhone || formValues.phone  // Usar o telefone do contato se o telefone do owner não estiver disponível
       },
       
+      // Array de endereços com um único objeto
       addresses: [
         {
           street: formValues.street,
@@ -294,13 +300,16 @@ export class ViewEditProfileComponent implements OnInit {
           city: formValues.city,
           state: formValues.state,
           country: formValues.country,
-          complement: formValues.complement,
+          complement: formValues.complement || '',
           partnerAddress: false
         }
-      ],
-      
-      socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : undefined
+      ]
     };
+
+    // Adicionar socialMedia apenas se houver valores
+    if (Object.keys(socialMedia).length > 0) {
+      clientRequest.socialMedia = socialMedia;
+    }
     
     console.log('Data to be sent:', clientRequest);
     

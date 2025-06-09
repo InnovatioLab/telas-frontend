@@ -72,7 +72,7 @@ export interface Address {
   latitude?: number | string | null;
   longitude?: number | string | null;
   partnerAddress?: boolean;
-  coordinatesParams?: string; // Adicionada a propriedade que faltava
+  coordinatesParams?: string;
 }
 
 export interface Attachment {

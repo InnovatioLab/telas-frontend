@@ -1,6 +1,6 @@
 <div class="profile-container">
   <div class="profile-header">
-    <h1>Profile Settings</h1>
+    <h1 class="profile-title">Profile Settings</h1>
   </div>
 
   <div class="profile-content" *ngIf="!loading; else loadingTemplate">
@@ -58,43 +58,6 @@
             type="tel" 
             id="phone" 
             formControlName="phone">
-        </div>
-      </div>
-      
-      <div class="section-title">Owner Information</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="ownerFirstName">First Name</label>
-          <input 
-            type="text" 
-            id="ownerFirstName" 
-            formControlName="ownerFirstName">
-        </div>
-        
-        <div class="form-group">
-          <label for="ownerLastName">Last Name</label>
-          <input 
-            type="text" 
-            id="ownerLastName" 
-            formControlName="ownerLastName">
-        </div>
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="ownerEmail">Owner Email</label>
-          <input 
-            type="email" 
-            id="ownerEmail" 
-            formControlName="ownerEmail">
-        </div>
-        
-        <div class="form-group">
-          <label for="ownerPhone">Owner Phone</label>
-          <input 
-            type="tel" 
-            id="ownerPhone" 
-            formControlName="ownerPhone">
         </div>
       </div>
       
