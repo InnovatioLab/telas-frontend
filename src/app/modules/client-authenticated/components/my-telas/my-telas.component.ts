@@ -82,7 +82,8 @@ export class MyTelasComponent implements OnInit {
         this.totalRecords = response.totalElements;
         this.loading = false;
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error fetching ads:', error);
         this.toastService.erro('Failed to load advertisements');
         this.loading = false;
       }
@@ -124,10 +125,12 @@ export class MyTelasComponent implements OnInit {
   }
 
   viewAd(id: string): void {
+    console.log('View ad:', id);
     this.toastService.info(`Viewing ad ${id}`);
   }
 
   editAd(id: string): void {
+    console.log('Edit ad:', id);
     this.toastService.info(`Editing ad ${id}`);
   }
 

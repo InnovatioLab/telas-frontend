@@ -1,5 +1,19 @@
 <app-sidebar-mapa></app-sidebar-mapa>
-<app-maps [zoom]="15" height="600px" width="100%" (pointClick)="handlePointClick($event)"></app-maps>
+
+<div class="map-container">
+  <div *ngIf="isLoading" class="map-loading">
+    <p>Loading map, please wait...</p>
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <app-maps 
+    [zoom]="15" 
+    height="600px" 
+    width="100%" 
+    (pointClick)="handlePointClick($event)">
+  </app-maps>
+</div>
+
 <app-pop-up-add-list 
   [(visible)]="showPointMenu" 
   [position]="menuPosition" 
@@ -7,4 +21,5 @@
   (detailsClicked)="showPointDetails($event)"
   (addToListClicked)="addPointToList($event)">
 </app-pop-up-add-list>
+
 <app-rodape />

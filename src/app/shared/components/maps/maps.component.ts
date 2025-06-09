@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, Renderer2, effect, EventEmitter, Output } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, Renderer2, effect, EventEmitter, Output, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { AddressSearchResult, GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { UserLocationService } from '@app/core/service/api/user-location.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { SidebarService } from '@app/core/service/state/sidebar.service';
+import { IconsModule } from '@app/shared/icons/icons.module';
 import { Subscription } from 'rxjs';
 
 declare global {
@@ -18,11 +19,11 @@ declare global {
 @Component({
   selector: 'app-maps',
   standalone: true,
-  imports: [CommonModule, GoogleMapsModule, FormsModule],
+  imports: [CommonModule, GoogleMapsModule, FormsModule, IconsModule],
   templateUrl: './maps.component.html',
   styleUrls: ['./maps.component.scss']
 })
-export class MapsComponent implements OnInit, OnDestroy {
+export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() latitude?: number;
   @Input() longitude?: number;
   @Input() zoom = 15;
@@ -78,6 +79,7 @@ export class MapsComponent implements OnInit, OnDestroy {
   
   apiLoaded = false;
   loadError: string | null = null;
+  tvDisplayIcon: any;
   
   private readonly subscriptions = new Subscription();
   
@@ -100,17 +102,14 @@ export class MapsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeMapCenter();
-    
     this.mapsService.initGoogleMapsApi();
-    
-    this.mapsService.checkAndGeocodeStoredAddress();
+    this.checkApiLoadedState();
     
     window.addEventListener('user-coordinates-updated', (event: Event) => {
       const customEvent = event as CustomEvent;
       this.ngZone.run(() => {
         if (customEvent.detail && customEvent.detail.latitude && customEvent.detail.longitude) {
           if (!this.hasExplicitCoordinates()) {
-            console.log('Atualizando centro do mapa via evento:', customEvent.detail);
             this.center = {
               lat: customEvent.detail.latitude,
               lng: customEvent.detail.longitude
@@ -146,25 +145,6 @@ export class MapsComponent implements OnInit, OnDestroy {
     });
     
     this.subscriptions.add(
-      this.userLocationService.getUserLocation().subscribe(location => {
-        if (!this.hasExplicitCoordinates()) {
-          this.center = {
-            lat: location.latitude,
-            lng: location.longitude
-          };
-        }
-      })
-    );
-    
-    this.subscriptions.add(
-      this.mapsService.searchResult$.subscribe(result => {
-        if (result) {
-          this.handleSearchResult(result);
-        }
-      })
-    );
-    
-    this.subscriptions.add(
       this.mapsService.apiLoaded$.subscribe(loaded => {
         this.apiLoaded = loaded;
       })
@@ -178,6 +158,40 @@ export class MapsComponent implements OnInit, OnDestroy {
     
     if (this.points && this.points.length > 0) {
       this.updateMapPoints();
+    }
+  }
+  
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.forceMapResize();
+    }, 500);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+  
+  private checkApiLoadedState(): void {
+    if (typeof google === 'undefined' || !google.maps) {
+      this.mapsService.initGoogleMapsApi();
+      
+      setTimeout(() => {
+        if (!this.apiLoaded) {
+          this.checkApiLoadedState();
+        }
+      }, 2000);
+    } else if (!this.apiLoaded) {
+      this.apiLoaded = true;
+    }
+  }
+  
+  private forceMapResize(): void {
+    window.dispatchEvent(new Event('resize'));
+    
+    if (!this.apiLoaded) {
+      setTimeout(() => {
+        this.forceMapResize();
+      }, 1000);
     }
   }
 
@@ -194,19 +208,9 @@ export class MapsComponent implements OnInit, OnDestroy {
       return;
     }
     
-    const savedCoordinates = this.getSavedUserCoordinates();
-    if (savedCoordinates) {
-      this.center = {
-        lat: savedCoordinates.latitude,
-        lng: savedCoordinates.longitude
-      };
-      return;
-    }
-    
-    const userLocation = this.userLocationService.getUserLocationValue();
     this.center = {
-      lat: userLocation.latitude,
-      lng: userLocation.longitude
+      lat: -3.7327, 
+      lng: -38.5270
     };
   }
   
@@ -226,10 +230,6 @@ export class MapsComponent implements OnInit, OnDestroy {
       console.error('Erro ao ler coordenadas salvas:', e);
     }
     return null;
-  }
-  
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
   }
   
   private handleSearchResult(result: AddressSearchResult): void {

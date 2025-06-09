@@ -230,7 +230,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       case 'wishList':
         this.navegarParaWishList();
         break;
-      case 'myTelas': // Alterei "my-telas" para "myTelas" para corresponder ao ID do menu
+      case 'myTelas':
         this.navegarParaMyTelas();
         break;
       default:
@@ -250,15 +250,12 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarParaMyTelas(): void {
-    // Verificar se o usuário está logado antes de navegar
     if (this.isLogado()) {
-      console.log('Navegando para My Telas, usuário logado');
       this.router.navigate(['/client/my-telas']);
       if (this.menuAberto && !this.menuFixo) {
         this.toggleMenu();
       }
     } else {
-      console.log('Usuário não está logado, redirecionando para login');
       this.router.navigate(['/login']);
     }
   }

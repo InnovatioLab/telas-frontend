@@ -11,11 +11,11 @@
     <ng-template pTemplate="header">
       <div class="flex align-items-center gap-2 w-full">
         <button (click)="voltar()" class="botao-voltar flex-none cursor-pointer" pTooltip="Back" tooltipPosition="right">
-          <span class="material-symbols-outlined botao-icon"> arrow_back </span>
+          <span class="material-symbols-outlined botao-icon">arrow_back</span>
         </button>
         <div class="flex line-height-1 gap-2 justify-content-center align-items-center w-full">
-          <span class="material-symbols-outlined text-primary icone-sidebar"> location_on </span>
-          <div class="font-negrito text-center">Location</div>
+          <app-icon-tv-display width="24" height="24" fill="var(--cor-primaria)"></app-icon-tv-display>
+          <span class="font-bold">{{ pontoSelecionado?.title || 'TV Display' }}</span>
         </div>
       </div>
     </ng-template>
@@ -26,59 +26,57 @@
       <div class="street-view-container">
         <div *ngIf="carregandoImagem" class="street-view-loading">
           <i class="pi pi-spin pi-spinner"></i>
-          <span>Loading view...</span>
+          <span>Loading street view...</span>
         </div>
         
         <div *ngIf="erroImagem" class="street-view-error">
           <span class="material-symbols-outlined">image_not_supported</span>
-          <span>View not available for this location</span>
+          <p>Street view not available for this location</p>
         </div>
         
-        <img 
-          *ngIf="streetViewUrl && !erroImagem" 
-          [src]="streetViewUrl" 
-          alt="Visualização da rua" 
-          class="street-view-image"
-          (error)="tratarErroImagem()"
-          (load)="carregandoImagem = false"
-        />
+        <img *ngIf="!carregandoImagem && !erroImagem && streetViewUrl" 
+            [src]="streetViewUrl" 
+            alt="Street View" 
+            class="street-view-image" 
+            (error)="tratarErroImagem()">
       </div>
       
       <div class="ponto-info">
-        <div class="info-grupo" *ngIf="pontoSelecionado.data && pontoSelecionado.data.size">
-          <span class="material-symbols-outlined">tv</span>
+        <div class="info-grupo">
+          <span class="material-symbols-outlined">location_on</span>
           <div class="info-detalhe">
-            <span class="info-label">Monitor Size:</span>
-            <span class="info-valor">{{ pontoSelecionado.data.size }}"</span>
+            <span class="info-label">Location</span>
+            <span class="info-valor">{{ pontoSelecionado.latitude.toFixed(6) }}, {{ pontoSelecionado.longitude.toFixed(6) }}</span>
           </div>
         </div>
-        
-        <div class="info-grupo" *ngIf="pontoSelecionado.data && pontoSelecionado.data.type">
-          <span class="material-symbols-outlined">device_hub</span>
+
+        <div *ngIf="pontoSelecionado.description" class="info-grupo">
+          <span class="material-symbols-outlined">description</span>
           <div class="info-detalhe">
-            <span class="info-label">Type:</span>
-            <span class="info-valor">{{ pontoSelecionado.data.type }}</span>
+            <span class="info-label">Description</span>
+            <span class="info-valor">{{ pontoSelecionado.description }}</span>
           </div>
         </div>
-        
-        <div class="info-grupo" *ngIf="pontoSelecionado.data && pontoSelecionado.data.distanceInKm">
-          <span class="material-symbols-outlined">route</span>
+
+        <div *ngIf="pontoSelecionado.type" class="info-grupo">
+          <app-icon-tv-display width="24" height="24" fill="var(--cor-primaria)"></app-icon-tv-display>
           <div class="info-detalhe">
-            <span class="info-label">Distance:</span>
-            <span class="info-valor">{{ pontoSelecionado.data.distanceInKm.toFixed(2) }} km</span>
+            <span class="info-label">Display Type</span>
+            <span class="info-valor">{{ pontoSelecionado.type || 'Standard' }}</span>
           </div>
         </div>
       </div>
 
       <div class="acoes-container">
-        <button pButton type="button"
-          label="Open in Google Maps"
-          class="p-button-secondary"
-          icon="pi pi-map-marker"
-          pTooltip="Open this location in Google Maps"
-          tooltipPosition="top"
-          (click)="abrirGoogleMaps()">
-        </button>
+        <button pButton 
+                label="View in Google Maps" 
+                icon="pi pi-map" 
+                class="p-button p-button-secondary" 
+                (click)="abrirGoogleMaps()"></button>
+        <button pButton 
+                label="Select This Location" 
+                icon="pi pi-check" 
+                class="p-button"></button>
       </div>
     </div>
     

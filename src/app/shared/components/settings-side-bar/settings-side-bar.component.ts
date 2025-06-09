@@ -40,12 +40,6 @@ export class SettingsSideBarComponent {
       icon: 'key'
     },
     {
-      id: 'ads',
-      label: 'Ad Progress',
-      route: 'progress-ad',
-      icon: 'chart'
-    },
-    {
       id: 'subscriptions',
       label: 'Subscriptions',
       route: 'subscriptions',

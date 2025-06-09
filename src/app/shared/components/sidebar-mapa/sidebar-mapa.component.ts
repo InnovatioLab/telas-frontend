@@ -6,11 +6,12 @@ import { Environment } from 'src/environments/environment';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { IconsModule } from '@app/shared/icons/icons.module';
 
 @Component({
   selector: 'app-sidebar-mapa',
   standalone: true,
-  imports: [CommonModule, PrimengModule],
+  imports: [CommonModule, PrimengModule, IconsModule],
   templateUrl: './sidebar-mapa.component.html',
   styleUrls: ['./sidebar-mapa.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

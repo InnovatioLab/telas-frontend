@@ -30,6 +30,10 @@ export class GoogleMapsService {
   private readonly callbackName = 'googleMapsInitialized';
   private readonly MAX_HISTORY_ITEMS = 10;
 
+  private apiInitializationAttempts = 0;
+  private readonly MAX_INITIALIZATION_ATTEMPTS = 3;
+  private apiLoadingInProgress = false;
+  
   constructor(
     @Inject(ENVIRONMENT) private readonly env: Environment
   ) {
@@ -42,24 +46,53 @@ export class GoogleMapsService {
   }
 
   public initGoogleMapsApi(): void {
+    // Se a API já está carregada, apenas notifique que está pronta
     if (typeof google !== 'undefined' && google.maps) {
       this.apiLoadedSubject.next(true);
       return;
     }
-
+    
+    // Evitar múltiplas tentativas de carregamento simultâneas
+    if (this.apiLoadingInProgress) {
+      return;
+    }
+    
+    // Se o callback já existe, o carregamento já foi iniciado
     if ((window as any)[this.callbackName]) {
       return;
     }
-
+    
+    this.apiLoadingInProgress = true;
     console.log('Inicializando carregamento da API do Google Maps');
+    
+    // Definir um temporizador para verificar se a API foi carregada
+    const timeoutCheck = setTimeout(() => {
+      if (!this.apiLoadedSubject.value) {
+        console.warn('Timeout ao carregar a API do Google Maps, tentando novamente...');
+        this.apiLoadingInProgress = false;
+        this.apiInitializationAttempts++;
+        
+        if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
+          this.removeExistingScripts();
+          this.initGoogleMapsApi();
+        } else {
+          const timeoutMessage = 'Timeout ao carregar a API do Google Maps após múltiplas tentativas';
+          this.apiErrorSubject.next(timeoutMessage);
+          console.error(timeoutMessage);
+        }
+      }
+    }, 10000);
     
     (window as any)[this.callbackName] = () => {
       console.log('Google Maps API carregada com sucesso via callback');
+      clearTimeout(timeoutCheck);
       this.apiLoadedSubject.next(true);
       this.apiErrorSubject.next(null);
-      this.loadPointsFromSavedLocation();
+      this.apiLoadingInProgress = false;
+      this.apiInitializationAttempts = 0;
     };
-
+    
+    // Criar e adicionar o script à página
     const script = document.createElement('script');
     const apiKey = this.env.googleMapsApiKey;
     
@@ -67,30 +100,38 @@ export class GoogleMapsService {
       const error = 'Chave da API do Google Maps não encontrada';
       this.apiErrorSubject.next(error);
       console.error(error);
+      this.apiLoadingInProgress = false;
       return;
     }
-
+    
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${this.callbackName}&v=weekly`;
     script.async = true;
     script.defer = true;
+    script.id = 'google-maps-script';
     
     script.onerror = (error) => {
       const errorMessage = 'Erro ao carregar a API do Google Maps';
       this.apiErrorSubject.next(errorMessage);
       console.error(errorMessage, error);
+      this.apiLoadingInProgress = false;
     };
     
     document.head.appendChild(script);
-    
-    setTimeout(() => {
-      if (!this.apiLoadedSubject.value) {
-        const timeoutMessage = 'Timeout ao carregar a API do Google Maps';
-        this.apiErrorSubject.next(timeoutMessage);
-        console.error(timeoutMessage);
-      }
-    }, 10000);
   }
-
+  
+  private removeExistingScripts(): void {
+    // Remover scripts existentes para evitar conflitos
+    const existingScript = document.getElementById('google-maps-script');
+    if (existingScript) {
+      existingScript.remove();
+    }
+    
+    // Remover também o callback para permitir reinicialização
+    if ((window as any)[this.callbackName]) {
+      delete (window as any)[this.callbackName];
+    }
+  }
+  
   public get apiLoaded$(): Observable<boolean> {
     return this.apiLoadedSubject.asObservable();
   }
@@ -121,14 +162,15 @@ export class GoogleMapsService {
 
   public createRedMarkerIcon(): google.maps.Icon {
     return {
-      url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+      url: '',
       scaledSize: new google.maps.Size(32, 32),
       origin: new google.maps.Point(0, 0),
       anchor: new google.maps.Point(16, 32)
     };
   }
 
-  private loadPointsFromSavedLocation(): void {
+  // Modificado para ser explicitamente chamado em vez de automaticamente
+  public loadPointsFromSavedLocation(): void {
     try {
       const savedCoordinates = localStorage.getItem('user_coordinates');
       if (savedCoordinates) {
@@ -473,7 +515,8 @@ export class GoogleMapsService {
         try {
           const points: MapPoint[] = [];
           
-          for (let i = 0; i < 2; i++) {
+          const numPoints = 1;
+          for (let i = 0; i < numPoints; i++) {
             const adjustedCoords = this.adjustCoordinates(latitude, longitude, i);
             
             points.push({

@@ -19,6 +19,7 @@ import { IconBackComponent } from './back.icon';
 import { IconCreditCardComponent } from './credit-card.icon';
 import { IconOlhoComponent } from './olho.icon';
 import { IconOlhoFechadoComponent } from './olho-fechado.icon';
+import { IconTvDisplayComponent } from './tv-display.icon';
 
 @NgModule({
   imports: [
@@ -41,7 +42,8 @@ import { IconOlhoFechadoComponent } from './olho-fechado.icon';
     IconBackComponent,
     IconCreditCardComponent,
     IconOlhoComponent,
-    IconOlhoFechadoComponent
+    IconOlhoFechadoComponent,
+    IconTvDisplayComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -63,7 +65,8 @@ import { IconOlhoFechadoComponent } from './olho-fechado.icon';
     IconBackComponent,
     IconCreditCardComponent,
     IconOlhoComponent,
-    IconOlhoFechadoComponent
+    IconOlhoFechadoComponent,
+    IconTvDisplayComponent
   ]
 })
 export class IconsModule { }

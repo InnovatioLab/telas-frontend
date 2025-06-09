@@ -32,9 +32,10 @@ export class ClientViewComponent implements OnInit {
   menuPosition = { x: 0, y: 0 };
   selectedPoint: MapPoint | null = null;
   savedPoints: MapPoint[] = [];
+  isLoading = false;
   
   constructor(
-    private readonly mapsService: GoogleMapsService,
+    public readonly mapsService: GoogleMapsService,
     private readonly toastService: ToastService
   ) {}
   
@@ -45,17 +46,20 @@ export class ClientViewComponent implements OnInit {
   }
   
   private loadNearbyPoints(): void {
+    this.isLoading = true;
     this.mapsService.getCurrentLocation()
       .then((location: {latitude: number, longitude: number} | null) => {
         if (location) {
           this.findNearbyPoints(location.latitude, location.longitude);
         } else {
           this.toastService.aviso('Could not determine your location. Please search for an address.');
+          this.isLoading = false;
         }
       })
       .catch((error: Error) => {
         console.error('Error getting user location:', error);
         this.toastService.erro('Error accessing your location. Please allow location access.');
+        this.isLoading = false;
       });
   }
   
@@ -67,10 +71,12 @@ export class ClientViewComponent implements OnInit {
         } else {
           console.log('No monitors found near initial location');
         }
+        this.isLoading = false;
       })
       .catch((error: Error) => {
         console.error('Error finding nearby monitors:', error);
         this.toastService.erro('Error searching for nearby monitors');
+        this.isLoading = false;
       });
   }
   
