@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Location } from '@angular/common';
 import { IconBackComponent } from '@app/shared/icons/back.icon';
 import { IconHomeComponent } from '@app/shared/icons/home.icon';
 import { IconLockComponent } from '@app/shared/icons/lock.icon';
@@ -24,10 +23,6 @@ interface MenuItem {
     CommonModule, 
     RouterModule, 
     IconBackComponent,
-    IconHomeComponent,
-    IconLockComponent,
-    IconPlaceComponent,
-    IconCreditCardComponent
   ]
 })
 export class SettingsSideBarComponent {
@@ -60,14 +55,14 @@ export class SettingsSideBarComponent {
 
   activeMenuItem: string = 'profile';
 
-  constructor(private location: Location) {}
+  constructor(private readonly router: Router) {}
 
   setActiveMenuItem(menuId: string): void {
     this.activeMenuItem = menuId;
   }
 
   goBack(): void {
-    this.location.back();
+    this.router.navigate(['/client']);
   }
   
   getIconComponent(iconName: string): any {
@@ -78,6 +73,6 @@ export class SettingsSideBarComponent {
       'credit-card': IconCreditCardComponent
     };
     
-    return iconMap[iconName] || null;
+    return iconMap[iconName] ?? null;
   }
 }

@@ -5,6 +5,7 @@ import { WishListComponent } from './components/wish-list/wish-list.component';
 import { ClientLayoutComponent } from './page/client-view-layout/client-view-layout.component';
 import { SettingsLayoutComponent } from './page/settings/settings-layout.component';
 import { ViewEditProfileComponent } from './components/view-edit-profile/view-edit-profile.component';
+import { AlterarSenhaComponent } from './components/alterar-senha/alterar-senha.component';
 
 export const ROUTES: Route[] = [
   {
@@ -41,17 +42,17 @@ export const ROUTES: Route[] = [
       },
       {
         path: 'change-password',
-        component: ViewEditProfileComponent, // Placeholder - será substituído pelo componente real
+        component: AlterarSenhaComponent,
         title: 'Change Password'
       },
       {
         path: 'progress-ad',
-        component: ViewEditProfileComponent, // Placeholder - será substituído pelo componente real
+        component: ViewEditProfileComponent,
         title: 'Ad Progress'
       },
       {
         path: 'subscriptions',
-        component: ViewEditProfileComponent, // Placeholder - será substituído pelo componente real
+        component: ViewEditProfileComponent,
         title: 'Subscriptions'
       }
     ]

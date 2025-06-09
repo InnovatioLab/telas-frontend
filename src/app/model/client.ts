@@ -31,7 +31,7 @@ export interface TermCondition {
 export interface VerificationCode {
   id?: string; // UUID
   code?: string;
-  expirationDate?: string; // ISO timestamp
+  expirationDate?: string;
 }
 
 export interface Contact {
@@ -44,6 +44,8 @@ export interface Contact {
 export interface Owner {
   id?: string; // UUID
   identificationNumber?: string;
+  firstName?: string; 
+  lastName?: string;
   name?: string;
   email?: string;
   phone?: string;

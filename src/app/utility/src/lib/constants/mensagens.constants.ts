@@ -19,11 +19,12 @@ export const MENSAGENS: MensagensConstants = {
     reenvioCodigoValidacao: 'A new code has been sent to your contact email! Check and try again.',
     cadastroRealizadoSucesso: 'Registration successfully completed!<br/>Welcome to Telas',
     naoEncontradoIdentificador: 'Identification number not found! Please check the information and try again.',
+    cancelarEditarSenha: 'Do you really want to leave? The data filled for password change will not be saved.',
   },
   validacao: {
 
     senhasNaoCorrespondem: 'Passwords do not match.',
-
+    senhaAtualIgualNova: 'The current password and the new password must be different!',
   }
 
 };
@@ -46,8 +47,10 @@ export interface MensagensConstants {
     reenvioCodigoValidacao: string;
     cadastroRealizadoSucesso: string;
     naoEncontradoIdentificador: string;
+    cancelarEditarSenha: string;
   };
   validacao: {
+    senhaAtualIgualNova: string;
     senhasNaoCorrespondem: string;
   };
 }

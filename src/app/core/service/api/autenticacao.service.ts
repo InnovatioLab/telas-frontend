@@ -10,6 +10,7 @@ import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { ClientService } from './client.service';
 import { AutenticacaoStorage } from '../auth/autenticacao-storage';
 import { AuthenticationStorage } from '../auth/authentication-storage';
+import { SenhaUpdate } from '@app/model/dto/request/senha-update.request';
 
 @Injectable({ providedIn: 'root' })
 export class AutenticacaoService {
@@ -97,6 +98,14 @@ export class AutenticacaoService {
 
   redefinirSenha(login: string, request: SenhaRequestDto) {
     return this.httpClient.patch<SenhaRequestDto>(`${this.url}/reset-password/${login}`, request);
+  }
+
+  alterarSenha(request: SenhaUpdate): Observable<SenhaUpdate> {
+    return this.httpClient.patch<SenhaUpdate>(`${this.url}update-password`, request, {
+      headers: {
+        Authorization: `Bearer ${AuthenticationStorage.getToken()}`
+      }
+    });
   }
 
   atualizarToken(): Observable<{ data: { id_token: string } }> {

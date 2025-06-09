@@ -1,66 +1,218 @@
 <div class="profile-container">
   <div class="profile-header">
     <h1>Profile Settings</h1>
-    <button class="btn-toggle-edit" (click)="toggleEditMode()">
-      {{ isEditMode ? 'Cancel' : 'Edit Profile' }}
-    </button>
   </div>
 
   <div class="profile-content" *ngIf="!loading; else loadingTemplate">
     <form [formGroup]="profileForm">
+      <div class="section-title">Company Information</div>
       <div class="form-row">
         <div class="form-group">
-          <label for="firstName">First Name</label>
+          <label for="businessName">Business Name</label>
           <input 
             type="text" 
-            id="firstName" 
-            formControlName="firstName" 
-            [readonly]="!isEditMode">
+            id="businessName" 
+            formControlName="businessName">
         </div>
         
         <div class="form-group">
-          <label for="lastName">Last Name</label>
+          <label for="identificationNumber">Identification Number</label>
           <input 
             type="text" 
-            id="lastName" 
-            formControlName="lastName" 
-            [readonly]="!isEditMode">
+            id="identificationNumber" 
+            formControlName="identificationNumber">
         </div>
       </div>
       
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input 
-          type="email" 
-          id="email" 
-          formControlName="email" 
-          [readonly]="!isEditMode">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="industry">Industry</label>
+          <input 
+            type="text" 
+            id="industry" 
+            formControlName="industry">
+        </div>
+        
+        <div class="form-group">
+          <label for="websiteUrl">Website</label>
+          <input 
+            type="text" 
+            id="websiteUrl" 
+            formControlName="websiteUrl">
+        </div>
       </div>
       
-      <div class="form-group">
-        <label for="phoneNumber">Phone Number</label>
-        <input 
-          type="tel" 
-          id="phoneNumber" 
-          formControlName="phoneNumber" 
-          [readonly]="!isEditMode">
+      <div class="section-title">Contact</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email">
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            formControlName="phone">
+        </div>
       </div>
       
-      <div class="form-actions" *ngIf="isEditMode">
-        <button 
-          type="button" 
-          class="btn-save" 
-          (click)="saveProfile()" 
-          [disabled]="profileForm.invalid">
-          Save Changes
-        </button>
+      <div class="section-title">Owner Information</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ownerFirstName">First Name</label>
+          <input 
+            type="text" 
+            id="ownerFirstName" 
+            formControlName="ownerFirstName">
+        </div>
+        
+        <div class="form-group">
+          <label for="ownerLastName">Last Name</label>
+          <input 
+            type="text" 
+            id="ownerLastName" 
+            formControlName="ownerLastName">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ownerEmail">Owner Email</label>
+          <input 
+            type="email" 
+            id="ownerEmail" 
+            formControlName="ownerEmail">
+        </div>
+        
+        <div class="form-group">
+          <label for="ownerPhone">Owner Phone</label>
+          <input 
+            type="tel" 
+            id="ownerPhone" 
+            formControlName="ownerPhone">
+        </div>
+      </div>
+      
+      <div class="section-title">Address</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="street">Street</label>
+          <input 
+            type="text" 
+            id="street" 
+            formControlName="street">
+        </div>
+        
+        <div class="form-group">
+          <label for="zipCode">ZIP Code</label>
+          <input 
+            type="text" 
+            id="zipCode" 
+            formControlName="zipCode">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="city">City</label>
+          <input 
+            type="text" 
+            id="city" 
+            formControlName="city">
+        </div>
+        
+        <div class="form-group">
+          <label for="state">State</label>
+          <input 
+            type="text" 
+            id="state" 
+            formControlName="state">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="country">Country</label>
+          <input 
+            type="text" 
+            id="country" 
+            formControlName="country">
+        </div>
+        
+        <div class="form-group">
+          <label for="complement">Complement</label>
+          <input 
+            type="text" 
+            id="complement" 
+            formControlName="complement">
+        </div>
+      </div>
+      
+      <div class="section-title">Social Media</div>
+      
+      <div formArrayName="socialMedia">
+        <div class="social-media-header">
+          <label>Social Media Links</label>
+          <button *ngIf="isEditMode" type="button" class="btn-add-social" (click)="addSocialMedia()">
+            <i class="pi pi-plus"></i>
+          </button>
+        </div>
+        
+        <div *ngIf="socialMediaArray.length === 0 && !isEditMode" class="no-social-media">
+          No social media links added.
+        </div>
+        
+        <div *ngFor="let social of socialMediaArray.controls; let i = index" [formGroupName]="i" class="form-row social-media-row">
+          <div class="form-group">
+            <p-dropdown
+              [options]="socialMediaOptions"
+              formControlName="platform"
+              placeholder="Select Social Media"
+              [disabled]="!isEditMode"
+              class="w-full social-dropdown">
+            </p-dropdown>
+          </div>
+          
+          <div class="form-group">
+            <input
+              type="url"
+              formControlName="url"
+              placeholder="https://www.example.com"
+              class="w-full input-form">
+          </div>
+          
+          <button *ngIf="isEditMode" type="button" class="btn-remove-social" (click)="removeSocialMedia(i)">
+            <i class="pi pi-trash"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="button-container">
+        <ng-container *ngIf="!isEditMode">
+          <button class="btn-edit" (click)="toggleEditMode()">
+            Edit
+          </button>
+        </ng-container>
+        <ng-container *ngIf="isEditMode">
+          <button class="btn-cancel" (click)="cancelEdit()">
+            Cancel
+          </button>
+          <button class="btn-save" (click)="saveProfile()" [disabled]="profileForm.invalid">
+            Save
+          </button>
+        </ng-container>
       </div>
     </form>
   </div>
   
   <ng-template #loadingTemplate>
     <div class="loading-indicator">
-      Loading profile information...
+      <p>Loading profile information...</p>
     </div>
   </ng-template>
 </div>

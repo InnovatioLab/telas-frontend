@@ -78,16 +78,13 @@ export class ClientService extends BaseHttpService<Client> {
       console.error('ID/UUID não fornecido para busca de usuário');
       throw new Error('ID/UUID não fornecido');
     }
-    
-    console.log(`Buscando cliente com ID/UUID: ${idOuUID}`);
-    
+        
     return this.http.get<ResponseDTO<T>>(`${this.baseUrl}/${idOuUID}`).pipe(
       map((response: ResponseDTO<T>) => {
         if (response?.data === undefined) {
           console.error('Resposta da API inválida:', response);
           throw new Error('Dados do usuário não encontrados');
         }
-        console.log('Dados do cliente recebidos com sucesso');
         return response.data;
       })
     );

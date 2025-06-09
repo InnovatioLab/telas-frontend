@@ -1,0 +1,82 @@
+<div class="container">
+  <div class="card">
+    <div class="card-content">
+      <h1 class="titulo">Alterar Senha</h1>
+      
+      <form [formGroup]="formSenha" (ngSubmit)="alterarSenha()">
+        <div class="password-field">
+          <label for="senhaAtual" class="margin-label">Senha Atual</label>
+          <div class="password-container">
+            <input 
+              [type]="senhaAtualVisivel ? 'text' : 'password'" 
+              id="senhaAtual" 
+              formControlName="senhaAtual" 
+              class="password-input" 
+              [ngClass]="{'is-invalid': formSenha.get('senhaAtual')?.invalid && formSenha.get('senhaAtual')?.touched}"
+              placeholder="Digite sua senha atual">
+            <button type="button" class="password-toggle" (click)="toggleSenha('senhaAtual')">
+              <app-icon-olho *ngIf="!senhaAtualVisivel"></app-icon-olho>
+              <app-icon-olho-fechado *ngIf="senhaAtualVisivel"></app-icon-olho-fechado>
+            </button>
+          </div>
+          <div *ngIf="formSenha.get('senhaAtual')?.invalid && formSenha.get('senhaAtual')?.touched" class="invalid-feedback">
+            Senha atual é obrigatória
+          </div>
+        </div>
+        
+        <div class="password-field">
+          <label for="novaSenha" class="margin-label">Nova Senha</label>
+          <div class="password-container">
+            <input 
+              [type]="senhaVisivel ? 'text' : 'password'" 
+              id="novaSenha" 
+              formControlName="novaSenha" 
+              class="password-input" 
+              [ngClass]="{'is-invalid': formSenha.get('novaSenha')?.invalid && formSenha.get('novaSenha')?.touched}"
+              placeholder="Digite sua nova senha">
+            <button type="button" class="password-toggle" (click)="toggleSenha('novaSenha')">
+              <app-icon-olho *ngIf="!senhaVisivel"></app-icon-olho>
+              <app-icon-olho-fechado *ngIf="senhaVisivel"></app-icon-olho-fechado>
+            </button>
+          </div>
+          <div *ngIf="formSenha.get('novaSenha')?.invalid && formSenha.get('novaSenha')?.touched" class="invalid-feedback">
+            <span *ngIf="formSenha.get('novaSenha')?.errors?.['required']">Nova senha é obrigatória</span>
+            <span *ngIf="formSenha.get('novaSenha')?.errors?.['minlength']">A senha deve ter pelo menos 8 caracteres</span>
+          </div>
+          <div class="password-requirements">
+            A senha deve conter pelo menos 8 caracteres
+          </div>
+        </div>
+        
+        <div class="password-field">
+          <label for="confirmacaoSenha" class="margin-label">Confirmar Nova Senha</label>
+          <div class="password-container">
+            <input 
+              [type]="confirmacaoVisivel ? 'text' : 'password'" 
+              id="confirmacaoSenha" 
+              formControlName="confirmacaoSenha" 
+              class="password-input" 
+              [ngClass]="{'is-invalid': formSenha.get('confirmacaoSenha')?.invalid && formSenha.get('confirmacaoSenha')?.touched}"
+              placeholder="Confirme sua nova senha">
+            <button type="button" class="password-toggle" (click)="toggleSenha('confirmacaoSenha')">
+              <app-icon-olho *ngIf="!confirmacaoVisivel"></app-icon-olho>
+              <app-icon-olho-fechado *ngIf="confirmacaoVisivel"></app-icon-olho-fechado>
+            </button>
+          </div>
+          <div *ngIf="formSenha.get('confirmacaoSenha')?.invalid && formSenha.get('confirmacaoSenha')?.touched" class="invalid-feedback">
+            <span *ngIf="formSenha.get('confirmacaoSenha')?.errors?.['required']">Confirmação de senha é obrigatória</span>
+            <span *ngIf="formSenha.get('confirmacaoSenha')?.errors?.['senhasDiferentes']">As senhas não coincidem</span>
+          </div>
+        </div>
+        
+        <div class="btn-senha-salvar">
+          <button type="submit" [disabled]="formSenha.invalid || loading">
+            {{ loading ? 'Alterando...' : 'Alterar Senha' }}
+          </button>
+        </div>
+      </form>
+      
+      <p-toast position="top-right"></p-toast>
+    </div>
+  </div>
+</div>
