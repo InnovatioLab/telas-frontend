@@ -15,6 +15,8 @@ import { IconBarsComponent } from './bars.icon';
 import { IconSearchComponent } from './search.icon';
 import { IconSunComponent } from './sun.icon';
 import { IconMoonComponent } from './moon.icon';
+import { IconBackComponent } from './back.icon';
+import { IconCreditCardComponent } from './credit-card.icon';
 
 @NgModule({
   imports: [
@@ -33,7 +35,9 @@ import { IconMoonComponent } from './moon.icon';
     IconBarsComponent,
     IconSearchComponent,
     IconSunComponent,
-    IconMoonComponent
+    IconMoonComponent,
+    IconBackComponent,
+    IconCreditCardComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -51,7 +55,9 @@ import { IconMoonComponent } from './moon.icon';
     IconBarsComponent,
     IconSearchComponent,
     IconSunComponent,
-    IconMoonComponent
+    IconMoonComponent,
+    IconBackComponent,
+    IconCreditCardComponent
   ]
 })
 export class IconsModule { }

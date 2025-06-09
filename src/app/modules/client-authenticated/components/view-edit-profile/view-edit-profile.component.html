@@ -1,0 +1,66 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Profile Settings</h1>
+    <button class="btn-toggle-edit" (click)="toggleEditMode()">
+      {{ isEditMode ? 'Cancel' : 'Edit Profile' }}
+    </button>
+  </div>
+
+  <div class="profile-content" *ngIf="!loading; else loadingTemplate">
+    <form [formGroup]="profileForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input 
+            type="text" 
+            id="firstName" 
+            formControlName="firstName" 
+            [readonly]="!isEditMode">
+        </div>
+        
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input 
+            type="text" 
+            id="lastName" 
+            formControlName="lastName" 
+            [readonly]="!isEditMode">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          [readonly]="!isEditMode">
+      </div>
+      
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input 
+          type="tel" 
+          id="phoneNumber" 
+          formControlName="phoneNumber" 
+          [readonly]="!isEditMode">
+      </div>
+      
+      <div class="form-actions" *ngIf="isEditMode">
+        <button 
+          type="button" 
+          class="btn-save" 
+          (click)="saveProfile()" 
+          [disabled]="profileForm.invalid">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+  
+  <ng-template #loadingTemplate>
+    <div class="loading-indicator">
+      Loading profile information...
+    </div>
+  </ng-template>
+</div>

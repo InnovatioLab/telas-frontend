@@ -1,0 +1,11 @@
+.settings-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  
+  .settings-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+}

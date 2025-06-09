@@ -342,7 +342,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaConfiguracoes(): void {
     if (this.isLogado()) {
-      this.router.navigate(['/management-profile/registration-data']);
+      this.router.navigate(['/client/settings']);
       if (this.menuAberto) {
         this.toggleMenu();
       }

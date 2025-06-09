@@ -1,13 +1,15 @@
 import { Route } from '@angular/router';
 import { AutenticacaoLoginGuard } from '@app/core/service/guard';
-import { ClientViewComponent } from './client-view/client-view.component';
-import { WishListComponent } from './wish-list/wish-list.component';
-import { LayoutComponent } from './page/layout.component';
+import { ClientViewComponent } from './components/client-view/client-view.component';
+import { WishListComponent } from './components/wish-list/wish-list.component';
+import { ClientLayoutComponent } from './page/client-view-layout/client-view-layout.component';
+import { SettingsLayoutComponent } from './page/settings/settings-layout.component';
+import { ViewEditProfileComponent } from './components/view-edit-profile/view-edit-profile.component';
 
 export const ROUTES: Route[] = [
   {
     path: '',
-    component: LayoutComponent,
+    component: ClientLayoutComponent,
     canActivate: [AutenticacaoLoginGuard],
     children: [
       {
@@ -19,6 +21,38 @@ export const ROUTES: Route[] = [
         path: 'wish-list',
         component: WishListComponent,
         title: 'Wish List'
+      }
+    ]
+  },
+  {
+    path: 'settings',
+    component: SettingsLayoutComponent,
+    canActivate: [AutenticacaoLoginGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'profile',
+        pathMatch: 'full'
+      },
+      {
+        path: 'profile',
+        component: ViewEditProfileComponent,
+        title: 'Personal Data'
+      },
+      {
+        path: 'change-password',
+        component: ViewEditProfileComponent, // Placeholder - será substituído pelo componente real
+        title: 'Change Password'
+      },
+      {
+        path: 'progress-ad',
+        component: ViewEditProfileComponent, // Placeholder - será substituído pelo componente real
+        title: 'Ad Progress'
+      },
+      {
+        path: 'subscriptions',
+        component: ViewEditProfileComponent, // Placeholder - será substituído pelo componente real
+        title: 'Subscriptions'
       }
     ]
   }

@@ -104,6 +104,15 @@ body {
     word-wrap: break-word;
   }
 
+  a {
+    color: var(--cor-cinza-fundo);
+    transition: var(--transicao-padrao);
+    
+    &:hover {
+      color: var(--cor-cinza-medio);
+      text-decoration: none;
+    }
+  }
 
 }
 

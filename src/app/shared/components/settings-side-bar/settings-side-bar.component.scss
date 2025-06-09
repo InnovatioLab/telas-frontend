@@ -1,0 +1,84 @@
+.settings-sidebar {
+  width: 250px;
+  height: 100%;
+  background-color: var(--cor-primaria);
+  color: var(--cor-branca);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 0;
+  
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    
+    .sidebar-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--cor-branca);
+    }
+    
+    .back-button {
+      background: none;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cor-branca);
+      border-radius: 50%;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      ::ng-deep svg {
+        color: var(--cor-branca);
+      }
+    }
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+    .sidebar-menu-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      color: var(--cor-branca);
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      
+      &.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-left: 3px solid var(--cor-branca);
+      }
+      
+      .menu-item-content {
+        display: flex;
+        align-items: center;
+        
+        .menu-item-icon {
+          margin-right: 10px;
+          color: var(--cor-branca);
+          
+          ::ng-deep svg {
+            color: var(--cor-branca);
+          }
+        }
+        
+        .menu-item-label {
+          font-size: 0.9rem;
+          color: var(--cor-branca);
+        }
+      }
+    }
+  }
+}
