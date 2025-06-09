@@ -1,5 +1,6 @@
 /* COMPONENTES HTML CUSTOMIZADOS */
 @use 'material-symbols';
+@import "primeicons/primeicons.css";
 
 :root {
   /* Cores */
@@ -16,7 +17,7 @@
   --cor-desabilitado: #696F74CC;
   --cor-branca: #FFFFFF;
   --cor-preto-claro: #16191B;
-  
+
   /* Tipografia */
   --fonte-familia: 'Montserrat', sans-serif;
   --fonte-tamanho-pequeno: 12px;
@@ -26,11 +27,11 @@
   --fonte-tamanho-extra-grande: 24px;
   --fonte-tamanho-titulo: 26px;
   --fonte-tamanho-h5: 30px;
-  
+
   --fonte-peso-regular: 400;
   --fonte-peso-medio: 500;
   --fonte-peso-negrito: 700;
-  
+
   /* Dimensões */
   --altura-input: 45px;
   --altura-botao: 47px;
@@ -38,7 +39,7 @@
   --largura-botao-padrao: 250px;
   --largura-botao-pequeno: 150px;
   --largura-dropdown-trigger: 3rem;
-  
+
   /* Bordas */
   --borda-raio-padrao: 15px;
   --borda-raio-pequeno: 8px;
@@ -46,18 +47,18 @@
   --borda-largura: 1px;
   --borda-estilo: solid;
   --borda-padrao: var(--borda-largura) var(--borda-estilo) var(--cor-cinza-medio);
-  
+
   /* Espaçamentos */
   --espacamento-pequeno: 8px;
   --espacamento-padrao: 16px;
   --espacamento-medio: 24px;
   --espacamento-grande: 32px;
   --espacamento-extra-grande: 48px;
-  
+
   /* Sombras */
   --sombra-padrao: 0 2px 12px rgba(0, 0, 0, 0.1);
   --sombra-hover: 0 4px 15px rgba(0, 0, 0, 0.15);
-  
+
   /* Transições */
   --transicao-padrao: all 0.3s ease;
   --transicao-rapida: all 0.15s ease;
@@ -448,9 +449,11 @@ select {
   border-radius: 15px !important;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
 }
+
 .p-drawer-content {
   overflow: hidden !important;
 }
+
 .p-dropdown {
   display: flex;
   align-items: center;
@@ -708,10 +711,10 @@ select {
 }
 
 .p-drawer-left .p-drawer {
-    width: 100% !important;
-    align-self: start;
-    height: 100%;
-    border-right-width: 1px;
+  width: 100% !important;
+  align-self: start;
+  height: 100%;
+  border-right-width: 1px;
 }
 
 .hide-scrollbar {
@@ -727,7 +730,12 @@ select {
 }
 
 /* Estilos para elementos HTML básicos */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-family: var(--fonte-familia);
@@ -737,33 +745,39 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 2.5rem; /* 40px */
+  font-size: 2.5rem;
+  /* 40px */
   font-weight: var(--fonte-peso-negrito);
 }
 
 h2 {
-  font-size: 2rem; /* 32px */
+  font-size: 2rem;
+  /* 32px */
   font-weight: var(--fonte-peso-negrito);
 }
 
 h3 {
-  font-size: 1.75rem; /* 28px */
+  font-size: 1.75rem;
+  /* 28px */
   font-weight: var(--fonte-peso-medio);
 }
 
 h4 {
-  font-size: 1.5rem; /* 24px */
+  font-size: 1.5rem;
+  /* 24px */
   font-weight: var(--fonte-peso-medio);
 }
 
 h5 {
-  font-size: var(--fonte-tamanho-h5); /* 30px */
+  font-size: var(--fonte-tamanho-h5);
+  /* 30px */
   font-weight: var(--fonte-peso-negrito);
   margin-bottom: 1rem;
 }
 
 h6 {
-  font-size: 1rem; /* 16px */
+  font-size: 1rem;
+  /* 16px */
   font-weight: var(--fonte-peso-medio);
 }
 
@@ -801,7 +815,6 @@ p {
   margin-bottom: 0 !important;
 }
 
-/* Classes que precisam ser mantidas para compatibilidade */
 .text-xlarge-bold {
   font-size: var(--fonte-tamanho-h5);
   font-weight: var(--fonte-peso-negrito);
@@ -812,3 +825,47 @@ p {
   font-weight: var(--fonte-peso-medio);
 }
 
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+
+  i {
+    font-size: 16px;
+    color: white;
+  }
+}
+
+.menu-item .material-icons {
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.material-icons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

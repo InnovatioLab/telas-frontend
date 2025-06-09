@@ -12,6 +12,15 @@ import { DialogoComponent } from '../dialogo/dialogo.component';
 import { SidebarService } from '@app/core/service/state/sidebar.service';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
+import { IconHomeComponent } from '../../icons/home.icon';
+import { IconFavoriteComponent } from '../../icons/favorite.icon';
+import { IconPlaceComponent } from '../../icons/place.icon';
+import { IconSettingsComponent } from '../../icons/settings.icon';
+import { IconHelpComponent } from '../../icons/help.icon';
+import { IconLogoutComponent } from '../../icons/logout.icon';
+import { IconLockComponent } from '../../icons/lock.icon';
+import { IconLockOpenComponent } from '../../icons/lock-open.icon';
+import { IconCloseComponent } from '../../icons/close.icon';
 
 interface MenuItem {
   id: string;
@@ -23,7 +32,21 @@ interface MenuItem {
 @Component({
   selector: 'app-client-menu-side',
   standalone: true,
-  imports: [CommonModule, PrimengModule, DialogModule, ToggleComponent],
+  imports: [
+    CommonModule, 
+    PrimengModule, 
+    DialogModule, 
+    ToggleComponent,
+    IconHomeComponent,
+    IconFavoriteComponent,
+    IconPlaceComponent,
+    IconSettingsComponent,
+    IconHelpComponent,
+    IconLogoutComponent,
+    IconLockComponent,
+    IconLockOpenComponent,
+    IconCloseComponent
+  ],
   providers: [DialogService, DialogoUtils],
   templateUrl: './client-menu-side.component.html',
   styleUrls: ['./client-menu-side.component.scss']
@@ -347,5 +370,18 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       default:
         return item.label;
     }
+  }
+  
+  getIconComponent(iconName: string): any {
+    const iconMap: {[key: string]: any} = {
+      'pi-home': IconHomeComponent,
+      'pi-heart': IconFavoriteComponent,
+      'pi-map-marker': IconPlaceComponent,
+      'pi-cog': IconSettingsComponent,
+      'pi-question-circle': IconHelpComponent,
+      'pi-sign-out': IconLogoutComponent
+    };
+    
+    return iconMap[iconName] || null;
   }
 }

@@ -13,11 +13,27 @@ import { ToastService } from '@app/core/service/state/toast.service';
 import { NotificacaoState } from '@app/modules/notificacao/models';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { CheckoutListSideBarComponent } from '../checkout-list-side-bar/checkout-list-side-bar.component';
+import { IconShoppingBasketComponent } from '../../icons/shopping-basket.icon';
+import { IconNotificationsComponent } from '../../icons/notifications.icon';
+import { IconBarsComponent } from '../../icons/bars.icon';
+import { IconSearchComponent } from '../../icons/search.icon';
+import { IconSettingsComponent } from '../../icons/settings.icon';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, PrimengModule, RouterModule, CheckoutListSideBarComponent, FormsModule],
+  imports: [
+    CommonModule, 
+    PrimengModule, 
+    RouterModule, 
+    CheckoutListSideBarComponent, 
+    FormsModule,
+    IconShoppingBasketComponent,
+    IconNotificationsComponent,
+    IconBarsComponent,
+    IconSearchComponent,
+    IconSettingsComponent
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

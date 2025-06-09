@@ -1266,3 +1266,23 @@ header {
     }
   }
 }
+
+.icon-button app-icon-shopping-basket,
+.icon-button app-icon-notifications,
+.icon-button app-icon-settings {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+}
+
+app-icon-bars {
+  display: flex;
+  width: 24px;
+  height: 24px;
+}
+
+app-icon-search {
+  display: flex;
+  width: 24px;
+  height: 24px;
+}

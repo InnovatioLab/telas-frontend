@@ -36,7 +36,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 15px;
+  padding: 16px 15px;
   background-color: var(--cor-primaria);
   position: relative;
 
@@ -62,40 +62,6 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 1;
-  }
-
-  .close-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: white;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    position: relative;
-    z-index: 2;
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-
-    &:focus {
-      outline: none;
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-    
-    &:focus-visible {
-      outline: 2px solid white;
-      outline-offset: 2px;
-    }
-
-    i {
-      font-size: 16px;
-      color: white;
-    }
   }
   
   .menu-actions {

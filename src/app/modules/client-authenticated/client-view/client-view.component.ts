@@ -19,10 +19,8 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
     CommonModule,
     RouterModule,
     PrimengModule,
-    HeaderComponent,
     MapsComponent,
     SidebarMapaComponent,
-    ClientMenuSideComponent,
     RodapeComponent,
     PopUpStepAddListComponent
   ],
