@@ -14,13 +14,13 @@ import { AutenticacaoService } from '@app/core/service/api/autenticacao.service'
 import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
 import { IconHomeComponent } from '../../icons/home.icon';
 import { IconFavoriteComponent } from '../../icons/favorite.icon';
-import { IconPlaceComponent } from '../../icons/place.icon';
 import { IconSettingsComponent } from '../../icons/settings.icon';
 import { IconHelpComponent } from '../../icons/help.icon';
 import { IconLogoutComponent } from '../../icons/logout.icon';
 import { IconLockComponent } from '../../icons/lock.icon';
 import { IconLockOpenComponent } from '../../icons/lock-open.icon';
 import { IconCloseComponent } from '../../icons/close.icon';
+import { IconPlaceComponent } from '@app/shared/icons/place.icon';
 
 interface MenuItem {
   id: string;
@@ -39,13 +39,13 @@ interface MenuItem {
     ToggleComponent,
     IconHomeComponent,
     IconFavoriteComponent,
-    IconPlaceComponent,
     IconSettingsComponent,
     IconHelpComponent,
     IconLogoutComponent,
     IconLockComponent,
     IconLockOpenComponent,
-    IconCloseComponent
+    IconCloseComponent,
+    IconPlaceComponent
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: './client-menu-side.component.html',
@@ -62,7 +62,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   menuItems: MenuItem[] = [
     { id: 'home', label: 'Home', icon: 'pi-home' },
     { id: 'wishList', label: 'Wish list', icon: 'pi-heart' },
-    { id: 'map', label: 'My telas', icon: 'pi-map-marker' },
+    { id: 'myTelas', label: 'My telas', icon: 'pi-map-marker' },
     { id: 'settings', label: 'Settings', icon: 'pi-cog' },
     { id: 'help', label: 'Help', icon: 'pi-question-circle' },
     { id: 'logout', label: 'Logout', icon: 'pi-sign-out' },
@@ -230,7 +230,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       case 'wishList':
         this.navegarParaWishList();
         break;
-      case 'map':
+      case 'myTelas': // Alterei "my-telas" para "myTelas" para corresponder ao ID do menu
         this.navegarParaMyTelas();
         break;
       default:
@@ -250,12 +250,15 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarParaMyTelas(): void {
+    // Verificar se o usuário está logado antes de navegar
     if (this.isLogado()) {
-      this.router.navigate(['/management-profile/progress-ad']);
-      if (this.menuAberto) {
+      console.log('Navegando para My Telas, usuário logado');
+      this.router.navigate(['/client/my-telas']);
+      if (this.menuAberto && !this.menuFixo) {
         this.toggleMenu();
       }
     } else {
+      console.log('Usuário não está logado, redirecionando para login');
       this.router.navigate(['/login']);
     }
   }
@@ -291,7 +294,13 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   isLogado(): boolean {
-    return this.authentication?.isLoggedIn$.getValue() || false;
+    // Verificar se o token existe no localStorage
+    const token = localStorage.getItem('telas_token');
+    // Verificar se há dados do usuário no localStorage
+    const userData = localStorage.getItem('telas_token_user');
+    
+    // Retornar true se ambos existirem
+    return !!token && !!userData;
   }
 
   navegarPaginaInicial(): void {
@@ -382,6 +391,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       'pi-sign-out': IconLogoutComponent
     };
     
-    return iconMap[iconName] || null;
+    return iconMap[iconName] ?? null;
   }
 }

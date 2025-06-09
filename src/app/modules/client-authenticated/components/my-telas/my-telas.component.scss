@@ -1,0 +1,193 @@
+.my-telas-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: var(--fonte-familia);
+}
+
+.header {
+  margin-bottom: 30px;
+  
+  h1 {
+    font-size: var(--fonte-tamanho-titulo);
+    color: var(--cor-primaria);
+    margin-bottom: 8px;
+  }
+  
+  .subtitle {
+    color: var(--cor-legenda);
+    font-size: var(--fonte-tamanho-padrao);
+    margin: 0;
+  }
+}
+
+.content {
+  background-color: var(--cor-branca);
+  border-radius: var(--borda-raio-padrao);
+  box-shadow: var(--sombra-padrao);
+  padding: 24px;
+
+  .tab-content {
+    margin-top: 20px;
+  }
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+  
+  .search {
+    flex: 1;
+    min-width: 250px;
+    
+    input {
+      width: 100%;
+    }
+  }
+  
+  .filter-options {
+    display: flex;
+    gap: 10px;
+  }
+}
+
+:host ::ng-deep {
+  .p-tabview {
+    .p-tabview-nav {
+      border-color: var(--cor-primaria);
+      
+      li {
+        margin-right: 4px;
+        
+        .p-tabview-nav-link {
+          padding: 0.75rem 1.25rem;
+          font-weight: var(--fonte-peso-medio);
+          color: var(--cor-legenda);
+          background-color: var(--cor-cinza-medio);
+          border-color: var(--cor-cinza-medio);
+          
+          &:hover {
+            background-color: rgba(var(--cor-primaria-rgb), 0.04);
+            border-color: var(--cor-primaria-clara);
+          }
+        }
+        
+        &.p-highlight .p-tabview-nav-link {
+          background-color: var(--cor-branca);
+          color: var(--cor-primaria);
+          border-color: var(--cor-primaria);
+          
+          &:hover {
+            background-color: var(--cor-branca);
+          }
+        }
+      }
+    }
+    
+    .p-tabview-panels {
+      padding: 1.25rem 0;
+      border-color: var(--cor-primaria);
+    }
+    
+    .p-tabview-selected {
+      color: var(--cor-primaria);
+    }
+  }
+  
+  .p-tabpanel {
+    padding: 0;
+  }
+  
+  // Ajustando a cor da linha inferior da lista de abas
+  .p-tabview .p-tabview-nav {
+    border-bottom: 1px solid var(--cor-primaria);
+  }
+  
+  // Ajustando a cor da aba ativa
+  .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+  }
+  
+  .p-tabview-ink-bar {
+    background-color: var(--cor-primaria);
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: var(--fonte-peso-medio);
+    text-transform: uppercase;
+    
+    &.status-approved {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: var(--cor-sucesso);
+    }
+    
+    &.status-pending {
+      background-color: rgba(255, 193, 7, 0.1);
+      color: #ffc107;
+    }
+    
+    &.status-rejected {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: var(--cor-erro);
+    }
+  }
+}
+
+.empty-message {
+  text-align: center;
+  padding: 40px 0;
+  
+  p {
+    margin-bottom: 20px;
+    color: var(--cor-legenda);
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  
+  p {
+    margin-top: 20px;
+    color: var(--cor-legenda);
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 16px;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .search, .filter-options {
+      width: 100%;
+    }
+  }
+  
+  :host ::ng-deep {
+    .p-tabview {
+      .p-tabview-nav {
+        li {
+          .p-tabview-nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: var(--fonte-tamanho-pequeno);
+          }
+        }
+      }
+    }
+  }
+}

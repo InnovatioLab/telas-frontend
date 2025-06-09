@@ -1,0 +1,61 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+import { ResponseDTO } from '@app/model/dto/response.dto';
+import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
+import { Page } from '@app/model/dto/page.dto';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AdService {
+  private readonly baseUrl = `${environment.apiUrl}ads`;
+
+  constructor(private http: HttpClient) {}
+
+  getPendingAds(page: number = 0, size: number = 10): Observable<Page<AdResponseDto>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+      
+    return this.http.get<ResponseDTO<Page<AdResponseDto>>>(`${this.baseUrl}/pending-ads`, { params })
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  getApprovedAds(page: number = 0, size: number = 10): Observable<Page<AdResponseDto>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+      
+    return this.http.get<ResponseDTO<Page<AdResponseDto>>>(`${this.baseUrl}/approved-ads`, { params })
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  getRejectedAds(page: number = 0, size: number = 10): Observable<Page<AdResponseDto>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+      
+    return this.http.get<ResponseDTO<Page<AdResponseDto>>>(`${this.baseUrl}/rejected-ads`, { params })
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  getAllAds(page: number = 0, size: number = 10): Observable<Page<AdResponseDto>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+      
+    return this.http.get<ResponseDTO<Page<AdResponseDto>>>(`${this.baseUrl}/all`, { params })
+      .pipe(
+        map(response => response.data)
+      );
+  }
+}

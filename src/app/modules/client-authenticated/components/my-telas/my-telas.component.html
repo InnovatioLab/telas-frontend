@@ -1,0 +1,29 @@
+<div class="my-telas-container">
+  <div class="header">
+    <h1>My Telas</h1>
+    <p class="subtitle">Manage your ad campaigns and track their performance</p>
+  </div>
+
+  <div class="content">
+    <p-tabView (onChange)="onTabChange($event)" [activeIndex]="activeTabIndex">
+      <p-tabPanel *ngFor="let tab of tabs" [header]="tab.label">
+        <div class="tab-content">
+          <app-table 
+            [value]="ads"
+            [colunas]="tableColumns"
+            [buscaPaginada]="true"
+            [totalRegistros]="totalRecords"
+            [rows]="pageSize"
+            [first]="first"
+            [header]="'Your ' + tab.label + ' Advertisements'"
+            [subheader]="'Showing all your ' + tab.label.toLowerCase() + ' advertisements'"
+            [mensagemEmpty]="'No ' + tab.label.toLowerCase() + ' advertisements found'"
+            (pageChange)="onPageChange($event)"
+            (visualizar)="viewAd($event)"
+            (editar)="editAd($event)">
+          </app-table>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</div>

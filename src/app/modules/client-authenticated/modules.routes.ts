@@ -6,6 +6,7 @@ import { ClientLayoutComponent } from './page/client-view-layout/client-view-lay
 import { SettingsLayoutComponent } from './page/settings/settings-layout.component';
 import { ViewEditProfileComponent } from './components/view-edit-profile/view-edit-profile.component';
 import { AlterarSenhaComponent } from './components/alterar-senha/alterar-senha.component';
+import { MyTelasComponent } from './components/my-telas/my-telas.component';
 
 export const ROUTES: Route[] = [
   {
@@ -22,6 +23,11 @@ export const ROUTES: Route[] = [
         path: 'wish-list',
         component: WishListComponent,
         title: 'Wish List'
+      },
+      {
+        path: 'my-telas',
+        component: MyTelasComponent,
+        title: 'My Telas'
       }
     ]
   },

@@ -44,7 +44,6 @@ export class ViewEditProfileComponent implements OnInit {
       websiteUrl: [''],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
-      // Campos do owner mantidos mas não exibidos na interface
       ownerFirstName: ['', Validators.required],
       ownerLastName: [''],
       ownerEmail: ['', [Validators.required, Validators.email]],
@@ -87,23 +86,18 @@ export class ViewEditProfileComponent implements OnInit {
   loadUserProfile(): void {
     this.loading = true;
     
-    // Obter dados do localStorage
     const userDataStr = localStorage.getItem('telas_token_user');
     
     if (userDataStr) {
       try {
-        // Deserializar os dados do localStorage
         this.clientData = JSON.parse(userDataStr);
-        console.log('Data loaded from localStorage:', this.clientData);
         this.populateForm(this.clientData);
         this.loading = false;
       } catch (error) {
-        console.error('Error processing user data:', error);
         this.loading = false;
         this.toastService.erro('Error loading profile data');
       }
     } else {
-      // Se não encontrar dados no localStorage, buscar pelo ID
       const userId = localStorage.getItem('telas_token_user') ? 
         JSON.parse(localStorage.getItem('telas_token_user')).id : null;
       
@@ -114,8 +108,7 @@ export class ViewEditProfileComponent implements OnInit {
             this.populateForm(client);
             this.loading = false;
           },
-          error: (error) => {
-            console.error('Error fetching client data:', error);
+          error: () => {
             this.loading = false;
             this.toastService.erro('Could not load profile data');
           }
@@ -129,30 +122,23 @@ export class ViewEditProfileComponent implements OnInit {
 
   populateForm(client: Client): void {
     if (!client) {
-      console.error('No client data provided');
       return;
     }
 
-    console.log('Populating form with data:', client);
-
-    // Mapear dados do cliente para o formulário
     const formData = {
       businessName: client.businessName || '',
       identificationNumber: client.identificationNumber || '',
       industry: client.industry || '',
       websiteUrl: client.websiteUrl || '',
       
-      // Contact info
       email: client.contact?.email || '',
       phone: client.contact?.phone || '',
       
-      // Owner info - mantidos no formulário mas não exibidos na interface
       ownerFirstName: client.owner?.firstName || '',
       ownerLastName: client.owner?.lastName || '',
       ownerEmail: client.owner?.email || '',
       ownerPhone: client.owner?.phone || '',
       
-      // Address (primeiro endereço, se existir)
       street: client.addresses && client.addresses.length > 0 ? client.addresses[0].street || '' : '',
       zipCode: client.addresses && client.addresses.length > 0 ? client.addresses[0].zipCode || '' : '',
       city: client.addresses && client.addresses.length > 0 ? client.addresses[0].city || '' : '',
@@ -161,15 +147,12 @@ export class ViewEditProfileComponent implements OnInit {
       complement: client.addresses && client.addresses.length > 0 ? client.addresses[0].complement || '' : '',
     };
 
-    // Atualizar o formulário com os dados
     this.profileForm.patchValue(formData);
     
-    // Limpar array de redes sociais
     while (this.socialMediaArray.length !== 0) {
       this.socialMediaArray.removeAt(0);
     }
     
-    // Adicionar redes sociais existentes
     if (client.socialMedia) {
       const socialMedia = client.socialMedia;
       
@@ -234,7 +217,6 @@ export class ViewEditProfileComponent implements OnInit {
         });
       }
     });
-    // Não permitir edição do número de identificação
     this.profileForm.get('identificationNumber')?.disable();
   }
 
@@ -259,7 +241,6 @@ export class ViewEditProfileComponent implements OnInit {
     
     const formValues = this.profileForm.getRawValue();
     
-    // Converter o array de socialMedia para o formato esperado pela API
     const socialMedia: Record<string, string> = {};
     if (formValues.socialMedia && Array.isArray(formValues.socialMedia) && formValues.socialMedia.length > 0) {
       formValues.socialMedia.forEach((item: { platform: string; url: string }) => {
@@ -269,7 +250,6 @@ export class ViewEditProfileComponent implements OnInit {
       });
     }
     
-    // Construir o payload conforme esperado pela API
     const clientRequest: ClientRequestDTO = {
       businessName: formValues.businessName,
       identificationNumber: this.clientData?.identificationNumber || '',
@@ -277,22 +257,19 @@ export class ViewEditProfileComponent implements OnInit {
       websiteUrl: formValues.websiteUrl || '',
       status: this.clientData?.status,
       
-      // Objeto de contato conforme esperado
       contact: {
         email: formValues.email,
         phone: formValues.phone
       },
       
-      // Objeto de proprietário usando os mesmos dados de contato
       owner: {
         identificationNumber: this.clientData?.identificationNumber || '',
         firstName: formValues.ownerFirstName,
         lastName: formValues.ownerLastName || '',
-        email: formValues.ownerEmail || formValues.email, // Usar o email do contato se o email do owner não estiver disponível
-        phone: formValues.ownerPhone || formValues.phone  // Usar o telefone do contato se o telefone do owner não estiver disponível
+        email: formValues.ownerEmail || formValues.email,
+        phone: formValues.ownerPhone || formValues.phone
       },
       
-      // Array de endereços com um único objeto
       addresses: [
         {
           street: formValues.street,
@@ -306,26 +283,20 @@ export class ViewEditProfileComponent implements OnInit {
       ]
     };
 
-    // Adicionar socialMedia apenas se houver valores
     if (Object.keys(socialMedia).length > 0) {
       clientRequest.socialMedia = socialMedia;
     }
     
-    console.log('Data to be sent:', clientRequest);
-    
     if (this.clientData?.id) {
       this.clientService.editar(this.clientData.id, clientRequest).subscribe({
-        next: (response) => {
-          console.log('Profile updated successfully:', response);
+        next: () => {
           this.toastService.sucesso('Profile updated successfully');
           this.isEditMode = false;
           this.disableForm();
           
-          // Atualizar os dados do localStorage após a edição bem-sucedida
           this.loadUserProfile();
         },
-        error: (error) => {
-          console.error('Error updating profile:', error);
+        error: () => {
           this.toastService.erro('Error updating profile');
           this.loading = false;
         },
