@@ -85,15 +85,9 @@
   100% { transform: rotate(360deg); }
 }
 
-// Estilo para ajustar o layout quando o sidebar admin está aberto
 :host-context(body.admin-sidebar-open) {
   .map-container {
     width: calc(100% - 350px);
     margin-right: 350px;
   }
-}
-
-// Ajustando o layout para não sobrepor o header
-app-alert-admin-sidebar {
-  margin-top: 70px; // Mesma altura do header
 }

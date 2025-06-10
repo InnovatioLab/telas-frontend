@@ -4,7 +4,7 @@
   left: -300px;
   width: 280px;
   height: 100%;
-  background-color: var(--color-background, #fff);
+  background-color: var(--cor-branca);
   z-index: 1000;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -151,13 +151,12 @@
       outline: none;
 
       &:hover, &:focus {
-        background-color: var(--color-text-hover, rgba(0, 0, 0, 0.05));
+        background-color: var(--cor-cinza-medio);
         opacity: 0.8;
       }
 
-
       span {
-        color: var(--color-text);
+        color: var(--cor-cinza-escuro);
         font-size: 15px;
       }
     }

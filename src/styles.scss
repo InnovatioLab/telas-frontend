@@ -117,17 +117,17 @@ body {
 }
 
 html::-webkit-scrollbar {
-  width: 6px;
+  width: var(--espacamento-pequeno);
   background: transparent;
 }
 
 html::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 3px;
+  background: var(--cor-cinza-medio);
+  border-radius: var(--borda-raio-pequeno);
 }
 
 html::-webkit-scrollbar-thumb:hover {
-  background: #b0b7c3;
+  background: var(--cor-cinza);
 }
 
 *:not(span.pi, span.material-symbols-outlined) {
@@ -145,7 +145,7 @@ html::-webkit-scrollbar-thumb:hover {
 
 hr {
   width: 100%;
-  border: 1px solid #dee2e6;
+  border: var(--borda-largura) var(--borda-estilo) var(--cor-cinza-medio);
 }
 
 textarea {
@@ -153,7 +153,7 @@ textarea {
 }
 
 label {
-  font-size: 14px;
+  font-size: var(--fonte-tamanho-padrao);
 }
 
 td {
@@ -207,18 +207,18 @@ td {
 .campos-filtros {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 1.5rem;
+  gap: var(--espacamento-pequeno);
+  margin-top: var(--espacamento-medio);
 
   .p-dropdown {
     background-color: var(--cor-branca);
-    border: 1px solid var(--cor-cinza-medio);
-    border-radius: 15px;
+    border: var(--borda-padrao);
+    border-radius: var(--borda-raio-padrao);
 
     .p-dropdown-label {
       color: var(--cor-legenda);
-      font-weight: 400;
-      font-size: 14px;
+      font-weight: var(--fonte-peso-regular);
+      font-size: var(--fonte-tamanho-padrao);
       width: 116px;
       height: 21px;
       padding: 0;
@@ -240,20 +240,20 @@ td {
   }
 
   .btn-limpar-filtros {
-    width: 150px;
-    height: 44px;
-    border-radius: 15px;
+    width: var(--largura-botao-pequeno);
+    height: var(--altura-botao-pequeno);
+    border-radius: var(--borda-raio-padrao);
     background-color: var(--cor-cinza-medio) !important;
     color: var(--cor-legenda) !important;
     border: none;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: var(--fonte-tamanho-padrao);
+    font-weight: var(--fonte-peso-medio);
     display: flex;
     align-items: center;
     justify-content: center;
 
     .p-button-icon {
-      font-size: 14px;
+      font-size: var(--fonte-tamanho-padrao);
     }
   }
 }
@@ -267,8 +267,8 @@ td {
     .p-dropdown-item {
       color: var(--cor-cinza-escuro) !important;
       border: none;
-      padding: 2px 8px;
-      font-size: 12px;
+      padding: var(--espacamento-pequeno) var(--espacamento-padrao);
+      font-size: var(--fonte-tamanho-pequeno);
 
       &:hover {
         background-color: var(--cor-primaria-clara) !important;
@@ -290,8 +290,8 @@ td {
 
   .p-ripple {
     color: var(--cor-cinza-escuro) !important;
-    padding: 2px 8px !important;
-    font-size: 12px;
+    padding: 2px var(--espacamento-pequeno) !important;
+    font-size: var(--fonte-tamanho-pequeno);
 
     &:hover {
       background: var(--cor-primaria-clara) !important;
@@ -325,19 +325,19 @@ td {
   }
 }
 
-.p-select-label {
+.p-dropdown-label {
   display: block;
   white-space: nowrap;
   overflow: hidden;
   flex: 1 1 auto;
   width: 1%;
-  padding: var(--p-select-padding-y) var(--p-select-padding-x);
+  padding: var(--espacamento-pequeno) var(--espacamento-padrao);
   text-overflow: ellipsis;
   cursor: pointer;
   background: transparent;
   border: 0 none;
   outline: 0 none;
-  font-size: 14px;
+  font-size: var(--fonte-tamanho-padrao);
 
   &.p-placeholder {
     color: var(--cor-legenda) !important;
@@ -345,9 +345,9 @@ td {
 }
 
 .botao-branco {
-  width: 250px;
-  height: 47px;
-  border-radius: 15px;
+  width: var(--largura-botao-padrao);
+  height: var(--altura-botao);
+  border-radius: var(--borda-raio-padrao);
 
   .p-button {
     display: inline-flex;
@@ -359,11 +359,11 @@ td {
     position: relative;
     background: var(--cor-primaria-escura) !important;
     border: none !important;
-    border-radius: 15px;
-    padding: 10px 16px;
+    border-radius: var(--borda-raio-padrao);
+    padding: var(--espacamento-pequeno) var(--espacamento-padrao);
 
     .p-button-icon-right {
-      margin-left: 2.25rem;
+      margin-left: var(--espacamento-medio);
     }
   }
 
@@ -383,8 +383,8 @@ td {
 .p-drawer.sidebar-documento {
   background-color: var(--cor-branca);
   border: none !important;
-  border-radius: 15px 0 0 15px !important;
-  width: 828px !important;
+  border-radius: var(--borda-raio-padrao) 0 0 var(--borda-raio-padrao) !important;
+  width: var(--largura-max-card-grande);
   max-width: 90vw !important;
   height: 100vh !important;
   display: flex !important;
@@ -392,26 +392,26 @@ td {
   pointer-events: auto !important;
   transform: translate3d(0px, 0px, 0px) !important;
   position: fixed !important;
-  transition: transform 0.3s !important;
+  transition: var(--transicao-padrao) !important;
   left: auto !important;
   right: 0 !important;
 }
 
 .section-header {
-  margin-bottom: 24px;
+  margin-bottom: var(--espacamento-medio);
   text-align: center;
 
   .titulo {
-    font-size: 26px !important;
-    font-weight: 400 !important;
+    font-size: var(--fonte-tamanho-titulo) !important;
+    font-weight: var(--fonte-peso-regular) !important;
     color: var(--cor-cinza-escuro) !important;
-    margin-bottom: 10.5px;
+    margin-bottom: var(--espacamento-pequeno);
     display: block;
   }
 
   .subtitulo {
-    font-size: 16px;
-    font-weight: 400;
+    font-size: var(--fonte-tamanho-medio);
+    font-weight: var(--fonte-peso-regular);
     color: var(--cor-legenda) !important;
     margin: 0;
     display: block;
@@ -432,18 +432,18 @@ input[type="tel"],
 input[type="date"],
 select {
   width: 100%;
-  height: 45px;
-  border-radius: 15px;
-  font-size: 16px;
-  font-weight: 400;
+  height: var(--altura-input);
+  border-radius: var(--borda-raio-padrao);
+  font-size: var(--fonte-tamanho-medio);
+  font-weight: var(--fonte-peso-regular);
   color: var(--cor-cinza-escuro);
   background-color: var(--cor-branca);
-  padding-left: 16px;
+  padding-left: var(--espacamento-padrao);
 
   &::placeholder {
     color: var(--cor-legenda);
-    font-weight: 400;
-    font-size: 16px;
+    font-weight: var(--fonte-peso-regular);
+    font-size: var(--fonte-tamanho-medio);
   }
 
   &:enabled:focus,
@@ -455,8 +455,8 @@ select {
 .p-select-overlay {
   border: none !important;
   background: var(--cor-branca) !important;
-  border-radius: 15px !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
+  border-radius: var(--borda-raio-padrao) !important;
+  box-shadow: var(--sombra-padrao) !important;
 }
 
 .p-drawer-content {
@@ -469,15 +469,15 @@ select {
 
   .p-dropdown-label {
     color: var(--cor-legenda);
-    font-weight: 400;
-    font-size: 16px;
+    font-weight: var(--fonte-peso-regular);
+    font-size: var(--fonte-tamanho-medio);
     padding: 0;
     display: flex;
     align-items: center;
   }
 
   .p-dropdown-trigger {
-    width: 3rem;
+    width: var(--largura-dropdown-trigger);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -495,7 +495,7 @@ select {
 .p-datepicker,
 .p-datePicker {
   background: var(--cor-branca);
-  border-radius: 15px;
+  border-radius: var(--borda-raio-padrao);
 
   .p-datepicker-header {
     display: flex;
@@ -503,17 +503,16 @@ select {
     justify-content: space-between;
     background: var(--cor-branca) !important;
     color: var(--cor-cinza-escuro) !important;
-    border-bottom: 1px solid var(--cor-cinza-medio);
+    border-bottom: var(--borda-padrao);
 
     .p-datepicker-title {
-
       .p-datepicker-month,
       .p-datepicker-year,
       .p-datepicker-select-month,
       .p-datepicker-select-year {
         color: var(--cor-cinza-escuro) !important;
-        font-size: 16px;
-        font-weight: 500;
+        font-size: var(--fonte-tamanho-medio);
+        font-weight: var(--fonte-peso-medio);
 
         &:hover {
           background-color: var(--cor-primaria-escura) !important;
@@ -553,12 +552,12 @@ select {
     }
 
     td {
-      padding: 0.2rem;
+      padding: var(--espacamento-pequeno);
 
       >span {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 50%;
+        width: var(--altura-botao-pequeno);
+        height: var(--altura-botao-pequeno);
+        border-radius: var(--borda-raio-circular);
         color: var(--cor-cinza-escuro);
 
         &.p-highlight {
@@ -586,31 +585,29 @@ select {
   padding: var(--p-datepicker-panel-padding);
   background: var(--cor-branca) !important;
   color: var(--p-datepicker-panel-color);
-  border: 1px solid var(--p-datepicker-panel-border-color);
-  border-radius: 15px;
-  box-shadow: var(--p-datepicker-panel-shadow);
+  border: var(--borda-padrao);
+  border-radius: var(--borda-raio-padrao);
+  box-shadow: var(--sombra-padrao);
 }
 
-// Estilo para p-datePicker (substitui p-calendar)
 .p-datePicker {
   width: 100%;
-
 
   .p-datepicker-input {
     border: none !important;
     width: 100%;
-    height: 45px;
-    border-radius: 15px !important;
+    height: var(--altura-input);
+    border-radius: var(--borda-raio-padrao) !important;
     background-color: var(--cor-branca) !important;
-    padding: 0 10px 0 16px;
-    font-size: 16px;
-    font-weight: 400;
+    padding: 0 var(--espacamento-pequeno) 0 var(--espacamento-padrao);
+    font-size: var(--fonte-tamanho-medio);
+    font-weight: var(--fonte-peso-regular);
     color: var(--cor-cinza-escuro);
 
     &::placeholder {
       color: var(--cor-legenda);
-      font-weight: 400;
-      font-size: 16px;
+      font-weight: var(--fonte-peso-regular);
+      font-size: var(--fonte-tamanho-medio);
     }
 
     &:enabled:focus,
@@ -622,7 +619,7 @@ select {
   }
 
   &.p-datePicker {
-    border-radius: 15px !important;
+    border-radius: var(--borda-raio-padrao) !important;
 
     &:focus-within {
       box-shadow: none !important;
@@ -630,13 +627,13 @@ select {
   }
 
   .p-datepicker-trigger {
-    width: 3rem;
-    height: 45px;
+    width: var(--largura-dropdown-trigger);
+    height: var(--altura-input);
     color: var(--cor-primaria-escura);
     background: transparent;
     border: none !important;
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
+    border-top-right-radius: var(--borda-raio-padrao);
+    border-bottom-right-radius: var(--borda-raio-padrao);
   }
 }
 
@@ -648,21 +645,21 @@ select {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 45px;
-  border-radius: 15px !important;
+  height: var(--altura-input);
+  border-radius: var(--borda-raio-padrao) !important;
   background-color: var(--cor-branca) !important;
 
   .p-select-label {
     color: var(--cor-legenda);
-    font-weight: 400;
-    font-size: 16px;
-    padding: 0 0 0 16px;
+    font-weight: var(--fonte-peso-regular);
+    font-size: var(--fonte-tamanho-medio);
+    padding: 0 0 0 var(--espacamento-padrao);
     display: flex;
     align-items: center;
   }
 
   .p-select-trigger {
-    width: 3rem;
+    width: var(--largura-dropdown-trigger);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -687,8 +684,8 @@ select {
     .p-select-item {
       color: var(--cor-cinza-escuro) !important;
       border: none;
-      padding: 2px 8px;
-      font-size: 12px;
+      padding: var(--espacamento-pequeno) var(--espacamento-padrao);
+      font-size: var(--fonte-tamanho-pequeno);
 
       &:hover {
         background-color: var(--cor-primaria-clara) !important;
@@ -754,39 +751,33 @@ h6 {
 }
 
 h1 {
-  font-size: 2.5rem;
-  /* 40px */
+  font-size: var(--fonte-tamanho-extra-grande);
   font-weight: var(--fonte-peso-negrito);
 }
 
 h2 {
-  font-size: 2rem;
-  /* 32px */
+  font-size: var(--fonte-tamanho-grande);
   font-weight: var(--fonte-peso-negrito);
 }
 
 h3 {
-  font-size: 1.75rem;
-  /* 28px */
+  font-size: var(--fonte-tamanho-medio);
   font-weight: var(--fonte-peso-medio);
 }
 
 h4 {
-  font-size: 1.5rem;
-  /* 24px */
+  font-size: var(--fonte-tamanho-padrao);
   font-weight: var(--fonte-peso-medio);
 }
 
 h5 {
   font-size: var(--fonte-tamanho-h5);
-  /* 30px */
   font-weight: var(--fonte-peso-negrito);
-  margin-bottom: 1rem;
+  margin-bottom: var(--espacamento-pequeno);
 }
 
 h6 {
-  font-size: 1rem;
-  /* 16px */
+  font-size: var(--fonte-tamanho-padrao);
   font-weight: var(--fonte-peso-medio);
 }
 
@@ -838,38 +829,38 @@ p {
   background: none;
   border: none;
   cursor: pointer;
-  color: white;
-  width: 30px;
-  height: 30px;
+  color: var(--cor-branca);
+  width: var(--altura-botao-pequeno);
+  height: var(--altura-botao-pequeno);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: var(--borda-raio-circular);
   position: relative;
   z-index: 2;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--cor-primaria-clara);
   }
 
   &:focus {
     outline: none;
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--cor-primaria-clara);
   }
 
   &:focus-visible {
-    outline: 2px solid white;
-    outline-offset: 2px;
+    outline: var(--borda-largura) var(--borda-estilo) var(--cor-branca);
+    outline-offset: var(--espacamento-pequeno);
   }
 
   i {
-    font-size: 16px;
-    color: white;
+    font-size: var(--fonte-tamanho-medio);
+    color: var(--cor-branca);
   }
 }
 
 .menu-item .material-icons {
-  margin-right: 10px;
+  margin-right: var(--espacamento-pequeno);
   vertical-align: middle;
 }
 

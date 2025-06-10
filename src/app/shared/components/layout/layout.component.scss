@@ -1,6 +1,3 @@
-$width-sidebar: 90px;
-$padding-content: 54px;
-
 .layout {
   display: flex;
   background: var(--cor-cinza-fundo);
@@ -10,5 +7,5 @@ $padding-content: 54px;
 .content {
   width: 100%;
   padding: var(--espacamento-extra-grande);
-  padding-left: calc(#{$width-sidebar} + var(--espacamento-extra-grande));
+  padding-left: calc(var(--largura-sidebar-compacto) + var(--espacamento-extra-grande));
 }

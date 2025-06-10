@@ -31,7 +31,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
   selectedPoint: MapPoint | null = null;
   savedPoints: MapPoint[] = [];
   isLoading = false;
-  private adminSidebarListener: (e: Event) => void;
+  private readonly adminSidebarListener: (e: Event) => void;
   
   constructor(
     private readonly authentication: Authentication,
