@@ -74,7 +74,7 @@ export class LoginComponent implements OnInit {
     const { login, senha } = this.form.value;
 
     const payload: ILoginRequest = {
-      username: login, // Usando o valor diretamente sem formatação
+      username: login,
       password: senha
     };
 
@@ -125,27 +125,17 @@ export class LoginComponent implements OnInit {
       client = this.autenticacaoService.user;
       
       if (!client) {
-        console.log('Usuário não encontrado, redirecionando para /client');
         this.router.navigate(['/client']);
         return;
       }
     }
 
-    console.log('Papel do usuário:', client.role);
-    console.log('É admin?', client.role === Role.ADMIN);
-
-    // Limpar qualquer estado que possa estar impedindo a navegação
     this.exibirTermos = false;
     this.loading = false;
 
     if (client.role === Role.ADMIN) {
-      console.log('Redirecionando admin para /admin');
-      this.router.navigate(['/admin']).then(
-        success => console.log('Navegação para /admin:', success),
-        error => console.error('Erro na navegação para /admin:', error)
-      );
+      this.router.navigate(['/admin']);
     } else {
-      console.log('Redirecionando usuário comum para /client');
       this.router.navigate(['/client']);
     }
   }
@@ -165,7 +155,6 @@ export class LoginComponent implements OnInit {
         this.loading = false;
         this.exibirTermos = false;
         this.authentication.pegarDadosAutenticado().then(async () => {
-          // Força a atualização do estado de autenticação
           this.authentication.isLoggedIn$.next(true);
           
           const userId = AuthenticationStorage.getUserId();

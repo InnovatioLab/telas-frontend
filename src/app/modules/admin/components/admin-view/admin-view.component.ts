@@ -38,14 +38,10 @@ export class AdminViewComponent implements OnInit {
     private readonly authentication: Authentication,
     private readonly mapsService: GoogleMapsService,
     private readonly toastService: ToastService
-  ) {
-    console.log('AdminViewComponent: Construído');
-  }
+  ) {}
 
   ngOnInit(): void {
-    console.log('AdminViewComponent: Inicializado');
     const client = this.authentication._clientSignal();
-    console.log('AdminViewComponent: Cliente:', client);
     if (client) {
       this.userName = client.businessName || 'Administrador';
     }
@@ -67,7 +63,6 @@ export class AdminViewComponent implements OnInit {
         }
       })
       .catch((error: Error) => {
-        console.error('Error getting user location:', error);
         this.toastService.erro('Error accessing your location. Please allow location access.');
         this.isLoading = false;
       });
@@ -78,13 +73,10 @@ export class AdminViewComponent implements OnInit {
       .then((monitors: MapPoint[]) => {
         if (monitors && monitors.length > 0) {
           this.emitMonitorsFoundEvent(monitors);
-        } else {
-          console.log('No monitors found near initial location');
         }
         this.isLoading = false;
       })
       .catch((error: Error) => {
-        console.error('Error finding nearby monitors:', error);
         this.toastService.erro('Error searching for nearby monitors');
         this.isLoading = false;
       });
