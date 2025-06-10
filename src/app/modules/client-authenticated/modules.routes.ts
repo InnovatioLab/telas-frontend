@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { AutenticacaoLoginGuard } from '@app/core/service/guard';
+import { ClientAuthenticatedGuard } from '@app/core/service/guard/client-authenticated.guard';
 import { ClientViewComponent } from './components/client-view/client-view.component';
 import { WishListComponent } from './components/wish-list/wish-list.component';
 import { ClientLayoutComponent } from './page/client-view-layout/client-view-layout.component';
@@ -12,7 +12,7 @@ export const ROUTES: Route[] = [
   {
     path: '',
     component: ClientLayoutComponent,
-    canActivate: [AutenticacaoLoginGuard],
+    canActivate: [ClientAuthenticatedGuard],
     children: [
       {
         path: '',
@@ -34,7 +34,7 @@ export const ROUTES: Route[] = [
   {
     path: 'settings',
     component: SettingsLayoutComponent,
-    canActivate: [AutenticacaoLoginGuard],
+    canActivate: [ClientAuthenticatedGuard],
     children: [
       {
         path: '',

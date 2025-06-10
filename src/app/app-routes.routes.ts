@@ -17,6 +17,10 @@ export const appRoutes: Routes = [
     path: 'client',
     loadChildren: () => import('./modules/client-authenticated/modules.routes').then((mod) => mod.ROUTES),
   },
+    {
+    path: 'admin',
+    loadChildren: () => import('./modules/admin/modules.routes').then(m => m.ROUTES),
+  },
   {
     path: '**',
     redirectTo: 'login'

@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, Renderer2, effect, EventEmitter, Output, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, effect, EventEmitter, Output, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { AddressSearchResult, GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { UserLocationService } from '@app/core/service/api/user-location.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { SidebarService } from '@app/core/service/state/sidebar.service';
 import { IconsModule } from '@app/shared/icons/icons.module';
@@ -85,11 +84,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   
   constructor(
     private readonly mapsService: GoogleMapsService,
-    private readonly userLocationService: UserLocationService,
     private readonly sidebarService: SidebarService,
     private readonly ngZone: NgZone,
     private readonly el: ElementRef,
-    private readonly renderer: Renderer2
   ) {
     effect(() => {
       const isVisible = this.sidebarService.visibilidade();
