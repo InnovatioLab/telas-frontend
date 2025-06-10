@@ -6,7 +6,13 @@ import { AdminAuthenticatedGuard } from '@app/core/service/guard/admin-authentic
 export const ROUTES: Route[] = [
   {
     path: '',
-    component: AdminViewComponent,
-    canActivate: [AdminAuthenticatedGuard]
+    component: AdminLayoutComponent,
+    canActivate: [AdminAuthenticatedGuard],
+    children: [
+      {
+        path: '',
+        component: AdminViewComponent
+      }
+    ]
   }
 ];

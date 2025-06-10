@@ -4,12 +4,10 @@ import { BaseModule } from '@app/shared/base/base.module';
 import { Authentication } from '@app/core/service/auth/autenthication';
 import { MapsComponent } from '@app/shared/components/maps/maps.component';
 import { SidebarMapaComponent } from '@app/shared/components/sidebar-mapa/sidebar-mapa.component';
-import { RodapeComponent } from '@app/shared/components/rodape/rodape.component';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-list/pop-up-add-list.component';
-import { HeaderComponent } from '@app/shared/components/header/header.component';
 
 @Component({
   selector: 'app-admin-view',
@@ -20,10 +18,8 @@ import { HeaderComponent } from '@app/shared/components/header/header.component'
     CommonModule, 
     BaseModule, 
     MapsComponent, 
-    SidebarMapaComponent, 
-    RodapeComponent,
-    PopUpStepAddListComponent,
-    HeaderComponent
+    SidebarMapaComponent,
+    PopUpStepAddListComponent
   ]
 })
 export class AdminViewComponent implements OnInit {
