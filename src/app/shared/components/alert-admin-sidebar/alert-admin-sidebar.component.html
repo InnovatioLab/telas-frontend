@@ -1,0 +1,59 @@
+<div class="admin-alert-sidebar" [class.visible]="isVisible" [class.pinned]="isPinned">
+  <div class="sidebar-header">
+    <h2>Administrative Panel</h2>
+    <p>Welcome, {{ userName }}</p>
+    
+    <div class="header-actions">
+      <button class="pin-button" (click)="togglePin()" [attr.title]="isPinned ? 'Unpin sidebar' : 'Pin sidebar'">
+        <span class="material-symbols-outlined">
+          {{ isPinned ? 'push_pin' : 'push_pin_outline' }}
+        </span>
+      </button>
+      
+      <button class="toggle-button" (click)="toggleSidebar()">
+        <span class="material-symbols-outlined">
+          {{ isVisible ? 'arrow_forward_ios' : 'arrow_back_ios' }}
+        </span>
+      </button>
+    </div>
+  </div>
+  
+  <div class="sidebar-content">
+    <div class="filters">
+      <div class="search-container">
+        <input 
+          type="text" 
+          pInputText 
+          [(ngModel)]="searchTerm" 
+          (ngModelChange)="applyFilters()"
+          placeholder="Search alerts..." 
+          class="search-input"
+        />
+      </div>
+      <div class="filter-container">
+        <p-selectButton [options]="[
+          {label: 'All', value: 'all'},
+          {label: 'Critical', value: 'critical'},
+          {label: 'Warnings', value: 'warning'},
+          {label: 'Acknowledged', value: 'acknowledged'},
+          {label: 'Resolved', value: 'resolved'}
+        ]" [(ngModel)]="statusFilter" (onChange)="applyFilters()"></p-selectButton>
+      </div>
+    </div>
+    
+    <div class="alerts-container">
+      <h3>System Alerts</h3>
+      
+      <div *ngIf="filteredAlerts.length === 0" class="no-alerts">
+        <p>No alerts found.</p>
+      </div>
+      
+      <app-card-alert 
+        *ngFor="let alert of filteredAlerts" 
+        [alert]="alert"
+        (resolve)="resolveAlert($event)"
+        (acknowledge)="acknowledgeAlert($event)">
+      </app-card-alert>
+    </div>
+  </div>
+</div>

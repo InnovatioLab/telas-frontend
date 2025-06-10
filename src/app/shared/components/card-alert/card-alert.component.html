@@ -1,0 +1,53 @@
+<div class="alert-item" [ngClass]="statusClass">
+  <div class="alert-header">
+    <h4>{{ alert.title }}</h4>
+    <span class="alert-timestamp">{{ formatTimestamp(alert.timestamp) }}</span>
+  </div>
+  
+  <div class="alert-description">
+    <p>{{ alert.description }}</p>
+    <span class="device-id">ID: {{ alert.deviceId }}</span>
+  </div>
+  
+  <div class="alert-actions">
+    <span class="status-badge" 
+          [ngClass]="{
+            'status-critical': alert.status === 'critical',
+            'status-warning': alert.status === 'warning',
+            'status-resolved': alert.status === 'resolved',
+            'status-acknowledged': alert.status === 'acknowledged'
+          }">
+      {{ statusLabel }}
+    </span>
+    
+    <div class="action-buttons">
+      <button 
+        *ngIf="canBeAcknowledged"
+        pButton 
+        class="p-button-sm p-button-info" 
+        pTooltip="Acknowledge this alert"
+        tooltipPosition="top"
+        (click)="onAcknowledge()">
+        <app-icon-mark-chat-read class="icon"></app-icon-mark-chat-read>
+      </button>
+      
+      <button 
+        *ngIf="alert.status === 'acknowledged'"
+        pButton 
+        class="p-button-sm p-button-info p-button-outlined ack-info-button" 
+        pTooltip="{{ alert.acknowledgeReason }}"
+        tooltipPosition="top"
+        type="button">
+        <i class="pi pi-info-circle"></i>
+      </button>
+      
+      <button 
+        *ngIf="canBeResolved"
+        pButton 
+        class="p-button-sm p-button-success" 
+        label="Resolve" 
+        (click)="onResolve()">
+      </button>
+    </div>
+  </div>
+</div>

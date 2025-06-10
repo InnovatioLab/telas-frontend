@@ -55,6 +55,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   menuAberto = false;
   isSearching = false;
   isDarkMode = false;
+  isAdminSidebarVisible = true;
   
   private resizeListener: () => void;
   private authSubscription: Subscription;
@@ -118,6 +119,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isLoggedIn = this.authentication.isTokenValido();
         this.cdr.detectChanges();
       });
+    
+    // Verificar o estado inicial da sidebar de admin
+    if (this.isAdministrador()) {
+      const savedVisibility = localStorage.getItem('admin_sidebar_visible');
+      this.isAdminSidebarVisible = savedVisibility !== 'false';
+    }
   }
 
   ngAfterViewInit() {
@@ -328,5 +335,20 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   
   isProfileManagementRoute(): boolean {
     return this.router.url.includes('/management-profile');
+  }
+  
+  toggleAdminSidebar(): void {
+    this.isAdminSidebarVisible = !this.isAdminSidebarVisible;
+    localStorage.setItem('admin_sidebar_visible', this.isAdminSidebarVisible.toString());
+    
+    // Emitir evento para o componente AlertAdminSidebar
+    const event = new CustomEvent('toggle-admin-sidebar', {
+      detail: { visible: this.isAdminSidebarVisible }
+    });
+    window.dispatchEvent(event);
+  }
+  
+  updateAdminSidebarVisibility(isVisible: boolean): void {
+    this.isAdminSidebarVisible = isVisible;
   }
 }

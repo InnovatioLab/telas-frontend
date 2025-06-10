@@ -109,6 +109,7 @@
             <button 
               id="test-btn-checkout-mobile" 
               (click)="abrirCheckout()" 
+              *ngIf="!isAdministrador()"
               pButton 
               [rounded]="true" 
               [text]="true"
@@ -294,6 +295,7 @@
             <button 
               id="test-btn-checkout-desktop" 
               (click)="abrirCheckout()" 
+              *ngIf="!isAdministrador()"
               pButton 
               [rounded]="true" 
               [text]="true"
@@ -303,6 +305,19 @@
               <app-icon-shopping-basket class="icon cursor-pointer"></app-icon-shopping-basket>
               <span *ngIf="itensSalvos() > 0" class="badge flex justify-content-center align-items-center absolute">
                 {{ itensSalvos() }}</span>
+            </button>
+            
+            <button
+              id="admin-alerts-button"
+              *ngIf="isAdministrador() && !isAdminSidebarVisible"
+              pButton
+              [rounded]="true"
+              [text]="true"
+              (click)="toggleAdminSidebar()"
+              pTooltip="Important System Alerts" 
+              tooltipPosition="bottom"
+            >
+              <span class="material-symbols-outlined icon cursor-pointer">notification_important</span>
             </button>
             
             <button

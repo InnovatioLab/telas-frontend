@@ -7,16 +7,24 @@
 
 app-header {
   width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 70px;
 }
 
 .admin-layout {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-top: 70px;
 }
 
 .admin-layout-content {
   flex: 1;
+  position: relative;
 }
 
 app-rodape {

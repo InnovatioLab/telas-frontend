@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { IconArquivoComponent } from './arquivo.icon';
 import { IconHomeComponent } from './home.icon';
 import { IconFavoriteComponent } from './favorite.icon';
@@ -20,9 +21,11 @@ import { IconCreditCardComponent } from './credit-card.icon';
 import { IconOlhoComponent } from './olho.icon';
 import { IconOlhoFechadoComponent } from './olho-fechado.icon';
 import { IconTvDisplayComponent } from './tv-display.icon';
+import { IconMarkChatReadComponent } from './mark-chat-read.icon';
 
 @NgModule({
   imports: [
+    CommonModule,
     IconArquivoComponent,
     IconHomeComponent,
     IconFavoriteComponent,
@@ -43,7 +46,8 @@ import { IconTvDisplayComponent } from './tv-display.icon';
     IconCreditCardComponent,
     IconOlhoComponent,
     IconOlhoFechadoComponent,
-    IconTvDisplayComponent
+    IconTvDisplayComponent,
+    IconMarkChatReadComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -66,7 +70,8 @@ import { IconTvDisplayComponent } from './tv-display.icon';
     IconCreditCardComponent,
     IconOlhoComponent,
     IconOlhoFechadoComponent,
-    IconTvDisplayComponent
+    IconTvDisplayComponent,
+    IconMarkChatReadComponent
   ]
 })
 export class IconsModule { }

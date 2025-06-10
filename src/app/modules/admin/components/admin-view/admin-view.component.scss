@@ -43,9 +43,11 @@
 
 .map-container {
   position: relative;
-  width: 100%;
+  width: calc(100% - 350px);
   height: 600px;
   margin-bottom: 2rem;
+  margin-left: 0;
+  padding-top: 10px;
 }
 
 .map-loading {
@@ -81,4 +83,17 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+// Estilo para ajustar o layout quando o sidebar admin está aberto
+:host-context(body.admin-sidebar-open) {
+  .map-container {
+    width: calc(100% - 350px);
+    margin-right: 350px;
+  }
+}
+
+// Ajustando o layout para não sobrepor o header
+app-alert-admin-sidebar {
+  margin-top: 70px; // Mesma altura do header
 }

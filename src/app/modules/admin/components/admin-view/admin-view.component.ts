@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseModule } from '@app/shared/base/base.module';
 import { Authentication } from '@app/core/service/auth/autenthication';
@@ -8,6 +8,7 @@ import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-list/pop-up-add-list.component';
+import { AlertAdminSidebarComponent } from '@app/shared/components/alert-admin-sidebar/alert-admin-sidebar.component';
 
 @Component({
   selector: 'app-admin-view',
@@ -19,34 +20,58 @@ import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-lis
     BaseModule, 
     MapsComponent, 
     SidebarMapaComponent,
-    PopUpStepAddListComponent
+    PopUpStepAddListComponent,
+    AlertAdminSidebarComponent
   ]
 })
-export class AdminViewComponent implements OnInit {
+export class AdminViewComponent implements OnInit, OnDestroy {
   userName: string = '';
   showPointMenu = false;
   menuPosition = { x: 0, y: 0 };
   selectedPoint: MapPoint | null = null;
   savedPoints: MapPoint[] = [];
   isLoading = false;
-
+  private adminSidebarListener: (e: Event) => void;
+  
   constructor(
     private readonly authentication: Authentication,
     private readonly mapsService: GoogleMapsService,
     private readonly toastService: ToastService
-  ) {}
-
+  ) {
+    this.adminSidebarListener = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      this.updateHeaderSidebarStatus(customEvent.detail.visible);
+    };
+  }
+  
   ngOnInit(): void {
     const client = this.authentication._clientSignal();
     if (client) {
-      this.userName = client.businessName || 'Administrador';
+      this.userName = client.businessName;
     }
 
     setTimeout(() => {
       this.loadNearbyPoints();
     }, 1500);
-  }
 
+    window.addEventListener('toggle-admin-sidebar', this.adminSidebarListener);
+  }
+  
+  ngOnDestroy(): void {
+    window.removeEventListener('toggle-admin-sidebar', this.adminSidebarListener);
+  }
+  
+  onAdminSidebarVisibilityChange(isVisible: boolean): void {
+    this.updateHeaderSidebarStatus(isVisible);
+  }
+  
+  private updateHeaderSidebarStatus(isVisible: boolean): void {
+    const header = document.querySelector('app-header') as any;
+    if (header && header.updateAdminSidebarVisibility) {
+      header.updateAdminSidebarVisibility(isVisible);
+    }
+  }
+  
   private loadNearbyPoints(): void {
     this.isLoading = true;
     this.mapsService.getCurrentLocation()
