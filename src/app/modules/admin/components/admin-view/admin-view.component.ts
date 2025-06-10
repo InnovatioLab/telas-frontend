@@ -130,7 +130,6 @@ export class AdminViewComponent implements OnInit, OnDestroy {
   }
 }
 
-// Interface para o evento personalizado
 interface ToggleAdminSidebarEvent {
   visible: boolean;
 }

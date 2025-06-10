@@ -291,12 +291,9 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   isLogado(): boolean {
-    // Verificar se o token existe no localStorage
     const token = localStorage.getItem('telas_token');
-    // Verificar se há dados do usuário no localStorage
     const userData = localStorage.getItem('telas_token_user');
     
-    // Retornar true se ambos existirem
     return !!token && !!userData;
   }
 

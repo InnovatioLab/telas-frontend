@@ -17,5 +17,4 @@ import { AdminMenuSideComponent } from '@app/shared/components/admin-menu-side/a
   styleUrls: ['./admin-view-layout.component.scss']
 })
 export class AdminLayoutComponent {
-  // Implementação do layout para a visualização de administrador
 }

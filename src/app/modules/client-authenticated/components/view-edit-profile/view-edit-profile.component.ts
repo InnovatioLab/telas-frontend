@@ -125,12 +125,9 @@ export class ViewEditProfileComponent implements OnInit {
       return;
     }
 
-    // Formatar o número de telefone se disponível
     let phoneNumber = client.contact?.phone || '';
     if (phoneNumber && !phoneNumber.includes('+')) {
-      // Se o telefone não tiver o formato internacional, tenta formatá-lo
       if (phoneNumber.length >= 10) {
-        // Assumindo formato americano para demonstração
         phoneNumber = `+1 ${phoneNumber.substring(0, 3)} ${phoneNumber.substring(3, 6)} ${phoneNumber.substring(6)}`;
       }
     }
@@ -251,7 +248,6 @@ export class ViewEditProfileComponent implements OnInit {
     
     const formValues = this.profileForm.getRawValue();
     
-    // Normaliza o número de telefone para o formato esperado pela API
     const normalizedPhone = formValues.phone?.replace(/\D/g, '');
     const formattedPhone = normalizedPhone ? 
       (normalizedPhone.startsWith('1') ? `+1${normalizedPhone.substring(1)}` : `+${normalizedPhone}`) : 

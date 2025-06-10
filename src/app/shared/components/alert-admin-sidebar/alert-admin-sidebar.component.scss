@@ -371,12 +371,11 @@
 
     .p-togglebutton-label {
       line-height: 1;
-      background: transparent !important; // Garantindo que o label também tenha background transparente
+      background: transparent !important;
     }
   }
 }
 
-// Ajustando o conteúdo principal para acomodar o sidebar
 :host ::ng-deep+app-maps {
   margin-right: 350px;
   width: calc(100% - 350px);

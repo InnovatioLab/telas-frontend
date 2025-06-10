@@ -33,13 +33,6 @@ export class ApiErrorHandler {
     return 'Ocorreu um erro na comunicação com o servidor.';
   }
 
-  /**
-   * Retorna a mensagem específica para um determinado contexto de erro
-   * @param error Objeto de erro HTTP
-   * @param contexto Contexto da operação (ex: "excluir", "carregar")
-   * @param recurso Nome do recurso envolvido na operação (opcional)
-   * @returns Mensagem de erro contextualizada
-   */
   static getMensagemContextualizada(error: HttpErrorResponse, contexto: string, recurso?: string): string {
     const mensagemBase = this.handleApiError(error);
     const nomeRecurso = recurso || 'recurso';

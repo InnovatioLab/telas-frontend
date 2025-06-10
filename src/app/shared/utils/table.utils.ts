@@ -12,9 +12,6 @@ export interface IColumn {
   bodyStyles?: string;
   bodyInlineStyles?: string;
   sortable?: boolean;
-    /**
-   * Limite de caracteres para cortar o texto exibido na coluna (opcional).
-   */ 
   cortarTexto?: number;
 }
 

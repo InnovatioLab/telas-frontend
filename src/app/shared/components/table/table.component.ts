@@ -126,7 +126,6 @@ export class TableComponent {
   }
 
   onRow() {
-    // Reset para a primeira página ao mudar o número de itens por página
     this.first = 0;
 
     const pageChangeData = {

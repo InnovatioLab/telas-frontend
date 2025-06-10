@@ -16,7 +16,6 @@ export const ClientAuthenticatedGuard: CanActivateFn = () => {
   
   const userRole = authentication._clientSignal()?.role;
   
-  // Permite acesso tanto para CLIENT quanto para ADMIN
   if (userRole !== Role.CLIENT && userRole !== Role.ADMIN) {
     toastService.erro('You do not have permission to access this page');
     router.navigate(['/']);

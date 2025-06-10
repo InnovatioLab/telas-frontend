@@ -16,7 +16,6 @@ interface FilterOption {
   value: string;
 }
 
-// Definindo a interface para os eventos personalizados
 interface ToggleAdminSidebarEvent {
   visible: boolean;
 }
@@ -26,7 +25,6 @@ interface AdminSidebarPinChangedEvent {
   visible: boolean;
 }
 
-// Declarando os tipos de eventos personalizados que serão usados
 declare global {
   interface WindowEventMap {
     'toggle-admin-sidebar': CustomEvent<ToggleAdminSidebarEvent>;
@@ -84,7 +82,6 @@ export class AlertAdminSidebarComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    // Carregar dados do usuário se não tiver nome
     if (!this.userName || this.userName === 'Administrador') {
       const client = this.authentication._clientSignal();
       if (client) {
@@ -92,20 +89,15 @@ export class AlertAdminSidebarComponent implements OnInit {
       }
     }
     
-    // Carregar alertas de exemplo para demonstração
     this.loadMockAlerts();
     this.applyFilters();
     
-    // Notificar o serviço que este sidebar está aberto
     this.sidebarService.abrirMenu('admin-alerts');
     
-    // Carregar estado salvo
     this.carregarEstadoSalvo();
     
-    // Escutar eventos para sincronizar com o botão do header
     window.addEventListener('toggle-admin-sidebar', (e: CustomEvent<ToggleAdminSidebarEvent>) => {
       if (e.detail && e.detail.visible !== undefined) {
-        // Apenas toggle se o evento vem do header e o estado atual é diferente
         if (this.isVisible !== e.detail.visible) {
           this.toggleSidebar(true);
         }
@@ -114,20 +106,16 @@ export class AlertAdminSidebarComponent implements OnInit {
   }
   
   private carregarEstadoSalvo(): void {
-    // Recuperar estado salvo de pinned
     const savedPinState = localStorage.getItem('admin_sidebar_pinned');
     if (savedPinState !== null) {
       this.isPinned = savedPinState === 'true';
     }
     
-    // Verificar visibilidade salva
     const savedVisibility = localStorage.getItem('admin_sidebar_visible');
     this.isVisible = savedVisibility === 'true';
     
-    // Notificar outros componentes sobre o estado inicial
     this.visibilityChange.emit(this.isVisible);
     
-    // Aplicar a classe ao body apenas se o sidebar estiver visível ou fixado
     if (this.isVisible || this.isPinned) {
       document.body.classList.add('admin-sidebar-open');
       if (this.isPinned) {
@@ -140,7 +128,6 @@ export class AlertAdminSidebarComponent implements OnInit {
   }
   
   toggleSidebar(fromHeader = false): void {
-    // Se estiver fixado, não permitir fechar pelo botão de toggle
     if (this.isPinned && !fromHeader) {
       return;
     }
@@ -148,7 +135,6 @@ export class AlertAdminSidebarComponent implements OnInit {
     this.isVisible = !this.isVisible;
     localStorage.setItem('admin_sidebar_visible', this.isVisible.toString());
     
-    // Notificar outros componentes sobre a mudança de visibilidade
     this.visibilityChange.emit(this.isVisible);
     
     if (this.isVisible) {
@@ -163,7 +149,6 @@ export class AlertAdminSidebarComponent implements OnInit {
       document.body.classList.remove('sidebar-pinned');
     }
     
-    // Dispara um evento para sincronizar com o header, se não foi iniciado por ele
     if (!fromHeader) {
       const visibilityEvent = new CustomEvent<ToggleAdminSidebarEvent>('admin-sidebar-visibility-changed', {
         detail: { visible: this.isVisible }
@@ -171,7 +156,6 @@ export class AlertAdminSidebarComponent implements OnInit {
       window.dispatchEvent(visibilityEvent);
     }
     
-    // Disparar evento de resize para ajustar o mapa
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
@@ -185,14 +169,12 @@ export class AlertAdminSidebarComponent implements OnInit {
     this.isPinned = !this.isPinned;
     localStorage.setItem('admin_sidebar_pinned', this.isPinned.toString());
     
-    // Se fixado, garantir que esteja visível
     if (this.isPinned && !this.isVisible) {
       this.isVisible = true;
       localStorage.setItem('admin_sidebar_visible', 'true');
       this.visibilityChange.emit(true);
     }
     
-    // Atualizar classes do body para controle do CSS
     if (this.isPinned) {
       document.body.classList.add('admin-sidebar-open');
       document.body.classList.add('sidebar-pinned');
@@ -203,13 +185,11 @@ export class AlertAdminSidebarComponent implements OnInit {
       }
     }
     
-    // Dispara um evento para sincronizar com o header
     const pinEvent = new CustomEvent<AdminSidebarPinChangedEvent>('admin-sidebar-pin-changed', {
       detail: { pinned: this.isPinned, visible: this.isVisible }
     });
     window.dispatchEvent(pinEvent);
     
-    // Disparar evento de resize para ajustar o mapa
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
@@ -224,12 +204,10 @@ export class AlertAdminSidebarComponent implements OnInit {
   applyFilters(): void {
     let result = [...this.alerts];
     
-    // Aplicar filtro de status
     if (this.statusFilter !== 'all') {
       result = result.filter(alert => alert.status === this.statusFilter);
     }
     
-    // Aplicar filtro de busca
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase().trim();
       result = result.filter(alert => 

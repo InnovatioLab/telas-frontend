@@ -82,7 +82,6 @@ export class FormContatoComponent implements OnInit {
   }
 
   private normalizarContato(numero: string): string {
-    // Remove todos os caracteres não numéricos, exceto o sinal de +
     return numero.replace(/[^0-9+]/g, '');
   }
 

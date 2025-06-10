@@ -259,7 +259,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   abrirHelp(): void {
-    // Implementar lógica para abrir ajuda
     if (this.menuAberto && !this.menuFixo) {
       this.toggleMenu();
     }

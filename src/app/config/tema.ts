@@ -3,7 +3,6 @@ import Aura from '@primeng/themes/aura';
 import { select } from './components/select';
 import { inputtext } from './components/inputtext';
 
-// Cores do sistema
 const colors = {
   primary: '#232F3E',
   primary_light: '#496382',
@@ -20,7 +19,6 @@ const colors = {
   light_black: '#16191B',
 };
 
-// Tipografia
 const typography = {
   fontFamily: 'Montserrat, sans-serif',
   fontSize: {
@@ -39,7 +37,6 @@ const typography = {
   },
 };
 
-// Dimensões
 const dimensions = {
   inputHeight: '45px',
   buttonHeight: '47px',
@@ -49,7 +46,6 @@ const dimensions = {
   dropdownTriggerWidth: '3rem',
 };
 
-// Bordas
 const borders = {
   defaultRadius: '15px',
   smallRadius: '8px',
@@ -58,7 +54,6 @@ const borders = {
   style: 'solid',
 };
 
-// Espaçamentos
 const spacing = {
   small: '8px',
   default: '16px',
@@ -67,19 +62,16 @@ const spacing = {
   xlarge: '48px',
 };
 
-// Sombras
 const shadows = {
   default: '0 2px 12px rgba(0, 0, 0, 0.1)',
   hover: '0 4px 15px rgba(0, 0, 0, 0.15)',
 };
 
-// Transições
 const transitions = {
   default: 'all 0.3s ease',
   fast: 'all 0.15s ease',
 };
 
-// Cores para a paleta primária do PrimeNG
 const primaryPalette = {
   50: colors.background_grey,
   100: colors.medium_grey,
@@ -94,16 +86,13 @@ const primaryPalette = {
   950: '#050709',
 };
 
-// Cores para a paleta de texto do PrimeNG
 const textPalette = {
   input: colors.dark_grey,
   button_primary: colors.white,
   caption: colors.caption,
 };
 
-// Configuração do tema para o PrimeNG
 export const MyPreset = definePreset(Aura, {
-  // Definições semânticas de cores
   semantic: {
     colorScheme: {
       primary: primaryPalette,
@@ -124,7 +113,6 @@ export const MyPreset = definePreset(Aura, {
       },
     },
   },
-  // Customizações específicas para componentes
   components: {
     global: {
       css: `

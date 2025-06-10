@@ -24,7 +24,6 @@
         (keydown.enter)="selecionarOpcao(item)" (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
         tabindex="0" role="menuitem" [id]="'menu-item-' + item.id" pTooltip="{{getMenuItemTooltip(item)}}"
         tooltipPosition="right">
-        <!-- Use ngSwitch para renderizar o ícone correto baseado no valor de item.icon -->
         <ng-container [ngSwitch]="item.icon">
           <app-icon-dashboard *ngSwitchCase="'pi-dashboard'"></app-icon-dashboard>
           <app-icon-user *ngSwitchCase="'pi-user'"></app-icon-user>

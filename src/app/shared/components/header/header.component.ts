@@ -20,7 +20,6 @@ import { IconSearchComponent } from '../../icons/search.icon';
 import { IconSettingsComponent } from '../../icons/settings.icon';
 import { IconWarningComponent } from '../../icons/warning.icon';
 
-// Interfaces para os eventos personalizados
 interface ToggleAdminSidebarEvent {
   visible: boolean;
 }
@@ -132,13 +131,11 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cdr.detectChanges();
       });
     
-    // Verificar o estado inicial da sidebar de admin
     if (this.isAdministrador()) {
       const savedVisibility = localStorage.getItem('admin_sidebar_visible');
       this.isAdminSidebarVisible = savedVisibility === 'true';
     }
     
-    // Escutar eventos do sidebar para sincronizar o botão
     window.addEventListener('admin-sidebar-visibility-changed', (e: CustomEvent<ToggleAdminSidebarEvent>) => {
       if (e.detail && e.detail.visible !== undefined) {
         this.isAdminSidebarVisible = e.detail.visible;
@@ -356,7 +353,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     if (isVisible && (menuTipo === 'client-menu' || menuTipo === 'admin-menu')) {
       this.sidebarService.fechar();
     } else {
-      // Escolher qual menu abrir dependendo da função do usuário
       const menuType = this.isAdministrador() ? 'admin-menu' : 'client-menu';
       this.sidebarService.abrirMenu(menuType);
     }
@@ -370,7 +366,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isAdminSidebarVisible = !this.isAdminSidebarVisible;
     localStorage.setItem('admin_sidebar_visible', this.isAdminSidebarVisible.toString());
     
-    // Emitir evento para o componente AlertAdminSidebar
     const toggleEvent = new CustomEvent<ToggleAdminSidebarEvent>('toggle-admin-sidebar', {
       detail: { visible: this.isAdminSidebarVisible }
     });

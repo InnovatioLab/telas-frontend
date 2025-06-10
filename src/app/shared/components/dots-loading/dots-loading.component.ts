@@ -7,7 +7,6 @@ import { delay } from 'rxjs';
   selector: 'app-dots-loading',
   standalone: true,
   imports: [CommonModule, 
-    // PrimengModule
   ],
   templateUrl: './dots-loading.component.html',
   styleUrls: ['./dots-loading.component.scss']

@@ -46,18 +46,15 @@ export class GoogleMapsService {
   }
 
   public initGoogleMapsApi(): void {
-    // Se a API já está carregada, apenas notifique que está pronta
     if (typeof google !== 'undefined' && google.maps) {
       this.apiLoadedSubject.next(true);
       return;
     }
     
-    // Evitar múltiplas tentativas de carregamento simultâneas
     if (this.apiLoadingInProgress) {
       return;
     }
     
-    // Se o callback já existe, o carregamento já foi iniciado
     if ((window as any)[this.callbackName]) {
       return;
     }
@@ -65,7 +62,6 @@ export class GoogleMapsService {
     this.apiLoadingInProgress = true;
     console.log('Inicializando carregamento da API do Google Maps');
     
-    // Definir um temporizador para verificar se a API foi carregada
     const timeoutCheck = setTimeout(() => {
       if (!this.apiLoadedSubject.value) {
         console.warn('Timeout ao carregar a API do Google Maps, tentando novamente...');
@@ -92,7 +88,6 @@ export class GoogleMapsService {
       this.apiInitializationAttempts = 0;
     };
     
-    // Criar e adicionar o script à página
     const script = document.createElement('script');
     const apiKey = this.env.googleMapsApiKey;
     
@@ -120,13 +115,11 @@ export class GoogleMapsService {
   }
   
   private removeExistingScripts(): void {
-    // Remover scripts existentes para evitar conflitos
     const existingScript = document.getElementById('google-maps-script');
     if (existingScript) {
       existingScript.remove();
     }
     
-    // Remover também o callback para permitir reinicialização
     if ((window as any)[this.callbackName]) {
       delete (window as any)[this.callbackName];
     }
@@ -169,7 +162,6 @@ export class GoogleMapsService {
     };
   }
 
-  // Modificado para ser explicitamente chamado em vez de automaticamente
   public loadPointsFromSavedLocation(): void {
     try {
       const savedCoordinates = localStorage.getItem('user_coordinates');

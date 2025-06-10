@@ -1,4 +1,3 @@
-// Se já existir este arquivo, apenas adicione o AcknowledgeDialogComponent às declarations e exports
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';

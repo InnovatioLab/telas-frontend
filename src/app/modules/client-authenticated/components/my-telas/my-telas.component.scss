@@ -102,12 +102,10 @@
     padding: 0;
   }
   
-  // Ajustando a cor da linha inferior da lista de abas
   .p-tabview .p-tabview-nav {
     border-bottom: 1px solid var(--cor-primaria);
   }
   
-  // Ajustando a cor da aba ativa
   .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
     border-color: var(--cor-primaria);
     color: var(--cor-primaria);

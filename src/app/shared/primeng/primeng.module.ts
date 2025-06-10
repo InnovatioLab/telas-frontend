@@ -53,7 +53,6 @@ import { GalleriaModule } from 'primeng/galleria';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { DrawerModule } from 'primeng/drawer';
-// Tipo para o manipulador DOM do PrimeNG
 interface PrimeDomHandlerType {
   zindex: number;
   generateZIndex: () => number;
@@ -121,7 +120,6 @@ interface PrimeDomHandlerType {
 })
 export class PrimengModule {
   constructor() {
-    // Definir propriedade PrimeDomHandler no objeto window de forma segura usando um tipo personalizado
     (window as unknown as { PrimeDomHandler: PrimeDomHandlerType }).PrimeDomHandler = {
       zindex: 10000,
       generateZIndex: function() {

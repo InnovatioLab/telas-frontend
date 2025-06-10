@@ -97,7 +97,6 @@ export interface Notification {
 
 export interface CartResponse {
   id?: string;
-  // Adicionar outros campos do cart conforme necessário
 }
 
 export enum Role {

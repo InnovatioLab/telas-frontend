@@ -5,19 +5,6 @@ import { MessageService } from 'primeng/api';
 export class ToastService {
   constructor(private notificacaoService: MessageService) {}
 
-  /**
-   * Exibe uma notificação de sucesso.
-   * @param mensagem A mensagem a ser exibida.
-   * @param tempo O tempo em milissegundos para exibir a notificação (padrão: 3000).
-  * @example
-   * constructor(
-       private readonly customMessageService: CustomMessageService,
-       private readonly toastService: ToastService,
-     ) {}
-   * this.customMessageService.messages.subscribe((res) => {
-      this.toastService.sucesso('asasas')
-    });
-  */
   sucesso(mensagem: string, tempo = 3000) {
     this.notificacaoService.add({
       severity: 'success',
