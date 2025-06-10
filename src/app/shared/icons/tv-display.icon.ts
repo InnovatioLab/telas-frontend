@@ -11,7 +11,7 @@ import { Component, Input } from '@angular/core';
   `
 })
 export class IconTvDisplayComponent {
-  @Input() width: string = '24';
-  @Input() height: string = '24';
+  @Input() width: string = '18';
+  @Input() height: string = '18';
   @Input() fill: string = 'currentColor';
 }

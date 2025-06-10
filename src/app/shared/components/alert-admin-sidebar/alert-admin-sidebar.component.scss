@@ -1,12 +1,12 @@
 .admin-alert-sidebar {
   position: fixed;
-  right: -350px;
+  right: -480px;
   top: 70px;
   width: 480px;
-  height: 100vh;
-  background-color: #fff;
+  height: calc(100vh - 70px);
+  background-color: var(--cor-branca);
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 999;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -22,58 +22,67 @@
   }
 
   .sidebar-header {
-    padding: 4px;
+    padding: 16px 15px;
     background-color: var(--cor-primaria);
-    color: white;
+    color: var(--cor-branca);
     position: relative;
     text-align: center;
 
     h2 {
       margin: 0 0 10px;
-      font-size: 1.5rem;
-      font-weight: 600;
+      font-size: var(--fonte-tamanho-grande);
+      font-weight: var(--fonte-peso-negrito);
       color: var(--cor-branca);
     }
 
     p {
       margin: 0;
-      font-size: 1rem;
+      font-size: var(--fonte-tamanho-padrao);
       opacity: 0.9;
     }
-
+    
     .header-actions {
-      position: absolute;
-      left: -70px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .toggle-button,
-    .pin-button {
-      background-color: var(--cor-primaria, #004a9f);
-      color: white;
-      border: none;
-      border-radius: 5px 0 0 5px;
-      width: 30px;
-      height: 30px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+      position: relative;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    .pin-btn {
+      background: transparent;
+      border: none;
+      color: var(--cor-sucesso);
       cursor: pointer;
-
-      .material-symbols-outlined {
-        font-size: 18px;
+      padding: 5px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      
+      &.pinned {
+        color: var(--cor-sucesso);
+        
+        &:hover {
+          opacity: 0.8;
+        }
       }
     }
-
-    .pin-button {
-      background-color: var(--cor-secundaria);
-
+    
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      
       &:hover {
-        background-color: darken(#ff6b00, 10%);
+        background-color: rgba(255, 255, 255, 0.1);
       }
     }
   }
@@ -162,17 +171,17 @@
 
   .alerts-container {
     h3 {
-      font-size: 1.2rem;
+      font-size: var(--fonte-tamanho-medio);
       margin-bottom: 15px;
-      color: var(--cor-primaria, #004a9f);
-      border-bottom: 1px solid #eee;
+      color: var(--cor-primaria);
+      border-bottom: 1px solid var(--cor-cinza-medio);
       padding-bottom: 10px;
     }
 
     .no-alerts {
       text-align: center;
       padding: 20px;
-      color: #888;
+      color: var(--cor-legenda);
     }
 
     .alert-item {
@@ -290,11 +299,11 @@
         min-width: 0; // Permite que os botões se comprimam se necessário
         background: transparent;
         border: 1px solid var(--cor-primaria);
-        color: #757575;
-        font-size: 14px;
+        color: var(--cor-legenda);
+        font-size: var(--fonte-tamanho-padrao);
         padding: 5px 10px;
-        transition: all 0.2s;
-        font-weight: normal;
+        transition: var(--transicao-padrao);
+        font-weight: var(--fonte-peso-regular);
         margin: 0;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -303,13 +312,13 @@
         &:not(.p-highlight):not(.p-disabled):hover {
           background: rgba(var(--cor-primaria-rgb), 0.04);
           border-color: var(--cor-primaria);
-          color: #757575;
+          color: var(--cor-legenda);
         }
 
         &.p-highlight {
           background-color: var(--cor-primaria);
           border-color: var(--cor-primaria);
-          color: white;
+          color: var(--cor-branca);
         }
 
         &:focus {
@@ -325,27 +334,35 @@
     user-select: none;
     overflow: hidden;
     position: relative;
-    color: #757575;
-    background: transparent;
+    color: var(--cor-legenda);
+    background: transparent !important;
     padding: 5px 10px;
-    font-size: 14px;
-    font-family: inherit;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
-    border-radius: 3px;
+    font-size: var(--fonte-tamanho-padrao);
+    font-family: var(--fonte-familia);
+    transition: var(--transicao-padrao);
+    border-radius: var(--borda-raio-pequeno);
     outline-color: transparent;
-    font-weight: normal;
+    font-weight: var(--fonte-peso-regular);
     margin: 0 2px;
 
+    .p-togglebutton-content {
+      background: transparent !important; // Garantindo que o conteúdo também tenha background transparente
+    }
+
     &.p-togglebutton-checked {
-      background-color: var(--cor-primaria);
+      background-color: var(--cor-primaria) !important;
       border-color: var(--cor-primaria);
-      color: white;
+      color: var(--cor-branca);
+      
+      .p-togglebutton-content {
+        background-color: transparent !important;
+      }
     }
 
     &:not(.p-disabled):not(.p-togglebutton-checked):hover {
-      background: rgba(var(--cor-primaria-rgb), 0.04);
+      background: rgba(var(--cor-primaria-rgb), 0.04) !important;
       border-color: var(--cor-primaria);
-      color: #757575;
+      color: var(--cor-legenda);
     }
 
     &:focus {
@@ -354,6 +371,7 @@
 
     .p-togglebutton-label {
       line-height: 1;
+      background: transparent !important; // Garantindo que o label também tenha background transparente
     }
   }
 }
@@ -362,4 +380,38 @@
 :host ::ng-deep+app-maps {
   margin-right: 350px;
   width: calc(100% - 350px);
+}
+
+.admin-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  display: block;
+}
+
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: block !important;
+  }
+  
+  .admin-alert-sidebar {
+    width: 320px;
+    right: -320px;
+  }
 }

@@ -76,6 +76,13 @@
   --largura-iniciais-usuario: 60px;
   --altura-iniciais-usuario: 60px;
   --altura-link-rotas: 60px;
+
+  /* Variáveis para modais */
+  --modal-padding: 1.5rem;
+  --modal-border-radius: var(--borda-raio-pequeno);
+  --modal-header-bg: var(--cor-branca);
+  --modal-content-bg: var(--cor-branca);
+  --modal-footer-bg: var(--cor-branca);
 }
 
 html,
@@ -874,4 +881,98 @@ p {
 .p-togglebutton {
   margin-top: 20px !important;
   border: none !important;
+}
+
+/* Estilos globais para diálogos e modais */
+:root {
+  /* Variáveis para modais */
+  --modal-padding: 1.5rem;
+  --modal-border-radius: var(--borda-raio-pequeno);
+  --modal-header-bg: var(--cor-branca);
+  --modal-content-bg: var(--cor-branca);
+  --modal-footer-bg: var(--cor-branca);
+}
+
+/* Estilos para os diálogos e modais */
+.p-dialog {
+  border-radius: var(--modal-border-radius);
+  overflow: hidden;
+  box-shadow: var(--sombra-padrao);
+  background-color: var(--cor-branca) !important;
+  
+  .p-dialog-header {
+    background-color: var(--modal-header-bg);
+    color: var(--cor-primaria);
+    padding: 1rem var(--modal-padding);
+    border-bottom: 1px solid var(--cor-cinza-medio);
+    
+    .p-dialog-title {
+      font-size: var(--fonte-tamanho-medio);
+      font-weight: var(--fonte-peso-medio);
+      color: var(--cor-primaria);
+    }
+    
+    .p-dialog-header-close {
+      color: var(--cor-primaria);
+    }
+  }
+  
+  .p-dialog-content {
+    background-color: var(--modal-content-bg);
+    padding: var(--modal-padding);
+    color: var(--cor-cinza-escuro);
+  }
+  
+  .p-dialog-footer {
+    background-color: var(--modal-footer-bg);
+    padding: 1rem var(--modal-padding);
+    border-top: 1px solid var(--cor-cinza-medio);
+    text-align: right;
+  }
+}
+
+.p-dynamicdialog {
+  .p-dialog {
+    min-width: 350px;
+    max-width: 95vw;
+    background-color: var(--cor-branca) !important;
+    
+    &.acknowledge-dialog-container {
+      width: 500px !important;
+      
+      .p-dialog-content {
+        padding: 1rem !important;
+        background-color: var(--cor-branca) !important;
+      }
+    }
+  }
+  
+  .p-dialog-mask.p-component-overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.p-dialog .p-inputtext,
+.p-dynamicdialog .p-inputtext,
+.p-dialog .p-dropdown,
+.p-dynamicdialog .p-dropdown,
+.p-dialog .p-calendar,
+.p-dynamicdialog .p-calendar,
+.p-dialog .p-password,
+.p-dynamicdialog .p-password,
+.p-dialog .p-inputnumber,
+.p-dynamicdialog .p-inputnumber,
+.p-dialog .p-inputtextarea,
+.p-dynamicdialog .p-inputtextarea {
+  width: 100%;
+  background-color: transparent;
+  
+  &::placeholder {
+    color: var(--cor-legenda);
+  }
+  
+  &:focus {
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 1px var(--cor-primaria-clara);
+  }
 }

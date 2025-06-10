@@ -31,16 +31,15 @@ export class AdminViewComponent implements OnInit, OnDestroy {
   selectedPoint: MapPoint | null = null;
   savedPoints: MapPoint[] = [];
   isLoading = false;
-  private readonly adminSidebarListener: (e: Event) => void;
+  private readonly adminSidebarListener: (e: CustomEvent<ToggleAdminSidebarEvent>) => void;
   
   constructor(
     private readonly authentication: Authentication,
     private readonly mapsService: GoogleMapsService,
     private readonly toastService: ToastService
   ) {
-    this.adminSidebarListener = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      this.updateHeaderSidebarStatus(customEvent.detail.visible);
+    this.adminSidebarListener = (e: CustomEvent<ToggleAdminSidebarEvent>) => {
+      this.updateHeaderSidebarStatus(e.detail.visible);
     };
   }
   
@@ -54,11 +53,11 @@ export class AdminViewComponent implements OnInit, OnDestroy {
       this.loadNearbyPoints();
     }, 1500);
 
-    window.addEventListener('toggle-admin-sidebar', this.adminSidebarListener);
+    window.addEventListener('toggle-admin-sidebar', this.adminSidebarListener as EventListener);
   }
   
   ngOnDestroy(): void {
-    window.removeEventListener('toggle-admin-sidebar', this.adminSidebarListener);
+    window.removeEventListener('toggle-admin-sidebar', this.adminSidebarListener as EventListener);
   }
   
   onAdminSidebarVisibilityChange(isVisible: boolean): void {
@@ -131,4 +130,9 @@ export class AdminViewComponent implements OnInit, OnDestroy {
   addPointToList(point: MapPoint): void {
     this.mapsService.addToSavedPoints(point);
   }
+}
+
+// Interface para o evento personalizado
+interface ToggleAdminSidebarEvent {
+  visible: boolean;
 }

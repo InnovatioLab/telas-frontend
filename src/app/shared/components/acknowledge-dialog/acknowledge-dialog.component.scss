@@ -1,0 +1,104 @@
+.acknowledge-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--cor-branca);
+}
+
+.alert-info {
+  background-color: var(--cor-cinza-fundo);
+  padding: 10px;
+  border-radius: var(--borda-raio-pequeno);
+  border-left: 4px solid var(--cor-primaria);
+}
+
+.alert-title {
+  font-weight: var(--fonte-peso-negrito);
+  margin-bottom: 5px;
+  color: var(--cor-primaria);
+}
+
+.device-id {
+  font-size: var(--fonte-tamanho-pequeno);
+  color: var(--cor-legenda);
+  font-family: monospace;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: var(--fonte-peso-medio);
+    color: var(--cor-primaria);
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex-direction: row;
+
+  .p-button {
+    flex: 0 0 auto;
+    min-width: 100px;
+  }
+
+  .p-button-info {
+    background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: var(--cor-branca) !important;
+
+    &:hover {
+      background-color: var(--cor-primaria-escura);
+      border-color: var(--cor-primaria-escura);
+    }
+
+    &:disabled {
+      background-color: var(--cor-primaria);
+      opacity: 0.6;
+      color: var(--cor-branca) !important;
+
+      .p-button-label {
+        color: var(--cor-branca) !important;
+      }
+    }
+
+    .p-button-label {
+      color: var(--cor-branca) !important;
+    }
+  }
+
+  .p-button-secondary {
+    .p-button-label {
+      color: var(--cor-cinza-escuro) !important;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .p-dialog {
+    width: 500px !important;
+    background-color: var(--cor-branca) !important;
+
+    .p-dialog-content {
+      padding: 1rem !important;
+      background-color: var(--cor-branca) !important;
+    }
+  }
+
+  .p-dialog-header-close {
+    color: var(--cor-primaria);
+  }
+
+  .p-dialog-header {
+    background-color: var(--cor-branca);
+    border-bottom: 1px solid var(--cor-cinza-medio);
+  }
+}

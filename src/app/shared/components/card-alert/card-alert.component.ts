@@ -81,8 +81,8 @@ export class CardAlertComponent {
   private openAcknowledgeDialog(): void {
     this.dialogRef = this.dialogService.open(AcknowledgeDialogComponent, {
       header: 'Acknowledge Alert',
-      width: '400px',
-      contentStyle: { overflow: 'auto' },
+      width: '500px',
+      contentStyle: { padding: '1rem', overflow: 'auto' },
       baseZIndex: 10000,
       data: {
         alertTitle: this.alert.title,

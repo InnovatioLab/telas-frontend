@@ -22,6 +22,7 @@ import { IconOlhoComponent } from './olho.icon';
 import { IconOlhoFechadoComponent } from './olho-fechado.icon';
 import { IconTvDisplayComponent } from './tv-display.icon';
 import { IconMarkChatReadComponent } from './mark-chat-read.icon';
+import { IconWarningComponent } from './warning.icon';
 
 @NgModule({
   imports: [
@@ -47,7 +48,8 @@ import { IconMarkChatReadComponent } from './mark-chat-read.icon';
     IconOlhoComponent,
     IconOlhoFechadoComponent,
     IconTvDisplayComponent,
-    IconMarkChatReadComponent
+    IconMarkChatReadComponent,
+    IconWarningComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -71,7 +73,9 @@ import { IconMarkChatReadComponent } from './mark-chat-read.icon';
     IconOlhoComponent,
     IconOlhoFechadoComponent,
     IconTvDisplayComponent,
-    IconMarkChatReadComponent
-  ]
+    IconMarkChatReadComponent,
+    IconWarningComponent
+  ],
+  declarations: []
 })
 export class IconsModule { }

@@ -18,6 +18,17 @@ import { IconNotificationsComponent } from '../../icons/notifications.icon';
 import { IconBarsComponent } from '../../icons/bars.icon';
 import { IconSearchComponent } from '../../icons/search.icon';
 import { IconSettingsComponent } from '../../icons/settings.icon';
+import { IconWarningComponent } from '../../icons/warning.icon';
+
+// Interfaces para os eventos personalizados
+interface ToggleAdminSidebarEvent {
+  visible: boolean;
+}
+
+interface AdminSidebarPinChangedEvent {
+  pinned: boolean;
+  visible: boolean;
+}
 
 @Component({
   selector: 'app-header',
@@ -32,7 +43,8 @@ import { IconSettingsComponent } from '../../icons/settings.icon';
     IconNotificationsComponent,
     IconBarsComponent,
     IconSearchComponent,
-    IconSettingsComponent
+    IconSettingsComponent,
+    IconWarningComponent
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
@@ -55,7 +67,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   menuAberto = false;
   isSearching = false;
   isDarkMode = false;
-  isAdminSidebarVisible = true;
+  isAdminSidebarVisible = false; // Inicializando como falso
   
   private resizeListener: () => void;
   private authSubscription: Subscription;
@@ -123,8 +135,23 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     // Verificar o estado inicial da sidebar de admin
     if (this.isAdministrador()) {
       const savedVisibility = localStorage.getItem('admin_sidebar_visible');
-      this.isAdminSidebarVisible = savedVisibility !== 'false';
+      this.isAdminSidebarVisible = savedVisibility === 'true';
     }
+    
+    // Escutar eventos do sidebar para sincronizar o botão
+    window.addEventListener('admin-sidebar-visibility-changed', (e: CustomEvent<ToggleAdminSidebarEvent>) => {
+      if (e.detail && e.detail.visible !== undefined) {
+        this.isAdminSidebarVisible = e.detail.visible;
+        this.cdr.detectChanges();
+      }
+    });
+    
+    window.addEventListener('admin-sidebar-pin-changed', (e: CustomEvent<AdminSidebarPinChangedEvent>) => {
+      if (e.detail) {
+        this.isAdminSidebarVisible = e.detail.visible;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -342,10 +369,10 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     localStorage.setItem('admin_sidebar_visible', this.isAdminSidebarVisible.toString());
     
     // Emitir evento para o componente AlertAdminSidebar
-    const event = new CustomEvent('toggle-admin-sidebar', {
+    const toggleEvent = new CustomEvent<ToggleAdminSidebarEvent>('toggle-admin-sidebar', {
       detail: { visible: this.isAdminSidebarVisible }
     });
-    window.dispatchEvent(event);
+    window.dispatchEvent(toggleEvent);
   }
   
   updateAdminSidebarVisibility(isVisible: boolean): void {
