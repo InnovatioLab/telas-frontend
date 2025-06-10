@@ -107,7 +107,7 @@ body {
   a {
     color: var(--cor-cinza-fundo);
     transition: var(--transicao-padrao);
-    
+
     &:hover {
       color: var(--cor-cinza-medio);
       text-decoration: none;
@@ -506,6 +506,7 @@ select {
     border-bottom: var(--borda-padrao);
 
     .p-datepicker-title {
+
       .p-datepicker-month,
       .p-datepicker-year,
       .p-datepicker-select-month,
@@ -868,4 +869,9 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.p-togglebutton {
+  margin-top: 20px !important;
+  border: none !important;
 }

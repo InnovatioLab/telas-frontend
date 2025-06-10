@@ -1,7 +1,7 @@
 <div class="admin-alert-sidebar" [class.visible]="isVisible" [class.pinned]="isPinned">
   <div class="sidebar-header">
-    <h2>Administrative Panel</h2>
-    <p>Welcome, {{ userName }}</p>
+    <h2 class="text-center">Monitoring Alerts</h2>
+    <p class="text-center">Welcome, {{ userName }}</p>
     
     <div class="header-actions">
       <button class="pin-button" (click)="togglePin()" [attr.title]="isPinned ? 'Unpin sidebar' : 'Pin sidebar'">
@@ -19,26 +19,38 @@
   </div>
   
   <div class="sidebar-content">
-    <div class="filters">
-      <div class="search-container">
-        <input 
-          type="text" 
-          pInputText 
-          [(ngModel)]="searchTerm" 
-          (ngModelChange)="applyFilters()"
-          placeholder="Search alerts..." 
-          class="search-input"
-        />
+    <div class="search-container">
+      <div class="address-search-container">
+        <div class="address-search-input">
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="applyFilters()"
+            placeholder="Search alerts..."
+            maxlength="50"
+            class="search-input"
+          />
+          <button
+            type="button"
+            class="botao-pesquisa"
+            (click)="applyFilters()"
+            aria-label="Search"
+            pTooltip="Search alerts"
+            tooltipPosition="left"
+          >
+            <app-icon-search class="search-icon"></app-icon-search>
+          </button>
+        </div>
       </div>
-      <div class="filter-container">
-        <p-selectButton [options]="[
-          {label: 'All', value: 'all'},
-          {label: 'Critical', value: 'critical'},
-          {label: 'Warnings', value: 'warning'},
-          {label: 'Acknowledged', value: 'acknowledged'},
-          {label: 'Resolved', value: 'resolved'}
-        ]" [(ngModel)]="statusFilter" (onChange)="applyFilters()"></p-selectButton>
-      </div>
+    </div>    
+    <div class="filter-container">
+      <p-selectButton 
+        [options]="filterOptions" 
+        [(ngModel)]="statusFilter" 
+        (onChange)="applyFilters()" 
+        styleClass="full-width-select">
+      </p-selectButton>
     </div>
     
     <div class="alerts-container">

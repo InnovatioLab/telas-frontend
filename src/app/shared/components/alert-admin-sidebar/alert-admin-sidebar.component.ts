@@ -6,11 +6,23 @@ import { Authentication } from '@app/core/service/auth/autenthication';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { Alert, CardAlertComponent } from '../card-alert/card-alert.component';
+import { IconSearchComponent } from '@app/shared/icons/search.icon';
+
+interface FilterOption {
+  label: string;
+  value: string;
+}
 
 @Component({
   selector: 'app-alert-admin-sidebar',
   standalone: true,
-  imports: [CommonModule, PrimengModule, FormsModule, CardAlertComponent],
+  imports: [
+    CommonModule, 
+    PrimengModule, 
+    FormsModule, 
+    CardAlertComponent,
+    IconSearchComponent
+  ],
   templateUrl: './alert-admin-sidebar.component.html',
   styleUrls: ['./alert-admin-sidebar.component.scss']
 })
@@ -24,6 +36,14 @@ export class AlertAdminSidebarComponent implements OnInit {
   filteredAlerts: Alert[] = [];
   statusFilter: string = 'all';
   searchTerm: string = '';
+  
+  filterOptions: FilterOption[] = [
+    { label: 'All', value: 'all' },
+    { label: 'Critical', value: 'critical' },
+    { label: 'Warnings', value: 'warning' },
+    { label: 'Acknowledged', value: 'acknowledged' },
+    { label: 'Resolved', value: 'resolved' }
+  ];
   
   constructor(
     private readonly sidebarService: SidebarService,
