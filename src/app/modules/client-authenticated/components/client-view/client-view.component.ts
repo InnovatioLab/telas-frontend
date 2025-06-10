@@ -4,8 +4,6 @@ import { RouterModule } from '@angular/router';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { ToastService } from '@app/core/service/state/toast.service';
-import { ClientMenuSideComponent } from '@app/shared/components/client-menu-side/client-menu-side.component';
-import { HeaderComponent } from '@app/shared/components/header/header.component';
 import { MapsComponent } from '@app/shared/components/maps/maps.component';
 import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-list/pop-up-add-list.component';
 import { RodapeComponent } from '@app/shared/components/rodape/rodape.component';

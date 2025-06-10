@@ -124,10 +124,23 @@
       background-color: var(--cor-primaria-escura);
       border-color: var(--cor-primaria-escura);
     }
+    
+    &.p-button-outlined {
+      background-color: transparent;
+      color: var(--cor-primaria);
+      
+      .icon {
+        color: var(--cor-primaria);
+      }
+      
+      &:hover {
+        background-color: rgba(var(--cor-primaria-rgb), 0.04);
+      }
+    }
   }
   
   .icon {
-    font-size: var(--fonte-tamanho-pequeno);
+    font-size: var(--fonte-tamanho-padrao);
     color: var(--cor-branca);
     display: flex;
     align-items: center;

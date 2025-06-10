@@ -353,10 +353,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     const isVisible = this.sidebarService.visibilidade();
     const menuTipo = this.sidebarService.tipo();
     
-    if (isVisible && menuTipo === 'client-menu') {
+    if (isVisible && (menuTipo === 'client-menu' || menuTipo === 'admin-menu')) {
       this.sidebarService.fechar();
     } else {
-      this.sidebarService.abrirMenu('client-menu');
+      // Escolher qual menu abrir dependendo da função do usuário
+      const menuType = this.isAdministrador() ? 'admin-menu' : 'client-menu';
+      this.sidebarService.abrirMenu(menuType);
     }
   }
   

@@ -66,9 +66,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
   
   private updateHeaderSidebarStatus(isVisible: boolean): void {
     const header = document.querySelector('app-header') as any;
-    if (header && header.updateAdminSidebarVisibility) {
-      header.updateAdminSidebarVisibility(isVisible);
-    }
+    header?.updateAdminSidebarVisibility?.(isVisible);
   }
   
   private loadNearbyPoints(): void {

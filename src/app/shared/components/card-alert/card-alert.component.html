@@ -32,13 +32,13 @@
       </button>
       
       <button 
-        *ngIf="alert.status === 'acknowledged'"
+        *ngIf="isAcknowledged"
         pButton 
         class="p-button-sm p-button-info p-button-outlined ack-info-button" 
         pTooltip="{{ alert.acknowledgeReason }}"
         tooltipPosition="top"
         type="button">
-        <i class="pi pi-info-circle"></i>
+        <app-icon-check class="icon"></app-icon-check>
       </button>
       
       <button 

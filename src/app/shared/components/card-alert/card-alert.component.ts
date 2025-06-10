@@ -5,6 +5,8 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { IconsModule } from '@app/shared/icons/icons.module';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { AcknowledgeDialogComponent } from '../acknowledge-dialog/acknowledge-dialog.component';
+import { IconMarkChatReadComponent } from '@app/shared/icons/mark-chat-read.icon';
+import { IconCheckComponent } from '@app/shared/icons/check.icon';
 
 export interface Alert {
   id: string;
@@ -19,7 +21,14 @@ export interface Alert {
 @Component({
   selector: 'app-card-alert',
   standalone: true,
-  imports: [CommonModule, FormsModule, PrimengModule, IconsModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    PrimengModule, 
+    IconsModule, 
+    IconMarkChatReadComponent, 
+    IconCheckComponent
+  ],
   templateUrl: './card-alert.component.html',
   styleUrls: ['./card-alert.component.scss']
 })
@@ -98,5 +107,9 @@ export class CardAlertComponent {
         });
       }
     });
+  }
+  
+  get isAcknowledged(): boolean {
+    return this.alert.status === 'acknowledged';
   }
 }

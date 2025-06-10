@@ -1,16 +1,21 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from '@app/shared/components/header/header.component';
-import { RodapeComponent } from '@app/shared/components/rodape/rodape.component';
+import { AdminMenuSideComponent } from '@app/shared/components/admin-menu-side/admin-menu-side.component';
 
 @Component({
-  selector: 'app-admin-layout',
-  templateUrl: './admin-view-layout.component.html',
-  styleUrls: ['./admin-view-layout.component.scss'],
+  selector: 'app-admin-view-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderComponent, RodapeComponent]
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    HeaderComponent,
+    AdminMenuSideComponent
+  ],
+  templateUrl: './admin-view-layout.component.html',
+  styleUrls: ['./admin-view-layout.component.scss']
 })
 export class AdminLayoutComponent {
-  // Componente simples que apenas fornece o layout
+  // Implementação do layout para a visualização de administrador
 }
