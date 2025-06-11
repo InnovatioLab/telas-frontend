@@ -12,15 +12,7 @@ import { DialogoComponent } from '../dialogo/dialogo.component';
 import { SidebarService } from '@app/core/service/state/sidebar.service';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
-import { IconSettingsComponent } from '../../icons/settings.icon';
-import { IconHelpComponent } from '../../icons/help.icon';
-import { IconLogoutComponent } from '../../icons/logout.icon';
-import { IconLockComponent } from '../../icons/lock.icon';
-import { IconLockOpenComponent } from '../../icons/lock-open.icon';
-import { IconCloseComponent } from '../../icons/close.icon';
-import { IconWarningComponent } from '@app/shared/icons/warning.icon';
-import { IconUserComponent } from '@app/shared/icons/user.icon';
-import { IconDashboardComponent } from '@app/shared/icons/dashboard.icon';
+import { IconsModule } from '@app/shared/icons/icons.module';
 
 interface MenuItem {
   id: string;
@@ -37,15 +29,7 @@ interface MenuItem {
     PrimengModule, 
     DialogModule, 
     ToggleComponent,
-    IconSettingsComponent,
-    IconHelpComponent,
-    IconLogoutComponent,
-    IconLockComponent,
-    IconLockOpenComponent,
-    IconCloseComponent,
-    IconWarningComponent,
-    IconUserComponent,
-    IconDashboardComponent
+    IconsModule,
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: './admin-menu-side.component.html',
@@ -59,12 +43,10 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   isDarkMode = false;
 
   menuItems: MenuItem[] = [
-    { id: 'home', label: 'Dashboard', icon: 'pi-dashboard' },
-    { id: 'users', label: 'Users Management', icon: 'pi-user' },
-    { id: 'alerts', label: 'System Alerts', icon: 'pi-warning' },
-    { id: 'settings', label: 'Settings', icon: 'pi-cog' },
-    { id: 'help', label: 'Help', icon: 'pi-question-circle' },
-    { id: 'logout', label: 'Logout', icon: 'pi-sign-out' },
+    { id: 'home', label: 'Dashboard', icon: 'dashboard' },
+    { id: 'users', label: 'Users Management', icon: 'user' },
+    { id: 'monitors', label: 'Monitors', icon: 'tv-display' },
+    { id: 'logout', label: 'Logout', icon: 'sair' },
   ];
 
   constructor(
@@ -216,6 +198,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case 'users':
         this.navegarParaUsers();
         break;
+      case 'monitors':
+        this.navegarParaMonitores();
+        break;
       case 'alerts':
         this.toggleAdminSidebar();
         break;
@@ -242,6 +227,13 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaConfiguracoes(): void {
     this.router.navigate(['/administrator/settings']);
+    if (this.menuAberto && !this.menuFixo) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaMonitores(): void {
+    this.router.navigate(['/administrator/monitors']);
     if (this.menuAberto && !this.menuFixo) {
       this.toggleMenu();
     }
@@ -316,6 +308,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return 'Go to dashboard';
       case 'users':
         return 'Manage system users';
+      case 'monitors':
+        return 'View system monitors';
       case 'alerts':
         return 'View system alerts';
       case 'settings':

@@ -25,6 +25,8 @@ import { IconMarkChatReadComponent } from './mark-chat-read.icon';
 import { IconDashboardComponent } from './dashboard.icon';
 import { IconUserComponent } from './user.icon';
 import { IconCheckComponent } from './check.icon';
+import { IconWarningComponent } from './warning.icon';
+import { IconSairComponent } from './sair.icon';
 
 @NgModule({
   imports: [
@@ -53,7 +55,9 @@ import { IconCheckComponent } from './check.icon';
     IconMarkChatReadComponent,
     IconDashboardComponent,
     IconUserComponent,
-    IconCheckComponent
+    IconCheckComponent,
+    IconWarningComponent,
+    IconSairComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -80,7 +84,9 @@ import { IconCheckComponent } from './check.icon';
     IconMarkChatReadComponent,
     IconDashboardComponent,
     IconUserComponent,
-    IconCheckComponent
+    IconCheckComponent,
+    IconWarningComponent,
+    IconSairComponent
   ],
   declarations: []
 })
