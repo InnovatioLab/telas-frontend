@@ -219,21 +219,21 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarParaUsers(): void {
-    this.router.navigate(['/administrator/users']);
+    this.router.navigate(['/admin/users']);
     if (this.menuAberto && !this.menuFixo) {
       this.toggleMenu();
     }
   }
 
   navegarParaConfiguracoes(): void {
-    this.router.navigate(['/administrator/settings']);
+    this.router.navigate(['/admin/settings']);
     if (this.menuAberto && !this.menuFixo) {
       this.toggleMenu();
     }
   }
 
   navegarParaMonitores(): void {
-    this.router.navigate(['/administrator/monitors']);
+    this.router.navigate(['/admin/monitors']);
     if (this.menuAberto && !this.menuFixo) {
       this.toggleMenu();
     }
@@ -279,7 +279,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarPaginaInicial(): void {
-    this.router.navigate(['/administrator']);
+    this.router.navigate(['/admin']);
     
     if (this.menuAberto && !this.menuFixo) {
       this.toggleMenu();
