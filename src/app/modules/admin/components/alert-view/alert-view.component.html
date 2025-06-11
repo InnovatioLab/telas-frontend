@@ -1,0 +1,22 @@
+<app-sidebar-mapa></app-sidebar-mapa>
+<app-alert-admin-sidebar 
+  [userName]="userName"
+  (visibilityChange)="onAdminSidebarVisibilityChange($event)">
+</app-alert-admin-sidebar>
+
+<div class="map-container">
+  <app-maps 
+    [zoom]="12" 
+    height="600px" 
+    width="100%" 
+    (pointClick)="handlePointClick($event)">
+  </app-maps>
+</div>
+
+<app-pop-up-add-list 
+  [(visible)]="showPointMenu" 
+  [position]="menuPosition" 
+  [selectedPoint]="selectedPoint"
+  (detailsClicked)="showPointDetails($event)"
+  (addToListClicked)="addPointToList($event)">
+</app-pop-up-add-list>

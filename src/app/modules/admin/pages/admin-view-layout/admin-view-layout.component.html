@@ -1,3 +1,7 @@
 <app-header></app-header>
 <app-admin-menu-side></app-admin-menu-side>
+<app-alert-admin-sidebar
+  [userName]="userName"
+  (visibilityChange)="onAlertSidebarVisibilityChange($event)">
+</app-alert-admin-sidebar>
 <router-outlet></router-outlet>

@@ -5,11 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { Authentication } from '@app/core/service/auth/autenthication';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { Alert, CardAlertComponent } from '../card-alert/card-alert.component';
+import { CardAlertComponent } from '../card-alert/card-alert.component';
 import { IconSearchComponent } from '@app/shared/icons/search.icon';
 import { IconCloseComponent } from '@app/shared/icons/close.icon';
 import { IconLockComponent } from '@app/shared/icons/lock.icon';
 import { IconLockOpenComponent } from '@app/shared/icons/lock-open.icon';
+import { MonitorAlert, MonitorService } from '@app/core/service/api/monitor.service';
+import { LoadingService } from '@app/core/service/state/loading.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface FilterOption {
   label: string;
@@ -44,7 +47,8 @@ declare global {
     IconSearchComponent,
     IconCloseComponent,
     IconLockComponent,
-    IconLockOpenComponent
+    IconLockOpenComponent,
+    ProgressSpinnerModule
   ],
   templateUrl: './alert-admin-sidebar.component.html',
   styleUrls: ['./alert-admin-sidebar.component.scss']
@@ -55,8 +59,8 @@ export class AlertAdminSidebarComponent implements OnInit {
   
   isVisible = false;
   isPinned = false;
-  alerts: Alert[] = [];
-  filteredAlerts: Alert[] = [];
+  alerts: MonitorAlert[] = [];
+  filteredAlerts: MonitorAlert[] = [];
   statusFilter: string = 'all';
   searchTerm: string = '';
   
@@ -71,7 +75,9 @@ export class AlertAdminSidebarComponent implements OnInit {
   constructor(
     private readonly sidebarService: SidebarService,
     private readonly authentication: Authentication,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly monitorService: MonitorService,
+    private readonly loadingService: LoadingService
   ) {}
   
   @HostListener('document:keydown.escape')
@@ -89,8 +95,7 @@ export class AlertAdminSidebarComponent implements OnInit {
       }
     }
     
-    this.loadMockAlerts();
-    this.applyFilters();
+    this.loadAlerts();
     
     this.sidebarService.abrirMenu('admin-alerts');
     
@@ -103,6 +108,21 @@ export class AlertAdminSidebarComponent implements OnInit {
         }
       }
     });
+  }
+  
+  private loadAlerts(): void {
+    this.loadingService.setLoading(true, 'load-alerts');
+    this.monitorService.getMonitorAlerts().subscribe(
+      (alerts: MonitorAlert[]) => {
+        this.alerts = alerts;
+        this.applyFilters();
+        this.loadingService.setLoading(false, 'load-alerts');
+      },
+      (error: Error) => {
+        this.toastService.erro('Erro ao carregar alertas');
+        this.loadingService.setLoading(false, 'load-alerts');
+      }
+    );
   }
   
   private carregarEstadoSalvo(): void {
@@ -220,76 +240,46 @@ export class AlertAdminSidebarComponent implements OnInit {
     this.filteredAlerts = result;
   }
   
-  resolveAlert(alert: Alert): void {
-    const index = this.alerts.findIndex(a => a.id === alert.id);
-    if (index !== -1) {
-      this.alerts[index].status = 'resolved';
-      this.applyFilters();
-      this.toastService.sucesso('Alert marked as resolved');
-    }
-  }
-  
-  acknowledgeAlert(data: { alert: Alert, reason: string }): void {
-    const { alert, reason } = data;
-    const index = this.alerts.findIndex(a => a.id === alert.id);
-    if (index !== -1) {
-      this.alerts[index].status = 'acknowledged';
-      this.alerts[index].acknowledgeReason = reason;
-      this.applyFilters();
-      this.toastService.sucesso(`Alert acknowledged: ${reason}`);
-    }
-  }
-  
-  private loadMockAlerts(): void {
-    this.alerts = [
-      {
-        id: '1',
-        title: 'Display Panel Offline',
-        description: 'Display panel #12345 has been offline for more than 24 hours.',
-        timestamp: new Date(new Date().getTime() - 2 * 60 * 60 * 1000),
-        status: 'critical',
-        deviceId: 'DP-12345'
+  resolveAlert(alert: MonitorAlert): void {
+    this.loadingService.setLoading(true, `resolve-alert-${alert.id}`);
+    this.monitorService.resolveAlert(alert.id).subscribe(
+      (updatedAlert: MonitorAlert) => {
+        const index = this.alerts.findIndex(a => a.id === alert.id);
+        if (index !== -1) {
+          this.alerts[index] = updatedAlert;
+          this.applyFilters();
+          this.toastService.sucesso('Alerta marcado como resolvido');
+        }
+        this.loadingService.setLoading(false, `resolve-alert-${alert.id}`);
       },
-      {
-        id: '2',
-        title: 'Connectivity Issues',
-        description: 'Panel #67890 is experiencing intermittent connectivity issues.',
-        timestamp: new Date(new Date().getTime() - 5 * 60 * 60 * 1000),
-        status: 'warning',
-        deviceId: 'DP-67890'
-      },
-      {
-        id: '3',
-        title: 'Power Failure',
-        description: 'Panel #54321 reported power supply issues before going offline.',
-        timestamp: new Date(new Date().getTime() - 12 * 60 * 60 * 1000),
-        status: 'critical',
-        deviceId: 'DP-54321'
-      },
-      {
-        id: '4',
-        title: 'System Reboot Required',
-        description: 'Panel #98765 requires a system reboot to apply security updates.',
-        timestamp: new Date(new Date().getTime() - 18 * 60 * 60 * 1000),
-        status: 'warning',
-        deviceId: 'DP-98765'
-      },
-      {
-        id: '5',
-        title: 'Display Calibration Needed',
-        description: 'Panel #24680 color calibration is out of expected range.',
-        timestamp: new Date(new Date().getTime() - 36 * 60 * 60 * 1000),
-        status: 'resolved',
-        deviceId: 'DP-24680'
-      },
-      {
-        id: '6',
-        title: 'Network Connection Unstable',
-        description: 'Panel #13579 is experiencing intermittent network connection issues.',
-        timestamp: new Date(new Date().getTime() - 8 * 60 * 60 * 1000),
-        status: 'acknowledged',
-        deviceId: 'DP-13579'
+      (error: Error) => {
+        this.toastService.erro('Erro ao resolver alerta');
+        this.loadingService.setLoading(false, `resolve-alert-${alert.id}`);
       }
-    ];
+    );
+  }
+  
+  acknowledgeAlert(data: { alert: MonitorAlert, reason: string }): void {
+    const { alert, reason } = data;
+    this.loadingService.setLoading(true, `acknowledge-alert-${alert.id}`);
+    this.monitorService.acknowledgeAlert(alert.id, reason).subscribe(
+      (updatedAlert: MonitorAlert) => {
+        const index = this.alerts.findIndex(a => a.id === alert.id);
+        if (index !== -1) {
+          this.alerts[index] = updatedAlert;
+          this.applyFilters();
+          this.toastService.sucesso(`Alerta confirmado: ${reason}`);
+        }
+        this.loadingService.setLoading(false, `acknowledge-alert-${alert.id}`);
+      },
+      (error: Error) => {
+        this.toastService.erro('Erro ao confirmar alerta');
+        this.loadingService.setLoading(false, `acknowledge-alert-${alert.id}`);
+      }
+    );
+  }
+  
+  get isLoading(): boolean {
+    return this.loadingService.loadingSub.getValue();
   }
 }

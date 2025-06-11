@@ -1,6 +1,6 @@
 <div class="admin-alert-sidebar" [ngClass]="{'visible': isVisible, 'pinned': isPinned}">
   <div class="sidebar-header">
-    <div class="header-actions">
+      <div class="header-actions">
       <button class="pin-btn desktop-only" (click)="togglePin($event)" [ngClass]="{'pinned': isPinned}"
         aria-label="Pin/Unpin sidebar" pTooltip="{{isPinned ? 'Unpin sidebar' : 'Pin sidebar'}}" tooltipPosition="left">
         <app-icon-lock *ngIf="isPinned"></app-icon-lock>
@@ -55,7 +55,12 @@
     <div class="alerts-container">
       <h3>System Alerts</h3>
       
-      <div *ngIf="filteredAlerts.length === 0" class="no-alerts">
+      <div *ngIf="isLoading" class="loading-container">
+        <p-progressSpinner strokeWidth="4" [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
+        <p>Loading alerts...</p>
+      </div>
+      
+      <div *ngIf="!isLoading && filteredAlerts.length === 0" class="no-alerts">
         <p>No alerts found.</p>
       </div>
       

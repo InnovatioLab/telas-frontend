@@ -1,115 +1,79 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { IconsModule } from '@app/shared/icons/icons.module';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { AcknowledgeDialogComponent } from '../acknowledge-dialog/acknowledge-dialog.component';
-import { IconMarkChatReadComponent } from '@app/shared/icons/mark-chat-read.icon';
-import { IconCheckComponent } from '@app/shared/icons/check.icon';
-
-export interface Alert {
-  id: string;
-  title: string;
-  description: string;
-  timestamp: Date;
-  status: 'critical' | 'warning' | 'resolved' | 'acknowledged';
-  deviceId: string;
-  acknowledgeReason?: string;
-}
+import { MonitorAlert } from '@app/core/service/api/monitor.service';
 
 @Component({
   selector: 'app-card-alert',
   standalone: true,
-  imports: [
-    CommonModule, 
-    FormsModule, 
-    PrimengModule, 
-    IconsModule, 
-    IconMarkChatReadComponent, 
-    IconCheckComponent
-  ],
+  imports: [CommonModule, PrimengModule],
   templateUrl: './card-alert.component.html',
-  styleUrls: ['./card-alert.component.scss']
+  styleUrls: ['./card-alert.component.scss'],
+  providers: [DialogService]
 })
 export class CardAlertComponent {
-  @Input() alert: Alert;
-  @Output() resolve = new EventEmitter<Alert>();
-  @Output() acknowledge = new EventEmitter<{alert: Alert, reason: string}>();
-  
-  private dialogRef: DynamicDialogRef;
-  
+  @Input() alert: MonitorAlert;
+  @Output() resolve = new EventEmitter<MonitorAlert>();
+  @Output() acknowledge = new EventEmitter<{ alert: MonitorAlert, reason: string }>();
+
   constructor(private dialogService: DialogService) {}
-  
-  get statusLabel(): string {
-    switch (this.alert.status) {
+
+  getStatusClass(status: string): string {
+    return `status-${status}`;
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
       case 'critical': return 'Critical';
       case 'warning': return 'Warning';
       case 'resolved': return 'Resolved';
       case 'acknowledged': return 'Acknowledged';
-      default: return '';
+      default: return status;
     }
   }
-  
-  get statusClass(): string {
-    switch (this.alert.status) {
-      case 'critical': return 'alert-critical';
-      case 'warning': return 'alert-warning';
-      case 'resolved': return 'alert-resolved';
-      case 'acknowledged': return 'alert-acknowledged';
-      default: return '';
+
+  formatTimestamp(timestamp: Date): string {
+    if (!timestamp) return '';
+    
+    const now = new Date();
+    const alertTime = new Date(timestamp);
+    const diffMs = now.getTime() - alertTime.getTime();
+    const diffMins = Math.round(diffMs / 60000);
+    
+    if (diffMins < 60) {
+      return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
+    } else if (diffMins < 1440) { // less than 24 hours
+      const hours = Math.floor(diffMins / 60);
+      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    } else {
+      const days = Math.floor(diffMins / 1440);
+      return `${days} day${days !== 1 ? 's' : ''} ago`;
     }
   }
-  
-  get canBeAcknowledged(): boolean {
-    return this.alert.status !== 'resolved' && this.alert.status !== 'acknowledged';
-  }
-  
-  get canBeResolved(): boolean {
-    return this.alert.status !== 'resolved';
-  }
-  
-  get acknowledgeTooltip(): string {
-    return this.alert.acknowledgeReason
-      ? `Acknowledged: ${this.alert.acknowledgeReason}`
-      : 'Acknowledge this alert';
-  }
-  
-  formatTimestamp(date: Date): string {
-    return new Date(date).toLocaleString();
-  }
-  
-  onResolve(): void {
+
+  onResolve(event: Event): void {
+    event.stopPropagation();
     this.resolve.emit(this.alert);
   }
-  
-  onAcknowledge(): void {
-    this.openAcknowledgeDialog();
-  }
-  
-  private openAcknowledgeDialog(): void {
-    this.dialogRef = this.dialogService.open(AcknowledgeDialogComponent, {
+
+  onAcknowledge(event: Event): void {
+    event.stopPropagation();
+    
+    const ref = this.dialogService.open(AcknowledgeDialogComponent, {
       header: 'Acknowledge Alert',
       width: '500px',
-      contentStyle: { padding: '1rem', overflow: 'auto' },
-      baseZIndex: 10000,
       data: {
         alertTitle: this.alert.title,
         deviceId: this.alert.deviceId
       }
     });
-    
-    this.dialogRef.onClose.subscribe((reason: string) => {
+
+    ref.onClose.subscribe((reason: string) => {
       if (reason) {
-        this.acknowledge.emit({
-          alert: this.alert,
-          reason: reason
-        });
+        this.acknowledge.emit({ alert: this.alert, reason });
       }
     });
-  }
-  
-  get isAcknowledged(): boolean {
-    return this.alert.status === 'acknowledged';
   }
 }

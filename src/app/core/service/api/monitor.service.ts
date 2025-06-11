@@ -1,9 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, catchError, map } from 'rxjs';
 import { Monitor, MonitorType } from '@app/model/monitors';
 import { DefaultStatus } from '@app/model/client';
 import { environment } from 'src/environments/environment';
+
+export interface MonitorAlert {
+  id: string;
+  monitorId: string;
+  title: string;
+  description: string;
+  timestamp: Date;
+  status: 'critical' | 'warning' | 'resolved' | 'acknowledged';
+  deviceId: string;
+  acknowledgeReason?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -208,6 +219,137 @@ export class MonitorService {
     //   catchError(error => {
     //     console.error(`Erro ao excluir monitor com ID ${id}:`, error);
     //     return of(false);
+    //   })
+    // );
+  }
+
+  getMonitorAlerts(monitorId?: string): Observable<MonitorAlert[]> {
+    console.log('Buscando alertas, monitor ID:', monitorId);
+    
+    const mockAlerts: MonitorAlert[] = [
+      {
+        id: '1',
+        monitorId: '1',
+        title: 'Display Panel Offline',
+        description: 'Display panel #12345 has been offline for more than 24 hours.',
+        timestamp: new Date(new Date().getTime() - 2 * 60 * 60 * 1000),
+        status: 'critical',
+        deviceId: 'DP-12345'
+      },
+      {
+        id: '2',
+        monitorId: '2',
+        title: 'Connectivity Issues',
+        description: 'Panel #67890 is experiencing intermittent connectivity issues.',
+        timestamp: new Date(new Date().getTime() - 5 * 60 * 60 * 1000),
+        status: 'warning',
+        deviceId: 'DP-67890'
+      },
+      {
+        id: '3',
+        monitorId: '3',
+        title: 'Power Failure',
+        description: 'Panel #54321 reported power supply issues before going offline.',
+        timestamp: new Date(new Date().getTime() - 12 * 60 * 60 * 1000),
+        status: 'critical',
+        deviceId: 'DP-54321'
+      },
+      {
+        id: '4',
+        monitorId: '1',
+        title: 'System Reboot Required',
+        description: 'Panel #98765 requires a system reboot to apply security updates.',
+        timestamp: new Date(new Date().getTime() - 18 * 60 * 60 * 1000),
+        status: 'warning',
+        deviceId: 'DP-98765'
+      },
+      {
+        id: '5',
+        monitorId: '2',
+        title: 'Display Calibration Needed',
+        description: 'Panel #24680 color calibration is out of expected range.',
+        timestamp: new Date(new Date().getTime() - 36 * 60 * 60 * 1000),
+        status: 'resolved',
+        deviceId: 'DP-24680'
+      },
+      {
+        id: '6',
+        monitorId: '3',
+        title: 'Network Connection Unstable',
+        description: 'Panel #13579 is experiencing intermittent network connection issues.',
+        timestamp: new Date(new Date().getTime() - 8 * 60 * 60 * 1000),
+        status: 'acknowledged',
+        deviceId: 'DP-13579',
+        acknowledgeReason: 'Troubleshooting in progress, internet provider issue'
+      }
+    ];
+    
+    if (monitorId) {
+      return of(mockAlerts.filter(alert => alert.monitorId === monitorId));
+    }
+    
+    return of(mockAlerts);
+    
+    // Chamada real para a API (descomentar em produção)
+    // let url = `${this.apiUrl}/alerts`;
+    // if (monitorId) {
+    //   url += `?monitorId=${monitorId}`;
+    // }
+    // return this.http.get<MonitorAlert[]>(url).pipe(
+    //   catchError(error => {
+    //     console.error('Erro ao buscar alertas:', error);
+    //     return of([]);
+    //   })
+    // );
+  }
+  
+  acknowledgeAlert(alertId: string, reason: string): Observable<MonitorAlert> {
+    console.log('Confirmando alerta:', alertId, 'com razão:', reason);
+    
+    // Implementação mock
+    const mockResponse: MonitorAlert = {
+      id: alertId,
+      monitorId: '1', // Valor arbitrário para mock
+      title: 'Alert Acknowledged',
+      description: 'This alert has been acknowledged by an administrator',
+      timestamp: new Date(),
+      status: 'acknowledged',
+      deviceId: 'DP-12345',
+      acknowledgeReason: reason
+    };
+    
+    return of(mockResponse);
+    
+    // Chamada real para a API (descomentar em produção)
+    // return this.http.post<MonitorAlert>(`${this.apiUrl}/alerts/${alertId}/acknowledge`, { reason }).pipe(
+    //   catchError(error => {
+    //     console.error('Erro ao confirmar alerta:', error);
+    //     throw error;
+    //   })
+    // );
+  }
+  
+  resolveAlert(alertId: string): Observable<MonitorAlert> {
+    console.log('Resolvendo alerta:', alertId);
+    
+    // Implementação mock
+    const mockResponse: MonitorAlert = {
+      id: alertId,
+      monitorId: '1', // Valor arbitrário para mock
+      title: 'Alert Resolved',
+      description: 'This alert has been marked as resolved',
+      timestamp: new Date(),
+      status: 'resolved',
+      deviceId: 'DP-12345'
+    };
+    
+    return of(mockResponse);
+    
+    // Chamada real para a API (descomentar em produção)
+    // return this.http.post<MonitorAlert>(`${this.apiUrl}/alerts/${alertId}/resolve`, {}).pipe(
+    //   catchError(error => {
+    //     console.error('Erro ao resolver alerta:', error);
+    //     throw error;
     //   })
     // );
   }
