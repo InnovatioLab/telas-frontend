@@ -1,0 +1,160 @@
+@use "sass:map";
+@use "sass:meta";
+
+// Colors
+$colors: (
+  'primary': #232F3E,
+  'primary-light': #496382,
+  'primary-dark': #131921,
+  'gray-bg': #f8f9fa,
+  'gray': #6c757d,
+  'gray-medium': #e9ecef,
+  'gray-dark': #212529,
+  'legend': #696F74,
+  'success': #28a745,
+  'error': #dc3545,
+  'disabled': #696F74CC,
+  'white': #FFFFFF,
+  'black-light': #16191B
+);
+
+// Typography
+$typography: (
+  'font-family': 'Montserrat' sans-serif,
+  'font-size-base': 16px,
+  'font-size-sm': 14px,
+  'font-size-lg': 18px,
+  'font-size-xl': 20px,
+  'font-size-2xl': 24px,
+  'font-size-3xl': 30px,
+  'font-size-4xl': 36px,
+  'font-weight-normal': 400,
+  'font-weight-medium': 500,
+  'font-weight-semibold': 600,
+  'font-weight-bold': 700,
+  'line-height-tight': 1.25,
+  'line-height-normal': 1.5,
+  'line-height-relaxed': 1.75
+);
+
+// Dimensions
+$dimensions: (
+  'input-height': 45px,
+  'button-height': 47px,
+  'button-height-small': 36px,
+  'button-width': 250px,
+  'button-width-small': 150px,
+  'dropdown-trigger-width': 3rem,
+  'card': (
+    'max-width-large': 1100px,
+    'max-height-large': 930px,
+    'max-width-small': 700px,
+    'min-width-small': 600px
+  ),
+  'form-mobile-max-height': 700px,
+  'sidebar': (
+    'width': 300px,
+    'width-compact': 90px
+  ),
+  'box': (
+    'close-height': 60px,
+    'user-height': 80px
+  ),
+  'user-initials': (
+    'width': 60px,
+    'height': 60px
+  ),
+  'route-link-height': 60px
+);
+
+// Borders
+$borders: (
+  'radius': (
+    'default': 15px,
+    'small': 8px,
+    'circular': 50%
+  ),
+  'width': 1px,
+  'style': solid
+);
+
+// Spacing
+$spacing: (
+  'small': 8px,
+  'base': 16px,
+  'medium': 24px,
+  'large': 32px,
+  'xlarge': 48px
+);
+
+// Shadows
+$shadows: (
+  'default': 0 2px 12px rgba(0, 0, 0, 0.1),
+  'hover': 0 4px 15px rgba(0, 0, 0, 0.15)
+);
+
+// Transitions
+$transitions: (
+  'default': all 0.3s ease,
+  'fast': all 0.15s ease
+);
+
+// Modal
+$modal: (
+  'padding': 1.5rem,
+  'border-radius': map.get(map.get($borders, 'radius'), 'small'),
+  'header-bg': map.get($colors, 'white'),
+  'content-bg': map.get($colors, 'white'),
+  'footer-bg': map.get($colors, 'white')
+);
+
+// CSS Custom Properties
+:root {
+  @each $name, $color in $colors {
+    --color-#{$name}: #{$color};
+  }
+
+  @each $name, $size in map.get($typography, 'font-sizes') {
+    --font-size-#{$name}: #{$size};
+  }
+
+  @each $name, $weight in map.get($typography, 'font-weights') {
+    --font-weight-#{$name}: #{$weight};
+  }
+
+  --font-family: #{map.get($typography, 'font-family')};
+
+  @each $name, $value in $dimensions {
+    @if meta.type-of($value) == 'map' {
+      @each $subname, $subvalue in $value {
+        --#{$name}-#{$subname}: #{$subvalue};
+      }
+    } @else {
+      --#{$name}: #{$value};
+    }
+  }
+
+  @each $name, $value in map.get($borders, 'radius') {
+    --border-radius-#{$name}: #{$value};
+  }
+
+  --border-width: #{map.get($borders, 'width')};
+  --border-style: #{map.get($borders, 'style')};
+  --border-default: var(--border-width) var(--border-style) var(--color-gray-medium);
+
+  @each $name, $value in $spacing {
+    --spacing-#{$name}: #{$value};
+  }
+
+  @each $name, $value in $shadows {
+    --shadow-#{$name}: #{$value};
+  }
+
+  @each $name, $value in $transitions {
+    --transition-#{$name}: #{$value};
+  }
+
+  @each $name, $value in $modal {
+    --modal-#{$name}: #{$value};
+  }
+} 

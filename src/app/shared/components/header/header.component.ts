@@ -19,6 +19,7 @@ import { IconBarsComponent } from '../../icons/bars.icon';
 import { IconSearchComponent } from '../../icons/search.icon';
 import { IconSettingsComponent } from '../../icons/settings.icon';
 import { IconWarningComponent } from '../../icons/warning.icon';
+import { LoadingService } from '@app/core/service/state/loading.service';
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
@@ -64,7 +65,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoggedIn = false;
   isMobile = false;
   menuAberto = false;
-  isSearching = false;
   isDarkMode = false;
   isAdminSidebarVisible = false; // Inicializando como falso
   
@@ -76,6 +76,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly searchSubscriptions = new Subscription();
   private readonly destroy$ = new Subject<void>();
   private monitorSearchSubscription: Subscription;
+  private _isSearching = false;
 
   constructor(
     public router: Router,
@@ -86,7 +87,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly sidebarService: SidebarService,
     private readonly cdr: ChangeDetectorRef,
     private readonly toggleModeService: ToggleModeService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit() {
@@ -202,7 +204,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.searchSubscriptions.add(
       this.googleMapsService.isSearching$.subscribe(
-        isSearching => this.isSearching = isSearching
+        isSearching => this._isSearching = isSearching
       )
     );
     
@@ -374,5 +376,9 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   
   updateAdminSidebarVisibility(isVisible: boolean): void {
     this.isAdminSidebarVisible = isVisible;
+  }
+
+  get isSearching(): boolean {
+    return this.loadingService.loadingSub.getValue();
   }
 }

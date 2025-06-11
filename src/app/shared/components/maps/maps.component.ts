@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, effect, EventEmitter, Output, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, effect, EventEmitter, Output, AfterViewInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { AddressSearchResult, GoogleMapsService } from '@app/core/service/api/google-maps.service';
@@ -7,6 +7,7 @@ import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { SidebarService } from '@app/core/service/state/sidebar.service';
 import { IconsModule } from '@app/shared/icons/icons.module';
 import { Subscription } from 'rxjs';
+import { LoadingService } from '@app/core/service/state/loading.service';
 
 declare global {
   interface WindowEventMap {
@@ -19,143 +20,59 @@ declare global {
   selector: 'app-maps',
   standalone: true,
   imports: [CommonModule, GoogleMapsModule, FormsModule, IconsModule],
-  templateUrl: './maps.component.html',
-  styleUrls: ['./maps.component.scss']
+  template: `
+    <div #mapContainer [style.width]="width" [style.height]="height"></div>
+  `,
+  styles: [`
+    :host {
+      display: block;
+    }
+    div {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  `]
 })
 export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('mapContainer') mapContainer!: ElementRef;
   @Input() latitude?: number;
   @Input() longitude?: number;
   @Input() zoom = 15;
-  @Input() 
-  set height(value: string) {
-    this._height = value;
-    this.updateMapDimensions();
-  }
-  get height(): string {
-    return this._height;
-  }
-  
-  @Input() 
-  set width(value: string) {
-    this._width = value;
-    this.updateMapDimensions();
-  }
-  get width(): string {
-    return this._width;
-  }
-  
-  private _height = '400px';
-  private _width = '100%';
-  
+  @Input() height = '400px';
+  @Input() width = '100%';
   @Input() points: MapPoint[] = [];
   @Input() showSearchBar = false;
+  @Input() center: { lat: number; lng: number } | null = null;
 
   @Output() pointClick = new EventEmitter<{point: MapPoint, event: MouseEvent}>();
+  @Output() mapInitialized = new EventEmitter<google.maps.Map>();
+  @Output() markerClicked = new EventEmitter<MapPoint>();
   
-  calculatedHeight = '400px';
-  calculatedWidth = '100%';
-  
-  center: google.maps.LatLngLiteral = {
-    lat: -3.7327, 
-    lng: -38.5270
-  };
-  
-  markerOptions: google.maps.MarkerOptions = {
-    draggable: false
-  };
-  
-  markerPositions: google.maps.LatLngLiteral[] = [];
-  markersConfig: { position: google.maps.LatLngLiteral, options: google.maps.MarkerOptions }[] = [];
-  
-  options: google.maps.MapOptions = {
-    mapTypeId: 'roadmap',
-    zoomControl: true,
-    scrollwheel: false,
-    disableDoubleClickZoom: true,
-    maxZoom: 20,
-    minZoom: 8,
-  };
-  
-  apiLoaded = false;
-  loadError: string | null = null;
-  tvDisplayIcon: any;
-  
-  private readonly subscriptions = new Subscription();
+  private map: google.maps.Map | null = null;
+  private markers: google.maps.Marker[] = [];
+  private subscriptions: Subscription[] = [];
+  private _apiLoaded = false;
+  private markerPositions: google.maps.LatLngLiteral[] = [];
+  private markersConfig: { position: google.maps.LatLngLiteral, options: google.maps.MarkerOptions }[] = [];
   
   constructor(
     private readonly mapsService: GoogleMapsService,
     private readonly sidebarService: SidebarService,
     private readonly ngZone: NgZone,
     private readonly el: ElementRef,
+    private readonly loadingService: LoadingService
   ) {
     effect(() => {
       const isVisible = this.sidebarService.visibilidade();
-      
       if (isVisible !== null) {
-        setTimeout(() => this.updateMapDimensions(), 100);
+        this.updateMapDimensions();
       }
     });
   }
 
   ngOnInit() {
-    this.initializeMapCenter();
-    this.mapsService.initGoogleMapsApi();
-    this.checkApiLoadedState();
-    
-    window.addEventListener('user-coordinates-updated', (event: Event) => {
-      const customEvent = event as CustomEvent;
-      this.ngZone.run(() => {
-        if (customEvent.detail && customEvent.detail.latitude && customEvent.detail.longitude) {
-          if (!this.hasExplicitCoordinates()) {
-            this.center = {
-              lat: customEvent.detail.latitude,
-              lng: customEvent.detail.longitude
-            };
-          }
-        }
-      });
-    });
-    
-    window.addEventListener('monitors-found', (event: Event) => {
-      const customEvent = event as CustomEvent;
-      this.ngZone.run(() => {
-        if (customEvent.detail && customEvent.detail.monitors) {
-          const monitors = customEvent.detail.monitors;
-          if (monitors && monitors.length > 0) {
-            this.clearMapPoints();
-            this.addMapPoints(monitors);
-            
-            setTimeout(() => {
-              if (monitors.length > 1) {
-                this.fitBoundsToPoints(monitors);
-              } else if (monitors.length === 1) {
-                this.center = { 
-                  lat: monitors[0].latitude, 
-                  lng: monitors[0].longitude 
-                };
-                this.zoom = 16;
-              }
-            }, 100);
-          }
-        }
-      });
-    });
-    
-    this.subscriptions.add(
-      this.mapsService.apiLoaded$.subscribe(loaded => {
-        this.apiLoaded = loaded;
-      })
-    );
-    
-    this.subscriptions.add(
-      this.mapsService.apiError$.subscribe(error => {
-        this.loadError = error;
-      })
-    );
-    
-    if (this.points && this.points.length > 0) {
-      this.updateMapPoints();
-    }
+    this.loadGoogleMapsScript();
+    this.setupEventListeners();
   }
   
   ngAfterViewInit(): void {
@@ -164,32 +81,62 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 500);
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.clearMarkers();
   }
   
-  private checkApiLoadedState(): void {
-    if (typeof google === 'undefined' || !google.maps) {
-      this.mapsService.initGoogleMapsApi();
-      
-      setTimeout(() => {
-        if (!this.apiLoaded) {
-          this.checkApiLoadedState();
-        }
-      }, 2000);
-    } else if (!this.apiLoaded) {
-      this.apiLoaded = true;
-    }
+  private loadGoogleMapsScript(): void {
+    this.loadingService.setLoading(true, 'load-google-maps');
+    this.mapsService.initGoogleMapsApi();
+
+    const subscription = this.mapsService.apiLoaded$.subscribe((loaded: boolean) => {
+      if (loaded) {
+        this._apiLoaded = true;
+        this.loadingService.setLoading(false, 'load-google-maps');
+        this.initializeMap();
+      }
+    });
+
+    this.subscriptions.push(subscription);
+  }
+  
+  private setupEventListeners(): void {
+    const userCoordsSub = this.mapsService.savedPoints$.subscribe((points: MapPoint[]) => {
+      if (this.map && points.length > 0) {
+        this.addMapPoints(points);
+      }
+    });
+
+    const monitorsSub = this.mapsService.nearestMonitors$.subscribe((monitors: MapPoint[]) => {
+      if (this.map && monitors.length > 0) {
+        this.addMapPoints(monitors);
+      }
+    });
+
+    this.subscriptions.push(userCoordsSub, monitorsSub);
+  }
+  
+  private initializeMap(): void {
+    if (!this.mapContainer?.nativeElement || !this._apiLoaded) return;
+
+    const defaultCenter = { lat: -3.7327, lng: -38.5270 };
+    const center = this.center || defaultCenter;
+
+    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+      center,
+      zoom: 15,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
+    });
+
+    this.mapInitialized.emit(this.map);
+    this.addMapPoints(this.points);
   }
   
   private forceMapResize(): void {
     window.dispatchEvent(new Event('resize'));
-    
-    if (!this.apiLoaded) {
-      setTimeout(() => {
-        this.forceMapResize();
-      }, 1000);
-    }
   }
 
   private hasExplicitCoordinates(): boolean {
@@ -205,10 +152,18 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     
-    this.center = {
-      lat: -3.7327, 
-      lng: -38.5270
-    };
+    const savedCoords = this.getSavedUserCoordinates();
+    if (savedCoords) {
+      this.center = {
+        lat: savedCoords.latitude,
+        lng: savedCoords.longitude
+      };
+    } else {
+      this.center = {
+        lat: -3.7327, 
+        lng: -38.5270
+      };
+    }
   }
   
   private getSavedUserCoordinates(): { latitude: number, longitude: number } | null {
@@ -228,35 +183,26 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return null;
   }
-  
-  private handleSearchResult(result: AddressSearchResult): void {
-    const { location } = result;
-    
-    this.center = {
-      lat: location.latitude,
-      lng: location.longitude
-    };
-    
-    this.zoom = 16;
-  }
 
-  public addMapPoints(points: MapPoint[]): void {
-    if (!points || points.length === 0) return;
-    
-    const pointsWithIds = points.map((point, index) => {
-      if (!point.id) {
-        return { ...point, id: `point-${Date.now()}-${index}` };
-      }
-      return point;
+  private addMapPoints(points: MapPoint[]): void {
+    if (!this.map) return;
+
+    this.clearMarkers();
+
+    points.forEach(point => {
+      const marker = new google.maps.Marker({
+        position: { lat: point.latitude, lng: point.longitude },
+        map: this.map,
+        title: point.title || '',
+        icon: this.mapsService.createRedMarkerIcon()
+      });
+
+      marker.addListener('click', () => {
+        this.markerClicked.emit(point);
+      });
+
+      this.markers.push(marker);
     });
-    
-    const existingIds = new Set(this.points.map(p => p.id));
-    const newPoints = pointsWithIds.filter(p => !existingIds.has(p.id));
-    
-    if (newPoints.length > 0) {
-      this.points = [...this.points, ...newPoints];
-      this.updateMapPoints();
-    }
   }
   
   public setMapPoints(points: MapPoint[]): void {
@@ -323,18 +269,18 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       const menuWidth = windowWidth > 768 ? 280 : 250;
       const maxAvailableWidth = windowWidth - menuWidth - 40;
       
-      this.calculatedWidth = `${maxAvailableWidth}px`;
-      this.calculatedHeight = this._height;
+      this.width = `${maxAvailableWidth}px`;
+      this.height = this.height;
     } else if (isMenuOpen && !isMobile) {
       const windowWidth = window.innerWidth;
       const menuWidth = 280;
       const maxAvailableWidth = windowWidth - menuWidth - 40;
       
-      this.calculatedWidth = `${maxAvailableWidth}px`;
-      this.calculatedHeight = '100vh';
+      this.width = `${maxAvailableWidth}px`;
+      this.height = '100vh';
     } else {
-      this.calculatedWidth = isMobile ? '100%' : this._width;
-      this.calculatedHeight = '100vh';
+      this.width = isMobile ? '100%' : this.width;
+      this.height = '100vh';
     }
     
     setTimeout(() => {
@@ -347,7 +293,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private fitBoundsToPoints(points: MapPoint[]): void {
-    if (!points || points.length === 0 || !this.apiLoaded) return;
+    if (!points || points.length === 0 || !this._apiLoaded) return;
     
     const bounds = new google.maps.LatLngBounds();
     points.forEach((point: MapPoint) => {
@@ -385,20 +331,14 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     
     calculatedZoom = Math.max(8, Math.min(18, calculatedZoom));
     this.zoom = calculatedZoom;
-    
-    setTimeout(() => {
-      const zoomEffect = () => {
-        const currentZoom = this.zoom;
-        this.zoom = currentZoom - 1;
-        
-        setTimeout(() => {
-          this.zoom = calculatedZoom;
-        }, 150);
-      };
-      
-      if (points.length > 1) {
-        zoomEffect();
-      }
-    }, 200);
+  }
+
+  private clearMarkers(): void {
+    this.markers.forEach(marker => marker.setMap(null));
+    this.markers = [];
+  }
+
+  get apiLoaded(): boolean {
+    return this._apiLoaded;
   }
 }

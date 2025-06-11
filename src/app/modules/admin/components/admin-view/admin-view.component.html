@@ -5,11 +5,6 @@
 </app-alert-admin-sidebar>
 
 <div class="map-container">
-  <div *ngIf="isLoading" class="map-loading">
-    <p>Loading map, please wait...</p>
-    <div class="loading-spinner"></div>
-  </div>
-  
   <app-maps 
     [zoom]="15" 
     height="600px" 

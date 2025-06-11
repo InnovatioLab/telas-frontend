@@ -1,9 +1,14 @@
-/* COMPONENTES HTML CUSTOMIZADOS */
-@use 'material-symbols';
-@import "primeicons/primeicons.css";
+/* Custom Styles */
+@use './app/shared/styles/variables' as *;
+@use './app/shared/styles/utilities' as *;
 
+/* External Components */
+@import 'primeicons/primeicons.css';
+@import 'primeflex/primeflex.css';
+
+/* Base Styles */
 :root {
-  /* Cores */
+  /* Colors */
   --cor-primaria: #232F3E;
   --cor-primaria-clara: #496382;
   --cor-primaria-escura: #131921;
@@ -18,7 +23,7 @@
   --cor-branca: #FFFFFF;
   --cor-preto-claro: #16191B;
 
-  /* Tipografia */
+  /* Typography */
   --fonte-familia: 'Montserrat', sans-serif;
   --fonte-tamanho-pequeno: 12px;
   --fonte-tamanho-padrao: 14px;
@@ -32,7 +37,7 @@
   --fonte-peso-medio: 500;
   --fonte-peso-negrito: 700;
 
-  /* Dimensões */
+  /* Dimensions */
   --altura-input: 45px;
   --altura-botao: 47px;
   --altura-botao-pequeno: 36px;
@@ -40,7 +45,7 @@
   --largura-botao-pequeno: 150px;
   --largura-dropdown-trigger: 3rem;
 
-  /* Bordas */
+  /* Borders */
   --borda-raio-padrao: 15px;
   --borda-raio-pequeno: 8px;
   --borda-raio-circular: 50%;
@@ -48,22 +53,22 @@
   --borda-estilo: solid;
   --borda-padrao: var(--borda-largura) var(--borda-estilo) var(--cor-cinza-medio);
 
-  /* Espaçamentos */
+  /* Spacing */
   --espacamento-pequeno: 8px;
   --espacamento-padrao: 16px;
   --espacamento-medio: 24px;
   --espacamento-grande: 32px;
   --espacamento-extra-grande: 48px;
 
-  /* Sombras */
+  /* Shadows */
   --sombra-padrao: 0 2px 12px rgba(0, 0, 0, 0.1);
   --sombra-hover: 0 4px 15px rgba(0, 0, 0, 0.15);
 
-  /* Transições */
+  /* Transitions */
   --transicao-padrao: all 0.3s ease;
   --transicao-rapida: all 0.15s ease;
 
-  /* Novas variáveis para padronização de dimensões específicas de componentes */
+  /* Component Dimensions */
   --largura-max-card-grande: 1100px;
   --altura-max-card-grande: 930px;
   --largura-max-card-pequeno: 700px;
@@ -77,7 +82,7 @@
   --altura-iniciais-usuario: 60px;
   --altura-link-rotas: 60px;
 
-  /* Variáveis para modais */
+  /* Modal */
   --modal-padding: 1.5rem;
   --modal-border-radius: var(--borda-raio-pequeno);
   --modal-header-bg: var(--cor-branca);
@@ -112,11 +117,11 @@ body {
   }
 
   a {
-    color: var(--cor-cinza-fundo);
-    transition: var(--transicao-padrao);
+    color: var(--color-gray-bg);
+    transition: var(--transition-default);
 
     &:hover {
-      color: var(--cor-cinza-medio);
+      color: var(--color-gray-medium);
       text-decoration: none;
     }
   }
@@ -152,7 +157,7 @@ html::-webkit-scrollbar-thumb:hover {
 
 hr {
   width: 100%;
-  border: var(--borda-largura) var(--borda-estilo) var(--cor-cinza-medio);
+  border: var(--border-default);
 }
 
 textarea {
@@ -247,20 +252,18 @@ td {
   }
 
   .btn-limpar-filtros {
-    width: var(--largura-botao-pequeno);
-    height: var(--altura-botao-pequeno);
-    border-radius: var(--borda-raio-padrao);
-    background-color: var(--cor-cinza-medio) !important;
-    color: var(--cor-legenda) !important;
-    border: none;
-    font-size: var(--fonte-tamanho-padrao);
-    font-weight: var(--fonte-peso-medio);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: var(--button-width-small);
+    height: var(--button-height-small);
+    background-color: var(--color-white);
+    border: var(--border-default);
+    border-radius: var(--border-radius-default);
+    color: var(--color-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-default);
 
-    .p-button-icon {
-      font-size: var(--fonte-tamanho-padrao);
+    &:hover {
+      background-color: var(--color-gray-bg);
     }
   }
 }
@@ -743,13 +746,8 @@ select {
   }
 }
 
-/* Estilos para elementos HTML básicos */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-family: var(--fonte-familia);
@@ -883,17 +881,7 @@ p {
   border: none !important;
 }
 
-/* Estilos globais para diálogos e modais */
-:root {
-  /* Variáveis para modais */
-  --modal-padding: 1.5rem;
-  --modal-border-radius: var(--borda-raio-pequeno);
-  --modal-header-bg: var(--cor-branca);
-  --modal-content-bg: var(--cor-branca);
-  --modal-footer-bg: var(--cor-branca);
-}
-
-/* Estilos para os diálogos e modais */
+/* Dialog Styles */
 .p-dialog {
   border-radius: var(--modal-border-radius);
   overflow: hidden;
@@ -974,5 +962,24 @@ p {
   &:focus {
     border-color: var(--cor-primaria);
     box-shadow: 0 0 0 1px var(--cor-primaria-clara);
+  }
+}
+
+/* Responsive styles */
+@include responsive('mobile') {
+  .container {
+    padding: var(--spacing-base);
+  }
+}
+
+@include responsive('tablet') {
+  .container {
+    padding: var(--spacing-medium);
+  }
+}
+
+@include responsive('desktop') {
+  .container {
+    padding: var(--spacing-large);
   }
 }

@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { FormatarPreco } from '@app/shared/pipes/preco.pipe';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { LoadingService } from '@app/core/service/state/loading.service';
 
 enum StepEnum {
   REVIEW = 1,
@@ -54,7 +55,8 @@ export class CkeckoutModalComponent implements OnInit {
 
   constructor(
     private readonly mapsService: GoogleMapsService,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private loadingService: LoadingService
   ) {
     this.adDetailsForm = this.fb.group({
       slogan: ['', [Validators.required]],

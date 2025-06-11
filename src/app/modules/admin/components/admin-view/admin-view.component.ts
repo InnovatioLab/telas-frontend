@@ -1,135 +1,171 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BaseModule } from '@app/shared/base/base.module';
-import { Authentication } from '@app/core/service/auth/autenthication';
-import { MapsComponent } from '@app/shared/components/maps/maps.component';
-import { SidebarMapaComponent } from '@app/shared/components/sidebar-mapa/sidebar-mapa.component';
-import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-list/pop-up-add-list.component';
-import { AlertAdminSidebarComponent } from '@app/shared/components/alert-admin-sidebar/alert-admin-sidebar.component';
+import { FormsModule } from '@angular/forms';
+import { GoogleMapsService } from '../../../../core/service/api/google-maps.service';
+import { MapPoint } from '../../../../core/service/state/map-point.interface';
+import { LoadingService } from '../../../../core/service/state/loading.service';
+import { Subscription } from 'rxjs';
+import { MapsComponent } from '../../../../shared/components/maps/maps.component';
 
 @Component({
   selector: 'app-admin-view',
-  templateUrl: './admin-view.component.html',
-  styleUrls: ['./admin-view.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule, 
-    BaseModule, 
-    MapsComponent, 
-    SidebarMapaComponent,
-    PopUpStepAddListComponent,
-    AlertAdminSidebarComponent
-  ]
+  imports: [CommonModule, FormsModule, MapsComponent],
+  template: `
+    <div class="admin-view">
+      <div class="map-container">
+        <app-maps
+          [points]="monitors"
+          [center]="mapCenter"
+          (markerClicked)="onMarkerClick($event)"
+          (mapInitialized)="onMapInitialized($event)">
+        </app-maps>
+      </div>
+      
+      <div class="monitors-list" *ngIf="monitors.length > 0">
+        <h3>Monitores Encontrados</h3>
+        <ul>
+          <li *ngFor="let monitor of monitors" (click)="onMonitorClick(monitor)">
+            <div class="monitor-info">
+              <span class="monitor-title">{{ monitor.title }}</span>
+              <span class="monitor-type">{{ monitor.data?.type }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .admin-view {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      height: 100%;
+    }
+    
+    .map-container {
+      flex: 1;
+      min-height: 500px;
+    }
+    
+    .monitors-list {
+      width: 300px;
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      
+      h3 {
+        margin: 0 0 1rem;
+        color: #333;
+      }
+      
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        
+        li {
+          padding: 0.75rem;
+          border-bottom: 1px solid #eee;
+          cursor: pointer;
+          transition: background-color 0.2s;
+          
+          &:hover {
+            background-color: #f5f5f5;
+          }
+          
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+      
+      .monitor-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        
+        .monitor-title {
+          font-weight: 500;
+          color: #333;
+        }
+        
+        .monitor-type {
+          font-size: 0.875rem;
+          color: #666;
+        }
+      }
+    }
+  `]
 })
 export class AdminViewComponent implements OnInit, OnDestroy {
-  userName: string = '';
-  showPointMenu = false;
-  menuPosition = { x: 0, y: 0 };
-  selectedPoint: MapPoint | null = null;
-  savedPoints: MapPoint[] = [];
-  isLoading = false;
-  private readonly adminSidebarListener: (e: CustomEvent<ToggleAdminSidebarEvent>) => void;
-  
+  monitors: MapPoint[] = [];
+  mapCenter: { lat: number; lng: number } | null = null;
+  private map: google.maps.Map | null = null;
+  private subscriptions: Subscription[] = [];
+
   constructor(
-    private readonly authentication: Authentication,
-    private readonly mapsService: GoogleMapsService,
-    private readonly toastService: ToastService
-  ) {
-    this.adminSidebarListener = (e: CustomEvent<ToggleAdminSidebarEvent>) => {
-      this.updateHeaderSidebarStatus(e.detail.visible);
-    };
-  }
-  
+    private googleMapsService: GoogleMapsService,
+    private loadingService: LoadingService
+  ) {}
+
   ngOnInit(): void {
-    const client = this.authentication._clientSignal();
-    if (client) {
-      this.userName = client.businessName;
-    }
-
-    setTimeout(() => {
-      this.loadNearbyPoints();
-    }, 1500);
-
-    window.addEventListener('toggle-admin-sidebar', this.adminSidebarListener as EventListener);
+    this.loadNearbyPoints();
+    this.setupEventListeners();
   }
-  
+
   ngOnDestroy(): void {
-    window.removeEventListener('toggle-admin-sidebar', this.adminSidebarListener as EventListener);
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
-  
-  onAdminSidebarVisibilityChange(isVisible: boolean): void {
-    this.updateHeaderSidebarStatus(isVisible);
-  }
-  
-  private updateHeaderSidebarStatus(isVisible: boolean): void {
-    const header = document.querySelector('app-header') as any;
-    header?.updateAdminSidebarVisibility?.(isVisible);
-  }
-  
-  private loadNearbyPoints(): void {
-    this.isLoading = true;
-    this.mapsService.getCurrentLocation()
-      .then((location: {latitude: number, longitude: number} | null) => {
-        if (location) {
-          this.findNearbyPoints(location.latitude, location.longitude);
-        } else {
-          this.toastService.aviso('Could not determine your location. Please search for an address.');
-          this.isLoading = false;
-        }
-      })
-      .catch((error: Error) => {
-        this.toastService.erro('Error accessing your location. Please allow location access.');
-        this.isLoading = false;
-      });
-  }
-  
-  private findNearbyPoints(latitude: number, longitude: number): void {
-    this.mapsService.findNearbyMonitors(latitude, longitude)
-      .then((monitors: MapPoint[]) => {
-        if (monitors && monitors.length > 0) {
-          this.emitMonitorsFoundEvent(monitors);
-        }
-        this.isLoading = false;
-      })
-      .catch((error: Error) => {
-        this.toastService.erro('Error searching for nearby monitors');
-        this.isLoading = false;
-      });
-  }
-  
-  private emitMonitorsFoundEvent(monitors: MapPoint[]): void {
-    const event = new CustomEvent('monitors-found', {
-      detail: { monitors }
-    });
-    window.dispatchEvent(event);
-  }
-  
-  handlePointClick(data: {point: MapPoint, event: MouseEvent}): void {
-    const { point, event } = data;
-    this.selectedPoint = point;
-    
-    this.menuPosition = { 
-      x: event.clientX, 
-      y: event.clientY 
-    };
-    
-    this.showPointMenu = true;
-    
-    event.stopPropagation();
-  }
-  
-  showPointDetails(point: MapPoint): void {
-    this.mapsService.selectPoint(point);
-  }
-  
-  addPointToList(point: MapPoint): void {
-    this.mapsService.addToSavedPoints(point);
-  }
-}
 
-interface ToggleAdminSidebarEvent {
-  visible: boolean;
+  private setupEventListeners(): void {
+    const userCoordsSub = this.googleMapsService.savedPoints$.subscribe(points => {
+      if (points.length > 0) {
+        const lastPoint = points[points.length - 1];
+        this.mapCenter = {
+          lat: lastPoint.latitude,
+          lng: lastPoint.longitude
+        };
+        this.loadNearbyPoints();
+      }
+    });
+
+    this.subscriptions.push(userCoordsSub);
+  }
+
+  private loadNearbyPoints(): void {
+    if (!this.mapCenter) return;
+
+    this.loadingService.setLoading(true, 'load-nearby-points');
+    
+    this.googleMapsService.findNearbyMonitors(
+      this.mapCenter.lat,
+      this.mapCenter.lng
+    ).then(monitors => {
+      this.monitors = monitors;
+      this.loadingService.setLoading(false, 'load-nearby-points');
+    }).catch(error => {
+      console.error('Error loading nearby points:', error);
+      this.loadingService.setLoading(false, 'load-nearby-points');
+    });
+  }
+
+  onMapInitialized(map: google.maps.Map): void {
+    this.map = map;
+  }
+
+  onMarkerClick(point: MapPoint): void {
+    if (this.map) {
+      this.map.setCenter({
+        lat: point.latitude,
+        lng: point.longitude
+      });
+      this.map.setZoom(16);
+    }
+  }
+
+  onMonitorClick(monitor: MapPoint): void {
+    this.onMarkerClick(monitor);
+  }
 }

@@ -1,0 +1,145 @@
+// Reset and base styles
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background-color: var(--color-gray-bg);
+  color: var(--p-text-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-dark) transparent;
+}
+
+// Scrollbar styles
+html::-webkit-scrollbar {
+  width: var(--spacing-small);
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: var(--color-gray-medium);
+  border-radius: var(--border-radius-small);
+
+  &:hover {
+    background: var(--color-gray);
+  }
+}
+
+// Typography
+*:not(span.pi, span.material-symbols-outlined) {
+  font-family: var(--font-family);
+}
+
+// Text utilities
+.text-danger {
+  color: var(--color-error);
+}
+
+// Border utilities
+.border-danger,
+.border-danger > input {
+  border-color: var(--color-error) !important;
+}
+
+// Form elements
+textarea {
+  resize: none;
+}
+
+label {
+  font-size: var(--font-size-base);
+}
+
+// Table styles
+td {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+// Width utilities
+.w-full {
+  .p-dropdown,
+  .p-inputmask,
+  .p-calendar,
+  .p-autocomplete,
+  .p-inputnumber,
+  .p-multiselect,
+  .p-password {
+    width: 100%;
+  }
+
+  .p-autocomplete-input,
+  .p-inputtext {
+    width: 100%;
+  }
+}
+
+// Container
+.container {
+  width: 100%;
+}
+
+// Filter fields
+.campos-filtros {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  margin-top: var(--spacing-medium);
+
+  .p-dropdown {
+    background-color: var(--color-white);
+    border: var(--border-default);
+    border-radius: var(--border-radius-default);
+
+    .p-dropdown-label {
+      color: var(--color-legend);
+      font-weight: var(--font-weight-regular);
+      font-size: var(--font-size-base);
+      width: 116px;
+      height: 21px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+
+      &.p-placeholder {
+        color: var(--color-legend) !important;
+      }
+    }
+
+    .p-dropdown-trigger-icon,
+    .p-dropdown-clear-icon {
+      color: var(--color-primary-dark);
+    }
+  }
+}
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin responsive($breakpoint) {
+  @if $breakpoint == 'mobile' {
+    @media (max-width: 767px) { @content; }
+  } @else if $breakpoint == 'tablet' {
+    @media (min-width: 768px) and (max-width: 1023px) { @content; }
+  } @else if $breakpoint == 'desktop' {
+    @media (min-width: 1024px) { @content; }
+  }
+} 

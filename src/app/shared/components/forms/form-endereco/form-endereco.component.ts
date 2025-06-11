@@ -8,6 +8,7 @@ import { ErrorComponent } from '../../error/error.component';
 import { ZipCodeValidatorDirective } from '@app/core/directives/zip-code-validator.directive';
 import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
+import { LoadingService } from '@app/core/service/state/loading.service';
 
 @Component({
   selector: 'ui-form-endereco',
@@ -41,13 +42,13 @@ export class FormEnderecoComponent implements OnInit {
   @Output() longitudeChange = new EventEmitter<string | null>();
 
   zipCodeEncontrado = true;
-  isLoading = false;
 
   private lastSearchedZipCode: string | null = null;
 
   constructor(
     private readonly zipCodeService: ZipCodeService, 
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit() {
@@ -114,7 +115,7 @@ export class FormEnderecoComponent implements OnInit {
     }
 
     if (cleanZipCode && cleanZipCode.length === 5) {
-      this.isLoading = true;
+      this.loadingService.setLoading(true, 'form-endereco');
       this.lastSearchedZipCode = cleanZipCode;
 
       this.zipCodeService.findLocationByZipCode(cleanZipCode).subscribe({
@@ -134,11 +135,10 @@ export class FormEnderecoComponent implements OnInit {
               longitude: '',
             });
           }
-          this.isLoading = false;
+          this.loadingService.setLoading(false, 'form-endereco');
         },
         error: () => {
           this.zipCodeEncontrado = false;
-          this.isLoading = false;
           this.atualizarCamposEndereco({
             zipCode: cleanZipCode,
             street: '',
@@ -148,6 +148,7 @@ export class FormEnderecoComponent implements OnInit {
             latitude: '',
             longitude: '',
           });
+          this.loadingService.setLoading(false, 'form-endereco');
         }
       });
     }
@@ -155,5 +156,9 @@ export class FormEnderecoComponent implements OnInit {
 
   removeThisAddress() {
     this.removeAddress.emit(this.index);
+  }
+
+  get isLoading(): boolean {
+    return this.loadingService.loadingSub.getValue();
   }
 }

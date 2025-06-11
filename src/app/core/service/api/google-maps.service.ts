@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment.interface';
 import { MapPoint } from '../state/map-point.interface';
+import { LoadingService } from '../state/loading.service';
 
 export interface AddressSearchResult {
   location: MapPoint;
@@ -24,18 +25,16 @@ export class GoogleMapsService {
   private readonly searchHistorySubject = new BehaviorSubject<AddressSearchResult[]>([]);
   private readonly _savedPoints = new BehaviorSubject<MapPoint[]>([]);
   private readonly nearestMonitorsSubject = new BehaviorSubject<MapPoint[]>([]);
-  readonly savedPoints$ = this._savedPoints.asObservable();
-  readonly nearestMonitors$ = this.nearestMonitorsSubject.asObservable();
   
   private readonly callbackName = 'googleMapsInitialized';
   private readonly MAX_HISTORY_ITEMS = 10;
-
   private apiInitializationAttempts = 0;
   private readonly MAX_INITIALIZATION_ATTEMPTS = 3;
   private apiLoadingInProgress = false;
   
   constructor(
-    @Inject(ENVIRONMENT) private readonly env: Environment
+    @Inject(ENVIRONMENT) private readonly env: Environment,
+    private readonly loadingService: LoadingService
   ) {
     window.addEventListener('address-to-geocode', ((e: Event) => {
       const customEvent = e as CustomEvent;
@@ -75,6 +74,7 @@ export class GoogleMapsService {
           const timeoutMessage = 'Timeout ao carregar a API do Google Maps após múltiplas tentativas';
           this.apiErrorSubject.next(timeoutMessage);
           console.error(timeoutMessage);
+          this.loadingService.setLoading(false, 'load-google-maps');
         }
       }
     }, 10000);
@@ -96,6 +96,7 @@ export class GoogleMapsService {
       this.apiErrorSubject.next(error);
       console.error(error);
       this.apiLoadingInProgress = false;
+      this.loadingService.setLoading(false, 'load-google-maps');
       return;
     }
     
@@ -109,6 +110,7 @@ export class GoogleMapsService {
       this.apiErrorSubject.next(errorMessage);
       console.error(errorMessage, error);
       this.apiLoadingInProgress = false;
+      this.loadingService.setLoading(false, 'load-google-maps');
     };
     
     document.head.appendChild(script);
@@ -128,40 +130,70 @@ export class GoogleMapsService {
   public get apiLoaded$(): Observable<boolean> {
     return this.apiLoadedSubject.asObservable();
   }
-
+  
   public get apiError$(): Observable<string | null> {
     return this.apiErrorSubject.asObservable();
   }
-
+  
+  public get isSearching$(): Observable<boolean> {
+    return this.searchingSubject.asObservable();
+  }
+  
+  public get searchError$(): Observable<string | null> {
+    return this.searchErrorSubject.asObservable();
+  }
+  
+  public get searchResult$(): Observable<AddressSearchResult | null> {
+    return this.searchResultSubject.asObservable();
+  }
+  
+  public get searchHistory$(): Observable<AddressSearchResult[]> {
+    return this.searchHistorySubject.asObservable();
+  }
+  
+  public get selectedPoint$(): Observable<MapPoint | null> {
+    return this.selectedPointSubject.asObservable();
+  }
+  
+  public get savedPoints$(): Observable<MapPoint[]> {
+    return this._savedPoints.asObservable();
+  }
+  
+  public get nearestMonitors$(): Observable<MapPoint[]> {
+    return this.nearestMonitorsSubject.asObservable();
+  }
+  
   public convertToMarkerPositions(points: MapPoint[]): google.maps.LatLngLiteral[] {
     return points.map(point => ({
       lat: point.latitude,
       lng: point.longitude
     }));
   }
-
-  public createMarkerOptions(point: MapPoint): google.maps.marker.AdvancedMarkerElementOptions {
-    const options: google.maps.marker.AdvancedMarkerElementOptions = {
-      gmpDraggable: false,
+  
+  public createMarkerOptions(point: MapPoint): google.maps.MarkerOptions {
+    const options: google.maps.MarkerOptions = {
+      draggable: false,
       title: point.title || ''
     };
-
+    
     if (point.icon) {
-      options.content = point.icon;
+      options.icon = point.icon;
     }
-
+    
     return options;
   }
-
-  public createRedMarkerIcon(): google.maps.Icon {
+  
+  public createRedMarkerIcon(): google.maps.Symbol {
     return {
-      url: '',
-      scaledSize: new google.maps.Size(32, 32),
-      origin: new google.maps.Point(0, 0),
-      anchor: new google.maps.Point(16, 32)
+      path: google.maps.SymbolPath.CIRCLE,
+      fillColor: '#FF0000',
+      fillOpacity: 1,
+      strokeWeight: 1,
+      strokeColor: '#FFFFFF',
+      scale: 8
     };
   }
-
+  
   public loadPointsFromSavedLocation(): void {
     try {
       const savedCoordinates = localStorage.getItem('user_coordinates');
@@ -181,15 +213,11 @@ export class GoogleMapsService {
       console.error('Erro ao carregar coordenadas salvas:', error);
     }
   }
-
+  
   public selectPoint(point: MapPoint | null): void {
     this.selectedPointSubject.next(point);
   }
-
-  public get selectedPoint$(): Observable<MapPoint | null> {
-    return this.selectedPointSubject.asObservable();
-  }
-
+  
   public async checkAndGeocodeStoredAddress(): Promise<void> {
     const addressToGeocode = localStorage.getItem('address_to_geocode');
     if (!addressToGeocode) return;
@@ -239,7 +267,7 @@ export class GoogleMapsService {
       console.error('Erro ao geocodificar endereço armazenado:', error);
     }
   }
-
+  
   public async performAddressSearch(query: string): Promise<void> {
     if (!query?.trim()) {
       this.searchErrorSubject.next('Please enter an address to search');
@@ -283,43 +311,11 @@ export class GoogleMapsService {
     }
   }
   
-  public clearCurrentSearch(): void {
-    this.searchErrorSubject.next(null);
-    this.searchResultSubject.next(null);
-  }
-  
   private addToSearchHistory(result: AddressSearchResult): void {
-    const currentHistory = this.searchHistorySubject.value;
-    
-    const existingIndex = currentHistory.findIndex(item => 
-      item.query.toLowerCase() === result.query.toLowerCase()
-    );
-    
-    let newHistory: AddressSearchResult[];
-    
-    if (existingIndex >= 0) {
-      newHistory = [...currentHistory];
-      newHistory[existingIndex] = result;
-    } else {
-      newHistory = [result, ...currentHistory];
-      
-      if (newHistory.length > this.MAX_HISTORY_ITEMS) {
-        newHistory = newHistory.slice(0, this.MAX_HISTORY_ITEMS);
-      }
-    }
-    
+    const currentHistory = this.searchHistorySubject.getValue();
+    const newHistory = [result, ...currentHistory].slice(0, this.MAX_HISTORY_ITEMS);
     this.searchHistorySubject.next(newHistory);
-    this.saveSearchHistoryToLocalStorage();
-  }
-  
-  private saveSearchHistoryToLocalStorage(): void {
-    try {
-      localStorage.setItem('addressSearchHistory', 
-        JSON.stringify(this.searchHistorySubject.value)
-      );
-    } catch (error) {
-      console.error('Erro ao salvar histórico de buscas:', error);
-    }
+    localStorage.setItem('addressSearchHistory', JSON.stringify(newHistory));
   }
   
   public loadSearchHistoryFromLocalStorage(): void {
@@ -334,12 +330,7 @@ export class GoogleMapsService {
     }
   }
   
-  public clearSearchHistory(): void {
-    this.searchHistorySubject.next([]);
-    localStorage.removeItem('addressSearchHistory');
-  }
-  
-  addToSavedPoints(point: MapPoint): void {
+  public addToSavedPoints(point: MapPoint): void {
     if (!point) return;
     
     const currentPoints = this._savedPoints.getValue();
@@ -350,22 +341,11 @@ export class GoogleMapsService {
     }
   }
   
-  updateSavedPoints(points: MapPoint[]): void {
-    this._savedPoints.next(points);
-  }
-  
-  removeFromSavedPoints(pointId: string): void {
-    const currentPoints = this._savedPoints.getValue();
-    const newPoints = currentPoints.filter(p => p.id !== pointId);
-    this._savedPoints.next(newPoints);
-    localStorage.setItem('savedMapPoints', JSON.stringify(newPoints));
-  }
-  
-  getSavedPoints(): MapPoint[] {
+  public getSavedPoints(): MapPoint[] {
     return this._savedPoints.getValue();
   }
   
-  initSavedPoints(): void {
+  public initSavedPoints(): void {
     const savedItems = localStorage.getItem('savedMapPoints');
     if (savedItems) {
       try {
@@ -381,28 +361,8 @@ export class GoogleMapsService {
     this.nearestMonitorsSubject.next(monitors);
   }
   
-  public clearNearestMonitors(): void {
-    this.nearestMonitorsSubject.next([]);
-  }
-  
   public getNearestMonitors(): MapPoint[] {
     return this.nearestMonitorsSubject.getValue();
-  }
-  
-  public get isSearching$(): Observable<boolean> {
-    return this.searchingSubject.asObservable();
-  }
-  
-  public get searchError$(): Observable<string | null> {
-    return this.searchErrorSubject.asObservable();
-  }
-  
-  public get searchResult$(): Observable<AddressSearchResult | null> {
-    return this.searchResultSubject.asObservable();
-  }
-  
-  public get searchHistory$(): Observable<AddressSearchResult[]> {
-    return this.searchHistorySubject.asObservable();
   }
   
   public async searchAddress(address: string): Promise<{ 
@@ -487,14 +447,20 @@ export class GoogleMapsService {
     });
   }
   
-  getUserCoordinates(): {latitude: number, longitude: number} | null {
+  private getUserCoordinates(): { latitude: number, longitude: number } | null {
     try {
-      const saved = localStorage.getItem('user_coordinates');
-      if (saved) {
-        return JSON.parse(saved);
+      const savedData = localStorage.getItem('user_coordinates');
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        if (parsed && parsed.latitude && parsed.longitude) {
+          return {
+            latitude: parsed.latitude,
+            longitude: parsed.longitude
+          };
+        }
       }
     } catch (e) {
-      console.error('Erro ao ler coordenadas do localStorage:', e);
+      console.error('Erro ao ler coordenadas salvas:', e);
     }
     return null;
   }
@@ -543,26 +509,21 @@ export class GoogleMapsService {
     });
   }
   
-  private adjustCoordinates(latitude: number, longitude: number, index: number): {latitude: number, longitude: number} {
-    const baseOffset = 0.00002;
-    
-    const patterns = [
-      { latOffset: 0, lngOffset: 0.00002 },
-      { latOffset: baseOffset, lngOffset: 0.00002 },
-      { latOffset: 0, lngOffset: baseOffset },
-      { latOffset: -baseOffset, lngOffset: 0.00002 },
-      { latOffset: 0, lngOffset: -baseOffset },
-      { latOffset: baseOffset, lngOffset: baseOffset },
-      { latOffset: -baseOffset, lngOffset: baseOffset },
-      { latOffset: -baseOffset, lngOffset: -baseOffset },
-      { latOffset: baseOffset, lngOffset: -baseOffset }
-    ];
-    
-    const pattern = patterns[index % patterns.length];
-    
+  private adjustCoordinates(latitude: number, longitude: number, index: number): { latitude: number, longitude: number } {
+    const offset = 0.001;
     return {
-      latitude: latitude + pattern.latOffset,
-      longitude: longitude + pattern.lngOffset
+      latitude: latitude + (offset * index),
+      longitude: longitude + (offset * index)
     };
+  }
+
+  public updateSavedPoints(points: MapPoint[]): void {
+    this._savedPoints.next(points);
+    localStorage.setItem('savedMapPoints', JSON.stringify(points));
+  }
+
+  public clearCurrentSearch(): void {
+    this.searchErrorSubject.next(null);
+    this.searchResultSubject.next(null);
   }
 }
