@@ -10,9 +10,10 @@ import { IconSearchComponent } from '@app/shared/icons/search.icon';
 import { IconCloseComponent } from '@app/shared/icons/close.icon';
 import { IconLockComponent } from '@app/shared/icons/lock.icon';
 import { IconLockOpenComponent } from '@app/shared/icons/lock-open.icon';
-import { MonitorAlert, MonitorService } from '@app/core/service/api/monitor.service';
+import { MonitorService } from '@app/core/service/api/monitor.service';
 import { LoadingService } from '@app/core/service/state/loading.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { IMonitorAlert } from '@app/core/service/api/interfaces/monitor';
 
 interface FilterOption {
   label: string;
@@ -59,8 +60,8 @@ export class AlertAdminSidebarComponent implements OnInit {
   
   isVisible = false;
   isPinned = false;
-  alerts: MonitorAlert[] = [];
-  filteredAlerts: MonitorAlert[] = [];
+  alerts: IMonitorAlert[] = [];
+  filteredAlerts: IMonitorAlert[] = [];
   statusFilter: string = 'all';
   searchTerm: string = '';
   
@@ -113,7 +114,7 @@ export class AlertAdminSidebarComponent implements OnInit {
   private loadAlerts(): void {
     this.loadingService.setLoading(true, 'load-alerts');
     this.monitorService.getMonitorAlerts().subscribe(
-      (alerts: MonitorAlert[]) => {
+      (alerts: IMonitorAlert[]) => {
         this.alerts = alerts;
         this.applyFilters();
         this.loadingService.setLoading(false, 'load-alerts');
@@ -240,10 +241,10 @@ export class AlertAdminSidebarComponent implements OnInit {
     this.filteredAlerts = result;
   }
   
-  resolveAlert(alert: MonitorAlert): void {
+  resolveAlert(alert: IMonitorAlert): void {
     this.loadingService.setLoading(true, `resolve-alert-${alert.id}`);
     this.monitorService.resolveAlert(alert.id).subscribe(
-      (updatedAlert: MonitorAlert) => {
+      (updatedAlert: IMonitorAlert) => {
         const index = this.alerts.findIndex(a => a.id === alert.id);
         if (index !== -1) {
           this.alerts[index] = updatedAlert;
@@ -259,11 +260,11 @@ export class AlertAdminSidebarComponent implements OnInit {
     );
   }
   
-  acknowledgeAlert(data: { alert: MonitorAlert, reason: string }): void {
+  acknowledgeAlert(data: { alert: IMonitorAlert, reason: string }): void {
     const { alert, reason } = data;
     this.loadingService.setLoading(true, `acknowledge-alert-${alert.id}`);
     this.monitorService.acknowledgeAlert(alert.id, reason).subscribe(
-      (updatedAlert: MonitorAlert) => {
+      (updatedAlert: IMonitorAlert) => {
         const index = this.alerts.findIndex(a => a.id === alert.id);
         if (index !== -1) {
           this.alerts[index] = updatedAlert;

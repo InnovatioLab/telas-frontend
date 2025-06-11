@@ -1,109 +1,74 @@
 <div class="container">
   <div class="header">
     <h1>Monitor Management</h1>
-    <button pButton type="button" label="Create Monitor" icon="pi pi-plus" class="p-button-primary" (click)="createMonitor()"></button>
+    <p-button label="Create Monitor" icon="pi pi-plus" (click)="createMonitor()"></p-button>
   </div>
 
-  <div class="search-container">
-    <div class="p-inputgroup">
-      <input type="text" pInputText [(ngModel)]="searchText" placeholder="Search monitors by name, location or type" (keyup.enter)="searchMonitors()">
-      <button type="button" pButton icon="pi pi-search" (click)="searchMonitors()"></button>
-      <button type="button" pButton icon="pi pi-times" class="p-button-danger" (click)="clearSearch()" *ngIf="searchText"></button>
+  <div class="content">
+    <p-card styleClass="mb-4">
+      <div class="filters">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input type="text" pInputText placeholder="Search monitors..." />
+        </span>
+        <p-dropdown [options]="[{label: 'All', value: ''}, {label: 'Active', value: 'active'}, {label: 'Inactive', value: 'inactive'}]" placeholder="Filter by status"></p-dropdown>
+      </div>
+    </p-card>
+
+    <p-table [value]="monitors" [loading]="loading" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" 
+             [rowsPerPageOptions]="[5,10,25,50]" [showCurrentPageReport]="true" responsiveLayout="scroll"
+             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} monitors">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Last Update</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-monitor>
+        <tr>
+          <td>{{monitor.id}}</td>
+          <td>{{monitor.name}}</td>
+          <td>
+            <p-badge [value]="monitor.status" [severity]="monitor.status === 'active' ? 'success' : 'danger'"></p-badge>
+          </td>
+          <td>{{monitor.lastUpdate | date:'medium'}}</td>
+          <td>
+            <div class="action-buttons">
+              <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-text" 
+                      (click)="onSelectMonitor(monitor)"></button>
+              <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                      (click)="deleteMonitor(monitor.id)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center">No monitors found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Dialog for details/edit/create -->
+  <p-dialog header="Monitor Details" [(visible)]="dialogVisible" [style]="{width: '450px'}" [modal]="true">
+    <div class="monitor-form" *ngIf="selectedMonitor">
+      <div class="p-field">
+        <label for="name">Name</label>
+        <input type="text" pInputText id="name" [(ngModel)]="selectedMonitor.name" />
+      </div>
+      <div class="p-field">
+        <label for="status">Status</label>
+        <p-dropdown id="status" [options]="[{label: 'Active', value: 'active'}, {label: 'Inactive', value: 'inactive'}]" 
+                   [(ngModel)]="selectedMonitor.status" optionLabel="label" optionValue="value"></p-dropdown>
+      </div>
     </div>
-  </div>
-
-  <div class="content-container">
-    <app-table
-      [value]="monitors"
-      [colunas]="colunas"
-      [header]="'Monitors'"
-      [subheader]="'Manage your system monitors'"
-      [totalRegistros]="totalRecords"
-      [mensagemEmpty]="'No monitors found'"
-      (visualizar)="visualizarMonitor($event)"
-      (editar)="editarMonitor($event)"
-      (excluir)="excluirMonitor($event)"
-      (pageChange)="onPageChange($event)">
-    </app-table>
-  </div>
-
-  <p-dialog [(visible)]="showDialog" [style]="{width: '600px'}" [modal]="true" [header]="isCreating ? 'Create Monitor' : 'Edit Monitor'"
-            [closeOnEscape]="true" [dismissableMask]="true">
-    <div class="monitor-form" *ngIf="monitorForm">
-      <form [formGroup]="monitorForm">
-        <div class="p-grid p-fluid">
-          <div class="p-field mb-3">
-            <label for="name">Name</label>
-            <input type="text" id="name" pInputText formControlName="name" class="w-full">
-            <small class="p-error" *ngIf="monitorForm.get('name')?.invalid && monitorForm.get('name')?.touched">
-              Name is required
-            </small>
-          </div>
-          
-          <div class="p-field mb-3">
-            <label for="location">Location</label>
-            <input type="text" id="location" pInputText formControlName="location" class="w-full">
-            <small class="p-error" *ngIf="monitorForm.get('location')?.invalid && monitorForm.get('location')?.touched">
-              Location is required
-            </small>
-          </div>
-          
-          <div class="p-field mb-3">
-            <label for="locationDescription">Location Description</label>
-            <textarea id="locationDescription" pInputTextarea formControlName="locationDescription" class="w-full" rows="3"></textarea>
-          </div>
-          
-          <div class="p-field mb-3">
-            <label for="productId">Product ID</label>
-            <input type="text" id="productId" pInputText formControlName="productId" class="w-full">
-            <small class="p-error" *ngIf="monitorForm.get('productId')?.invalid && monitorForm.get('productId')?.touched">
-              Product ID is required
-            </small>
-          </div>
-          
-          <div class="p-field mb-3">
-            <label for="size">Size (inches)</label>
-            <p-inputNumber id="size" formControlName="size" [min]="1" [max]="200" class="w-full"></p-inputNumber>
-            <small class="p-error" *ngIf="monitorForm.get('size')?.invalid && monitorForm.get('size')?.touched">
-              Size is required and must be greater than 0
-            </small>
-          </div>
-          
-          <div class="p-field mb-3">
-            <label for="maxBlocks">Max Blocks</label>
-            <p-inputNumber id="maxBlocks" formControlName="maxBlocks" [min]="1" [max]="100" class="w-full"></p-inputNumber>
-            <small class="p-error" *ngIf="monitorForm.get('maxBlocks')?.invalid && monitorForm.get('maxBlocks')?.touched">
-              Max blocks is required and must be greater than 0
-            </small>
-          </div>
-          
-          <div class="p-field mb-3">
-            <label for="type">Type</label>
-            <p-dropdown id="type" [options]="monitorTypes" formControlName="type" placeholder="Select a type" class="w-full"></p-dropdown>
-            <small class="p-error" *ngIf="monitorForm.get('type')?.invalid && monitorForm.get('type')?.touched">
-              Type is required
-            </small>
-          </div>
-          
-          <div class="p-field mb-3">
-            <label for="status">Status</label>
-            <p-dropdown id="status" [options]="statusOptions" formControlName="status" optionLabel="label" optionValue="value" placeholder="Select a status" class="w-full"></p-dropdown>
-            <small class="p-error" *ngIf="monitorForm.get('status')?.invalid && monitorForm.get('status')?.touched">
-              Status is required
-            </small>
-          </div>
-          
-          <div class="p-field mb-3">
-            <label for="active" class="p-checkbox-label">Active</label>
-            <p-checkbox id="active" formControlName="active" [binary]="true"></p-checkbox>
-          </div>
-        </div>
-      </form>
-    </div>
-    
     <ng-template pTemplate="footer">
-      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-      <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveMonitor()" [disabled]="monitorForm?.invalid"></button>
+      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="selectedMonitor = null"></button>
+      <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="updateMonitor(selectedMonitor)"></button>
     </ng-template>
   </p-dialog>
 </div>

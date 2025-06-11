@@ -1,20 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, catchError, map } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Monitor, MonitorType } from '@app/model/monitors';
 import { DefaultStatus } from '@app/model/client';
 import { environment } from 'src/environments/environment';
-
-export interface MonitorAlert {
-  id: string;
-  monitorId: string;
-  title: string;
-  description: string;
-  timestamp: Date;
-  status: 'critical' | 'warning' | 'resolved' | 'acknowledged';
-  deviceId: string;
-  acknowledgeReason?: string;
-}
+import { IMonitorAlert } from './interfaces/monitor';
 
 @Injectable({
   providedIn: 'root'
@@ -182,7 +172,7 @@ export class MonitorService {
       status: monitor.status || DefaultStatus.ACTIVE,
       lastUpdate: new Date(),
       type: monitor.type || MonitorType.BASIC,
-      active: monitor.active !== undefined ? monitor.active : true,
+      active: monitor.active ?? true,
       locationDescription: monitor.locationDescription || 'Location Description ' + id,
       size: monitor.size || 55.0,
       productId: monitor.productId || 'PROD-' + id,
@@ -223,10 +213,10 @@ export class MonitorService {
     // );
   }
 
-  getMonitorAlerts(monitorId?: string): Observable<MonitorAlert[]> {
+  getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {
     console.log('Buscando alertas, monitor ID:', monitorId);
     
-    const mockAlerts: MonitorAlert[] = [
+    const mockAlerts: IMonitorAlert[] = [
       {
         id: '1',
         monitorId: '1',
@@ -303,11 +293,11 @@ export class MonitorService {
     // );
   }
   
-  acknowledgeAlert(alertId: string, reason: string): Observable<MonitorAlert> {
+  acknowledgeAlert(alertId: string, reason: string): Observable<IMonitorAlert> {
     console.log('Confirmando alerta:', alertId, 'com razão:', reason);
     
     // Implementação mock
-    const mockResponse: MonitorAlert = {
+    const mockResponse: IMonitorAlert = {
       id: alertId,
       monitorId: '1', // Valor arbitrário para mock
       title: 'Alert Acknowledged',
@@ -329,11 +319,11 @@ export class MonitorService {
     // );
   }
   
-  resolveAlert(alertId: string): Observable<MonitorAlert> {
+  resolveAlert(alertId: string): Observable<IMonitorAlert> {
     console.log('Resolvendo alerta:', alertId);
     
     // Implementação mock
-    const mockResponse: MonitorAlert = {
+    const mockResponse: IMonitorAlert = {
       id: alertId,
       monitorId: '1', // Valor arbitrário para mock
       title: 'Alert Resolved',

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { DialogService } from 'primeng/dynamicdialog';
 import { AcknowledgeDialogComponent } from '../acknowledge-dialog/acknowledge-dialog.component';
-import { MonitorAlert } from '@app/core/service/api/monitor.service';
+import { IMonitorAlert } from '@app/core/service/api/interfaces/monitor';
 
 @Component({
   selector: 'app-card-alert',
@@ -14,11 +14,11 @@ import { MonitorAlert } from '@app/core/service/api/monitor.service';
   providers: [DialogService]
 })
 export class CardAlertComponent {
-  @Input() alert: MonitorAlert;
-  @Output() resolve = new EventEmitter<MonitorAlert>();
-  @Output() acknowledge = new EventEmitter<{ alert: MonitorAlert, reason: string }>();
+  @Input() alert: IMonitorAlert;
+  @Output() resolve = new EventEmitter<IMonitorAlert>();
+  @Output() acknowledge = new EventEmitter<{ alert: IMonitorAlert, reason: string }>();
 
-  constructor(private dialogService: DialogService) {}
+  constructor(private readonly dialogService: DialogService) {}
 
   getStatusClass(status: string): string {
     return `status-${status}`;
