@@ -11,6 +11,8 @@ import { FormatarCpfCnpjPipe } from '@app/shared/pipes/formatar-cpf-cnpj.pipe';
 import { CortarStringPipe } from '@app/shared/pipes/cortar-string.pipe';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { Client } from '@app/model/client';
+import { Monitor } from '@app/model/monitors';
+
 export interface IPageEvent {
   first: number;
   rows: number;
@@ -35,12 +37,12 @@ export interface IPageEvent {
 export class TableComponent {
   @ViewChild('table', { static: true }) dataTable: Table;
   @Input()
-  set value(val: Array<Client | IDocumentoDistribuicao>) {
+  set value(val: Array<Client | IDocumentoDistribuicao | Monitor>) {
     this._value = val;
     if (!this.buscaPaginada) this.getTotalRegistros();
   }
 
-  get value(): Array<Client | IDocumentoDistribuicao> {
+  get value(): Array<Client | IDocumentoDistribuicao | Monitor> {
     return this._value;
   }
 
@@ -78,7 +80,7 @@ export class TableComponent {
   @ViewChild('inputElement') inputElement!: ElementRef;
   @ViewChild('table') table!: Table;
 
-  private _value: Array<Client | IDocumentoDistribuicao > = [];
+  private _value: Array<Client | IDocumentoDistribuicao | Monitor> = [];
 
   sortField = '';
   sortOrder = 'asc';
@@ -213,15 +215,15 @@ export class TableComponent {
     }
   }
 
-  onEditar(item: Client): void {
+  onEditar(item: Client | Monitor): void {
     this.editar.emit(item.id);
   }
 
-  onVisualizar(item: Client): void {
+  onVisualizar(item: Client | Monitor): void {
     this.visualizar.emit(item.id);
   }
 
-  onExcluir(item: Client): void {
+  onExcluir(item: Client | Monitor): void {
     this.excluir.emit(item.id);
   }
 
