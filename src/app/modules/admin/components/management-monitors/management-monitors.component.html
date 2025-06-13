@@ -1,18 +1,11 @@
 <div class="container">
-  <div class="header">
-    <h1>Monitor Management</h1>
-    <p-button label="Create Monitor" icon="pi pi-plus" (click)="createMonitor()"></p-button>
-  </div>
-
   <div class="content">
-    <p-card styleClass="mb-4">
-      <div class="filters">
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"></i>
-          <input type="text" pInputText placeholder="Search monitors..." />
-        </span>
-        <p-dropdown [options]="[{label: 'All', value: ''}, {label: 'Active', value: 'active'}, {label: 'Inactive', value: 'inactive'}]" placeholder="Filter by status"></p-dropdown>
-      </div>
+    <p-card styleClass="card-header">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input type="text" pInputText placeholder="Search monitors..." />
+      </span>
+        <p-button label="Create Monitor" icon="pi pi-plus" (click)="createMonitor()"></p-button>
     </p-card>
 
     <p-table [value]="monitors" [loading]="loading" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" 
@@ -53,22 +46,90 @@
     </p-table>
   </div>
 
-  <!-- Dialog for details/edit/create -->
-  <p-dialog header="Monitor Details" [(visible)]="dialogVisible" [style]="{width: '450px'}" [modal]="true">
+  <p-dialog header="New Monitor Details" [(visible)]="dialogVisible" [style]="{width: '600px'}" [modal]="true">
     <div class="monitor-form" *ngIf="selectedMonitor">
-      <div class="p-field">
-        <label for="name">Name</label>
-        <input type="text" pInputText id="name" [(ngModel)]="selectedMonitor.name" />
-      </div>
-      <div class="p-field">
-        <label for="status">Status</label>
-        <p-dropdown id="status" [options]="[{label: 'Active', value: 'active'}, {label: 'Inactive', value: 'inactive'}]" 
-                   [(ngModel)]="selectedMonitor.status" optionLabel="label" optionValue="value"></p-dropdown>
+      <div class="p-grid p-fluid">
+        <div class="p-field p-col-12 p-md-6">
+          <label for="name">Name*</label>
+          <input type="text" pInputText id="name" [(ngModel)]="selectedMonitor.name" required />
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="productId">Product ID*</label>
+          <input type="text" pInputText id="productId" [(ngModel)]="selectedMonitor.productId" required />
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="size">Size (inches)*</label>
+          <p-inputNumber id="size" [(ngModel)]="selectedMonitor.size" [min]="1" [max]="200"></p-inputNumber>
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="type">Type*</label>
+          <p-dropdown id="type" [options]="[
+            {label: 'Basic', value: 'BASIC'}, 
+            {label: 'Advanced', value: 'ADVANCED'}, 
+            {label: 'Premium', value: 'PREMIUM'}
+          ]" [(ngModel)]="selectedMonitor.type" optionLabel="label" optionValue="value"></p-dropdown>
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="status">Status*</label>
+          <p-dropdown id="status" [options]="[
+            {label: 'Active', value: 'active'}, 
+            {label: 'Inactive', value: 'inactive'}
+          ]" [(ngModel)]="selectedMonitor.status" optionLabel="label" optionValue="value"></p-dropdown>
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="active">Active</label>
+          <p-inputSwitch [(ngModel)]="selectedMonitor.active"></p-inputSwitch>
+        </div>
+        
+        <div class="p-field p-col-12">
+          <label for="locationDescription">Location Description</label>
+          <textarea pInputTextarea id="locationDescription" [(ngModel)]="selectedMonitor.locationDescription" rows="3"></textarea>
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="maxBlocks">Max Blocks</label>
+          <p-inputNumber id="maxBlocks" [(ngModel)]="selectedMonitor.maxBlocks" [min]="1" [max]="100"></p-inputNumber>
+        </div>
+        
+        <div class="p-field-checkbox p-col-12">
+          <p-divider></p-divider>
+          <h4>Address</h4>
+        </div>
+        
+        <div class="p-field p-col-12">
+          <label for="street">Street*</label>
+          <input type="text" pInputText id="street" [(ngModel)]="selectedMonitor.address.street" required />
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="city">City*</label>
+          <input type="text" pInputText id="city" [(ngModel)]="selectedMonitor.address.city" required />
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="state">State*</label>
+          <input type="text" pInputText id="state" [(ngModel)]="selectedMonitor.address.state" required />
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="country">Country*</label>
+          <input type="text" pInputText id="country" [(ngModel)]="selectedMonitor.address.country" required />
+        </div>
+        
+        <div class="p-field p-col-12 p-md-6">
+          <label for="zipCode">Zip Code*</label>
+          <input type="text" pInputText id="zipCode" [(ngModel)]="selectedMonitor.address.zipCode" required />
+        </div>
       </div>
     </div>
     <ng-template pTemplate="footer">
-      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="selectedMonitor = null"></button>
       <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="updateMonitor(selectedMonitor)"></button>
     </ng-template>
   </p-dialog>
 </div>
+

@@ -1,11 +1,9 @@
 .container {
-  padding: 1.5rem;
 
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
 
     h1 {
       margin: 0;
@@ -17,11 +15,23 @@
   .content {
     .filters {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      justify-content: space-between;
+      gap: var(--espacamento-padrao);
       flex-wrap: wrap;
-      gap: 1rem;
+
+      .p-input-icon-left {
+        flex: 1;
+        margin: 0;
+
+        input {
+          width: 100%;
+        }
+      }
+
+      .p-button {
+        margin-left: var(--espacamento-padrao);
+      }
     }
 
     .action-buttons {
@@ -34,7 +44,6 @@
 .monitor-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   padding: 1rem 0;
 
   .p-field {
@@ -54,4 +63,20 @@
 
 .text-center {
   text-align: center;
+}
+
+.card-header {
+  padding: var(--espacamento-padrao);
+}
+
+@media screen and (max-width: 576px) {
+  .filters {
+    flex-direction: column;
+
+    .p-button {
+      margin-left: 0;
+      margin-top: var(--espacamento-pequeno);
+      width: 100%;
+    }
+  }
 }

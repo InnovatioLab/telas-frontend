@@ -5,6 +5,7 @@ import { Monitor, MonitorType } from '@app/model/monitors';
 import { DefaultStatus } from '@app/model/client';
 import { environment } from 'src/environments/environment';
 import { IMonitorAlert } from './interfaces/monitor';
+import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -142,19 +143,35 @@ export class MonitorService {
     // );
   }
 
-  createMonitor(monitor: Omit<Monitor, 'id'>): Observable<Monitor> {
-    console.log('Criando novo monitor:', monitor);
+  createMonitor(monitorRequest: CreateMonitorRequestDto): Observable<Monitor> {
+    console.log('Criando novo monitor:', monitorRequest);
     
     const newMonitor: Monitor = {
-      ...monitor,
       id: Math.random().toString(36).substring(2, 9),
-      lastUpdate: new Date()
+      name: `Monitor ${monitorRequest.productId}`,
+      location: monitorRequest.address?.city || 'Sem localização',
+      status: DefaultStatus.ACTIVE,
+      lastUpdate: new Date(),
+      type: monitorRequest.type,
+      active: monitorRequest.active,
+      locationDescription: monitorRequest.locationDescription || '',
+      size: monitorRequest.size,
+      productId: monitorRequest.productId,
+      maxBlocks: monitorRequest.maxBlocks,
+      address: {
+        id: monitorRequest.addressId || Math.random().toString(36).substring(2, 9),
+        street: monitorRequest.address.street,
+        city: monitorRequest.address.city,
+        state: monitorRequest.address.state,
+        country: monitorRequest.address.country,
+        zipCode: monitorRequest.address.zipCode
+      }
     };
     
     return of(newMonitor);
     
     // Chamada real para a API (descomentar em produção)
-    // return this.http.post<Monitor>(this.apiUrl, monitor).pipe(
+    // return this.http.post<Monitor>(this.apiUrl, monitorRequest).pipe(
     //   catchError(error => {
     //     console.error('Erro ao criar monitor:', error);
     //     throw error;

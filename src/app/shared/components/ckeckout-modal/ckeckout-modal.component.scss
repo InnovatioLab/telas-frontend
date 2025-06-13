@@ -265,23 +265,6 @@
   }
 }
 
-::ng-deep {
-  .p-dialog-content {
-    padding: 0 !important;
-    overflow: hidden !important;
-  }
-  
-  .p-datatable.p-datatable-sm {
-    .p-datatable-thead > tr > th {
-      padding: 0.5rem;
-    }
-    
-    .p-datatable-tbody > tr > td {
-      padding: 0.5rem;
-    }
-  }
-}
-
 @media screen and (max-width: 768px) {
   .checkout-modal-container {
     .checkout-header {

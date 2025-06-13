@@ -1,5 +1,4 @@
-import { DefaultStatus } from './client';
-import { Address } from './client';
+import { Address, DefaultStatus } from "./client";
 
 export enum MonitorType {
   BASIC = 'BASIC',
