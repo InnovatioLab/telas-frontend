@@ -5,7 +5,7 @@ import { WishListComponent } from './components/wish-list/wish-list.component';
 import { ClientLayoutComponent } from './page/client-view-layout/client-view-layout.component';
 import { SettingsLayoutComponent } from './page/settings/settings-layout.component';
 import { ViewEditProfileComponent } from './components/view-edit-profile/view-edit-profile.component';
-import { AlterarSenhaComponent } from './components/alterar-senha/alterar-senha.component';
+import { AlterarSenhaComponent } from '../../shared/components/alterar-senha/alterar-senha.component';
 import { MyTelasComponent } from './components/my-telas/my-telas.component';
 
 export const ROUTES: Route[] = [

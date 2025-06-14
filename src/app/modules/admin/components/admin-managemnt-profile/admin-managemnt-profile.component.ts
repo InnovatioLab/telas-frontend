@@ -7,7 +7,7 @@ import { Authentication } from '@app/core/service/auth/autenthication';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { AuthenticationStorage } from '@app/core/service/auth/authentication-storage';
 import { MessageModule } from 'primeng/message';
-import { AlterarSenhaComponent } from '@app/modules/client-authenticated/components/alterar-senha/alterar-senha.component';
+import { AlterarSenhaComponent } from '@app/shared/components/alterar-senha/alterar-senha.component';
 
 interface SecurityQuestion {
   text: string;

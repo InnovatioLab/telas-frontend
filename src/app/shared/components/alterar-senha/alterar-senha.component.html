@@ -1,11 +1,11 @@
 <div class="container">
   <div class="card">
     <div class="card-content">
-      <h1 class="titulo">Alterar Senha</h1>
+      <h1 class="titulo">Change Password</h1>
       
       <form [formGroup]="formSenha" (ngSubmit)="alterarSenha()">
         <div class="password-field">
-          <label for="senhaAtual" class="margin-label">Senha Atual</label>
+          <label for="senhaAtual" class="margin-label">Current Password</label>
           <div class="password-container">
             <input 
               [type]="senhaAtualVisivel ? 'text' : 'password'" 
@@ -13,19 +13,19 @@
               formControlName="senhaAtual" 
               class="password-input" 
               [ngClass]="{'is-invalid': formSenha.get('senhaAtual')?.invalid && formSenha.get('senhaAtual')?.touched}"
-              placeholder="Digite sua senha atual">
+              placeholder="Enter your current password">
             <button type="button" class="password-toggle" (click)="toggleSenha('senhaAtual')">
               <app-icon-olho *ngIf="!senhaAtualVisivel"></app-icon-olho>
               <app-icon-olho-fechado *ngIf="senhaAtualVisivel"></app-icon-olho-fechado>
             </button>
           </div>
           <div *ngIf="formSenha.get('senhaAtual')?.invalid && formSenha.get('senhaAtual')?.touched" class="invalid-feedback">
-            Senha atual é obrigatória
+            Current password is required
           </div>
         </div>
         
         <div class="password-field">
-          <label for="novaSenha" class="margin-label">Nova Senha</label>
+          <label for="novaSenha" class="margin-label">New Password</label>
           <div class="password-container">
             <input 
               [type]="senhaVisivel ? 'text' : 'password'" 
@@ -33,23 +33,23 @@
               formControlName="novaSenha" 
               class="password-input" 
               [ngClass]="{'is-invalid': formSenha.get('novaSenha')?.invalid && formSenha.get('novaSenha')?.touched}"
-              placeholder="Digite sua nova senha">
+              placeholder="Enter your new password">
             <button type="button" class="password-toggle" (click)="toggleSenha('novaSenha')">
               <app-icon-olho *ngIf="!senhaVisivel"></app-icon-olho>
               <app-icon-olho-fechado *ngIf="senhaVisivel"></app-icon-olho-fechado>
             </button>
           </div>
           <div *ngIf="formSenha.get('novaSenha')?.invalid && formSenha.get('novaSenha')?.touched" class="invalid-feedback">
-            <span *ngIf="formSenha.get('novaSenha')?.errors?.['required']">Nova senha é obrigatória</span>
-            <span *ngIf="formSenha.get('novaSenha')?.errors?.['minlength']">A senha deve ter pelo menos 8 caracteres</span>
+            <span *ngIf="formSenha.get('novaSenha')?.errors?.['required']">New password is required</span>
+            <span *ngIf="formSenha.get('novaSenha')?.errors?.['minlength']">Password must be at least 8 characters</span>
           </div>
           <div class="password-requirements">
-            A senha deve conter pelo menos 8 caracteres
+            Password must contain at least 8 characters
           </div>
         </div>
         
         <div class="password-field">
-          <label for="confirmacaoSenha" class="margin-label">Confirmar Nova Senha</label>
+          <label for="confirmacaoSenha" class="margin-label">Confirm New Password</label>
           <div class="password-container">
             <input 
               [type]="confirmacaoVisivel ? 'text' : 'password'" 
@@ -57,21 +57,21 @@
               formControlName="confirmacaoSenha" 
               class="password-input" 
               [ngClass]="{'is-invalid': formSenha.get('confirmacaoSenha')?.invalid && formSenha.get('confirmacaoSenha')?.touched}"
-              placeholder="Confirme sua nova senha">
+              placeholder="Confirm your new password">
             <button type="button" class="password-toggle" (click)="toggleSenha('confirmacaoSenha')">
               <app-icon-olho *ngIf="!confirmacaoVisivel"></app-icon-olho>
               <app-icon-olho-fechado *ngIf="confirmacaoVisivel"></app-icon-olho-fechado>
             </button>
           </div>
           <div *ngIf="formSenha.get('confirmacaoSenha')?.invalid && formSenha.get('confirmacaoSenha')?.touched" class="invalid-feedback">
-            <span *ngIf="formSenha.get('confirmacaoSenha')?.errors?.['required']">Confirmação de senha é obrigatória</span>
-            <span *ngIf="formSenha.get('confirmacaoSenha')?.errors?.['senhasDiferentes']">As senhas não coincidem</span>
+            <span *ngIf="formSenha.get('confirmacaoSenha')?.errors?.['required']">Password confirmation is required</span>
+            <span *ngIf="formSenha.get('confirmacaoSenha')?.errors?.['senhasDiferentes']">Passwords do not match</span>
           </div>
         </div>
         
         <div class="btn-senha-salvar">
           <button type="submit" [disabled]="formSenha.invalid || loading">
-            {{ loading ? 'Alterando...' : 'Alterar Senha' }}
+            {{ loading ? 'Updating...' : 'Update Password' }}
           </button>
         </div>
       </form>

@@ -85,23 +85,23 @@ export class AlterarSenhaComponent implements OnInit {
         next: (response) => {
           this.messageService.add({
             severity: 'success',
-            summary: 'Sucesso',
-            detail: 'Senha alterada com sucesso!'
+            summary: 'Success',
+            detail: 'Password changed successfully!'
           });
           this.formSenha.reset();
         },
         error: (error) => {
-          let mensagemErro = 'Erro ao alterar senha. Tente novamente.';
+          let mensagemErro = 'Error changing password. Please try again.';
           
           if (error.status === 401) {
-            mensagemErro = 'Senha atual incorreta. Por favor, verifique.';
+            mensagemErro = 'Incorrect current password. Please verify.';
           } else if (error.error?.message) {
             mensagemErro = error.error.message;
           }
           
           this.messageService.add({
             severity: 'error',
-            summary: 'Erro',
+            summary: 'Error',
             detail: mensagemErro
           });
         }
