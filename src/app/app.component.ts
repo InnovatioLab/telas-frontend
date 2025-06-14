@@ -30,37 +30,6 @@ export class AppComponent {
     private readonly router: Router,
     public dialogService: DialogService,
   ) {
-    window.addEventListener('popstate', (event) => {
-      if (window.location.pathname === '/login') {
-        event.preventDefault();
-        this.verificarLogout();
-        history.go(1);
-      }
-    });
   }
 
-  logout(){
-    AutenticacaoStorage.clearToken()
-    this.router.navigate(['/logout']);
-  }
-
-  verificarLogout() {
-    const descricao = DIALOGOS.sairSistema;
-
-    const config = DialogoUtils.criarConfig({
-      titulo: 'Confirmar Logout',
-      descricao: descricao,
-      icon: 'report',
-      acaoPrimaria: TEXTO_ACAO.simSair,
-      acaoPrimariaCallback: () => {
-        this.ref.close();
-        this.logout();
-      },
-      acaoSecundaria: TEXTO_ACAO.naoVoltar,
-      acaoSecundariaCallback: () => {
-        this.ref.close();
-      }
-    });
-    this.ref = this.dialogService.open(DialogoComponent, config);
-  }
 }

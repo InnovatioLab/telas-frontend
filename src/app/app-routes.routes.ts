@@ -3,11 +3,11 @@ import { Routes } from '@angular/router';
 export const appRoutes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./modules/manage-access/modules.routes').then((mod) => mod.ROUTES),
+    loadChildren: () => import('./modules/application/modules.routes').then((mod) => mod.ROUTES),
   },
   {
-    path: 'app',
-    loadChildren: () => import('./modules/client-authenticated/modules.routes').then((mod) => mod.ROUTES),
+    path: 'auth',
+    loadChildren: () => import('./modules/manage-access/modules.routes').then((mod) => mod.ROUTES),
   },
   {
     path: 'register',
@@ -15,14 +15,14 @@ export const appRoutes: Routes = [
   },
   {
     path: 'client',
-    loadChildren: () => import('./modules/client-authenticated/modules.routes').then((mod) => mod.ROUTES),
+    loadChildren: () => import('./modules/client/modules.routes').then((mod) => mod.ROUTES),
   },
-    {
+  {
     path: 'admin',
     loadChildren: () => import('./modules/admin/modules.routes').then(m => m.ROUTES),
   },
   {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: 'auth/login'
   }
 ];
