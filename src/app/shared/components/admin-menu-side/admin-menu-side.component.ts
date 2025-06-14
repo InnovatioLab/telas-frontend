@@ -43,8 +43,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   isDarkMode = false;
 
   menuItems: MenuItem[] = [
-    { id: 'home', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'users', label: 'Users Management', icon: 'user' },
+    { id: 'home', label: 'Map', icon: 'dashboard' },
     { id: 'monitors', label: 'Monitors', icon: 'tv-display' },
     { id: 'logout', label: 'Logout', icon: 'sair' },
   ];

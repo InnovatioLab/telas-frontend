@@ -331,7 +331,11 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
   redirecionarAdministracao() {
     if (this.isAdministrador()) {
-      this.router.navigate(['/administrator']);
+      if (this.router.url.includes('/admin/profile')) {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/admin/profile']);
+      }
     }
   }
 

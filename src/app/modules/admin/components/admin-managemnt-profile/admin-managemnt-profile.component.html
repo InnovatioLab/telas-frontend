@@ -1,0 +1,318 @@
+<div class="admin-profile-container">
+  <div class="header">
+    <h1>Profile Management</h1>
+    <p>Update your personal information and access credentials</p>
+  </div>
+
+  <div class="profile-layout">
+    <div class="profile-sidebar">
+      <div class="user-info-card">
+        <div class="user-details">
+          <p>Username: {{ fullName }}</p>
+          <p>{{ userEmail }}</p>
+          <p class="user-role">{{ adminUser?.role }}</p>
+          <p *ngIf="hasAddress" class="user-address">
+            <i class="pi pi-map-marker"></i> {{ formattedAddress }}
+          </p>
+        </div>
+      </div>
+      
+      <div class="sidebar-menu">
+        <div class="sidebar-header">
+          <h3>Settings Menu</h3>
+        </div>
+        <div class="sidebar-content">
+          <ul class="menu-items">
+            <li *ngFor="let item of menuItems" 
+                [ngClass]="{'active': activeTabIndex === item.id}" 
+                (click)="setActiveTab(item.id)">
+              <i [class]="item.icon"></i>
+              <span>{{ item.label }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-main-content">
+      <div class="card profile-card" *ngIf="activeTabIndex === 0">
+        <div class="card-header">
+          <h2>Personal Information</h2>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input 
+                type="text" 
+                pInputText 
+                id="firstName" 
+                formControlName="firstName" 
+                placeholder="Your first name"
+                class="w-full"
+              >
+              <small class="error-message" *ngIf="hasError(profileForm, 'firstName', 'required')">
+                First name is required
+              </small>
+              <small class="error-message" *ngIf="hasError(profileForm, 'firstName', 'minlength')">
+                First name must have at least 3 characters
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input 
+                type="text" 
+                pInputText 
+                id="lastName" 
+                formControlName="lastName" 
+                placeholder="Your last name"
+                class="w-full"
+              >
+              <small class="error-message" *ngIf="hasError(profileForm, 'lastName', 'minlength')">
+                Last name must have at least 2 characters
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input 
+                type="email" 
+                pInputText 
+                id="email" 
+                formControlName="email" 
+                placeholder="your-email@example.com"
+                class="w-full"
+              >
+              <small class="error-message" *ngIf="hasError(profileForm, 'email', 'required')">
+                Email is required
+              </small>
+              <small class="error-message" *ngIf="hasError(profileForm, 'email', 'email')">
+                Invalid email format
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input 
+                type="text" 
+                pInputText 
+                id="phone" 
+                formControlName="phone" 
+                placeholder="(00) 00000-0000"
+                class="w-full"
+              >
+              <small class="error-message" *ngIf="hasError(profileForm, 'phone', 'pattern')">
+                Invalid phone format
+              </small>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                pButton 
+                type="submit" 
+                [disabled]="profileForm.invalid || loadingProfile"
+                class="p-button-primary w-full"
+              >
+                <i class="pi pi-save mr-2" *ngIf="!loadingProfile"></i>
+                <i class="pi pi-spin pi-spinner mr-2" *ngIf="loadingProfile"></i>
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Seção de Dados da Empresa -->
+      <div class="card business-card" *ngIf="activeTabIndex === 1">
+        <div class="card-header">
+          <h2>Company Information</h2>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="businessForm" (ngSubmit)="updateBusiness()">
+            <div class="form-group">
+              <label for="businessName">Company Name</label>
+              <input 
+                type="text" 
+                pInputText 
+                id="businessName" 
+                formControlName="businessName" 
+                placeholder="Your company name"
+                class="w-full"
+              >
+              <small class="error-message" *ngIf="hasError(businessForm, 'businessName', 'required')">
+                Company name is required
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="identificationNumber">Identification Number</label>
+              <input 
+                type="text" 
+                pInputText 
+                id="identificationNumber" 
+                formControlName="identificationNumber" 
+                placeholder="Business ID or SSN"
+                class="w-full"
+              >
+              <small class="error-message" *ngIf="hasError(businessForm, 'identificationNumber', 'required')">
+                Identification number is required
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="industry">Industry</label>
+              <input 
+                type="text" 
+                pInputText 
+                id="industry" 
+                formControlName="industry" 
+                placeholder="Company industry"
+                class="w-full"
+              >
+              <small class="error-message" *ngIf="hasError(businessForm, 'industry', 'required')">
+                Industry is required
+              </small>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                pButton 
+                type="submit" 
+                [disabled]="businessForm.invalid || loadingBusiness"
+                class="p-button-primary w-full"
+              >
+                <i class="pi pi-save mr-2" *ngIf="!loadingBusiness"></i>
+                <i class="pi pi-spin pi-spinner mr-2" *ngIf="loadingBusiness"></i>
+                Save Company Data
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Seção de Endereço -->
+      <div class="card address-card" *ngIf="activeTabIndex === 2">
+        <div class="card-header">
+          <h2>Address</h2>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="addressForm" (ngSubmit)="updateAddress()">
+            <div class="form-group">
+              <label for="street">Street Address</label>
+              <input 
+                type="text" 
+                pInputText 
+                id="street" 
+                formControlName="street" 
+                placeholder="Street, number"
+                class="w-full"
+              >
+              <small class="error-message" *ngIf="hasError(addressForm, 'street', 'required')">
+                Street address is required
+              </small>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="zipCode">Zip Code</label>
+                <input 
+                  type="text" 
+                  pInputText 
+                  id="zipCode" 
+                  formControlName="zipCode" 
+                  placeholder="00000-000"
+                  class="w-full"
+                >
+                <small class="error-message" *ngIf="hasError(addressForm, 'zipCode', 'required')">
+                  Zip code is required
+                </small>
+              </div>
+
+              <div class="form-group">
+                <label for="city">City</label>
+                <input 
+                  type="text" 
+                  pInputText 
+                  id="city" 
+                  formControlName="city" 
+                  placeholder="Your city"
+                  class="w-full"
+                >
+                <small class="error-message" *ngIf="hasError(addressForm, 'city', 'required')">
+                  City is required
+                </small>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="state">State</label>
+                <input 
+                  type="text" 
+                  pInputText 
+                  id="state" 
+                  formControlName="state" 
+                  placeholder="State"
+                  class="w-full"
+                >
+                <small class="error-message" *ngIf="hasError(addressForm, 'state', 'required')">
+                  State is required
+                </small>
+              </div>
+
+              <div class="form-group">
+                <label for="country">Country</label>
+                <input 
+                  type="text" 
+                  pInputText 
+                  id="country" 
+                  formControlName="country" 
+                  placeholder="Country"
+                  class="w-full"
+                >
+                <small class="error-message" *ngIf="hasError(addressForm, 'country', 'required')">
+                  Country is required
+                </small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="complement">Complement</label>
+              <input 
+                type="text" 
+                pInputText 
+                id="complement" 
+                formControlName="complement" 
+                placeholder="Apartment, suite, etc."
+                class="w-full"
+              >
+            </div>
+
+            <div class="form-actions">
+              <button 
+                pButton 
+                type="submit" 
+                [disabled]="addressForm.invalid || loadingAddress"
+                class="p-button-primary w-full"
+              >
+                <i class="pi pi-save mr-2" *ngIf="!loadingAddress"></i>
+                <i class="pi pi-spin pi-spinner mr-2" *ngIf="loadingAddress"></i>
+                Save Address
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card password-card" *ngIf="activeTabIndex === 3">
+        <div class="card-header">
+          <h2>Change Password</h2>
+        </div>
+        <div class="card-body password-container">
+          <app-alterar-senha></app-alterar-senha>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

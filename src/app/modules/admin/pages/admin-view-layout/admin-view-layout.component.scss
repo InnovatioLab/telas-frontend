@@ -7,18 +7,15 @@
 }
 
 router-outlet {
-  flex: 1;
   position: relative;
 }
 
-/* Ajustar conteúdo quando o sidebar estiver pinado */
 :host-context(body.admin-sidebar-open.sidebar-pinned) ::ng-deep router-outlet + * {
   width: calc(100% - 480px);
   margin-right: 480px;
   transition: width 0.3s ease, margin-right 0.3s ease;
 }
 
-/* Versão responsiva */
 @media (max-width: 768px) {
   :host-context(body.admin-sidebar-open.sidebar-pinned) ::ng-deep router-outlet + * {
     width: calc(100% - 320px);
