@@ -1,82 +1,179 @@
-.container {
-
-  .header {
+::ng-deep {
+  .p-card-body {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
 
-    h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      font-weight: 600;
-    }
-  }
-
-  .content {
-    .filters {
+    .card-header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: var(--espacamento-padrao);
-      flex-wrap: wrap;
+    }
+
+    p-button {
+      flex-shrink: 0;
+
+      @media (max-width: 576px) {
+        .p-button {
+          font-size: var(--fonte-tamanho-pequeno);
+          padding: var(--espacamento-pequeno);
+        }
+      }
+    }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
 
       .p-input-icon-left {
-        flex: 1;
-        margin: 0;
+        width: 100%;
+        margin-bottom: var(--espacamento-pequeno);
+      }
 
-        input {
+      p-button {
+        width: 100%;
+
+        .p-button {
           width: 100%;
         }
       }
+    }
+  }
 
-      .p-button {
-        margin-left: var(--espacamento-padrao);
+  .container {
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 600;
       }
     }
 
-    .action-buttons {
-      display: flex;
-      gap: 0.5rem;
+    .content {
+      .filters {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--espacamento-padrao);
+        flex-wrap: wrap;
+
+        .p-input-icon-left {
+          flex: 1;
+          margin: 0;
+
+          input {
+            width: 100%;
+          }
+        }
+
+        .p-button {
+          margin-left: var(--espacamento-padrao);
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
     }
   }
-}
 
-.monitor-form {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem 0;
-
-  .p-field {
+  .monitor-form {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    padding: 1rem 0;
 
-    label {
-      font-weight: 500;
-    }
+    .p-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
 
-    input, p-dropdown {
-      width: 100%;
+      label {
+        font-weight: 500;
+      }
+
+      input,
+      p-dropdown {
+        width: 100%;
+      }
     }
   }
-}
 
-.text-center {
-  text-align: center;
-}
+  .text-center {
+    text-align: center;
+  }
 
-.card-header {
-  padding: var(--espacamento-padrao);
-}
+  .card-header {
+    padding: var(--espacamento-padrao);
+  }
 
-@media screen and (max-width: 576px) {
-  .filters {
-    flex-direction: column;
+  .p-card-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacamento-padrao);
 
-    .p-button {
-      margin-left: 0;
-      margin-top: var(--espacamento-pequeno);
-      width: 100%;
+    .p-input-icon-left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      position: relative;
+
+      app-icon-search {
+        position: absolute;
+        left: 0.75rem;
+        z-index: 1;
+      }
+
+      input {
+        width: 100%;
+        padding-left: 2.5rem;
+      }
+    }
+
+    p-button {
+      flex-shrink: 0;
+
+      // Ajuste para dispositivos móveis
+      @media (max-width: 576px) {
+        .p-button {
+          font-size: var(--fonte-tamanho-pequeno);
+          padding: var(--espacamento-pequeno);
+        }
+      }
+    }
+
+    // Responsividade para telas muito pequenas
+    @media (max-width: 480px) {
+      flex-direction: column;
+
+      .p-input-icon-left {
+        width: 100%;
+        margin-bottom: var(--espacamento-pequeno);
+      }
+
+      p-button {
+        width: 100%;
+
+        .p-button {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 576px) {
+    .filters {
+      flex-direction: column;
+
+      .p-button {
+        margin-left: 0;
+        margin-top: var(--espacamento-pequeno);
+        width: 100%;
+      }
     }
   }
 }

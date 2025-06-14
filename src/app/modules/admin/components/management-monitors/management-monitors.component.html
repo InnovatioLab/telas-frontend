@@ -1,11 +1,16 @@
 <div class="container">
   <div class="content">
     <p-card styleClass="card-header">
-      <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input type="text" pInputText placeholder="Search monitors..." />
-      </span>
-        <p-button label="Create Monitor" icon="pi pi-plus" (click)="createMonitor()"></p-button>
+      <div class="card-header-content">
+          <i class="pi pi-search"></i>
+          <div class="p-card-content">
+            <span class="p-input-icon-left">
+              <app-icon-search></app-icon-search>
+              <input type="text" pInputText placeholder="Search monitors..." />
+            </span>
+            <p-button label="Create Monitor" icon="pi pi-plus"></p-button>
+          </div>
+      </div>
     </p-card>
 
     <p-table [value]="monitors" [loading]="loading" styleClass="p-datatable-sm" [paginator]="true" [rows]="10" 

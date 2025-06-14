@@ -373,9 +373,9 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   navegarPaginaInicial() {
     if (this.isLogado()) {
       if (this.isAdministrador()) {
-        this.router.navigate(['/administrator']);
+        this.router.navigate(['/admin']);
       } else {
-        this.router.navigate(['/client-view']);
+        this.router.navigate(['/client']);
       }
     } else {
       this.router.navigate(['/']);
@@ -427,9 +427,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   isInAllowedRoutes(): boolean {
     const currentUrl = this.router.url;
     
-    // Verificação exata das rotas principais, não incluindo subrotas
     return this.headerAllowedRoutes.some(route => {
-      // Verificar se é exatamente /admin ou /client (com ou sem barra no final)
       const exactRoutePattern = new RegExp(`^${route}(\\/)?$`);
       return exactRoutePattern.test(currentUrl);
     });

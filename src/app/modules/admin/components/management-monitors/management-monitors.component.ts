@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { IconsModule } from '@app/shared/icons/icons.module';
 import { MonitorService } from '@app/core/service/api/monitor.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { Monitor, MonitorType } from '@app/model/monitors';
@@ -16,7 +17,7 @@ import { DisplayType } from '@app/model/enums/display-type.enum';
     CommonModule,
     PrimengModule,
     FormsModule,
-    ReactiveFormsModule
+    IconsModule 
   ],
   templateUrl: './management-monitors.component.html',
   styleUrls: ['./management-monitors.component.scss']
