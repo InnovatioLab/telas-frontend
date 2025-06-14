@@ -26,7 +26,12 @@
             <li *ngFor="let item of menuItems" 
                 [ngClass]="{'active': activeTabIndex === item.id}" 
                 (click)="setActiveTab(item.id)">
-              <i [class]="item.icon"></i>
+              <ng-container [ngSwitch]="item.component">
+                <app-icon-user *ngSwitchCase="'app-icon-user'"></app-icon-user>
+                <app-icon-building *ngSwitchCase="'app-icon-building'"></app-icon-building>
+                <app-icon-map-marker *ngSwitchCase="'app-icon-map-marker'"></app-icon-map-marker>
+                <app-icon-key *ngSwitchCase="'app-icon-key'"></app-icon-key>
+              </ng-container>
               <span>{{ item.label }}</span>
             </li>
           </ul>

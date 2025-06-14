@@ -148,13 +148,20 @@
             color: var(--cor-primaria);
           }
 
-          i {
+          app-icon-user, 
+          app-icon-building, 
+          app-icon-map-marker, 
+          app-icon-key {
             margin-right: var(--espacamento-padrao);
             font-size: var(--fonte-tamanho-padrao);
+            color: var(--cor-primaria);
+            display: flex;
+            align-items: center;
           }
 
           span {
             font-weight: var(--fonte-peso-medio);
+            color: var(--cor-primaria);
           }
         }
       }

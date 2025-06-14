@@ -17,6 +17,7 @@ interface SecurityQuestion {
 interface MenuItem {
   id: number;
   icon: string;
+  component: string;
   label: string;
 }
 
@@ -98,10 +99,10 @@ export class AdminManagementProfileComponent implements OnInit {
   ];
 
   menuItems: MenuItem[] = [
-    { id: 0, icon: 'pi pi-user', label: 'Personal Profile' },
-    { id: 1, icon: 'pi pi-building', label: 'Company Data' },
-    { id: 2, icon: 'pi pi-map-marker', label: 'Address' },
-    { id: 3, icon: 'pi pi-key', label: 'Change Password' }
+    { id: 0, icon: '', component: 'app-icon-user', label: 'Personal Profile' },
+    { id: 1, icon: '', component: 'app-icon-building', label: 'Company Data' },
+    { id: 2, icon: '', component: 'app-icon-map-marker', label: 'Address' },
+    { id: 3, icon: '', component: 'app-icon-key', label: 'Change Password' }
   ];
   
   constructor(
