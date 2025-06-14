@@ -1,4 +1,4 @@
-<header class="header" [ngClass]="{'dark-header': isDarkMode}">
+<header class="header" [ngClass]="{'dark-header': isDarkMode}" [appShowInRoutes]="headerAllowedRoutes">
   <div class="mobile-menu" *ngIf="isMobile" [ngClass]="{'is-open': isMobileMenuOpen}">
     <div class="mobile-header-user">
       <div class="mobile-header">
@@ -44,7 +44,7 @@
           </div>
         </div>
 
-        <div class="search-container" *ngIf="isLogado()">
+        <div class="search-container" *ngIf="isLogado() && isInAllowedRoutes()">
           <div class="address-search-container">
             <div class="address-search-input">
               <input type="text" pInputText [(ngModel)]="searchText" placeholder="Search for an address" maxlength="50"
@@ -138,7 +138,7 @@
           </div>
         </div>
 
-        <div class="search-container" *ngIf="isLogado()">
+        <div class="search-container" *ngIf="isLogado() && isInAllowedRoutes()">
           <div class="address-search-container">
             <div class="address-search-input">
               <input type="text" pInputText [(ngModel)]="searchText" placeholder="Search for an address" maxlength="50"
@@ -171,7 +171,7 @@
             alt="Company Logo" class="imagem-logo" tabindex="0" />
         </section>
 
-        <section class="search-container-desktop" *ngIf="isLogado()">
+        <section class="search-container-desktop" *ngIf="isLogado() && isInAllowedRoutes()">
           <div class="address-search-container">
             <div class="address-search-input">
               <input type="text" pInputText [(ngModel)]="searchText" placeholder="Search for an address" maxlength="50"
@@ -233,4 +233,4 @@
   </div>
 </header>
 <app-checkout-list-side-bar *ngIf="isLogado()"></app-checkout-list-side-bar>
-<div class="espaco-header"></div>
+<div class="espaco-header" [appShowInRoutes]="headerAllowedRoutes"></div>

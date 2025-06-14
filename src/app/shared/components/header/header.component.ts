@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
@@ -17,6 +17,7 @@ import { LoadingService } from '@app/core/service/state/loading.service';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
 import { AlertCounterComponent } from '../alert-counter/alert-counter.component';
 import { IconsModule } from '@app/shared/icons/icons.module';
+import { ShowInRoutesDirective } from '@app/core/directives/show-in-routes.directive';
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
@@ -42,7 +43,8 @@ interface AlertCountEvent {
     CheckoutListSideBarComponent, 
     FormsModule,
     IconsModule,
-    AlertCounterComponent
+    AlertCounterComponent,
+    ShowInRoutesDirective
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
@@ -65,6 +67,9 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   menuAberto = false;
   isDarkMode = false;
   isAdminSidebarVisible = false; // Inicializando como falso
+  
+  // Rotas onde o header deve ser mostrado
+  headerAllowedRoutes = ['/client', '/admin'];
   
   private resizeListener: () => void;
   private authSubscription: Subscription;
@@ -417,6 +422,17 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
   get isSearching(): boolean {
     return this.loadingService.loadingSub.getValue();
+  }
+
+  isInAllowedRoutes(): boolean {
+    const currentUrl = this.router.url;
+    
+    // Verificação exata das rotas principais, não incluindo subrotas
+    return this.headerAllowedRoutes.some(route => {
+      // Verificar se é exatamente /admin ou /client (com ou sem barra no final)
+      const exactRoutePattern = new RegExp(`^${route}(\\/)?$`);
+      return exactRoutePattern.test(currentUrl);
+    });
   }
 }
 
