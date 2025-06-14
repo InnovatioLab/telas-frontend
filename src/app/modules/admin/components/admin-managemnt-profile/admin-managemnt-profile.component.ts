@@ -78,10 +78,6 @@ interface AdminUserData {
   styleUrls: ['./admin-managemnt-profile.component.scss']
 })
 export class AdminManagementProfileComponent implements OnInit {
-  profileForm: FormGroup;
-  securityQuestionsForm: FormGroup;
-  businessForm: FormGroup;
-  addressForm: FormGroup;
   loadingProfile = false;
   loadingSecurityQuestions = false;
   loadingBusiness = false;
@@ -100,9 +96,7 @@ export class AdminManagementProfileComponent implements OnInit {
 
   menuItems: MenuItem[] = [
     { id: 0, icon: '', component: 'app-icon-user', label: 'Personal Profile' },
-    { id: 1, icon: '', component: 'app-icon-building', label: 'Company Data' },
-    { id: 2, icon: '', component: 'app-icon-map-marker', label: 'Address' },
-    { id: 3, icon: '', component: 'app-icon-key', label: 'Change Password' }
+    { id: 1, icon: '', component: 'app-icon-key', label: 'Change Password' }
   ];
   
   constructor(
@@ -113,7 +107,6 @@ export class AdminManagementProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserData();
-    this.initForms();
   }
 
   private loadUserData(): void {
@@ -133,120 +126,6 @@ export class AdminManagementProfileComponent implements OnInit {
     } finally {
       this.loadingProfile = false;
     }
-  }
-
-  private initForms(): void {
-    // Formulário de perfil pessoal
-    this.profileForm = this.fb.group({
-      firstName: [this.adminUser?.owner?.firstName || '', [Validators.required, Validators.minLength(3)]],
-      lastName: [this.adminUser?.owner?.lastName || '', Validators.minLength(2)],
-      email: [this.adminUser?.owner?.email || '', [Validators.required, Validators.email]],
-      phone: [this.adminUser?.owner?.phone || '', Validators.pattern(/^[0-9\-\+\(\)\ ]+$/)]
-    });
-
-    // Formulário de empresa/negócio
-    this.businessForm = this.fb.group({
-      businessName: [this.adminUser?.businessName || '', [Validators.required, Validators.minLength(2)]],
-      identificationNumber: [this.adminUser?.identificationNumber || '', Validators.required],
-      industry: [this.adminUser?.industry || '', Validators.required]
-    });
-
-    // Formulário de endereço
-    const primaryAddress = this.adminUser?.addresses?.[0] || null;
-    this.addressForm = this.fb.group({
-      street: [primaryAddress?.street || '', Validators.required],
-      zipCode: [primaryAddress?.zipCode || '', Validators.required],
-      city: [primaryAddress?.city || '', Validators.required],
-      state: [primaryAddress?.state || '', Validators.required],
-      country: [primaryAddress?.country || 'US', Validators.required],
-      complement: [primaryAddress?.complement || '']
-    });
-    
-    // Formulário de perguntas de segurança
-    this.securityQuestionsForm = this.fb.group({
-      question1: ['', Validators.required],
-      answer1: ['', Validators.required],
-      question2: ['', Validators.required],
-      answer2: ['', Validators.required]
-    }, { validator: this.differentQuestionsValidator });
-  }
-  
-  private differentQuestionsValidator(group: FormGroup): { [key: string]: any } | null {
-    const question1 = group.get('question1')?.value;
-    const question2 = group.get('question2')?.value;
-    
-    if (!question1 || !question2) {
-      return null;
-    }
-    
-    return question1 !== question2 ? null : { 'sameQuestions': true };
-  }
-
-  updateProfile(): void {
-    if (this.profileForm.invalid) {
-      this.toastService.erro('Please correct the errors in the form.');
-      return;
-    }
-
-    this.loadingProfile = true;
-
-    setTimeout(() => {
-      this.loadingProfile = false;
-      this.toastService.sucesso('Profile updated successfully!');
-    }, 1000);
-  }
-
-  updateBusiness(): void {
-    if (this.businessForm.invalid) {
-      this.toastService.erro('Please correct the errors in the company form.');
-      return;
-    }
-
-    this.loadingBusiness = true;
-    const businessData = this.businessForm.value;
-    
-    setTimeout(() => {
-      this.loadingBusiness = false;
-      this.toastService.sucesso('Company information updated successfully!');
-    }, 1000);
-  }
-
-  updateAddress(): void {
-    if (this.addressForm.invalid) {
-      this.toastService.erro('Please correct the errors in the address form.');
-      return;
-    }
-
-    this.loadingAddress = true;
-    const addressData = this.addressForm.value;
-
-    
-    setTimeout(() => {
-      this.loadingAddress = false;
-      this.toastService.sucesso('Address updated successfully!');
-    }, 1000);
-  }
-  
-  saveSecurityQuestions(): void {
-    if (this.securityQuestionsForm.invalid) {
-      this.toastService.erro('Please correct the errors in the security questions form.');
-      return;
-    }
-    
-    if (this.securityQuestionsForm.hasError('sameQuestions')) {
-      this.toastService.erro('Please select different questions.');
-      return;
-    }
-
-    this.loadingSecurityQuestions = true;
-    const securityData = this.securityQuestionsForm.value;
-
-    console.log('Security questions to be saved:', securityData);
-    
-    setTimeout(() => {
-      this.loadingSecurityQuestions = false;
-      this.toastService.sucesso('Security questions saved successfully!');
-    }, 1000);
   }
 
   hasError(formGroup: FormGroup, controlName: string, errorType: string): boolean {
@@ -277,5 +156,26 @@ export class AdminManagementProfileComponent implements OnInit {
     
     const addr = this.adminUser?.addresses[0];
     return `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}, ${addr.country}`;
+  }
+
+  get primaryAddress() {
+    return this.adminUser?.addresses?.[0] || null;
+  }
+
+  get formattedPhone(): string {
+    const phone = this.adminUser?.owner?.phone;
+    if (!phone) return 'Not available';
+    
+    // Formatar o telefone para exibição
+    const digits = phone.replace(/\D/g, '');
+    
+    if (digits.length < 10) return phone; // Retorna o original se não tiver formato padrão
+    
+    const countryCode = '+1';
+    const areaCode = digits.substring(0, 3);
+    const middle = digits.substring(3, 6);
+    const last = digits.substring(6, 10);
+    
+    return `${countryCode} ${areaCode} ${middle} ${last}`;
   }
 }

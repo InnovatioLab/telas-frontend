@@ -1,7 +1,7 @@
 <div class="admin-profile-container">
   <div class="header">
     <h1>Profile Management</h1>
-    <p>Update your personal information and access credentials</p>
+    <p>View your personal information and access credentials</p>
   </div>
 
   <div class="profile-layout">
@@ -28,8 +28,6 @@
                 (click)="setActiveTab(item.id)">
               <ng-container [ngSwitch]="item.component">
                 <app-icon-user *ngSwitchCase="'app-icon-user'"></app-icon-user>
-                <app-icon-building *ngSwitchCase="'app-icon-building'"></app-icon-building>
-                <app-icon-map-marker *ngSwitchCase="'app-icon-map-marker'"></app-icon-map-marker>
                 <app-icon-key *ngSwitchCase="'app-icon-key'"></app-icon-key>
               </ng-container>
               <span>{{ item.label }}</span>
@@ -45,272 +43,101 @@
           <h2>Personal Information</h2>
         </div>
         <div class="card-body">
-          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
-            <div class="form-group">
-              <label for="firstName">First Name</label>
-              <input 
-                type="text" 
-                pInputText 
-                id="firstName" 
-                formControlName="firstName" 
-                placeholder="Your first name"
-                class="w-full"
-              >
-              <small class="error-message" *ngIf="hasError(profileForm, 'firstName', 'required')">
-                First name is required
-              </small>
-              <small class="error-message" *ngIf="hasError(profileForm, 'firstName', 'minlength')">
-                First name must have at least 3 characters
-              </small>
-            </div>
+          <div class="profile-sections">
+            <div class="section personal-section">
+              <div class="section-header">
+                <app-icon-user></app-icon-user>
+                <h3>Personal Details</h3>
+              </div>
+              
+              <div class="form-group">
+                <label>First Name</label>
+                <div class="data-field">{{ adminUser?.owner?.firstName || 'Not available' }}</div>
+              </div>
 
-            <div class="form-group">
-              <label for="lastName">Last Name</label>
-              <input 
-                type="text" 
-                pInputText 
-                id="lastName" 
-                formControlName="lastName" 
-                placeholder="Your last name"
-                class="w-full"
-              >
-              <small class="error-message" *ngIf="hasError(profileForm, 'lastName', 'minlength')">
-                Last name must have at least 2 characters
-              </small>
-            </div>
+              <div class="form-group">
+                <label>Last Name</label>
+                <div class="data-field">{{ adminUser?.owner?.lastName || 'Not available' }}</div>
+              </div>
 
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input 
-                type="email" 
-                pInputText 
-                id="email" 
-                formControlName="email" 
-                placeholder="your-email@example.com"
-                class="w-full"
-              >
-              <small class="error-message" *ngIf="hasError(profileForm, 'email', 'required')">
-                Email is required
-              </small>
-              <small class="error-message" *ngIf="hasError(profileForm, 'email', 'email')">
-                Invalid email format
-              </small>
-            </div>
+              <div class="form-group">
+                <label>Email</label>
+                <div class="data-field">{{ adminUser?.owner?.email || 'Not available' }}</div>
+              </div>
 
-            <div class="form-group">
-              <label for="phone">Phone</label>
-              <input 
-                type="text" 
-                pInputText 
-                id="phone" 
-                formControlName="phone" 
-                placeholder="(00) 00000-0000"
-                class="w-full"
-              >
-              <small class="error-message" *ngIf="hasError(profileForm, 'phone', 'pattern')">
-                Invalid phone format
-              </small>
+              <div class="form-group">
+                <label>Phone</label>
+                <div class="data-field">{{ formattedPhone }}</div>
+              </div>
             </div>
+            
+            <div class="section company-section">
+              <div class="section-header">
+                <app-icon-building></app-icon-building>
+                <h3>Company Information</h3>
+              </div>
+              
+              <div class="form-group">
+                <label>Company Name</label>
+                <div class="data-field">{{ adminUser?.businessName || 'Not available' }}</div>
+              </div>
 
-            <div class="form-actions">
-              <button 
-                pButton 
-                type="submit" 
-                [disabled]="profileForm.invalid || loadingProfile"
-                class="p-button-primary w-full"
-              >
-                <i class="pi pi-save mr-2" *ngIf="!loadingProfile"></i>
-                <i class="pi pi-spin pi-spinner mr-2" *ngIf="loadingProfile"></i>
-                Save Changes
-              </button>
+              <div class="form-group">
+                <label>Identification Number</label>
+                <div class="data-field">{{ adminUser?.identificationNumber || 'Not available' }}</div>
+              </div>
+
+              <div class="form-group">
+                <label>Industry</label>
+                <div class="data-field">{{ adminUser?.industry || 'Not available' }}</div>
+              </div>
             </div>
-          </form>
+            
+            <div class="section address-section">
+              <div class="section-header">
+                <app-icon-map-marker></app-icon-map-marker>
+                <h3>Address Information</h3>
+              </div>
+              
+              <div class="form-group">
+                <label>Street Address</label>
+                <div class="data-field">{{ primaryAddress?.street || 'Not available' }}</div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Zip Code</label>
+                  <div class="data-field">{{ primaryAddress?.zipCode || 'Not available' }}</div>
+                </div>
+
+                <div class="form-group">
+                  <label>City</label>
+                  <div class="data-field">{{ primaryAddress?.city || 'Not available' }}</div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>State</label>
+                  <div class="data-field">{{ primaryAddress?.state || 'Not available' }}</div>
+                </div>
+
+                <div class="form-group">
+                  <label>Country</label>
+                  <div class="data-field">{{ primaryAddress?.country || 'Not available' }}</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Complement</label>
+                <div class="data-field">{{ primaryAddress?.complement || 'Not available' }}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Seção de Dados da Empresa -->
-      <div class="card business-card" *ngIf="activeTabIndex === 1">
-        <div class="card-header">
-          <h2>Company Information</h2>
-        </div>
-        <div class="card-body">
-          <form [formGroup]="businessForm" (ngSubmit)="updateBusiness()">
-            <div class="form-group">
-              <label for="businessName">Company Name</label>
-              <input 
-                type="text" 
-                pInputText 
-                id="businessName" 
-                formControlName="businessName" 
-                placeholder="Your company name"
-                class="w-full"
-              >
-              <small class="error-message" *ngIf="hasError(businessForm, 'businessName', 'required')">
-                Company name is required
-              </small>
-            </div>
-
-            <div class="form-group">
-              <label for="identificationNumber">Identification Number</label>
-              <input 
-                type="text" 
-                pInputText 
-                id="identificationNumber" 
-                formControlName="identificationNumber" 
-                placeholder="Business ID or SSN"
-                class="w-full"
-              >
-              <small class="error-message" *ngIf="hasError(businessForm, 'identificationNumber', 'required')">
-                Identification number is required
-              </small>
-            </div>
-
-            <div class="form-group">
-              <label for="industry">Industry</label>
-              <input 
-                type="text" 
-                pInputText 
-                id="industry" 
-                formControlName="industry" 
-                placeholder="Company industry"
-                class="w-full"
-              >
-              <small class="error-message" *ngIf="hasError(businessForm, 'industry', 'required')">
-                Industry is required
-              </small>
-            </div>
-
-            <div class="form-actions">
-              <button 
-                pButton 
-                type="submit" 
-                [disabled]="businessForm.invalid || loadingBusiness"
-                class="p-button-primary w-full"
-              >
-                <i class="pi pi-save mr-2" *ngIf="!loadingBusiness"></i>
-                <i class="pi pi-spin pi-spinner mr-2" *ngIf="loadingBusiness"></i>
-                Save Company Data
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Seção de Endereço -->
-      <div class="card address-card" *ngIf="activeTabIndex === 2">
-        <div class="card-header">
-          <h2>Address</h2>
-        </div>
-        <div class="card-body">
-          <form [formGroup]="addressForm" (ngSubmit)="updateAddress()">
-            <div class="form-group">
-              <label for="street">Street Address</label>
-              <input 
-                type="text" 
-                pInputText 
-                id="street" 
-                formControlName="street" 
-                placeholder="Street, number"
-                class="w-full"
-              >
-              <small class="error-message" *ngIf="hasError(addressForm, 'street', 'required')">
-                Street address is required
-              </small>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="zipCode">Zip Code</label>
-                <input 
-                  type="text" 
-                  pInputText 
-                  id="zipCode" 
-                  formControlName="zipCode" 
-                  placeholder="00000-000"
-                  class="w-full"
-                >
-                <small class="error-message" *ngIf="hasError(addressForm, 'zipCode', 'required')">
-                  Zip code is required
-                </small>
-              </div>
-
-              <div class="form-group">
-                <label for="city">City</label>
-                <input 
-                  type="text" 
-                  pInputText 
-                  id="city" 
-                  formControlName="city" 
-                  placeholder="Your city"
-                  class="w-full"
-                >
-                <small class="error-message" *ngIf="hasError(addressForm, 'city', 'required')">
-                  City is required
-                </small>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="state">State</label>
-                <input 
-                  type="text" 
-                  pInputText 
-                  id="state" 
-                  formControlName="state" 
-                  placeholder="State"
-                  class="w-full"
-                >
-                <small class="error-message" *ngIf="hasError(addressForm, 'state', 'required')">
-                  State is required
-                </small>
-              </div>
-
-              <div class="form-group">
-                <label for="country">Country</label>
-                <input 
-                  type="text" 
-                  pInputText 
-                  id="country" 
-                  formControlName="country" 
-                  placeholder="Country"
-                  class="w-full"
-                >
-                <small class="error-message" *ngIf="hasError(addressForm, 'country', 'required')">
-                  Country is required
-                </small>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="complement">Complement</label>
-              <input 
-                type="text" 
-                pInputText 
-                id="complement" 
-                formControlName="complement" 
-                placeholder="Apartment, suite, etc."
-                class="w-full"
-              >
-            </div>
-
-            <div class="form-actions">
-              <button 
-                pButton 
-                type="submit" 
-                [disabled]="addressForm.invalid || loadingAddress"
-                class="p-button-primary w-full"
-              >
-                <i class="pi pi-save mr-2" *ngIf="!loadingAddress"></i>
-                <i class="pi pi-spin pi-spinner mr-2" *ngIf="loadingAddress"></i>
-                Save Address
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="card password-card" *ngIf="activeTabIndex === 3">
+      <div class="card password-card" *ngIf="activeTabIndex === 1">
         <div class="card-header">
           <h2>Change Password</h2>
         </div>
