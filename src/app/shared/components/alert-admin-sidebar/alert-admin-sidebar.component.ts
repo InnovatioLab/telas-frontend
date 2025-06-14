@@ -29,11 +29,17 @@ interface AdminSidebarPinChangedEvent {
   visible: boolean;
 }
 
+interface AlertCountEvent {
+  count: number;
+  hasCritical: boolean;
+}
+
 declare global {
   interface WindowEventMap {
     'toggle-admin-sidebar': CustomEvent<ToggleAdminSidebarEvent>;
     'admin-sidebar-visibility-changed': CustomEvent<ToggleAdminSidebarEvent>;
     'admin-sidebar-pin-changed': CustomEvent<AdminSidebarPinChangedEvent>;
+    'admin-alert-count-changed': CustomEvent<AlertCountEvent>;
   }
 }
 
@@ -109,6 +115,11 @@ export class AlertAdminSidebarComponent implements OnInit {
         }
       }
     });
+    
+    // Adicionar simulação de novo alerta para demonstração
+    if (this.isAdministrador()) {
+      setInterval(() => this.addTestAlert(), 30000);
+    }
   }
   
   private loadAlerts(): void {
@@ -117,6 +128,7 @@ export class AlertAdminSidebarComponent implements OnInit {
       (alerts: IMonitorAlert[]) => {
         this.alerts = alerts;
         this.applyFilters();
+        this.updateAlertCount(); // Atualizar contagem de alertas
         this.loadingService.setLoading(false, 'load-alerts');
       },
       (error: Error) => {
@@ -146,6 +158,60 @@ export class AlertAdminSidebarComponent implements OnInit {
       document.body.classList.remove('admin-sidebar-open');
       document.body.classList.remove('sidebar-pinned');
     }
+  }
+  
+  private isAdministrador(): boolean {
+    return this.authentication._clientSignal()?.role === 'ADMIN';
+  }
+  
+  // Método para adicionar um alerta de teste manualmente
+  addTestAlert(): void {
+    const alertTypes = ['critical', 'warning'] as const;
+    const randomType = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+    const randomId = Math.floor(Math.random() * 10000).toString();
+    
+    const newAlert: IMonitorAlert = {
+      id: randomId,
+      monitorId: Math.floor(Math.random() * 3 + 1).toString(),
+      title: randomType === 'critical' ? 'Critical Alert: System Failure' : 'Warning: Performance Issue',
+      description: randomType === 'critical' 
+        ? `Critical system error detected on monitor #${randomId}. Immediate attention required.` 
+        : `Performance degradation detected on monitor #${randomId}. Please check system status.`,
+      timestamp: new Date(),
+      status: randomType,
+      deviceId: `DP-${randomId}`
+    };
+    
+    this.alerts = [newAlert, ...this.alerts];
+    this.applyFilters();
+    this.updateAlertCount();
+    
+    if (!this.isVisible) {
+      this.toastService.info(`Novo alerta: ${newAlert.title}`);
+    }
+  }
+  
+  // Método para atualizar a contagem de alertas e emitir evento
+  private updateAlertCount(): void {
+    // Contagem de alertas não resolvidos e não confirmados
+    const pendingAlerts = this.alerts.filter(
+      alert => alert.status === 'critical' || alert.status === 'warning'
+    );
+    
+    const hasCritical = pendingAlerts.some(alert => alert.status === 'critical');
+    
+    // Emitir evento global para o header
+    const alertCountEvent = new CustomEvent<AlertCountEvent>('admin-alert-count-changed', {
+      detail: {
+        count: pendingAlerts.length,
+        hasCritical
+      }
+    });
+    window.dispatchEvent(alertCountEvent);
+    
+    // Salvar no localStorage para persistência
+    localStorage.setItem('admin_alert_count', pendingAlerts.length.toString());
+    localStorage.setItem('admin_has_critical_alert', hasCritical.toString());
   }
   
   toggleSidebar(fromHeader = false): void {
@@ -249,6 +315,7 @@ export class AlertAdminSidebarComponent implements OnInit {
         if (index !== -1) {
           this.alerts[index] = updatedAlert;
           this.applyFilters();
+          this.updateAlertCount(); // Atualizar contagem ao resolver
           this.toastService.sucesso('Alerta marcado como resolvido');
         }
         this.loadingService.setLoading(false, `resolve-alert-${alert.id}`);
@@ -269,6 +336,7 @@ export class AlertAdminSidebarComponent implements OnInit {
         if (index !== -1) {
           this.alerts[index] = updatedAlert;
           this.applyFilters();
+          this.updateAlertCount(); // Atualizar contagem ao confirmar
           this.toastService.sucesso(`Alerta confirmado: ${reason}`);
         }
         this.loadingService.setLoading(false, `acknowledge-alert-${alert.id}`);

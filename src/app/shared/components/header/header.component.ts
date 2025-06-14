@@ -31,6 +31,11 @@ interface AdminSidebarPinChangedEvent {
   visible: boolean;
 }
 
+interface AlertCountEvent {
+  count: number;
+  hasCritical: boolean;
+}
+
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -68,6 +73,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   menuAberto = false;
   isDarkMode = false;
   isAdminSidebarVisible = false; // Inicializando como falso
+  adminAlertCount = signal<number>(0);
+  hasAdminCriticalAlert = signal<boolean>(false);
   
   private resizeListener: () => void;
   private authSubscription: Subscription;
@@ -138,10 +145,30 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isAdministrador()) {
       const savedVisibility = localStorage.getItem('admin_sidebar_visible');
       this.isAdminSidebarVisible = savedVisibility === 'true';
+      
+      // Carregar contagem de alertas salva
+      const savedAlertCount = localStorage.getItem('admin_alert_count');
+      if (savedAlertCount) {
+        this.adminAlertCount.set(parseInt(savedAlertCount, 10));
+      }
+      
+      const savedHasCritical = localStorage.getItem('admin_has_critical_alert');
+      if (savedHasCritical) {
+        this.hasAdminCriticalAlert.set(savedHasCritical === 'true');
+      }
+      
+      // Adicionar listener para eventos de contagem de alertas
+      window.addEventListener('admin-alert-count-changed', (e: CustomEvent<AlertCountEvent>) => {
+        if (e.detail) {
+          this.adminAlertCount.set(e.detail.count);
+          this.hasAdminCriticalAlert.set(e.detail.hasCritical);
+          this.cdr.detectChanges();
+        }
+      });
     }
     
     window.addEventListener('admin-sidebar-visibility-changed', (e: CustomEvent<ToggleAdminSidebarEvent>) => {
-      if (e.detail && e.detail.visible !== undefined) {
+      if (e.detail?.visible !== undefined) {
         this.isAdminSidebarVisible = e.detail.visible;
         this.cdr.detectChanges();
       }
@@ -408,6 +435,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       detail: { visible: this.isAdminSidebarVisible }
     });
     window.dispatchEvent(toggleEvent);
+    
+    // Resetar o estado visual de alerta crítico quando o sidebar é aberto
+    if (this.isAdminSidebarVisible) {
+      this.hasAdminCriticalAlert.set(false);
+      localStorage.setItem('admin_has_critical_alert', 'false');
+    }
   }
   
   updateAdminSidebarVisibility(isVisible: boolean): void {

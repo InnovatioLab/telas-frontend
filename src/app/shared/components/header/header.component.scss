@@ -1286,3 +1286,54 @@ app-icon-search {
   width: 24px;
   height: 24px;
 }
+
+/* Estilos para o contador de alertas */
+.alert-badge {
+  background-color: var(--cor-primaria-clara);
+  color: var(--cor-branca);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 12px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  padding: 0 6px;
+  font-weight: var(--fonte-peso-negrito);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.badge-critical {
+  background-color: var(--cor-erro);
+}
+
+/* Efeito piscante para os alertas */
+@keyframes blinking {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.alert-blinking {
+  animation: blinking 1.5s infinite;
+  
+  &:hover {
+    animation: none;
+    opacity: 1;
+  }
+  
+  &:focus {
+    animation: none;
+    opacity: 1;
+  }
+  
+  app-icon-warning {
+    color: var(--cor-erro) !important;
+  }
+}
+
+/* Estilos específicos para o botão de alerta */
+#admin-alerts-button, #admin-alerts-button-mobile {
+  position: relative;
+}

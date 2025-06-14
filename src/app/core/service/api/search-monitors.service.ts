@@ -200,13 +200,11 @@ export class SearchMonitorsService {
       if (!zipCode) {
         throw new Error('Unable to identify zip code from address');
       }
-      
-      const response = await this.findNearestMonitors(zipCode, size, type, limit).toPromise();
-      
+            
       const currentPoints = this.nearestMonitorsSubject.getValue();
       return currentPoints;
     } catch (error: any) {
-      const errorMessage = error?.message || 'Error searching for nearby monitors';
+      const errorMessage = error?.message ?? 'Error searching for nearby monitors';
       this.errorSubject.next(errorMessage);
       return [];
     } finally {
@@ -218,12 +216,12 @@ export class SearchMonitorsService {
     const brRegex = /\b\d{5}-\d{3}\b/;
     const usRegex = /\b\d{5}(?:-\d{4})?\b/;
     
-    const brMatch = address.match(brRegex);
+    const brMatch = brRegex.exec(address);
     if (brMatch) {
       return brMatch[0].replace('-', '');
     }
     
-    const usMatch = address.match(usRegex);
+    const usMatch = usRegex.exec(address);
     if (usMatch) {
       return usMatch[0].replace('-', '');
     }

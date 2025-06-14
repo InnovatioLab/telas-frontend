@@ -130,8 +130,12 @@
               </button>
 
               <button (click)="toggleAdminSidebar()" class="icon-button" id="admin-alerts-button-mobile"
-                *ngIf="isAdministrador()">
+                *ngIf="isAdministrador()" [ngClass]="{'alert-blinking': hasAdminCriticalAlert()}">
                 <app-icon-warning style="color: white;"></app-icon-warning>
+                <span *ngIf="adminAlertCount() > 0" class="badge alert-badge flex justify-content-center align-items-center absolute"
+                  [ngClass]="{'badge-critical': hasAdminCriticalAlert()}">
+                  {{ adminAlertCount() }}
+                </span>
               </button>
             </div>
           </div>
@@ -194,10 +198,15 @@
                 {{ itensSalvos() }}</span>
             </button>
 
+            <!-- Botão de alertas no header desktop -->
             <button id="admin-alerts-button" *ngIf="isAdministrador() && !isAdminSidebarVisible" pButton
               [rounded]="true" [text]="true" (click)="toggleAdminSidebar()" pTooltip="Important System Alerts"
-              tooltipPosition="bottom">
+              tooltipPosition="bottom" [ngClass]="{'alert-blinking': hasAdminCriticalAlert()}">
               <app-icon-warning class="icon cursor-pointer" style="color: white;"></app-icon-warning>
+              <span *ngIf="adminAlertCount() > 0" class="badge alert-badge flex justify-content-center align-items-center absolute"
+                [ngClass]="{'badge-critical': hasAdminCriticalAlert()}">
+                {{ adminAlertCount() }}
+              </span>
             </button>
 
             <button id="link-administracao" *ngIf="isAdministrador()" pButton [rounded]="true" [text]="true"

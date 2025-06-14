@@ -170,16 +170,16 @@ export class GoogleMapsService {
     }));
   }
   
-  public createMarkerOptions(point: MapPoint): google.maps.MarkerOptions {
-    const options: google.maps.MarkerOptions = {
-      draggable: false,
+  public createMarkerOptions(point: MapPoint): google.maps.marker.AdvancedMarkerElementOptions {
+    const options: google.maps.marker.AdvancedMarkerElementOptions = {
+      gmpDraggable: false,
       title: point.title || ''
     };
-    
+
     if (point.icon) {
-      options.icon = point.icon;
+      (options as any).glyph = point.icon;
     }
-    
+
     return options;
   }
   
@@ -457,7 +457,7 @@ export class GoogleMapsService {
       const savedData = localStorage.getItem('user_coordinates');
       if (savedData) {
         const parsed = JSON.parse(savedData);
-        if (parsed && parsed.latitude && parsed.longitude) {
+        if (parsed?.latitude && parsed?.longitude) {
           return {
             latitude: parsed.latitude,
             longitude: parsed.longitude

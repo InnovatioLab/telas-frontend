@@ -8,7 +8,6 @@ import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-list/pop-up-add-list.component';
-import { AlertAdminSidebarComponent } from '@app/shared/components/alert-admin-sidebar/alert-admin-sidebar.component';
 import { MonitorService } from '@app/core/service/api/monitor.service';
 import { LoadingService } from '@app/core/service/state/loading.service';
 import { finalize } from 'rxjs/operators';
@@ -24,7 +23,6 @@ import { finalize } from 'rxjs/operators';
     MapsComponent, 
     SidebarMapaComponent,
     PopUpStepAddListComponent,
-    AlertAdminSidebarComponent
   ]
 })
 export class AlertViewComponent implements OnInit, OnDestroy {
@@ -74,27 +72,33 @@ export class AlertViewComponent implements OnInit, OnDestroy {
       .pipe(
         finalize(() => this.loadingService.setLoading(false, 'load-monitors'))
       )
-      .subscribe(
-        (monitors) => {
-          this.mapPoints = monitors.map(monitor => ({
-            id: monitor.id,
-            title: monitor.name,
-            position: {
-              lat: parseFloat((Math.random() * (41.9 - 41.7) + 41.7).toFixed(6)),
-              lng: parseFloat((Math.random() * (-87.6 - -87.8) + -87.8).toFixed(6))
-            },
-            type: 'monitor',
-            description: monitor.locationDescription || 'Monitor location',
-            icon: this.getIconForStatus(monitor.status),
-            data: monitor
-          }));
+      .subscribe({
+        next: (monitors) => {
+          this.mapPoints = monitors.map(monitor => {
+            const lat = parseFloat((Math.random() * (41.9 - 41.7) + 41.7).toFixed(6));
+            const lng = parseFloat((Math.random() * (-87.6 - -87.8) + -87.8).toFixed(6));
+            return {
+              id: monitor.id,
+              title: monitor.name,
+              position: {
+                lat,
+                lng
+              },
+              latitude: lat,
+              longitude: lng,
+              type: 'monitor',
+              description: monitor.locationDescription || 'Monitor location',
+              icon: this.getIconForStatus(monitor.status),
+              data: monitor
+            };
+          });
           
           this.emitMonitorsFoundEvent(this.mapPoints);
         },
-        (error) => {
+        error: (error) => {
           this.toastService.erro('Erro ao carregar monitores');
         }
-      );
+      });
   }
   
   private getIconForStatus(status: string): string {

@@ -9,7 +9,7 @@
 /* Base Styles */
 :root {
   /* Colors */
-  --cor-primaria: #232F3E;
+ --cor-primaria: #232F3E;
   --cor-primaria-clara: #496382;
   --cor-primaria-escura: #131921;
   --cor-cinza-fundo: #f8f9fa;
@@ -19,9 +19,16 @@
   --cor-legenda: #696F74;
   --cor-sucesso: #28a745;
   --cor-erro: #dc3545;
+  --cor-erro-claro: #f8d7da;
+  --cor-erro-escuro: #b02a37;
   --cor-desabilitado: #696F74CC;
   --cor-branca: #FFFFFF;
   --cor-preto-claro: #16191B;
+  
+  /* Cor para RGB - usado em transparências */
+  --cor-erro-rgb: 220, 53, 69;
+  --cor-primaria-rgb: 35, 47, 62;
+
 
   /* Typography */
   --fonte-familia: 'Montserrat', sans-serif;

@@ -53,7 +53,16 @@
     </div>
     
     <div class="alerts-container">
-      <h3>System Alerts</h3>
+      <div class="alerts-header">
+        <h3>System Alerts</h3>
+        <button pButton pRipple type="button" 
+                icon="pi pi-plus" 
+                class="p-button-rounded p-button-warning p-button-text test-alert-btn"
+                (click)="addTestAlert()" 
+                pTooltip="Add test alert" 
+                tooltipPosition="left">
+        </button>
+      </div>
       
       <div *ngIf="isLoading" class="loading-container">
         <p-progressSpinner strokeWidth="4" [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
@@ -62,6 +71,12 @@
       
       <div *ngIf="!isLoading && filteredAlerts.length === 0" class="no-alerts">
         <p>No alerts found.</p>
+        <button pButton pRipple type="button" 
+                label="Create Test Alert" 
+                icon="pi pi-plus" 
+                class="p-button-sm p-button-warning" 
+                (click)="addTestAlert()">
+        </button>
       </div>
       
       <app-card-alert 

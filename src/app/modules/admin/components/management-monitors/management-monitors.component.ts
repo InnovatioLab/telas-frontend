@@ -116,7 +116,7 @@ export class ManagementMonitorsComponent implements OnInit {
           zipCode: monitor.address?.zipCode || ''
         },
         type: monitor.type || MonitorType.BASIC,
-        active: monitor.active !== undefined ? monitor.active : true,
+        active: monitor.active ?? true,
         locationDescription: monitor.locationDescription || '',
         maxBlocks: monitor.maxBlocks || undefined,
         ads: [
