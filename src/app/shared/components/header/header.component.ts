@@ -13,14 +13,10 @@ import { ToastService } from '@app/core/service/state/toast.service';
 import { NotificacaoState } from '@app/modules/notificacao/models';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { CheckoutListSideBarComponent } from '../checkout-list-side-bar/checkout-list-side-bar.component';
-import { IconShoppingBasketComponent } from '../../icons/shopping-basket.icon';
-import { IconNotificationsComponent } from '../../icons/notifications.icon';
-import { IconBarsComponent } from '../../icons/bars.icon';
-import { IconSearchComponent } from '../../icons/search.icon';
-import { IconSettingsComponent } from '../../icons/settings.icon';
-import { IconWarningComponent } from '../../icons/warning.icon';
 import { LoadingService } from '@app/core/service/state/loading.service';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
+import { AlertCounterComponent } from '../alert-counter/alert-counter.component';
+import { IconsModule } from '@app/shared/icons/icons.module';
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
@@ -45,12 +41,8 @@ interface AlertCountEvent {
     RouterModule, 
     CheckoutListSideBarComponent, 
     FormsModule,
-    IconShoppingBasketComponent,
-    IconNotificationsComponent,
-    IconBarsComponent,
-    IconSearchComponent,
-    IconSettingsComponent,
-    IconWarningComponent
+    IconsModule,
+    AlertCounterComponent
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
@@ -73,8 +65,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   menuAberto = false;
   isDarkMode = false;
   isAdminSidebarVisible = false; // Inicializando como falso
-  adminAlertCount = signal<number>(0);
-  hasAdminCriticalAlert = signal<boolean>(false);
   
   private resizeListener: () => void;
   private authSubscription: Subscription;
@@ -145,26 +135,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isAdministrador()) {
       const savedVisibility = localStorage.getItem('admin_sidebar_visible');
       this.isAdminSidebarVisible = savedVisibility === 'true';
-      
-      // Carregar contagem de alertas salva
-      const savedAlertCount = localStorage.getItem('admin_alert_count');
-      if (savedAlertCount) {
-        this.adminAlertCount.set(parseInt(savedAlertCount, 10));
-      }
-      
-      const savedHasCritical = localStorage.getItem('admin_has_critical_alert');
-      if (savedHasCritical) {
-        this.hasAdminCriticalAlert.set(savedHasCritical === 'true');
-      }
-      
-      // Adicionar listener para eventos de contagem de alertas
-      window.addEventListener('admin-alert-count-changed', (e: CustomEvent<AlertCountEvent>) => {
-        if (e.detail) {
-          this.adminAlertCount.set(e.detail.count);
-          this.hasAdminCriticalAlert.set(e.detail.hasCritical);
-          this.cdr.detectChanges();
-        }
-      });
     }
     
     window.addEventListener('admin-sidebar-visibility-changed', (e: CustomEvent<ToggleAdminSidebarEvent>) => {
@@ -435,12 +405,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       detail: { visible: this.isAdminSidebarVisible }
     });
     window.dispatchEvent(toggleEvent);
-    
-    // Resetar o estado visual de alerta crítico quando o sidebar é aberto
-    if (this.isAdminSidebarVisible) {
-      this.hasAdminCriticalAlert.set(false);
-      localStorage.setItem('admin_has_critical_alert', 'false');
-    }
   }
   
   updateAdminSidebarVisibility(isVisible: boolean): void {
@@ -451,3 +415,4 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.loadingService.loadingSub.getValue();
   }
 }
+

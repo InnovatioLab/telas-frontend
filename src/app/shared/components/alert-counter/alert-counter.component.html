@@ -1,0 +1,15 @@
+<button 
+  [id]="isDesktop ? 'admin-alerts-button' : 'admin-alerts-button-mobile'" 
+  pButton
+  [rounded]="isDesktop" 
+  [text]="isDesktop" 
+  [ngClass]="{'alert-blinking': hasAdminCriticalAlert(), 'icon-button': !isDesktop}"
+  (click)="onToggleSidebar()" 
+  pTooltip="Important System Alerts"
+  tooltipPosition="bottom">
+  <app-icon-warning class="icon cursor-pointer" style="color: white;"></app-icon-warning>
+  <span *ngIf="adminAlertCount() > 0" class="badge alert-badge flex justify-content-center align-items-center absolute"
+    [ngClass]="{'badge-critical': hasAdminCriticalAlert()}">
+    {{ adminAlertCount() }}
+  </span>
+</button>
