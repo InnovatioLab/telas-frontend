@@ -145,7 +145,6 @@ export class SearchMonitorsService {
   public findByZipCode(zipCode: string): Promise<MapPoint[]> {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
-    
     if (!zipCode || zipCode.trim().length < 5) {
       this.errorSubject.next('Invalid zip code');
       this.loadingSubject.next(false);
@@ -161,6 +160,7 @@ export class SearchMonitorsService {
         if (points.length === 0) {
           this.errorSubject.next(`No monitors found for ZIP code ${cleanZipCode}`);
         }
+        console.log(`Found ${points.length} monitors for ZIP code ${cleanZipCode}`);
         return points;
       })
       .catch((error): MapPoint[] => {

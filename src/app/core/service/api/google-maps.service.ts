@@ -194,6 +194,17 @@ export class GoogleMapsService {
     };
   }
   
+  public createSearchMarkerIcon(): google.maps.Symbol {
+    return {
+      path: google.maps.SymbolPath.CIRCLE,
+      fillColor: '#4285F4', // Cor azul do Google
+      fillOpacity: 1,
+      strokeWeight: 2,
+      strokeColor: '#FFFFFF',
+      scale: 10
+    };
+  }
+  
   public loadPointsFromSavedLocation(): void {
     try {
       const savedCoordinates = localStorage.getItem('user_coordinates');
@@ -431,18 +442,12 @@ export class GoogleMapsService {
             if (savedCoordinates) {
               resolve(savedCoordinates);
             } else {
-              resolve({
-                latitude: -3.7327, 
-                longitude: -38.5270
-              });
+              resolve(null);
             }
           }
         );
       } else {
-        resolve(this.getUserCoordinates() || {
-          latitude: -3.7327, 
-          longitude: -38.5270
-        });
+        resolve(this.getUserCoordinates() || null);
       }
     });
   }
@@ -525,5 +530,10 @@ export class GoogleMapsService {
   public clearCurrentSearch(): void {
     this.searchErrorSubject.next(null);
     this.searchResultSubject.next(null);
+  }
+
+  public setSearchResult(result: AddressSearchResult): void {
+    this.searchResultSubject.next(result);
+    this.addToSearchHistory(result);
   }
 }

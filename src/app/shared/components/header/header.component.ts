@@ -20,6 +20,7 @@ import { IconSearchComponent } from '../../icons/search.icon';
 import { IconSettingsComponent } from '../../icons/settings.icon';
 import { IconWarningComponent } from '../../icons/warning.icon';
 import { LoadingService } from '@app/core/service/state/loading.service';
+import { ZipCodeService } from '@app/core/service/api/zipcode.service';
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
@@ -88,7 +89,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly cdr: ChangeDetectorRef,
     private readonly toggleModeService: ToggleModeService,
     private readonly toastService: ToastService,
-    private loadingService: LoadingService
+    private readonly loadingService: LoadingService,
+    private readonly zipcodeService: ZipCodeService,
   ) {}
 
   ngOnInit() {
@@ -169,24 +171,58 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     const searchTextCopy = this.searchText.trim();
     const zipRegex = /^\d{5}(-\d{4})?$/;
     
+    this.loadingService.setLoading(true, 'address-search');
+    
     if (zipRegex.test(searchTextCopy)) {
-      this.searchMonitorsService.findByZipCode(searchTextCopy)
-        .then(monitors => {
-          if (monitors && monitors.length > 0) {
-            this.emitMonitorsFoundEvent(monitors);
-            this.toastService.sucesso(`Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`);
-          } else {
-            this.toastService.aviso(`No monitors found for ZIP code ${searchTextCopy}`);
+      const zipCode = searchTextCopy.split('-')[0]; // Remove o hífen se existir
+      console.log('HeaderComponent: Buscando por CEP:', zipCode);
+      
+      // Se é um CEP, usar o ZipCodeService
+      this.zipcodeService.findLocationByZipCode(zipCode)
+        .subscribe({
+          next: (addressData) => {
+            if (addressData) {
+              console.log('HeaderComponent: Dados de endereço encontrados:', addressData);
+              this.toastService.sucesso(`Localização encontrada: ${addressData.city}, ${addressData.state}`);
+              this.searchText = '';
+              
+              // Buscar monitores próximos após encontrar o CEP
+              this.searchMonitorsService.findByZipCode(zipCode)
+                .then(monitors => {
+                  if (monitors && monitors.length > 0) {
+                    this.emitMonitorsFoundEvent(monitors);
+                    this.toastService.sucesso(`Encontrados ${monitors.length} monitores próximos ao CEP ${zipCode}`);
+                  } else {
+                    this.toastService.aviso(`Nenhum monitor encontrado para o CEP ${zipCode}`);
+                  }
+                })
+                .catch(error => {
+                  console.error('Erro ao buscar monitores por CEP:', error);
+                  this.toastService.erro(`Erro ao buscar monitores com o CEP ${zipCode}`);
+                });
+            } else {
+              console.log('HeaderComponent: Nenhum dado encontrado, usando Google Maps');
+              // Se não encontrou pelo ZipCodeService, tentar diretamente pelo Google Maps
+              this.googleMapsService.performAddressSearch(searchTextCopy);
+            }
+            this.loadingService.setLoading(false, 'address-search');
+          },
+          error: (error) => {
+            console.error('HeaderComponent: Erro ao buscar CEP:', error);
+            // Fallback para o Google Maps
+            this.googleMapsService.performAddressSearch(searchTextCopy);
+            this.searchText = '';
+            this.loadingService.setLoading(false, 'address-search');
+          },
+          complete: () => {
+            this.loadingService.setLoading(false, 'address-search');
           }
-          this.searchText = ''; 
-        })
-        .catch(error => {
-          console.error('Erro ao buscar monitores por CEP:', error);
-          this.toastService.erro(`Error searching for monitors with ZIP code ${searchTextCopy}`);
         });
     } else {
+      // Se não é um CEP, usar o Google Maps normalmente
       this.googleMapsService.performAddressSearch(searchTextCopy);
       this.searchText = '';
+      this.loadingService.setLoading(false, 'address-search');
     }
   }
   

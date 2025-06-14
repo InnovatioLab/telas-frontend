@@ -102,6 +102,59 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private setupEventListeners(): void {
+    // Adicionar listener para o evento zipcode-location-found
+    window.addEventListener('zipcode-location-found', ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.location) {
+        const location = customEvent.detail.location;
+        if (this.map && location.latitude && location.longitude) {
+          this.ngZone.run(() => {
+            const newCenter = { lat: location.latitude, lng: location.longitude };
+            this.map?.setCenter(newCenter);
+            this.map?.setZoom(15);
+            
+            // Criar um marcador para a localização
+            this.clearMarkers();
+            const marker = new google.maps.Marker({
+              position: newCenter,
+              map: this.map,
+              title: location.title || 'Localização do CEP',
+              icon: this.mapsService.createRedMarkerIcon()
+            });
+            this.markers.push(marker);
+          });
+        }
+      }
+    }) as EventListener);
+
+    // Listener para o evento user-coordinates-updated
+    window.addEventListener('user-coordinates-updated', ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.latitude && customEvent.detail?.longitude) {
+        const newCenter = {
+          lat: customEvent.detail.latitude,
+          lng: customEvent.detail.longitude
+        };
+        
+        if (this.map) {
+          this.ngZone.run(() => {
+            this.map?.setCenter(newCenter);
+            this.map?.setZoom(15);
+            
+            // Adicionar um marcador na posição atual
+            this.clearMarkers();
+            const marker = new google.maps.Marker({
+              position: newCenter,
+              map: this.map,
+              title: 'Localização atual',
+              icon: this.mapsService.createRedMarkerIcon()
+            });
+            this.markers.push(marker);
+          });
+        }
+      }
+    }) as EventListener);
+
     const userCoordsSub = this.mapsService.savedPoints$.subscribe((points: MapPoint[]) => {
       if (this.map && points.length > 0) {
         this.addMapPoints(points);

@@ -1,0 +1,11 @@
+{
+  "/zipcode-api": {
+    "target": "https://app.zipcodebase.com/api/v1",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/zipcode-api": ""
+    },
+    "logLevel": "debug"
+  }
+}
