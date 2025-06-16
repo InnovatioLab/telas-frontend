@@ -1,5 +1,4 @@
-import { computed, Injectable, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { computed, Injectable, signal } from '@angular/core';
 import { AuthenticationStorage } from './authentication-storage';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { firstValueFrom, BehaviorSubject } from 'rxjs';
@@ -8,8 +7,6 @@ import { ClientService } from '../api/client.service';
 
 @Injectable({ providedIn: 'root' })
 export class Authentication extends AuthenticationStorage {
-  private readonly router = inject(Router);
-
   _clientSignal = signal<Client | null>(null);
 
   _helperJwt: JwtHelperService;
@@ -43,22 +40,12 @@ export class Authentication extends AuthenticationStorage {
   constructor(private readonly clientService: ClientService) {
     super();
 
-    console.log('Authentication service inicializado');
-    this.checkInitialToken();
-
     if (Authentication.getDataUser()) {
       const client = JSON.parse(Authentication.getDataUser());
       this._clientSignal.set(client);
     }
 
     this.loggedInSubject.next(this.isTokenValido());
-  }
-
-  private checkInitialToken(): void {
-    console.log('Verificando token inicial');
-    // Adicionar log para depurar verificação do token
-    const token = localStorage.getItem('token');
-    console.log('Token encontrado:', !!token);
   }
 
   public get token(): string {
@@ -69,10 +56,14 @@ export class Authentication extends AuthenticationStorage {
   }
 
   public isTokenValido(): boolean {
-    const token = localStorage.getItem('token');
-    console.log('Verificando validade do token:', !!token);
-
-    return !!token;
+    try {
+      const token: string = AuthenticationStorage.getToken();
+      const tokenExpirado = this.helperJwt.isTokenExpired(token);
+      if (!token || token == 'null' || tokenExpirado) return false;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   public isAceitouTermo(): boolean {
