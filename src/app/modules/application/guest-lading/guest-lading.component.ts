@@ -7,6 +7,7 @@ import { MapperAnimateComponent } from '../components/mapper-animate/mapper-anim
 import { HowItWorksComponent } from '../components/how-it-works/how-it-works.component';
 import { HeroComponent } from '../components/hero/hero.component';
 import { FeatureComponent } from '../components/feature/feature.component';
+import { BannerComponent } from "../components/banner/banner.component";
 
 @Component({
   selector: 'app-guest-lading',
@@ -19,7 +20,8 @@ import { FeatureComponent } from '../components/feature/feature.component';
     MapperAnimateComponent,
     HowItWorksComponent,
     HeroComponent,
-    FeatureComponent
+    FeatureComponent,
+    BannerComponent
   ],
   templateUrl: './guest-lading.component.html',
   styleUrls: ['./guest-lading.component.scss']

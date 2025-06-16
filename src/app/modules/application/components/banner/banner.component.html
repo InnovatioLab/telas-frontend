@@ -1,0 +1,118 @@
+<section class="py-20 bg-gray-background">
+  <div class="container mx-auto px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-gray-dark mb-6">See Your Ads Come to Life</h2>
+        <p class="text-xl text-gray-color max-w-3xl mx-auto">
+          Experience how your advertisements will look on our premium digital screens. 
+          High-quality displays in strategic locations ensure maximum visibility and impact.
+        </p>
+      </div>
+      <!-- Main Banner Display -->
+      <div class="relative mb-16">
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 shadow-2xl">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <!-- Digital Screen Mockup -->
+            <div class="relative">
+              <div class="bg-black rounded-2xl p-4 shadow-xl cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl group">
+                <div class="aspect-video bg-gradient-to-r from-primary-color to-primary-light rounded-lg relative overflow-hidden transition-all duration-700 group-hover:from-purple-600 group-hover:to-pink-600">
+                  <div class="absolute inset-0 flex items-center justify-center transition-all duration-500 group-hover:scale-110">
+                    <div class="text-center text-white">
+                      <h3 class="text-2xl font-bold mb-2">Your Business Here</h3>
+                      <p class="text-lg opacity-90">Premium Digital Advertising</p>
+                      <div class="mt-4 bg-white text-primary-color px-6 py-2 rounded-full font-semibold inline-block hover:bg-opacity-90 transition-all duration-300">
+                        Call Now: (555) 123-4567
+                      </div>
+                    </div>
+                  </div>
+                  <div class="absolute top-4 right-4">
+                    <div class="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm flex items-center animate-pulse">
+                      <app-icon-olho class="w-4 h-4 mr-1"></app-icon-olho>
+                      2.5K views
+                    </div>
+                  </div>
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
+                </div>
+                <!-- Screen Info -->
+                <div class="mt-4 text-white text-center">
+                  <p class="text-sm opacity-75">55" 4K Ultra HD Display</p>
+                  <p class="text-xs opacity-60">Downtown Shopping Mall - Screen #1</p>
+                </div>
+              </div>
+            </div>
+            <!-- Ad Performance Stats -->
+            <div class="space-y-6">
+              <div class="text-white">
+                <h3 class="text-2xl font-bold mb-4">Real-Time Performance</h3>
+                <p class="text-gray-300 mb-6">Track your ad performance with detailed analytics and insights.</p>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 rounded-xl">
+                  <div class="p-4 text-center">
+                    <app-icon-olho class="w-8 h-8 mx-auto mb-2 text-primary-light"></app-icon-olho>
+                    <p class="text-2xl font-bold">2.5K</p>
+                    <p class="text-sm opacity-75">Daily Views</p>
+                  </div>
+                </div>
+                <div class="bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 rounded-xl">
+                  <div class="p-4 text-center">
+                    <app-icon-clock class="w-8 h-8 mx-auto mb-2 text-primary-light"></app-icon-clock>
+                    <p class="text-2xl font-bold">15s</p>
+                    <p class="text-sm opacity-75">Display Time</p>
+                  </div>
+                </div>
+                <div class="bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 rounded-xl">
+                  <div class="p-4 text-center">
+                    <app-icon-tv-display class="w-8 h-8 mx-auto mb-2 text-primary-light"></app-icon-tv-display>
+                    <p class="text-2xl font-bold">HD</p>
+                    <p class="text-sm opacity-75">Quality</p>
+                  </div>
+                </div>
+                <div class="bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 rounded-xl">
+                  <div class="p-4 text-center">
+                    <app-icon-play class="w-8 h-8 mx-auto mb-2 text-primary-light"></app-icon-play>
+                    <p class="text-2xl font-bold">24/7</p>
+                    <p class="text-sm opacity-75">Active</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>      
+      <!-- Interactive Ad Examples -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div *ngFor="let ad of adExamples" class="text-center group">
+          <div class="bg-black rounded-xl p-3 mb-4 shadow-lg cursor-pointer transition-all duration-500 hover:scale-110 hover:shadow-2xl hover:rotate-1">
+            <div class="aspect-video bg-gradient-to-r {{ad.gradient}} rounded-lg flex items-center justify-center relative overflow-hidden transition-all duration-700 group-hover:animate-pulse">
+              <div class="text-white text-center z-10 transition-all duration-500 group-hover:scale-110">
+                <h4 class="font-bold text-lg mb-1">{{ad.title}}</h4>
+                <p class="text-sm opacity-90 mb-2">{{ad.subtitle}}</p>
+                <div class="bg-white text-gray-800 px-3 py-1 rounded-full text-xs font-semibold inline-block">
+                  {{ad.cta}}
+                </div>
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
+              <div class="absolute top-2 right-2 w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100 animate-ping"></div>
+            </div>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-dark mb-2 transition-colors duration-300 group-hover:text-primary-color">
+            {{ad.category}}
+          </h3>
+          <p class="text-gray-color text-sm">Perfect for {{ad.category.toLowerCase()}} promotions</p>
+        </div>
+      </div>
+      <!-- Call to Action -->
+      <div class="text-center mt-12">
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <h3 class="text-2xl font-bold text-gray-dark mb-4">Ready to Launch Your Campaign?</h3>
+          <p class="text-gray-color mb-6">Join thousands of businesses already advertising on our premium digital network.</p>
+          <button class="btn-primary px-8 py-3 text-lg hover:scale-105 transition-all duration-300"
+            (click)="onStartAdvertising()">
+            Start Advertising Today
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -30,6 +30,10 @@ import { IconSairComponent } from './sair.icon';
 import { IconBuildingComponent } from './building.icon';
 import { IconMapMarkerComponent } from './map-marker.icon';
 import { IconKeyComponent } from './key.icon';
+import { IconBoltComponent } from './bolt.icon';
+import { IconFilterComponent } from './filter.icon';
+import { IconClockComponent } from './clock.icon';
+import { IconPlayComponent } from './play.icon';
 
 @NgModule({
   imports: [
@@ -63,7 +67,11 @@ import { IconKeyComponent } from './key.icon';
     IconSairComponent,
     IconBuildingComponent,
     IconMapMarkerComponent,
-    IconKeyComponent
+    IconKeyComponent,
+    IconBoltComponent,
+    IconFilterComponent,
+    IconClockComponent,
+    IconPlayComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -95,7 +103,11 @@ import { IconKeyComponent } from './key.icon';
     IconSairComponent,
     IconBuildingComponent,
     IconMapMarkerComponent,
-    IconKeyComponent
+    IconKeyComponent,
+    IconBoltComponent,
+    IconFilterComponent,
+    IconClockComponent,
+    IconPlayComponent
   ],
   declarations: []
 })

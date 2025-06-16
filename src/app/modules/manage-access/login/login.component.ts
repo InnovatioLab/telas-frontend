@@ -16,6 +16,7 @@ import { TermosComponent } from '@app/modules/register/termos-condicoes/termos.c
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { ClientService } from '@app/core/service/api/client.service';
 import { AuthenticationStorage } from '@app/core/service/auth/authentication-storage';
+import { IconsModule } from '@app/shared/icons/icons.module';
 
 @Component({
     selector: 'app-login',
@@ -25,7 +26,8 @@ import { AuthenticationStorage } from '@app/core/service/auth/authentication-sto
       PrimengModule, 
       CardCentralizadoComponent, 
       ErrorComponent, 
-      TermosComponent
+      TermosComponent,
+      IconsModule
     ],
     standalone: true,
     templateUrl: './login.component.html',

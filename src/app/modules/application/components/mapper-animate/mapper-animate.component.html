@@ -15,7 +15,7 @@
             <h3 class="text-2xl font-bold text-gray-dark mb-6">Search for Screens</h3>
             <div class="space-y-4 mb-6">
               <div class="relative">
-                <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-color" style="font-size: 1.25rem;"></i>
+                <app-icon-search class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-color" width="20" height="20"></app-icon-search>
                 <input 
                   type="text"
                   placeholder="Enter location (address, city, area...)"
@@ -27,11 +27,11 @@
                   type="button"
                   class="btn btn-outline flex-1 border-primary-color text-primary-color hover:bg-primary-color hover:text-white"
                 >
-                  <i class="pi pi-filter mr-2" style="font-size: 1rem;"></i>
+                  <app-icon-filter class="mr-2" width="16" height="16"></app-icon-filter>
                   Filters
                 </button>
                 <button type="button" class="flex-2 btn-primary">
-                  <i class="pi pi-search mr-2" style="font-size: 1rem;"></i>
+                  <app-icon-search class="mr-2" width="16" height="16"></app-icon-search>
                   Search Screens
                 </button>
               </div>
@@ -43,7 +43,7 @@
                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div class="flex items-center space-x-3">
                     <div class="bg-primary-color p-2 rounded-full">
-                      <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+                      <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
                     </div>
                     <div>
                       <p class="font-medium text-gray-dark">Downtown Mall - Screen #1</p>
@@ -55,7 +55,7 @@
                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div class="flex items-center space-x-3">
                     <div class="bg-primary-color p-2 rounded-full">
-                      <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+                      <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
                     </div>
                     <div>
                       <p class="font-medium text-gray-dark">Business District - Screen #3</p>
@@ -74,7 +74,7 @@
             <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 h-96 flex items-center justify-center">
               <div class="text-center">
                 <div class="bg-primary-color p-6 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                  <i class="pi pi-map-marker text-white" style="font-size: 2.5rem;"></i>
+                  <app-icon-map-marker class="text-white" width="40" height="40"></app-icon-map-marker>
                 </div>
                 <h3 class="text-xl font-semibold text-gray-dark mb-2">Interactive Map View</h3>
                 <p class="text-gray-color">Google Maps integration shows all available screens in real-time</p>
@@ -82,13 +82,13 @@
             </div>
             <!-- Floating elements to simulate map pins -->
             <div class="absolute top-16 left-12 bg-primary-color p-2 rounded-full shadow-lg animate-pulse">
-              <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+              <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
             </div>
             <div class="absolute top-32 right-16 bg-primary-color p-2 rounded-full shadow-lg animate-pulse delay-75">
-              <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+              <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
             </div>
             <div class="absolute bottom-24 left-20 bg-primary-color p-2 rounded-full shadow-lg animate-pulse delay-150">
-              <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+              <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
             </div>
           </div>
         </div>
@@ -97,21 +97,21 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
         <div class="text-center">
           <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <i class="pi pi-search text-white" style="font-size: 2rem;"></i>
+            <app-icon-search class="text-white" width="32" height="32"></app-icon-search>
           </div>
           <h3 class="text-lg font-semibold text-gray-dark mb-2">Smart Search</h3>
           <p class="text-gray-color">Find screens by location, size, traffic, and availability in real-time</p>
         </div>
         <div class="text-center">
           <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <i class="pi pi-map-marker text-white" style="font-size: 2rem;"></i>
+            <app-icon-map-marker class="text-white" width="32" height="32"></app-icon-map-marker>
           </div>
           <h3 class="text-lg font-semibold text-gray-dark mb-2">Precise Location</h3>
           <p class="text-gray-color">Get exact coordinates and detailed information about each screen location</p>
         </div>
         <div class="text-center">
           <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <i class="pi pi-bolt text-white" style="font-size: 2rem;"></i>
+            <app-icon-bolt class="text-white" width="32" height="32"></app-icon-bolt>
           </div>
           <h3 class="text-lg font-semibold text-gray-dark mb-2">Instant Booking</h3>
           <p class="text-gray-color">Book your preferred screen locations directly from the map interface</p>
