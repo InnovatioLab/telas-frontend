@@ -1,84 +1,76 @@
-<section id="how-it-works" class="py-20 bg-gray-background">
-  <div class="container px-4">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-bold text-gray-dark mb-6">How It Works</h2>
-        <p class="text-xl text-gray-color max-w-2xl mx-auto">
+<section id="how-it-works" class="how-section">
+  <div class="how-container">
+    <div class="how-max">
+      <div class="how-header">
+        <h2 class="how-title">How It Works</h2>
+        <p class="how-description">
           Get your business advertised on digital screens in just four simple steps.
           Our streamlined process makes it easy to reach your customers.
         </p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="how-steps-grid">
         <!-- Step 1 -->
-        <div class="text-center">
-          <div class="relative mb-6">
-            <div class="bg-primary-color p-6 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+        <div class="how-step">
+          <div class="how-step-icon-wrap">
+            <div class="how-step-icon">
               <app-icon-search class="text-white" width="40" height="40"></app-icon-search>
             </div>
-            <div class="absolute -top-2 -right-2 bg-primary-light text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
-              1
-            </div>
+            <div class="how-step-number">1</div>
           </div>
-          <h3 class="text-xl font-semibold text-gray-dark mb-3">Find Screens</h3>
-          <p class="text-gray-color">
+          <h3 class="how-step-title">Find Screens</h3>
+          <p class="how-step-description">
             Use our Google Maps integration to search and find digital advertising screens in your desired location.
           </p>
         </div>
         <!-- Step 2 -->
-        <div class="text-center">
-          <div class="relative mb-6">
-            <div class="bg-primary-color p-6 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+        <div class="how-step">
+          <div class="how-step-icon-wrap">
+            <div class="how-step-icon">
               <app-icon-arquivo class="text-white" width="40" height="40"></app-icon-arquivo>
             </div>
-            <div class="absolute -top-2 -right-2 bg-primary-light text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
-              2
-            </div>
+            <div class="how-step-number">2</div>
           </div>
-          <h3 class="text-xl font-semibold text-gray-dark mb-3">Submit Documents</h3>
-          <p class="text-gray-color">
+          <h3 class="how-step-title">Submit Documents</h3>
+          <p class="how-step-description">
             Upload your advertising materials and required documents for review by our admin team.
           </p>
         </div>
         <!-- Step 3 -->
-        <div class="text-center">
-          <div class="relative mb-6">
-            <div class="bg-primary-color p-6 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+        <div class="how-step">
+          <div class="how-step-icon-wrap">
+            <div class="how-step-icon">
               <app-icon-check class="text-white" width="40" height="40"></app-icon-check>
             </div>
-            <div class="absolute -top-2 -right-2 bg-primary-light text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
-              3
-            </div>
+            <div class="how-step-number">3</div>
           </div>
-          <h3 class="text-xl font-semibold text-gray-dark mb-3">Get Approved</h3>
-          <p class="text-gray-color">
+          <h3 class="how-step-title">Get Approved</h3>
+          <p class="how-step-description">
             Our administrators will review your submission and approve your advertising content.
           </p>
         </div>
         <!-- Step 4 -->
-        <div class="text-center">
-          <div class="relative mb-6">
-            <div class="bg-primary-color p-6 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+        <div class="how-step">
+          <div class="how-step-icon-wrap">
+            <div class="how-step-icon">
               <app-icon-tv-display class="text-white" width="40" height="40"></app-icon-tv-display>
             </div>
-            <div class="absolute -top-2 -right-2 bg-primary-light text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
-              4
-            </div>
+            <div class="how-step-number">4</div>
           </div>
-          <h3 class="text-xl font-semibold text-gray-dark mb-3">Go Live</h3>
-          <p class="text-gray-color">
+          <h3 class="how-step-title">Go Live</h3>
+          <p class="how-step-description">
             Once approved, your ads will be displayed on the selected digital screens to reach your target audience.
           </p>
         </div>
       </div>
-      <div class="text-center mt-12">
-        <div class="bg-white card-custom p-8 max-w-3xl mx-auto">
-          <h3 class="text-2xl font-bold text-gray-dark mb-4">Ready to Start Advertising?</h3>
-          <p class="text-gray-color mb-6">
+      <div class="how-cta-section">
+        <div class="how-cta-card">
+          <h3 class="how-cta-title">Ready to Start Advertising?</h3>
+          <p class="how-cta-description">
             Join hundreds of businesses already using our platform to reach more customers
             through strategic digital advertising placements.
           </p>
           <button
-            class="btn-primary px-8 py-3 text-lg rounded-full"
+            class="how-cta-btn"
             (click)="onStartCampaign()"
           >
             Start Your Campaign
@@ -87,4 +79,3 @@
       </div>
     </div>
   </div>
-</section>
