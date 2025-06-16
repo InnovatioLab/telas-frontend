@@ -1,7 +1,12 @@
 <div class="box-status-layout">
   <div class="box-status-main-content">
     <aside class="sidebar-fixed">
-      <h3>Screens</h3>
+      <div class="sidebar-header">
+        <button class="logout-btn" (click)="logout()" pTooltip="Logout" tooltipPosition="right">
+          <app-icon-logout width="22" height="22"></app-icon-logout>
+        </button>
+        <h3>Screens</h3>
+      </div>
       <ul class="screen-list">
         <li 
           *ngFor="let screen of screens" 
@@ -11,48 +16,60 @@
           <span class="status-badge" [ngClass]="screen.status">{{ getStatusLabel(screen.status) }}</span>
         </li>
       </ul>
-      <nav class="menu">
+    </aside>
+    <main class="content">
+      <h2>{{ selectedScreen.name }}</h2>
+      <nav class="tabs-menu">
         <ul>
           <li 
             *ngFor="let opt of menuOptions"
             [class.active]="selectedMenu === opt.key"
             (click)="selectMenu(opt.key)">
+            <ng-container [ngSwitch]="opt.icon">
+              <app-icon-tv-display *ngSwitchCase="'tv-display'" class="menu-icon" width="18" height="18"></app-icon-tv-display>
+              <app-icon-shopping-basket *ngSwitchCase="'shopping-basket'" class="menu-icon" width="18" height="18"></app-icon-shopping-basket>
+            </ng-container>
             {{ opt.label }}
           </li>
         </ul>
       </nav>
-    </aside>
-    <main class="content">
-      <h2>{{ selectedScreen.name }}</h2>
       <ng-container [ngSwitch]="selectedMenu">
         <section *ngSwitchCase="'panel'">
           <h4>Panel View</h4>
-          <div>
-            <strong>Screen:</strong> {{ selectedScreen.name }}
+          <div class="panel-section">
+            <div class="panel-block">
+              <strong>Screen:</strong> {{ selectedScreen.name }}
+            </div>
+            <div class="panel-block">
+              <strong>Infrastructure</strong>
+              <div><strong>IP:</strong> {{ selectedScreen.infra.ip }}</div>
+              <div><strong>MAC:</strong> {{ selectedScreen.infra.mac }}</div>
+              <div><strong>Location:</strong> {{ selectedScreen.infra.location }}</div>
+            </div>
+            <div class="panel-block">
+              <strong>Status</strong>
+              <div>
+                <span class="status-badge" [ngClass]="selectedScreen.status">{{ getStatusLabel(selectedScreen.status) }}</span>
+              </div>
+            </div>
+            <div class="panel-block">
+              <strong>Connectivity</strong>
+              <div>
+                <strong>Internet:</strong>
+                <span [ngClass]="selectedScreen.connectivity.internet ? 'online' : 'offline'">
+                  {{ selectedScreen.connectivity.internet ? 'Connected' : 'Disconnected' }}
+                </span>
+              </div>
+              <div>
+                <strong>Last Check:</strong> {{ selectedScreen.connectivity.lastCheck }}
+              </div>
+            </div>
           </div>
         </section>
-        <section *ngSwitchCase="'infra'">
-          <h4>Infrastructure</h4>
-          <div><strong>IP:</strong> {{ selectedScreen.infra.ip }}</div>
-          <div><strong>MAC:</strong> {{ selectedScreen.infra.mac }}</div>
-          <div><strong>Location:</strong> {{ selectedScreen.infra.location }}</div>
-        </section>
-        <section *ngSwitchCase="'status'">
-          <h4>Status</h4>
+        <section *ngSwitchCase="'ads'">
+          <h4>Loaded Ads</h4>
           <div>
-            <span class="status-badge" [ngClass]="selectedScreen.status">{{ getStatusLabel(selectedScreen.status) }}</span>
-          </div>
-        </section>
-        <section *ngSwitchCase="'connectivity'">
-          <h4>Connectivity</h4>
-          <div>
-            <strong>Internet:</strong>
-            <span [ngClass]="selectedScreen.connectivity.internet ? 'online' : 'offline'">
-              {{ selectedScreen.connectivity.internet ? 'Connected' : 'Disconnected' }}
-            </span>
-          </div>
-          <div>
-            <strong>Last Check:</strong> {{ selectedScreen.connectivity.lastCheck }}
+            <span>No ads loaded for this screen.</span>
           </div>
         </section>
       </ng-container>

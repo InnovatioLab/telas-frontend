@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { Router } from '@angular/router';
+import { IconsModule } from '@app/shared/icons/icons.module';
 
 interface ScreenStatus {
   id: string;
@@ -20,12 +22,11 @@ interface ScreenStatus {
 @Component({
   selector: 'app-box-status',
   standalone: true,
-  imports: [CommonModule, PrimengModule],
+  imports: [CommonModule, PrimengModule, IconsModule],
   templateUrl: './box-status.component.html',
   styleUrls: ['./box-status.component.scss']
 })
 export class BoxStatusComponent {
-  // Uma box (painel) com várias screens
   screens: ScreenStatus[] = [
     {
       id: '1',
@@ -51,14 +52,14 @@ export class BoxStatusComponent {
   ];
 
   menuOptions = [
-    { label: 'Panel View', key: 'panel' },
-    { label: 'Infra', key: 'infra' },
-    { label: 'Status', key: 'status' },
-    { label: 'Connectivity', key: 'connectivity' }
+    { label: 'Panel View', key: 'panel', icon: 'tv-display' },
+    { label: 'Ads', key: 'ads', icon: 'shopping-basket' }
   ];
 
   selectedScreen: ScreenStatus = this.screens[0];
   selectedMenu: string = 'panel';
+
+  constructor(private readonly router: Router) {}
 
   selectScreen(screen: ScreenStatus) {
     this.selectedScreen = screen;
@@ -76,5 +77,9 @@ export class BoxStatusComponent {
       case 'maintenance': return 'Maintenance';
       default: return status;
     }
+  }
+
+  logout() {
+    this.router.navigate(['/boxes/login']);
   }
 }
