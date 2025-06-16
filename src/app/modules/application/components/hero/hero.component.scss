@@ -1,148 +1,142 @@
-.bg-gradient-to-br {
+.hero-section {
   background: linear-gradient(135deg, #f9fafb 0%, #fff 100%);
-}
-
-.from-gray-50 {
-  /* já incluso no gradient acima */
-}
-
-.to-white {
-  /* já incluso no gradient acima */
-}
-
-.py-20 {
   padding-top: 5rem;
   padding-bottom: 5rem;
 }
 
-.container {
+.hero-container {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-}
-
-.px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
-.max-w-4xl {
+.hero-content {
   max-width: 56rem;
-}
-
-.text-center {
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
 }
 
-.flex {
+.hero-icon-wrapper {
   display: flex;
-}
-
-.justify-center {
   justify-content: center;
-}
-
-.mb-6 {
   margin-bottom: 1.5rem;
 }
 
-.bg-primary-color {
+.hero-main-icon {
   background-color: var(--cor-primaria);
-}
-
-.p-4 {
   padding: 1rem;
-}
-
-.rounded-full {
   border-radius: 9999px;
 }
 
-.text-5xl {
+.hero-title {
   font-size: 3rem;
-}
-
-.md\:text-6xl {
-  /* Será sobrescrito via media query */
-}
-
-.font-bold {
   font-weight: var(--fonte-peso-negrito);
-}
-
-.text-gray-dark {
   color: var(--cor-cinza-escuro);
+  margin-bottom: 1.5rem;
 }
 
-.text-primary-color {
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 3.75rem;
+  }
+}
+
+.hero-title-highlight {
   color: var(--cor-primaria);
 }
 
-.mb-8 {
-  margin-bottom: 2rem;
-}
-
-.text-xl {
+.hero-subtitle {
   font-size: 1.25rem;
-}
-
-.text-gray-color {
   color: var(--cor-cinza);
-}
-
-.max-w-2xl {
+  margin-bottom: 2rem;
   max-width: 42rem;
-}
-
-.mx-auto {
   margin-left: auto;
   margin-right: auto;
 }
 
-.flex-col {
+.hero-actions {
+  display: flex;
   flex-direction: column;
-}
-
-.sm\:flex-row {
-  /* Será sobrescrito via media query */
-}
-
-.gap-4 {
   gap: 1rem;
-}
-
-.mb-12 {
+  justify-content: center;
   margin-bottom: 3rem;
 }
 
-.btn-primary {
+@media (min-width: 640px) {
+  .hero-actions {
+    flex-direction: row;
+  }
+}
+
+.hero-btn {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: var(--fonte-tamanho-grande);
+}
+
+.hero-btn-outline {
+  border: 1px solid var(--cor-primaria);
+  background: var(--cor-branca);
+  color: var(--cor-primaria);
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: var(--fonte-tamanho-grande);
+  transition: var(--transicao-padrao);
+}
+
+.hero-btn-outline:hover,
+.hero-btn-outline:focus {
   background: var(--cor-primaria);
   color: var(--cor-branca);
-  border: none;
-  border-radius: var(--borda-raio-padrao);
-  font-size: var(--fonte-tamanho-medio);
-  font-weight: var(--fonte-peso-medio);
-  transition: var(--transicao-padrao);
-  cursor: pointer;
 }
 
-.btn-primary:hover {
-  background: var(--cor-primaria-escura);
+.hero-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 4rem;
 }
 
-.btn {
-  display: inline-flex;
+@media (min-width: 768px) {
+  .hero-features {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.hero-feature {
+  text-align: center;
+}
+
+.hero-feature-icon {
+  background-color: var(--cor-primaria-clara);
+  padding: 0.75rem;
+  border-radius: 9999px;
+  width: 4rem;
+  height: 4rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1rem;
+  display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--borda-raio-padrao);
-  font-size: var(--fonte-tamanho-medio);
-  font-weight: var(--fonte-peso-medio);
-  height: var(--altura-botao);
-  padding: 0 var(--espacamento-padrao);
-  cursor: pointer;
-  transition: var(--transicao-padrao);
-  border: 1px solid transparent;
-  background: transparent;
+}
+
+.hero-feature-title {
+  font-size: var(--fonte-tamanho-grande);
+  font-weight: 600;
+  color: var(--cor-cinza-escuro);
+  margin-bottom: 0.5rem;
+}
+
+.hero-feature-desc {
+  color: var(--cor-cinza);
 }
 
 .btn-outline {
@@ -176,10 +170,6 @@
 
 .grid-cols-1 {
   grid-template-columns: 1fr;
-}
-
-.md\:grid-cols-3 {
-  /* Será sobrescrito via media query */
 }
 
 .gap-8 {
