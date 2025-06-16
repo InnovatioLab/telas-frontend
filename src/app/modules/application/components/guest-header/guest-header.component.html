@@ -1,0 +1,42 @@
+<header class="bg-white shadow-lg sticky top-0 z-50">
+  <div class="container px-4 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <i class="pi pi-desktop text-primary-color" style="font-size: 2rem;"></i>
+        <h1 class="text-2xl font-bold text-primary-color">Telas</h1>
+      </div>
+      <nav class="hidden md:flex items-center space-x-8">
+        <a href="#map-search" class="text-gray-dark hover:text-primary-color transition-colors">
+          Find Screens
+        </a>
+        <a href="#how-it-works" class="text-gray-dark hover:text-primary-color transition-colors">
+          How It Works
+        </a>
+        <a href="#features" class="text-gray-dark hover:text-primary-color transition-colors">
+          Features
+        </a>
+        <a href="#contact" class="text-gray-dark hover:text-primary-color transition-colors">
+          Contact
+        </a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <button 
+          type="button"
+          class="btn btn-outline border-primary-color text-primary-color hover:bg-primary-color hover:text-white"
+          (click)="onLogin()"
+        >
+          <i class="pi pi-sign-in mr-2" style="font-size: 1rem;"></i>
+          Login
+        </button>
+        <button 
+          type="button"
+          class="btn-primary"
+          (click)="onRegister()"
+        >
+          <i class="pi pi-user mr-2" style="font-size: 1rem;"></i>
+          Sign Up
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

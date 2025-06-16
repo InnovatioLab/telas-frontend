@@ -1,0 +1,122 @@
+<section id="map-search" class="py-20 bg-white">
+  <div class="container px-4">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-gray-dark mb-6">Find Digital Screens Near You</h2>
+        <p class="text-xl text-gray-color max-w-3xl mx-auto">
+          Use our advanced Google Maps integration to discover available digital advertising screens 
+          in your target locations. Search by address, city, or area to find the perfect spots for your campaigns.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- Search Interface Demo -->
+        <div class="order-2 lg:order-1">
+          <div class="card-custom p-8">
+            <h3 class="text-2xl font-bold text-gray-dark mb-6">Search for Screens</h3>
+            <div class="space-y-4 mb-6">
+              <div class="relative">
+                <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-color" style="font-size: 1.25rem;"></i>
+                <input 
+                  type="text"
+                  placeholder="Enter location (address, city, area...)"
+                  class="pl-10 h-12 border-2 border-gray-300 focus:border-primary-color w-full"
+                />
+              </div>
+              <div class="flex gap-3">
+                <button 
+                  type="button"
+                  class="btn btn-outline flex-1 border-primary-color text-primary-color hover:bg-primary-color hover:text-white"
+                >
+                  <i class="pi pi-filter mr-2" style="font-size: 1rem;"></i>
+                  Filters
+                </button>
+                <button type="button" class="flex-2 btn-primary">
+                  <i class="pi pi-search mr-2" style="font-size: 1rem;"></i>
+                  Search Screens
+                </button>
+              </div>
+            </div>
+            <!-- Mock Results -->
+            <div class="space-y-3">
+              <h4 class="font-semibold text-gray-dark">Available Screens Found:</h4>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div class="flex items-center space-x-3">
+                    <div class="bg-primary-color p-2 rounded-full">
+                      <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+                    </div>
+                    <div>
+                      <p class="font-medium text-gray-dark">Downtown Mall - Screen #1</p>
+                      <p class="text-sm text-gray-color">High traffic area • 1080x1920</p>
+                    </div>
+                  </div>
+                  <span class="text-primary-color font-semibold">Available</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div class="flex items-center space-x-3">
+                    <div class="bg-primary-color p-2 rounded-full">
+                      <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+                    </div>
+                    <div>
+                      <p class="font-medium text-gray-dark">Business District - Screen #3</p>
+                      <p class="text-sm text-gray-color">Premium location • 1920x1080</p>
+                    </div>
+                  </div>
+                  <span class="text-primary-color font-semibold">Available</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Map Preview -->
+        <div class="order-1 lg:order-2">
+          <div class="relative">
+            <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 h-96 flex items-center justify-center">
+              <div class="text-center">
+                <div class="bg-primary-color p-6 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                  <i class="pi pi-map-marker text-white" style="font-size: 2.5rem;"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-dark mb-2">Interactive Map View</h3>
+                <p class="text-gray-color">Google Maps integration shows all available screens in real-time</p>
+              </div>
+            </div>
+            <!-- Floating elements to simulate map pins -->
+            <div class="absolute top-16 left-12 bg-primary-color p-2 rounded-full shadow-lg animate-pulse">
+              <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+            </div>
+            <div class="absolute top-32 right-16 bg-primary-color p-2 rounded-full shadow-lg animate-pulse delay-75">
+              <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+            </div>
+            <div class="absolute bottom-24 left-20 bg-primary-color p-2 rounded-full shadow-lg animate-pulse delay-150">
+              <i class="pi pi-map-marker text-white" style="font-size: 1rem;"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Features Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+        <div class="text-center">
+          <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <i class="pi pi-search text-white" style="font-size: 2rem;"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-dark mb-2">Smart Search</h3>
+          <p class="text-gray-color">Find screens by location, size, traffic, and availability in real-time</p>
+        </div>
+        <div class="text-center">
+          <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <i class="pi pi-map-marker text-white" style="font-size: 2rem;"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-dark mb-2">Precise Location</h3>
+          <p class="text-gray-color">Get exact coordinates and detailed information about each screen location</p>
+        </div>
+        <div class="text-center">
+          <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <i class="pi pi-bolt text-white" style="font-size: 2rem;"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-dark mb-2">Instant Booking</h3>
+          <p class="text-gray-color">Book your preferred screen locations directly from the map interface</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
