@@ -13,6 +13,7 @@
 
     label {
       margin-left: var(--espacamento-pequeno);
+      color: var(--cor-primaria);
       &.required::after {
         content: ' *';
       }
