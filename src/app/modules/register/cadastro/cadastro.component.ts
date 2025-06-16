@@ -20,6 +20,7 @@ import { FormContatoComponent } from '@app/shared/components/forms/form-contato/
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
 import { LoadingService } from '@app/core/service/state/loading.service';
 import { ClientService } from '@app/core/service/api/client.service';
+import { IconsModule } from '@app/shared/icons/icons.module';
 
 @Component({
   selector: 'feat-cadastro',
@@ -31,6 +32,7 @@ import { ClientService } from '@app/core/service/api/client.service';
     FormDadosPessoaisComponent,
     ButtonFooterComponent,
     FormContatoComponent,
+    IconsModule
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: './cadastro.component.html',
