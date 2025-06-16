@@ -1,120 +1,118 @@
-<section id="map-search" class="py-20 bg-white">
-  <div class="container px-4">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-bold text-gray-dark mb-6">Find Digital Screens Near You</h2>
-        <p class="text-xl text-gray-color max-w-3xl mx-auto">
+<section id="map-search" class="mapper-section">
+  <div class="mapper-container">
+    <div class="mapper-max">
+      <div class="mapper-header">
+        <h2 class="mapper-title">Find Digital Screens Near You</h2>
+        <p class="mapper-description">
           Use our advanced Google Maps integration to discover available digital advertising screens 
           in your target locations. Search by address, city, or area to find the perfect spots for your campaigns.
         </p>
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="mapper-main-grid">
         <!-- Search Interface Demo -->
-        <div class="order-2 lg:order-1">
-          <div class="card-custom p-8">
-            <h3 class="text-2xl font-bold text-gray-dark mb-6">Search for Screens</h3>
-            <div class="space-y-4 mb-6">
-              <div class="relative">
-                <app-icon-search class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-color" width="20" height="20"></app-icon-search>
+        <div class="mapper-order-2">
+          <div class="mapper-card">
+            <h3 class="mapper-card-title">Search for Screens</h3>
+            <div class="mapper-search-group">
+              <div class="mapper-search-input-wrapper">
+                <app-icon-search class="mapper-search-icon" width="20" height="20"></app-icon-search>
                 <input 
                   type="text"
                   placeholder="Enter location (address, city, area...)"
-                  class="pl-10 h-12 border-2 border-gray-300 focus:border-primary-color w-full"
+                  class="mapper-search-input"
                 />
               </div>
-              <div class="flex gap-3">
+              <div class="mapper-search-actions">
                 <button 
                   type="button"
-                  class="btn btn-outline flex-1 border-primary-color text-primary-color hover:bg-primary-color hover:text-white"
+                  class="mapper-btn mapper-btn-outline mapper-btn-flex-1"
                 >
-                  <app-icon-filter class="mr-2" width="16" height="16"></app-icon-filter>
+                  <app-icon-filter class="mapper-btn-icon" width="16" height="16"></app-icon-filter>
                   Filters
                 </button>
-                <button type="button" class="flex-2 btn-primary">
-                  <app-icon-search class="mr-2" width="16" height="16"></app-icon-search>
+                <button type="button" class="mapper-btn mapper-btn-primary mapper-btn-flex-2">
+                  <app-icon-search class="mapper-btn-icon" width="16" height="16"></app-icon-search>
                   Search Screens
                 </button>
               </div>
             </div>
             <!-- Mock Results -->
-            <div class="space-y-3">
-              <h4 class="font-semibold text-gray-dark">Available Screens Found:</h4>
-              <div class="space-y-2">
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div class="flex items-center space-x-3">
-                    <div class="bg-primary-color p-2 rounded-full">
+            <div class="mapper-results">
+              <h4 class="mapper-results-title">Available Screens Found:</h4>
+              <div class="mapper-result-list">
+                <div class="mapper-result-item">
+                  <div class="mapper-result-info">
+                    <div class="mapper-result-icon-bg">
                       <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
                     </div>
                     <div>
-                      <p class="font-medium text-gray-dark">Downtown Mall - Screen #1</p>
-                      <p class="text-sm text-gray-color">High traffic area • 1080x1920</p>
+                      <p class="mapper-result-title">Downtown Mall - Screen #1</p>
+                      <p class="mapper-result-subtitle">High traffic area • 1080x1920</p>
                     </div>
                   </div>
-                  <span class="text-primary-color font-semibold">Available</span>
+                  <span class="mapper-result-status">Available</span>
                 </div>
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div class="flex items-center space-x-3">
-                    <div class="bg-primary-color p-2 rounded-full">
+                <div class="mapper-result-item">
+                  <div class="mapper-result-info">
+                    <div class="mapper-result-icon-bg">
                       <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
                     </div>
                     <div>
-                      <p class="font-medium text-gray-dark">Business District - Screen #3</p>
-                      <p class="text-sm text-gray-color">Premium location • 1920x1080</p>
+                      <p class="mapper-result-title">Business District - Screen #3</p>
+                      <p class="mapper-result-subtitle">Premium location • 1920x1080</p>
                     </div>
                   </div>
-                  <span class="text-primary-color font-semibold">Available</span>
+                  <span class="mapper-result-status">Available</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <!-- Map Preview -->
-        <div class="order-1 lg:order-2">
-          <div class="relative">
-            <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 h-96 flex items-center justify-center">
-              <div class="text-center">
-                <div class="bg-primary-color p-6 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                  <app-icon-map-marker class="text-white" width="40" height="40"></app-icon-map-marker>
-                </div>
-                <h3 class="text-xl font-semibold text-gray-dark mb-2">Interactive Map View</h3>
-                <p class="text-gray-color">Google Maps integration shows all available screens in real-time</p>
+        <div class="mapper-order-1">
+          <div class="mapper-map-preview">
+            <div class="mapper-map-bg">
+              <div class="mapper-map-center-icon-bg">
+                <app-icon-map-marker class="text-white" width="40" height="40"></app-icon-map-marker>
               </div>
+              <h3 class="mapper-map-title">Interactive Map View</h3>
+              <p class="mapper-map-description">Google Maps integration shows all available screens in real-time</p>
             </div>
             <!-- Floating elements to simulate map pins -->
-            <div class="absolute top-16 left-12 bg-primary-color p-2 rounded-full shadow-lg animate-pulse">
+            <div class="mapper-map-pin mapper-map-pin-1">
               <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
             </div>
-            <div class="absolute top-32 right-16 bg-primary-color p-2 rounded-full shadow-lg animate-pulse delay-75">
+            <div class="mapper-map-pin mapper-map-pin-2">
               <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
             </div>
-            <div class="absolute bottom-24 left-20 bg-primary-color p-2 rounded-full shadow-lg animate-pulse delay-150">
+            <div class="mapper-map-pin mapper-map-pin-3">
               <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>
             </div>
           </div>
         </div>
       </div>
       <!-- Features Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-        <div class="text-center">
-          <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+      <div class="mapper-features-grid">
+        <div class="mapper-feature">
+          <div class="mapper-feature-icon-bg">
             <app-icon-search class="text-white" width="32" height="32"></app-icon-search>
           </div>
-          <h3 class="text-lg font-semibold text-gray-dark mb-2">Smart Search</h3>
-          <p class="text-gray-color">Find screens by location, size, traffic, and availability in real-time</p>
+          <h3 class="mapper-feature-title">Smart Search</h3>
+          <p class="mapper-feature-description">Find screens by location, size, traffic, and availability in real-time</p>
         </div>
-        <div class="text-center">
-          <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+        <div class="mapper-feature">
+          <div class="mapper-feature-icon-bg">
             <app-icon-map-marker class="text-white" width="32" height="32"></app-icon-map-marker>
           </div>
-          <h3 class="text-lg font-semibold text-gray-dark mb-2">Precise Location</h3>
-          <p class="text-gray-color">Get exact coordinates and detailed information about each screen location</p>
+          <h3 class="mapper-feature-title">Precise Location</h3>
+          <p class="mapper-feature-description">Get exact coordinates and detailed information about each screen location</p>
         </div>
-        <div class="text-center">
-          <div class="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+        <div class="mapper-feature">
+          <div class="mapper-feature-icon-bg">
             <app-icon-bolt class="text-white" width="32" height="32"></app-icon-bolt>
           </div>
-          <h3 class="text-lg font-semibold text-gray-dark mb-2">Instant Booking</h3>
-          <p class="text-gray-color">Book your preferred screen locations directly from the map interface</p>
+          <h3 class="mapper-feature-title">Instant Booking</h3>
+          <p class="mapper-feature-description">Book your preferred screen locations directly from the map interface</p>
         </div>
       </div>
     </div>
