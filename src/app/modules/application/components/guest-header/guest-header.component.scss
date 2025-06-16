@@ -4,6 +4,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 50;
+  padding: 10px 0;
 }
 
 .container {
@@ -72,11 +73,21 @@ header {
   border: 1px solid var(--cor-primaria);
   background: var(--cor-branca);
   color: var(--cor-primaria);
+
+  app-icon-logout {
+    color: var(--cor-primaria);
+    transition: color 0.2s;
+  }
 }
 
 .btn-outline:hover {
   background: var(--cor-primaria);
   color: var(--cor-branca);
+
+  // Ícone branco no hover
+  app-icon-logout {
+    color: var(--cor-branca);
+  }
 }
 
 .btn-primary {
@@ -91,6 +102,40 @@ header {
 
 .mr-2 {
   margin-right: var(--espacamento-pequeno);
+}
+
+.nav-link {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  .nav-underline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--cor-primaria);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
+    content: '';
+    display: block;
+    pointer-events: none;
+  }
+
+  &:hover .nav-underline,
+  &:focus .nav-underline {
+    transform: scaleX(1);
+    transform-origin: center;
+  }
+
+  .nav-underline {
+    will-change: transform;
+  }
 }
 
 @media (max-width: 768px) {

@@ -19,4 +19,11 @@ export class GuestHeaderComponent {
   onRegister() {
     this.router.navigate(['/register']);
   }
+
+  navLinks = [
+    { href: '#map-search', label: 'Find Screens' },
+    { href: '#how-it-works', label: 'How It Works' },
+    { href: '#features', label: 'Features' },
+    { href: '#contact', label: 'Contact' }
+  ];
 }
