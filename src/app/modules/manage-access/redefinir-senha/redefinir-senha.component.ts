@@ -75,13 +75,13 @@ export class RedefinirSenhaComponent implements OnInit, OnDestroy {
   cancelar() {
     const mensagem = MENSAGENS.dialogo.cancelarRedefinirSenha;
     const config = DialogoUtils.exibirAlerta(mensagem, {
-      acaoPrimaria: TEXTO_ACAO.simCancelar,
+      acaoPrimaria: 'Yes, cancel',
       acaoPrimariaCallback: () => {
         this.refDialogo?.close();
         this.navegarLogin();
       },
 
-      acaoSecundaria: TEXTO_ACAO.naoVoltar,
+      acaoSecundaria: 'No, go back',
       acaoSecundariaCallback: () => {
         this.refDialogo?.close();
       }

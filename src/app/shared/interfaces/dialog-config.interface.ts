@@ -1,7 +1,9 @@
+import { Type } from '@angular/core';
+
 export interface IConfigDialogo {
-  titulo?: string | 'Alerta!' | 'Sucesso!' | 'Erro!';
+  titulo?: string;
   descricao?: string;
-  icon?: string | 'check_circle' | 'report';
+  icon?: string | Type<any>;
   acaoPrimaria?: string;
   acaoSecundaria?: string;
   acaoPrimariaCallback?: () => void;

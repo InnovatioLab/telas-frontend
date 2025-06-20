@@ -288,7 +288,7 @@ export class CadastroComponent implements OnInit {
         this.ref.close();
         this.voltarHome();
       },
-      acaoSecundaria: 'No, go back',
+      acaoSecundaria: 'No, stay',
       acaoSecundariaCallback: () => {
         this.ref.close();
       }

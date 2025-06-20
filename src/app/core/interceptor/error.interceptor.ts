@@ -21,7 +21,7 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
     catchError(({ error, status, url }: HttpErrorResponse) => {
 
       if (status === HttpStatusCode.Unauthorized && !url?.includes(rotaLogin)) {
-        configDialogo = DialogoUtils.exibirAlerta(error?.detail, {
+        configDialogo = DialogoUtils.exibirAlerta(error?.detail ?? 'Unauthorized access. Please log in again.', {
           acaoPrimariaCallback: () => {
             refDialog?.destroy();
             autenticacaoService.logout()
@@ -32,7 +32,7 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
       }
 
       if (status === HttpStatusCode.Unauthorized && url?.includes(rotaLogin)) {
-        configDialogo = DialogoUtils.exibirAlerta('Dados inválidos! Revise e tente novamente.', {
+        configDialogo = DialogoUtils.exibirAlerta('Invalid data! Please review and try again.', {
           acaoPrimariaCallback: () => {
             refDialog?.destroy();
             autenticacaoService.logout()
