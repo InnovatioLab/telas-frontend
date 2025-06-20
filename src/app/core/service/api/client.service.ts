@@ -78,7 +78,6 @@ export class ClientService extends BaseHttpService<Client> {
       console.error('ID/UUID não fornecido para busca de usuário');
       throw new Error('ID/UUID não fornecido');
     }
-        
     return this.http.get<ResponseDTO<T>>(`${this.baseUrl}/${idOuUID}`).pipe(
       map((response: ResponseDTO<T>) => {
         if (response?.data === undefined) {
@@ -90,9 +89,19 @@ export class ClientService extends BaseHttpService<Client> {
     );
   }
 
-  situacaoCadastroLogin(login: string): Observable<boolean> {
-    return this.http
-      .get<ResponseDTO<{ cadastroCompleto: boolean }>>(`${this.baseUrl}/situacao-cadastro/${login}`)
-      .pipe(map((data: ResponseDTO<{ cadastroCompleto: boolean }>) => data.data.cadastroCompleto));
+  buscaClientPorIdentificador<T>(identificador: string): Observable<ClientResponseDTO> {
+    if (!identificador) {
+      console.error('Identificador não fornecido para busca de usuário');
+      throw new Error('Identificador não fornecido');
+    }
+    return this.http.get<ResponseDTO<ClientResponseDTO>>(`${this.baseUrl}/identification/${identificador}`).pipe(
+      map((response: ResponseDTO<ClientResponseDTO>) => {
+        if (response?.data === undefined) {
+          console.error('Resposta da API inválida:', response);
+          throw new Error('Dados do usuário não encontrados');
+        }
+        return response.data;
+      })
+    );
   }
 }

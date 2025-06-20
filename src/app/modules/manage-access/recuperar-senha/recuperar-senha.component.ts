@@ -63,9 +63,9 @@ export class RecuperarSenhaComponent {
   }
 
   buscarClient(login: string) {
-    this.clientService.buscarClient(login).subscribe(resposta => {
+    this.clientService.buscaClientPorIdentificador(login).subscribe(resposta => {
       if (resposta) {
-        this.verificarSituacaoCadastroLogin(login);
+        this.redirecionarValidacaoCadastro(login);
       } else {
         this.exibirAlerta(MENSAGENS.dialogo.naoEncontradoIdentificador);
       }
@@ -82,43 +82,35 @@ export class RecuperarSenhaComponent {
     this.refDialogo = this.dialogService.open(DialogoComponent, config);
   }
 
-  verificarSituacaoCadastroLogin(login: string) {
-    this.clientService.situacaoCadastroLogin(login).subscribe(resposta => {
-      if (resposta) {
-        this.recuperarSenha();
-      } else {
-        this.reenviarCodigo();
-      }
-    });
-  }
-
   recuperarSenha() {
-    this.authService.recuperarSenha(this.form.get('login')?.value).subscribe(res => {
+    const login = this.form.get('login')?.value;
+    this.authService.recuperarSenha(login).subscribe(res => {
       if (res) {
-        this.redirecionarValidacaoRecuperar();
+        this.redirecionarValidacaoRecuperar(login);
       }
     });
   }
 
-  redirecionarValidacaoRecuperar() {
-    this.router.navigate(['authentication/validate-code-recover-password', this.form.get('login')?.value]);
+  redirecionarValidacaoRecuperar(login: string) {
+    this.router.navigate(['auth/validate-code-recover-password', login]);
   }
 
   reenviarCodigo() {
-    this.clientService.reenvioCodigo(this.form.get('login')?.value).subscribe(res => {
+    const login = this.form.get('login')?.value;
+    this.clientService.reenvioCodigo(login).subscribe(res => {
       if (res) {
-        this.redirecionarValidacaoCadastro();
+        this.redirecionarValidacaoCadastro(login);
       }
     });
   }
 
-  redirecionarValidacaoCadastro() {
-    this.router.navigate(['/register/validate', this.form.get('login')?.value]);
+  redirecionarValidacaoCadastro(login: string) {
+    this.router.navigate(['/register/validate-code-recover-password', login]);
   }
 
   onlyNumbersInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/[^0-9]/g, '');
+    input.value = input.value.replace(/\D/g, '');
     this.form.get('login').setValue(input.value);
   }
 }

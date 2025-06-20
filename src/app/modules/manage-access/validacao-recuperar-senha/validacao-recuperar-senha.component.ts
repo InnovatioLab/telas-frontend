@@ -2,18 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  CardCentralizadoComponent,
-  DialogoComponent,
-  ErrorComponent,
-  PrimengModule
-} from '@raizes-cearenses-nx/shared-ui';
-import { DialogoUtils, MENSAGENS, TEXTO_ACAO } from '@raizes-cearenses-nx/utility';
-import { UserService } from '@raizes-cearenses-nx/user';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { AuthenticationService } from '@raizes-cearenses-nx/authentication-data-access';
+import { ClientService } from '@app/core/service/api/client.service';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
+import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { RedefinirSenhaComponent } from '../redefinir-senha/redefinir-senha.component';
-import { CAMPOS_REGEX } from '@raizes-cearenses-nx/produto';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
 
 @Component({
   selector: 'feat-validacao-recuperar-senha',
@@ -41,12 +38,12 @@ export class ValidacaoRecuperaSenhaComponent implements OnInit {
   refDialogo: DynamicDialogRef | undefined;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private service: UserService,
-    private dialogService: DialogService,
-    private authService: AuthenticationService
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly formBuilder: FormBuilder,
+    private readonly router: Router,
+    private readonly service: ClientService,
+    private readonly dialogService: DialogService,
+    private readonly authService: AutenticacaoService
   ) {
     this.validacaoForm = this.formBuilder.group({
       codigo: ['', [Validators.required, Validators.pattern(CAMPOS_REGEX.CODIGO_SEIS_DIGITOS)]]

@@ -93,7 +93,7 @@ export class AutenticacaoService {
   }
 
   recuperarSenha(login: string) {
-    return this.httpClient.post(`${this.url}/recover-password/${login}`, {});
+    return this.httpClient.post(`${this.url}recovery-password/${login}`, {});
   }
 
   redefinirSenha(login: string, request: SenhaRequestDto) {
