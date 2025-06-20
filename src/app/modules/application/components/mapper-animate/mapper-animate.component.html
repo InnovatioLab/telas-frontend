@@ -71,13 +71,12 @@
         <!-- Map Preview -->
         <div class="mapper-order-1">
           <div class="mapper-map-preview">
-            <div class="mapper-map-bg">
-              <div class="mapper-map-center-icon-bg">
-                <app-icon-map-marker class="text-white" width="40" height="40"></app-icon-map-marker>
-              </div>
-              <h3 class="mapper-map-title">Interactive Map View</h3>
-              <p class="mapper-map-description">Google Maps integration shows all available screens in real-time</p>
-            </div>
+            <app-maps
+              [height]="'60px'"
+              [width]="'100%'"
+              [showSearchBar]="false"
+              style="border-radius: 16px; overflow: hidden;"
+            ></app-maps>
             <!-- Floating elements to simulate map pins -->
             <div class="mapper-map-pin mapper-map-pin-1">
               <app-icon-map-marker class="text-white" width="16" height="16"></app-icon-map-marker>

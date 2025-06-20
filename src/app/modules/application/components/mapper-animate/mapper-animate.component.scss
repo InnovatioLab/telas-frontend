@@ -63,6 +63,7 @@
   box-shadow: var(--sombra-padrao);
   padding: var(--espacamento-grande);
   transition: var(--transicao-padrao);
+  height: 800px;
 }
 
 .mapper-card-title {
@@ -226,6 +227,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 
 .mapper-map-center-icon-bg {
@@ -264,16 +266,16 @@
 }
 
 .mapper-map-pin-1 {
-  top: 4rem;
+  top: 12rem;
   left: 3rem;
 }
 .mapper-map-pin-2 {
-  top: 8rem;
+  top: 18rem;
   right: 4rem;
   animation-delay: 0.075s;
 }
 .mapper-map-pin-3 {
-  bottom: 6rem;
+  bottom: 15rem;
   left: 5rem;
   animation-delay: 0.15s;
 }
