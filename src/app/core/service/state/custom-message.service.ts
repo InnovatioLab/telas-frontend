@@ -11,14 +11,14 @@ export class CustomMessageService {
   }
 
   showSuccess(detail: string) {
-    this.showMessage('success', 'Sucesso', detail);
+    this.showMessage('success', 'Success', detail);
   }
 
   showWarning(detail: string) {
-    this.showMessage('warn', 'Atenção', detail);
+    this.showMessage('warn', 'Warning', detail);
   }
 
   showError(detail: string) {
-    this.showMessage('error', 'Erro', detail);
+    this.showMessage('error', 'Error', detail);
   }
 }

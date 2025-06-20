@@ -5,49 +5,49 @@ export class ApiErrorHandler {
     console.error('API Error:', error);
 
     if (error.status === 401 || error.status === 403) {
-      return 'Você não tem permissão para realizar esta operação.';
+      return 'You do not have permission to perform this operation.';
     }
 
     if (error.status === 422) {
       if (error.error?.detail) {
         const validationErrors = error.error.detail;
         if (Array.isArray(validationErrors) && validationErrors.length > 0) {
-          return `Erro de validação: ${validationErrors[0].msg}`;
+          return `Validation error: ${validationErrors[0].msg}`;
         }
       }
-      return 'Dados inválidos ou recurso indisponível.';
+      return 'Invalid data or resource unavailable.';
     }
 
     if (error.status === 404) {
-      return 'Recurso não encontrado.';
+      return 'Resource not found.';
     }
 
     if (error.status === 0) {
-      return 'Erro de conexão com o servidor. Verifique sua internet.';
+      return 'Connection error with the server. Check your internet.';
     }
 
     if (error.status >= 500) {
-      return 'Erro interno do servidor. Tente novamente mais tarde.';
+      return 'Internal server error. Please try again later.';
     }
 
-    return 'Ocorreu um erro na comunicação com o servidor.';
+    return 'An error occurred while communicating with the server.';
   }
 
   static getMensagemContextualizada(error: HttpErrorResponse, contexto: string, recurso?: string): string {
     const mensagemBase = this.handleApiError(error);
-    const nomeRecurso = recurso || 'recurso';
+    const nomeRecurso = recurso || 'resource';
 
     const operacoes: { [key: string]: string } = {
-      'excluir': `Erro ao excluir ${nomeRecurso}.`,
-      'carregar': `Erro ao carregar ${nomeRecurso}.`,
-      'salvar': `Erro ao salvar ${nomeRecurso}.`,
-      'atualizar': `Erro ao atualizar ${nomeRecurso}.`,
-      'obter': `Erro ao obter detalhes do ${nomeRecurso}.`,
-      'enviar': `Erro ao enviar ${nomeRecurso}.`,
-      'processar': `Erro ao processar ${nomeRecurso}.`,
+      'excluir': `Error deleting ${nomeRecurso}.`,
+      'carregar': `Error loading ${nomeRecurso}.`,
+      'salvar': `Error saving ${nomeRecurso}.`,
+      'atualizar': `Error updating ${nomeRecurso}.`,
+      'obter': `Error getting details of ${nomeRecurso}.`,
+      'enviar': `Error sending ${nomeRecurso}.`,
+      'processar': `Error processing ${nomeRecurso}.`,
     };
 
-    const prefixo = operacoes[contexto] || `Erro na operação de ${contexto}.`;
+    const prefixo = operacoes[contexto] || `Error in ${contexto} operation.`;
 
     if (contexto === 'excluir') {
       if (error.status === 422) {

@@ -7,7 +7,7 @@ import { provideRouter } from '@angular/router';
 import { appRoutes } from '@app/app-routes.routes';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
-import { ptBrLocale } from '@app/config/localizacao';
+import { enUsLocale } from '@app/config/localizacao';
 import { MyPreset } from '@app/config/tema';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -37,7 +37,7 @@ bootstrapApplication(AppComponent, {
       theme: {
         preset: MyPreset,
       },
-      translation: ptBrLocale,
+      translation: enUsLocale,
     }),
     provideEnvironmentNgxMask(),
   ],

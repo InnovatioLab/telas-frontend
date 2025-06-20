@@ -9,9 +9,9 @@ export class MenuView {
     this.nomeUsuario = dados.nomeUsuario;
     this.cargoUsuario = dados.cargoUsuario;
     this.menuItems = [
-      { label: 'Painel Inicial ', icon: 'dashboard', navegacao: '/dashboard' },
-      { label: 'Documentos', icon: 'documentos', navegacao: '/documentos' },
-      { label: 'Sair', icon: 'sair', navegacao: '/logout' },
+      { label: 'Dashboard', icon: 'dashboard', navegacao: '/dashboard' },
+      { label: 'Documents', icon: 'documentos', navegacao: '/documentos' },
+      { label: 'Logout', icon: 'sair', navegacao: '/logout' },
     ];
   }
 

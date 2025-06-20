@@ -8,7 +8,7 @@ export class ToastService {
   sucesso(mensagem: string, tempo = 3000) {
     this.notificacaoService.add({
       severity: 'success',
-      summary: 'Sucesso',
+      summary: 'Success',
       detail: mensagem,
       life: tempo
     });
@@ -17,7 +17,7 @@ export class ToastService {
   erro(mensagem: string, tempo = 3000) {
     this.notificacaoService.add({
       severity: 'error',
-      summary: 'Erro',
+      summary: 'Error',
       detail: mensagem,
       life: tempo
     });
@@ -26,7 +26,7 @@ export class ToastService {
   info(mensagem: string, tempo = 3000) {
     this.notificacaoService.add({
       severity: 'info',
-      summary: 'Informação',
+      summary: 'Info',
       detail: mensagem,
       life: tempo
     });
@@ -35,7 +35,7 @@ export class ToastService {
   aviso(mensagem: string, tempo = 3000) {
     this.notificacaoService.add({
       severity: 'warn',
-      summary: 'Aviso',
+      summary: 'Warning',
       detail: mensagem,
       life: tempo
     });
