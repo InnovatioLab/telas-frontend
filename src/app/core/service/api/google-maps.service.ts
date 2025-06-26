@@ -45,18 +45,23 @@ export class GoogleMapsService {
   }
 
   public initGoogleMapsApi(): void {
-    if (typeof google !== 'undefined' && google.maps) {
+    // Verificar se a API já está carregada e funcionando
+    if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
+      console.log('Google Maps API already loaded');
       this.apiLoadedSubject.next(true);
       this.apiErrorSubject.next(null);
       this.apiInitializationAttempts = 0;
+      this.apiLoadingInProgress = false;
       return;
     }
 
     if (this.apiLoadingInProgress) {
+      console.log('Google Maps API loading already in progress');
       return;
     }
 
     if ((window as any)[this.callbackName]) {
+      console.log('Google Maps callback already exists');
       return;
     }
 
@@ -66,10 +71,12 @@ export class GoogleMapsService {
 
     const timeoutCheck = setTimeout(() => {
       if (!this.apiLoadedSubject.getValue() && this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
+        console.log('Timeout reached, retrying...');
         this.removeExistingScripts();
         this.apiLoadingInProgress = false;
         this.initGoogleMapsApi();
       } else if (this.apiInitializationAttempts >= this.MAX_INITIALIZATION_ATTEMPTS) {
+        console.error('Max initialization attempts reached');
         this.apiErrorSubject.next('Não foi possível carregar o Google Maps. Tente novamente mais tarde.');
         this.apiLoadingInProgress = false;
       }
@@ -77,6 +84,7 @@ export class GoogleMapsService {
 
     (window as any)[this.callbackName] = () => {
       clearTimeout(timeoutCheck);
+      console.log('Google Maps API loaded successfully');
       this.apiLoadedSubject.next(true);
       this.apiErrorSubject.next(null);
       this.apiLoadingInProgress = false;
@@ -99,6 +107,7 @@ export class GoogleMapsService {
 
     script.onerror = (error) => {
       clearTimeout(timeoutCheck);
+      console.error('Error loading Google Maps script:', error);
       this.apiErrorSubject.next('Erro ao carregar o Google Maps. Tentando novamente...');
       this.apiLoadingInProgress = false;
       if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
@@ -528,5 +537,21 @@ export class GoogleMapsService {
   public setSearchResult(result: AddressSearchResult): void {
     this.searchResultSubject.next(result);
     this.addToSearchHistory(result);
+  }
+
+  public checkAndReinitializeApi(): void {
+    // Verificar se a API está realmente funcionando
+    if (typeof google === 'undefined' || !google.maps || !google.maps.Map) {
+      console.log('Google Maps API not properly loaded, reinitializing...');
+      this.apiLoadedSubject.next(false);
+      this.apiErrorSubject.next(null);
+      this.apiInitializationAttempts = 0;
+      this.apiLoadingInProgress = false;
+      this.initGoogleMapsApi();
+    } else {
+      console.log('Google Maps API is properly loaded');
+      this.apiLoadedSubject.next(true);
+      this.apiErrorSubject.next(null);
+    }
   }
 }

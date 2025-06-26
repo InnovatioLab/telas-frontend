@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
@@ -25,7 +25,9 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
   templateUrl: './client-view.component.html',
   styleUrls: ['./client-view.component.scss']
 })
-export class ClientViewComponent implements OnInit {
+export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MapsComponent) mapsComponent!: MapsComponent;
+  
   showPointMenu = false;
   menuPosition = { x: 0, y: 0 };
   selectedPoint: MapPoint | null = null;
@@ -36,11 +38,44 @@ export class ClientViewComponent implements OnInit {
     public readonly mapsService: GoogleMapsService,
     private readonly toastService: ToastService
   ) {}
-  
+
   ngOnInit(): void {
+    this.isLoading = true;
+    
+    // Aguardar um pouco para garantir que o componente está pronto
     setTimeout(() => {
-      this.loadNearbyPoints();
-    }, 1500);
+      this.ensureMapInitialized();
+    }, 500);
+  }
+  
+  ngAfterViewInit(): void {
+    // Verificar se o mapa precisa ser inicializado
+    setTimeout(() => {
+      this.ensureMapInitialized();
+    }, 1000);
+  }
+  
+  ngOnDestroy(): void {
+    // Cleanup se necessário
+  }
+  
+  private ensureMapInitialized(): void {
+    if (this.mapsComponent) {
+      this.mapsComponent.ensureMapInitialized();
+      
+      // Verificar se o mapa está pronto
+      setTimeout(() => {
+        if (!this.mapsComponent.isMapReady()) {
+          console.log('Map not ready, forcing reinitialization...');
+          this.mapsComponent.forceReinitialize();
+        } else {
+          this.isLoading = false;
+        }
+      }, 2000);
+    } else {
+      console.warn('Maps component not available');
+      this.isLoading = false;
+    }
   }
   
   private loadNearbyPoints(): void {

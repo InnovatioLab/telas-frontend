@@ -80,6 +80,10 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     if (this.menuFixo) {
       this.abrirMenu();
     }
+    
+    // Disparar evento para notificar que o menu foi carregado
+    const loadEvent = new CustomEvent('admin-menu-loaded');
+    window.dispatchEvent(loadEvent);
   }
   
   ngOnDestroy(): void {
@@ -123,7 +127,16 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       this.renderer.addClass(document.body, 'menu-fixed');
     } else {
       this.renderer.removeClass(document.body, 'menu-fixed');
+      if (!this.menuAberto) {
+        this.fecharMenu();
+      }
     }
+    
+    // Disparar evento para notificar o mapa sobre a mudança de fixação
+    const pinEvent = new CustomEvent('admin-menu-pin-changed', {
+      detail: { pinned: this.menuFixo }
+    });
+    window.dispatchEvent(pinEvent);
     
     this.ajustarEspacoMapa();
   }
@@ -183,6 +196,10 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     this.sidebarService.fechar();
     
     this.renderer.removeClass(document.body, 'menu-open');
+    
+    // Disparar evento para notificar que o menu foi fechado
+    const closeEvent = new CustomEvent('admin-menu-closed');
+    window.dispatchEvent(closeEvent);
     
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));

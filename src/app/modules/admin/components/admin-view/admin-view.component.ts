@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GoogleMapsService } from '../../../../core/service/api/google-maps.service';
@@ -15,8 +15,11 @@ import { MapsComponent } from '../../../../shared/components/maps/maps.component
     <div class="admin-view">
       <div class="map-container">
         <app-maps
+          #mapsComponent
           [points]="monitors"
           [center]="mapCenter"
+          height="100vh"
+          width="100%"
           (markerClicked)="onMarkerClick($event)"
           (mapInitialized)="onMapInitialized($event)">
         </app-maps>
@@ -99,7 +102,9 @@ import { MapsComponent } from '../../../../shared/components/maps/maps.component
     }
   `]
 })
-export class AdminViewComponent implements OnInit, OnDestroy {
+export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('mapsComponent') mapsComponent!: MapsComponent;
+  
   monitors: MapPoint[] = [];
   mapCenter: { lat: number; lng: number } | null = null;
   private map: google.maps.Map | null = null;
@@ -114,9 +119,32 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     this.loadNearbyPoints();
     this.setupEventListeners();
   }
+  
+  ngAfterViewInit(): void {
+    // Verificar se o mapa precisa ser inicializado
+    setTimeout(() => {
+      this.ensureMapInitialized();
+    }, 1000);
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+  
+  private ensureMapInitialized(): void {
+    if (this.mapsComponent) {
+      this.mapsComponent.ensureMapInitialized();
+      
+      // Verificar se o mapa está pronto
+      setTimeout(() => {
+        if (!this.mapsComponent.isMapReady()) {
+          console.log('Admin map not ready, forcing reinitialization...');
+          this.mapsComponent.forceReinitialize();
+        }
+      }, 2000);
+    } else {
+      console.warn('Admin maps component not available');
+    }
   }
 
   private setupEventListeners(): void {

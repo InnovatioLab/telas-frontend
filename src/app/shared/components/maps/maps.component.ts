@@ -26,10 +26,14 @@ declare global {
   styles: [`
     :host {
       display: block;
+      height: 100vh;
+      width: 100%;
     }
     div {
       border-radius: 8px;
       overflow: hidden;
+      height: 100vh;
+      width: 100%;
     }
   `]
 })
@@ -38,7 +42,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() latitude?: number;
   @Input() longitude?: number;
   @Input() zoom = 15;
-  @Input() height = '400px';
+  @Input() height = '100vh';
   @Input() width = '100%';
   @Input() points: MapPoint[] = [];
   @Input() showSearchBar = false;
@@ -52,6 +56,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   private markers: google.maps.Marker[] = [];
   private subscriptions: Subscription[] = [];
   private _apiLoaded = false;
+  private _mapReady = false;
   private markerPositions: google.maps.LatLngLiteral[] = [];
   private markersConfig: { position: google.maps.LatLngLiteral, options: google.maps.MarkerOptions }[] = [];
   
@@ -66,9 +71,31 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       const isVisible = this.sidebarService.visibilidade();
       const tipo = this.sidebarService.tipo();
       
-      // Only update map dimensions for sidebar types that affect map layout
-      // Exclude 'client-menu' as it should not cause map resizing
-      if (isVisible !== null && tipo !== 'client-menu') {
+      // Para admin-menu: só recalcular quando estiver fixado (menu-fixed)
+      if (tipo === 'admin-menu') {
+        const isMenuFixed = document.body.classList.contains('menu-fixed');
+        if (isMenuFixed) {
+          this.updateMapDimensions();
+        }
+        return;
+      }
+      
+      // Para alert-admin-sidebar: só recalcular quando estiver fixado (sidebar-pinned)
+      if (tipo === 'alert-admin-sidebar') {
+        const isSidebarPinned = document.body.classList.contains('sidebar-pinned');
+        if (isSidebarPinned) {
+          this.updateMapDimensions();
+        }
+        return;
+      }
+      
+      // Para outros tipos de sidebar (ex: client-menu): não recalcular
+      if (tipo === 'client-menu') {
+        return;
+      }
+      
+      // Para outros tipos não especificados: recalcular normalmente
+      if (isVisible !== null) {
         this.updateMapDimensions();
       }
     });
@@ -77,6 +104,43 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   public reloadMapApi(): void {
     this.mapsService.initGoogleMapsApi();
   }
+  
+  public forceReinitialize(): void {
+    console.log('Forcing map reinitialization');
+    
+    // Limpar o mapa atual
+    if (this.map) {
+      this.map = null;
+    }
+    
+    // Limpar marcadores
+    this.clearMarkers();
+    
+    // Resetar estado
+    this._apiLoaded = false;
+    this._mapReady = false;
+    
+    // Recarregar a API
+    this.loadGoogleMapsScript();
+  }
+
+  public ensureMapInitialized(): void {
+    if (!this._apiLoaded) {
+      console.log('API not loaded, initializing...');
+      this.loadGoogleMapsScript();
+    } else if (!this.map) {
+      console.log('API loaded but map not initialized, initializing map...');
+      this.initializeMap();
+    } else if (!this._mapReady) {
+      console.log('Map exists but not ready, triggering resize...');
+      setTimeout(() => {
+        if (this.map) {
+          google.maps.event.trigger(this.map, 'resize');
+          this._mapReady = true;
+        }
+      }, 200);
+    }
+  }
 
   ngOnInit() {
     this.loadGoogleMapsScript();
@@ -84,25 +148,46 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   ngAfterViewInit(): void {
-    // setTimeout(() => {
-    //   this.forceMapResize();
-    // }, 500);
+    // Verificar se a API já está carregada e o mapa não foi inicializado
+    if (this._apiLoaded && !this.map && this.mapContainer?.nativeElement) {
+      setTimeout(() => {
+        this.initializeMap();
+      }, 100);
+    }
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.clearMarkers();
+    
+    // Limpar o mapa para evitar vazamentos de memória
+    if (this.map) {
+      this.map = null;
+    }
   }
   
   private loadGoogleMapsScript(): void {
     this.loadingService.setLoading(true, 'load-google-maps');
+    
+    // Verificar se a API já está carregada
+    if (typeof google !== 'undefined' && google.maps) {
+      this._apiLoaded = true;
+      this.loadingService.setLoading(false, 'load-google-maps');
+      this.initializeMap();
+      return;
+    }
+    
     this.mapsService.initGoogleMapsApi();
 
     const subscription = this.mapsService.apiLoaded$.subscribe((loaded: boolean) => {
       if (loaded) {
         this._apiLoaded = true;
         this.loadingService.setLoading(false, 'load-google-maps');
-        this.initializeMap();
+        
+        // Aguardar um pouco para garantir que o DOM está pronto
+        setTimeout(() => {
+          this.initializeMap();
+        }, 100);
       }
     });
 
@@ -163,6 +248,76 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }) as EventListener);
 
+    // Listener para detectar quando a janela ganha foco
+    window.addEventListener('focus', () => {
+      if (this._apiLoaded && !this.map) {
+        console.log('Window gained focus, checking map initialization');
+        setTimeout(() => {
+          this.initializeMap();
+        }, 500);
+      }
+    });
+
+    // Listener para detectar quando o usuário navega de volta para a página
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        console.log('Page restored from cache, checking map state');
+        setTimeout(() => {
+          this.ensureMapInitialized();
+        }, 1000);
+      }
+    });
+
+    // Listener para detectar quando a página se torna visível novamente
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && this._apiLoaded && !this.map) {
+        console.log('Page became visible, checking map initialization');
+        setTimeout(() => {
+          this.initializeMap();
+        }, 500);
+      }
+    });
+
+    // Listener para detectar quando o admin-menu é fixado/desfixado
+    window.addEventListener('admin-menu-pin-changed', () => {
+      const isMenuFixed = document.body.classList.contains('menu-fixed');
+      console.log('Admin menu pin changed, menu-fixed:', isMenuFixed);
+      setTimeout(() => {
+        this.updateMapDimensions();
+      }, 300);
+    });
+
+    // Listener para detectar quando o alert-admin-sidebar é fixado/desfixado
+    window.addEventListener('admin-sidebar-pin-changed', (event: any) => {
+      const isPinned = event.detail?.pinned;
+      console.log('Alert admin sidebar pin changed, pinned:', isPinned);
+      setTimeout(() => {
+        this.updateMapDimensions();
+      }, 300);
+    });
+
+    // Listener para detectar quando o admin-menu é carregado inicialmente
+    window.addEventListener('admin-menu-loaded', () => {
+      const isMenuFixed = document.body.classList.contains('menu-fixed');
+      console.log('Admin menu loaded, menu-fixed:', isMenuFixed);
+      if (isMenuFixed) {
+        setTimeout(() => {
+          this.updateMapDimensions();
+        }, 300);
+      }
+    });
+
+    // Listener para detectar quando o admin-menu é fechado
+    window.addEventListener('admin-menu-closed', () => {
+      const isMenuFixed = document.body.classList.contains('menu-fixed');
+      console.log('Admin menu closed, menu-fixed:', isMenuFixed);
+      if (!isMenuFixed) {
+        setTimeout(() => {
+          this.updateMapDimensions();
+        }, 300);
+      }
+    });
+
     const userCoordsSub = this.mapsService.savedPoints$.subscribe((points: MapPoint[]) => {
       if (this.map && points.length > 0) {
         this.addMapPoints(points);
@@ -179,21 +334,71 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private initializeMap(): void {
-    if (!this.mapContainer?.nativeElement || !this._apiLoaded) return;
+    if (!this.mapContainer?.nativeElement) {
+      console.warn('Map container not available');
+      return;
+    }
+    
+    if (!this._apiLoaded) {
+      console.warn('Google Maps API not loaded yet');
+      return;
+    }
+    
+    if (typeof google === 'undefined' || !google.maps) {
+      console.warn('Google Maps not available');
+      return;
+    }
+    
+    // Se o mapa já existe, não recriar
+    if (this.map) {
+      console.log('Map already initialized');
+      return;
+    }
 
-    const defaultCenter = { lat: -3.7327, lng: -38.5270 };
-    const center = this.center || defaultCenter;
+    try {
+      const defaultCenter = { lat: -3.7327, lng: -38.5270 };
+      const center = this.center || defaultCenter;
 
-    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
-      center,
-      zoom: 15,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false
-    });
+      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+        center,
+        zoom: this.zoom,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false
+      });
 
-    this.mapInitialized.emit(this.map);
-    this.addMapPoints(this.points);
+      this.mapInitialized.emit(this.map);
+      
+      // Adicionar pontos se existirem
+      if (this.points && this.points.length > 0) {
+        this.addMapPoints(this.points);
+      }
+      
+      // Forçar um resize para garantir que o mapa se ajuste corretamente
+      setTimeout(() => {
+        if (this.map) {
+          google.maps.event.trigger(this.map, 'resize');
+          this._mapReady = true;
+        }
+      }, 200);
+      
+      console.log('Map initialized successfully');
+    } catch (error) {
+      console.error('Error initializing map:', error);
+      this._apiLoaded = false;
+      this._mapReady = false;
+    }
+  }
+  
+  public isMapReady(): boolean {
+    return this._mapReady && this._apiLoaded && !!this.map;
+  }
+  
+  public checkMapState(): void {
+    if (this._apiLoaded && !this.map && this.mapContainer?.nativeElement) {
+      console.log('Map state check: API loaded but map not initialized, reinitializing...');
+      this.initializeMap();
+    }
   }
   
   private forceMapResize(): void {
@@ -323,28 +528,75 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   private updateMapDimensions(): void {
     const isMenuOpen = document.body.classList.contains('menu-open');
     const isMenuFixed = document.body.classList.contains('menu-fixed');
+    const isAdminSidebarOpen = document.body.classList.contains('admin-sidebar-open');
+    const isSidebarPinned = document.body.classList.contains('sidebar-pinned');
     const isMobile = window.innerWidth <= 768;
     
-    if (isMenuFixed) {
-      const windowWidth = window.innerWidth;
-      const menuWidth = windowWidth > 768 ? 280 : 250;
-      const maxAvailableWidth = windowWidth - menuWidth - 40;
-      
-      this.width = `${maxAvailableWidth}px`;
-      this.height = this.height;
-    } else if (isMenuOpen && !isMobile) {
-      const windowWidth = window.innerWidth;
+    console.log('Updating map dimensions:', {
+      isMenuOpen,
+      isMenuFixed,
+      isAdminSidebarOpen,
+      isSidebarPinned,
+      isMobile
+    });
+    
+    // Calcular largura disponível baseada nos sidebars fixados
+    let availableWidth = window.innerWidth;
+    let marginLeft = 0;
+    let marginRight = 0;
+    
+    // Se o admin-menu está fixado, reduzir largura da esquerda
+    if (isMenuFixed && !isMobile) {
       const menuWidth = 280;
-      const maxAvailableWidth = windowWidth - menuWidth - 40;
-      
-      this.width = `${maxAvailableWidth}px`;
-      this.height = '100vh';
-    } else {
-      this.width = isMobile ? '100%' : this.width;
-      this.height = '100vh';
+      availableWidth -= menuWidth;
+      marginLeft = menuWidth;
     }
     
+    // Se o alert-admin-sidebar está fixado, reduzir largura da direita
+    if (isSidebarPinned && !isMobile) {
+      const sidebarWidth = 480;
+      availableWidth -= sidebarWidth;
+      marginRight = sidebarWidth;
+    }
+    
+    // Aplicar as dimensões calculadas
+    if (isMenuFixed || isSidebarPinned) {
+      this.width = `${availableWidth}px`;
+      this.height = '100vh';
+      
+      // Aplicar margens se necessário
+      if (marginLeft > 0) {
+        this.el.nativeElement.style.marginLeft = `${marginLeft}px`;
+      }
+      if (marginRight > 0) {
+        this.el.nativeElement.style.marginRight = `${marginRight}px`;
+      }
+      
+      console.log('Map dimensions adjusted for fixed sidebars:', {
+        width: this.width,
+        height: this.height,
+        marginLeft,
+        marginRight,
+        availableWidth
+      });
+    } else {
+      // Reset para dimensões padrão quando nenhum sidebar está fixado
+      this.width = '100%';
+      this.height = '100vh';
+      this.el.nativeElement.style.marginLeft = '0';
+      this.el.nativeElement.style.marginRight = '0';
+      
+      console.log('Map dimensions reset to original:', {
+        width: this.width,
+        height: this.height
+      });
+    }
+    
+    // Forçar resize do mapa após ajuste de dimensões
     setTimeout(() => {
+      if (this.map) {
+        google.maps.event.trigger(this.map, 'resize');
+      }
       const mapElement = this.el.nativeElement.querySelector('google-map');
       if (mapElement) {
         const event = new Event('resize');
@@ -401,5 +653,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get apiLoaded(): boolean {
     return this._apiLoaded;
+  }
+  
+  get mapReady(): boolean {
+    return this._mapReady;
   }
 }

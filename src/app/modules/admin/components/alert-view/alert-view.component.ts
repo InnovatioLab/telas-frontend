@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseModule } from '@app/shared/base/base.module';
 import { Authentication } from '@app/core/service/auth/autenthication';
@@ -25,7 +25,9 @@ import { finalize } from 'rxjs/operators';
     PopUpStepAddListComponent,
   ]
 })
-export class AlertViewComponent implements OnInit, OnDestroy {
+export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild(MapsComponent) mapsComponent!: MapsComponent;
+  
   userName: string = '';
   showPointMenu = false;
   menuPosition = { x: 0, y: 0 };
@@ -56,10 +58,32 @@ export class AlertViewComponent implements OnInit, OnDestroy {
     window.addEventListener('toggle-admin-sidebar', this.adminSidebarListener as EventListener);
   }
   
+  ngAfterViewInit(): void {
+    // Verificar se o mapa precisa ser inicializado
+    setTimeout(() => {
+      this.ensureMapInitialized();
+    }, 1000);
+  }
+  
   ngOnDestroy(): void {
     window.removeEventListener('toggle-admin-sidebar', this.adminSidebarListener as EventListener);
   }
-
+  
+  private ensureMapInitialized(): void {
+    if (this.mapsComponent) {
+      this.mapsComponent.ensureMapInitialized();
+      
+      // Verificar se o mapa está pronto
+      setTimeout(() => {
+        if (!this.mapsComponent.isMapReady()) {
+          console.log('Alert map not ready, forcing reinitialization...');
+          this.mapsComponent.forceReinitialize();
+        }
+      }, 2000);
+    } else {
+      console.warn('Alert maps component not available');
+    }
+  }
   
   private updateHeaderSidebarStatus(isVisible: boolean): void {
     const header = document.querySelector('app-header') as any;

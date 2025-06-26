@@ -1,8 +1,9 @@
 <app-sidebar-mapa></app-sidebar-mapa>
 <div class="map-container">
   <app-maps 
+    #mapsComponent
     [zoom]="12" 
-    height="600px" 
+    height="100vh" 
     width="100%" 
     (pointClick)="handlePointClick($event)">
   </app-maps>
