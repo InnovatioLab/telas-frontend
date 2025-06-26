@@ -68,7 +68,7 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     window.removeEventListener('toggle-admin-sidebar', this.adminSidebarListener as EventListener);
   }
-  
+
   private ensureMapInitialized(): void {
     if (this.mapsComponent) {
       this.mapsComponent.ensureMapInitialized();

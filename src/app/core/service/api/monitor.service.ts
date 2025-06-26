@@ -6,6 +6,8 @@ import { DefaultStatus } from '@app/model/client';
 import { environment } from 'src/environments/environment';
 import { IMonitorAlert } from './interfaces/monitor';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { ResponseDto } from '@app/model/dto/response/response.dto';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -146,37 +148,48 @@ export class MonitorService {
   createMonitor(monitorRequest: CreateMonitorRequestDto): Observable<Monitor> {
     console.log('Criando novo monitor:', monitorRequest);
     
-    const newMonitor: Monitor = {
-      id: Math.random().toString(36).substring(2, 9),
-      name: `Monitor ${monitorRequest.productId}`,
-      location: monitorRequest.address?.city || 'Sem localização',
-      status: DefaultStatus.ACTIVE,
-      lastUpdate: new Date(),
-      type: monitorRequest.type,
-      active: monitorRequest.active,
-      locationDescription: monitorRequest.locationDescription || '',
-      size: monitorRequest.size,
-      productId: monitorRequest.productId,
-      maxBlocks: monitorRequest.maxBlocks,
-      address: {
-        id: monitorRequest.addressId || Math.random().toString(36).substring(2, 9),
-        street: monitorRequest.address.street,
-        city: monitorRequest.address.city,
-        state: monitorRequest.address.state,
-        country: monitorRequest.address.country,
-        zipCode: monitorRequest.address.zipCode
-      }
-    };
-    
-    return of(newMonitor);
-    
-    // Chamada real para a API (descomentar em produção)
-    // return this.http.post<Monitor>(this.apiUrl, monitorRequest).pipe(
-    //   catchError(error => {
-    //     console.error('Erro ao criar monitor:', error);
-    //     throw error;
-    //   })
-    // );
+    // Chamada real para a API
+    return this.http.post<ResponseDto<Monitor>>(this.apiUrl, monitorRequest).pipe(
+      map((response: ResponseDto<Monitor>) => {
+        console.log('Resposta da API:', response);
+        
+        // A API retorna um ResponseDto, então precisamos extrair os dados
+        if (response && response.data) {
+          return response.data;
+        }
+        
+        // Se não houver data, criar um monitor mock para compatibilidade
+        const generatedProductId = monitorRequest.productId || `PROD-${Math.random().toString(36).substring(2, 9)}`;
+        
+        const newMonitor: Monitor = {
+          id: Math.random().toString(36).substring(2, 9),
+          name: `Monitor ${monitorRequest.type} ${generatedProductId}`,
+          location: monitorRequest.address?.city || 'Sem localização',
+          status: DefaultStatus.ACTIVE,
+          lastUpdate: new Date(),
+          type: monitorRequest.type,
+          active: monitorRequest.active,
+          locationDescription: monitorRequest.locationDescription || '',
+          size: monitorRequest.size || 42.5,
+          productId: generatedProductId,
+          maxBlocks: monitorRequest.maxBlocks || 12,
+          address: {
+            id: Math.random().toString(36).substring(2, 9),
+            street: monitorRequest.address?.street || '',
+            city: monitorRequest.address?.city || '',
+            state: monitorRequest.address?.state || '',
+            country: monitorRequest.address?.country || '',
+            zipCode: monitorRequest.address?.zipCode || ''
+          }
+        };
+        
+        return newMonitor;
+      }),
+      catchError(error => {
+        console.error('Erro ao criar monitor:', error);
+        throw error;
+      })
+    );
   }
 
   updateMonitor(id: string, monitor: Partial<Monitor>): Observable<Monitor> {

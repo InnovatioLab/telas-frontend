@@ -54,34 +54,34 @@ export class GoogleMapsService {
       this.apiLoadingInProgress = false;
       return;
     }
-
+    
     if (this.apiLoadingInProgress) {
       console.log('Google Maps API loading already in progress');
       return;
     }
-
+    
     if ((window as any)[this.callbackName]) {
       console.log('Google Maps callback already exists');
       return;
     }
-
+    
     this.apiLoadingInProgress = true;
     this.apiInitializationAttempts++;
     console.log('Inicializando carregamento da API do Google Maps, tentativa', this.apiInitializationAttempts);
-
+    
     const timeoutCheck = setTimeout(() => {
       if (!this.apiLoadedSubject.getValue() && this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
         console.log('Timeout reached, retrying...');
         this.removeExistingScripts();
         this.apiLoadingInProgress = false;
-        this.initGoogleMapsApi();
+          this.initGoogleMapsApi();
       } else if (this.apiInitializationAttempts >= this.MAX_INITIALIZATION_ATTEMPTS) {
         console.error('Max initialization attempts reached');
         this.apiErrorSubject.next('Não foi possível carregar o Google Maps. Tente novamente mais tarde.');
         this.apiLoadingInProgress = false;
       }
     }, 10000);
-
+    
     (window as any)[this.callbackName] = () => {
       clearTimeout(timeoutCheck);
       console.log('Google Maps API loaded successfully');
@@ -90,21 +90,21 @@ export class GoogleMapsService {
       this.apiLoadingInProgress = false;
       this.apiInitializationAttempts = 0;
     };
-
+    
     const script = document.createElement('script');
     const apiKey = this.env.googleMapsApiKey;
-
+    
     if (!apiKey) {
       this.apiErrorSubject.next('API Key do Google Maps não configurada.');
       this.apiLoadingInProgress = false;
       return;
     }
-
+    
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${this.callbackName}&v=weekly`;
     script.async = true;
     script.defer = true;
     script.id = 'google-maps-script';
-
+    
     script.onerror = (error) => {
       clearTimeout(timeoutCheck);
       console.error('Error loading Google Maps script:', error);
@@ -114,7 +114,7 @@ export class GoogleMapsService {
         setTimeout(() => this.initGoogleMapsApi(), 2000);
       }
     };
-
+    
     document.head.appendChild(script);
   }
   
@@ -177,11 +177,11 @@ export class GoogleMapsService {
       gmpDraggable: false,
       title: point.title || ''
     };
-
+    
     if (point.icon) {
       (options as any).glyph = point.icon;
     }
-
+    
     return options;
   }
   

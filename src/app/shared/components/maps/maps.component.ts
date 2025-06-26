@@ -150,7 +150,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     // Verificar se a API já está carregada e o mapa não foi inicializado
     if (this._apiLoaded && !this.map && this.mapContainer?.nativeElement) {
-      setTimeout(() => {
+    setTimeout(() => {
         this.initializeMap();
       }, 100);
     }
@@ -186,7 +186,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         
         // Aguardar um pouco para garantir que o DOM está pronto
         setTimeout(() => {
-          this.initializeMap();
+        this.initializeMap();
         }, 100);
       }
     });
@@ -356,22 +356,22 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     try {
-      const defaultCenter = { lat: -3.7327, lng: -38.5270 };
-      const center = this.center || defaultCenter;
+    const defaultCenter = { lat: -3.7327, lng: -38.5270 };
+    const center = this.center || defaultCenter;
 
-      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
-        center,
+    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+      center,
         zoom: this.zoom,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false
-      });
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
+    });
 
-      this.mapInitialized.emit(this.map);
+    this.mapInitialized.emit(this.map);
       
       // Adicionar pontos se existirem
       if (this.points && this.points.length > 0) {
-        this.addMapPoints(this.points);
+    this.addMapPoints(this.points);
       }
       
       // Forçar um resize para garantir que o mapa se ajuste corretamente

@@ -1,0 +1,261 @@
+<div class="create-monitor-modal">
+  <div class="modal-header">
+    <h2>Create New Monitor</h2>
+    <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-text p-button-secondary close-btn" 
+            (click)="cancel()"></button>
+  </div>
+
+  <form [formGroup]="monitorForm" (ngSubmit)="submit()" class="modal-content">
+    <div class="form-section">
+      <h3>Monitor Information</h3>
+      
+      <div class="form-row">
+        <div class="form-field">
+          <label for="size">Size (inches)</label>
+          <p-inputNumber 
+            id="size" 
+            formControlName="size" 
+            [min]="0.01" 
+            [max]="999.99" 
+            [minFractionDigits]="2" 
+            [maxFractionDigits]="2"
+            placeholder="Enter size">
+          </p-inputNumber>
+          <small class="error-message" *ngIf="getFieldError('size')">{{ getFieldError('size') }}</small>
+        </div>
+
+        <div class="form-field">
+          <label for="type">Type*</label>
+          <p-dropdown 
+            id="type" 
+            formControlName="type" 
+            [options]="monitorTypes" 
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select type">
+          </p-dropdown>
+          <small class="error-message" *ngIf="getFieldError('type')">{{ getFieldError('type') }}</small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="maxBlocks">Max Blocks</label>
+          <p-inputNumber 
+            id="maxBlocks" 
+            formControlName="maxBlocks" 
+            [min]="1" 
+            placeholder="Enter max blocks">
+          </p-inputNumber>
+          <small class="error-message" *ngIf="getFieldError('maxBlocks')">{{ getFieldError('maxBlocks') }}</small>
+        </div>
+
+        <div class="form-field">
+          <label for="active">Active</label>
+          <p-inputSwitch id="active" formControlName="active"></p-inputSwitch>
+        </div>
+      </div>
+
+      <div class="form-field full-width">
+        <label for="locationDescription">Location Description</label>
+        <textarea 
+          pInputTextarea 
+          id="locationDescription" 
+          formControlName="locationDescription" 
+          rows="3"
+          placeholder="Enter location description">
+        </textarea>
+        <small class="error-message" *ngIf="getFieldError('locationDescription')">{{ getFieldError('locationDescription') }}</small>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Address Information</h3>
+      
+      <div formGroupName="address" class="address-group">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="zipCode">Zip Code*</label>
+            <div class="zipcode-input-container">
+              <input 
+                pInputText 
+                id="zipCode" 
+                formControlName="zipCode" 
+                placeholder="Enter 5-digit zip code"
+                maxlength="5">
+              <i *ngIf="loadingZipCode" class="pi pi-spin pi-spinner loading-icon"></i>
+            </div>
+            <small class="help-text">Enter the zip code to automatically fill city, state, and coordinates</small>
+            <small class="error-message" *ngIf="getFieldError('address', 'zipCode')">{{ getFieldError('address', 'zipCode') }}</small>
+          </div>
+
+          <div class="form-field">
+            <label for="street">Street*</label>
+            <input 
+              pInputText 
+              id="street" 
+              formControlName="street" 
+              placeholder="Enter street">
+            <small class="error-message" *ngIf="getFieldError('address', 'street')">{{ getFieldError('address', 'street') }}</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="city">City*</label>
+            <input 
+              pInputText 
+              id="city" 
+              formControlName="city" 
+              placeholder="Enter city">
+            <small class="error-message" *ngIf="getFieldError('address', 'city')">{{ getFieldError('address', 'city') }}</small>
+          </div>
+
+          <div class="form-field">
+            <label for="state">State*</label>
+            <input 
+              pInputText 
+              id="state" 
+              formControlName="state" 
+              placeholder="Enter 2-letter state code"
+              maxlength="2">
+            <small class="error-message" *ngIf="getFieldError('address', 'state')">{{ getFieldError('address', 'state') }}</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="country">Country</label>
+            <input 
+              pInputText 
+              id="country" 
+              formControlName="country" 
+              placeholder="Enter country">
+            <small class="error-message" *ngIf="getFieldError('address', 'country')">{{ getFieldError('address', 'country') }}</small>
+          </div>
+
+          <div class="form-field">
+            <label for="complement">Complement</label>
+            <input 
+              pInputText 
+              id="complement" 
+              formControlName="complement" 
+              placeholder="Enter complement">
+            <small class="error-message" *ngIf="getFieldError('address', 'complement')">{{ getFieldError('address', 'complement') }}</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="latitude">Latitude</label>
+            <p-inputNumber 
+              id="latitude" 
+              formControlName="latitude" 
+              [minFractionDigits]="6" 
+              [maxFractionDigits]="6"
+              placeholder="Enter latitude">
+            </p-inputNumber>
+          </div>
+
+          <div class="form-field">
+            <label for="longitude">Longitude</label>
+            <p-inputNumber 
+              id="longitude" 
+              formControlName="longitude" 
+              [minFractionDigits]="6" 
+              [maxFractionDigits]="6"
+              placeholder="Enter longitude">
+            </p-inputNumber>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-header">
+        <h3>Advertisements (Optional)</h3>
+        <button 
+          pButton 
+          pRipple 
+          type="button" 
+          icon="pi pi-plus" 
+          label="Add Ad" 
+          class="p-button-outlined p-button-sm"
+          (click)="addAd()">
+        </button>
+      </div>
+
+      <div formArrayName="ads" class="ads-container">
+        <div *ngFor="let adGroup of adsArray.controls; let i = index" [formGroupName]="i" class="ad-item">
+          <div class="ad-header">
+            <h4>Ad {{ i + 1 }}</h4>
+            <button 
+              pButton 
+              pRipple 
+              type="button" 
+              icon="pi pi-trash" 
+              class="p-button-rounded p-button-danger p-button-text p-button-sm"
+              (click)="removeAd(i)">
+            </button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="adId{{i}}">Ad ID*</label>
+              <input 
+                pInputText 
+                [id]="'adId' + i" 
+                formControlName="id" 
+                placeholder="Enter ad ID">
+            </div>
+
+            <div class="form-field">
+              <label for="displayType{{i}}">Display Type</label>
+              <p-dropdown 
+                [id]="'displayType' + i" 
+                formControlName="displayType" 
+                [options]="displayTypes" 
+                optionLabel="label" 
+                optionValue="value">
+              </p-dropdown>
+            </div>
+
+            <div class="form-field">
+              <label for="orderIndex{{i}}">Order Index*</label>
+              <p-inputNumber 
+                [id]="'orderIndex' + i" 
+                formControlName="orderIndex" 
+                [min]="1" 
+                placeholder="Enter order">
+              </p-inputNumber>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="adsArray.length === 0" class="no-ads">
+          <p>No advertisements added. Click "Add Ad" to include advertisements.</p>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="modal-footer">
+    <button 
+      pButton 
+      pRipple 
+      type="button" 
+      label="Cancel" 
+      class="p-button-outlined p-button-secondary"
+      (click)="cancel()">
+    </button>
+    <button 
+      pButton 
+      pRipple 
+      type="submit" 
+      label="Create Monitor" 
+      icon="pi pi-check"
+      [disabled]="monitorForm.invalid"
+      (click)="submit()">
+    </button>
+  </div>
+</div> 

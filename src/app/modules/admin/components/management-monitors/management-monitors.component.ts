@@ -7,8 +7,8 @@ import { MonitorService } from '@app/core/service/api/monitor.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { Monitor, MonitorType } from '@app/model/monitors';
 import { DefaultStatus } from '@app/model/client';
-import { CreateMonitorRequestDto, MonitorAdRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
-import { DisplayType } from '@app/model/enums/display-type.enum';
+import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { CreateMonitorModalComponent } from '../create-monitor-modal/create-monitor-modal.component';
 
 @Component({
   selector: 'app-management-monitors',
@@ -17,7 +17,8 @@ import { DisplayType } from '@app/model/enums/display-type.enum';
     CommonModule,
     PrimengModule,
     FormsModule,
-    IconsModule 
+    IconsModule,
+    CreateMonitorModalComponent
   ],
   templateUrl: './management-monitors.component.html',
   styleUrls: ['./management-monitors.component.scss']
@@ -27,6 +28,7 @@ export class ManagementMonitorsComponent implements OnInit {
   selectedMonitor: Monitor | null = null;
   loading = false;
   dialogVisible = false;
+  createMonitorModalVisible = false;
 
   constructor(
     private readonly monitorService: MonitorService,
@@ -51,30 +53,30 @@ export class ManagementMonitorsComponent implements OnInit {
     );
   }
 
-  createMonitor(): void {
-    // Inicializar um novo monitor com valores padrão
-    this.selectedMonitor = {
-      id: '',
-      name: '',
-      location: '',
-      status: DefaultStatus.ACTIVE,
-      lastUpdate: new Date(),
-      type: MonitorType.BASIC,
-      active: true,
-      locationDescription: '',
-      size: 42.5,
-      productId: '',
-      maxBlocks: 12,
-      address: {
-        id: '',
-        street: '',
-        city: '',
-        state: '',
-        country: '',
-        zipCode: ''
+  openCreateMonitorModal(): void {
+    this.createMonitorModalVisible = true;
+  }
+
+  onMonitorCreated(monitorRequest: CreateMonitorRequestDto): void {
+    this.loading = true;
+    
+    this.monitorService.createMonitor(monitorRequest).subscribe({
+      next: (newMonitor) => {
+        this.monitors.push(newMonitor);
+        this.toastService.sucesso('Monitor created successfully');
+        this.createMonitorModalVisible = false;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error creating monitor:', error);
+        this.toastService.erro('Error creating monitor');
+        this.loading = false;
       }
-    };
-    this.dialogVisible = true;
+    });
+  }
+
+  onCreateMonitorModalClose(): void {
+    this.createMonitorModalVisible = false;
   }
 
   onSelectMonitor(monitor: Monitor): void {
@@ -101,57 +103,6 @@ export class ManagementMonitorsComponent implements OnInit {
         },
         (error) => {
           this.toastService.erro('Error updating monitor');
-          this.loading = false;
-        }
-      );
-    } else {
-      // Criar um novo monitor usando o DTO correto
-      const createMonitorRequest: CreateMonitorRequestDto = {
-        productId: monitor.productId || '',
-        size: monitor.size || 0,
-        address: {
-          street: monitor.address?.street || '',
-          city: monitor.address?.city || '',
-          state: monitor.address?.state || '',
-          country: monitor.address?.country || '',
-          zipCode: monitor.address?.zipCode || ''
-        },
-        type: monitor.type || MonitorType.BASIC,
-        active: monitor.active ?? true,
-        locationDescription: monitor.locationDescription || '',
-        maxBlocks: monitor.maxBlocks || undefined,
-        ads: [
-          {
-            id: new Date().getTime().toString(),
-            displayType: DisplayType.CONTINUOUS,
-            orderIndex: 0
-          }
-        ]
-      };
-      
-      // Validação básica antes de enviar
-      if (!createMonitorRequest.productId) {
-        this.toastService.erro('Product ID is required');
-        this.loading = false;
-        return;
-      }
-      
-      if (createMonitorRequest.size <= 0) {
-        this.toastService.erro('Size must be greater than 0');
-        this.loading = false;
-        return;
-      }
-      
-      this.monitorService.createMonitor(createMonitorRequest).subscribe(
-        (newMonitor) => {
-          this.monitors.push(newMonitor);
-          this.toastService.sucesso('Monitor created successfully');
-          this.dialogVisible = false;
-          this.selectedMonitor = null;
-          this.loading = false;
-        },
-        (error) => {
-          this.toastService.erro('Error creating monitor');
           this.loading = false;
         }
       );

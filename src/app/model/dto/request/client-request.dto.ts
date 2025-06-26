@@ -33,4 +33,6 @@ export interface AddressRequestDTO {
   country: string;
   complement?: string;
   partnerAddress?: boolean;
+  latitude?: number;
+  longitude?: number;
 }

@@ -38,7 +38,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     public readonly mapsService: GoogleMapsService,
     private readonly toastService: ToastService
   ) {}
-
+  
   ngOnInit(): void {
     this.isLoading = true;
     

@@ -8,7 +8,7 @@
               <app-icon-search></app-icon-search>
               <input type="text" pInputText placeholder="Search monitors..." />
             </span>
-            <p-button label="Create Monitor" icon="pi pi-plus"></p-button>
+            <p-button label="Create Monitor" icon="pi pi-plus" (click)="openCreateMonitorModal()"></p-button>
           </div>
       </div>
     </p-card>
@@ -51,7 +51,26 @@
     </p-table>
   </div>
 
-  <p-dialog header="New Monitor Details" [(visible)]="dialogVisible" [style]="{width: '600px'}" [modal]="true">
+  <!-- Modal de criação de monitor -->
+  <p-dialog 
+    [(visible)]="createMonitorModalVisible" 
+    [modal]="true" 
+    [style]="{width: '90vw', maxWidth: '800px', height: '90vh'}" 
+    [draggable]="false"
+    [resizable]="false"
+    [closeOnEscape]="true"
+    [dismissableMask]="true"
+    [showHeader]="false"
+    [contentStyle]="{'padding': '0', 'border-radius': '8px', 'overflow': 'hidden'}">
+    
+    <app-create-monitor-modal
+      (close)="onCreateMonitorModalClose()"
+      (monitorCreated)="onMonitorCreated($event)">
+    </app-create-monitor-modal>
+  </p-dialog>
+
+  <!-- Modal de edição de monitor (mantido para compatibilidade) -->
+  <p-dialog header="Edit Monitor Details" [(visible)]="dialogVisible" [style]="{width: '600px'}" [modal]="true">
     <div class="monitor-form" *ngIf="selectedMonitor">
       <div class="p-grid p-fluid">
         <div class="p-field p-col-12 p-md-6">

@@ -3,15 +3,14 @@ import { AddressRequestDTO } from "./client-request.dto";
 import { DisplayType } from "@app/model/enums/display-type.enum";
 
 export interface CreateMonitorRequestDto {
-  productId: string;
-  size: number;
-  addressId?: string;
-  address: AddressRequestDTO;
+  productId?: string;
+  size?: number;
+  address?: AddressRequestDTO;
   maxBlocks?: number;
   locationDescription?: string;
   type: MonitorType;
   active: boolean;
-  ads: MonitorAdRequestDto[];
+  ads?: MonitorAdRequestDto[];
 }
 
 export interface MonitorAdRequestDto {
