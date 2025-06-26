@@ -2,10 +2,15 @@
   <div class="w-full text-center flex flex-column justify-content-center">
 
     <div class="icone-custon">
-      <span *ngIf="data.icon !== 'report'" [class]="'icon-fill material-symbols-outlined dialogo-icone ' + data.icon">
-        {{ data.icon }}
-      </span>
-      <app-icon-atencao *ngIf="data.icon === 'report'"/>
+      <ng-container *ngIf="iconComponent; else iconeString">
+        <ng-container *ngComponentOutlet="iconComponent"></ng-container>
+      </ng-container>
+      <ng-template #iconeString>
+        <span *ngIf="data.icon && typeof data.icon === 'string' && data.icon !== 'report'" [class]="'icon-fill material-symbols-outlined dialogo-icone ' + data.icon">
+          {{ data.icon }}
+        </span>
+        <app-icon-atencao *ngIf="data.icon === 'report'"/>
+      </ng-template>
     </div>
     <span class="dialogo-titulo">
       {{ data.titulo }}

@@ -64,10 +64,18 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     effect(() => {
       const isVisible = this.sidebarService.visibilidade();
-      if (isVisible !== null) {
+      const tipo = this.sidebarService.tipo();
+      
+      // Only update map dimensions for sidebar types that affect map layout
+      // Exclude 'client-menu' as it should not cause map resizing
+      if (isVisible !== null && tipo !== 'client-menu') {
         this.updateMapDimensions();
       }
     });
+  }
+
+  public reloadMapApi(): void {
+    this.mapsService.initGoogleMapsApi();
   }
 
   ngOnInit() {
@@ -76,9 +84,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.forceMapResize();
-    }, 500);
+    // setTimeout(() => {
+    //   this.forceMapResize();
+    // }, 500);
   }
 
   ngOnDestroy(): void {

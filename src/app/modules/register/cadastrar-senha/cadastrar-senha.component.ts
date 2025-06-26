@@ -7,6 +7,7 @@ import { ClientService } from '@app/core/service/api/client.service';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
+import { IconsModule } from '@app/shared/icons/icons.module';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { MascaraUtils } from '@app/shared/utils/mascara.utils';
@@ -22,7 +23,8 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
     CardCentralizadoComponent,
     ErrorComponent,
     ReactiveFormsModule,
-    SenhaDirective
+    SenhaDirective,
+    IconsModule
   ],
   providers: [DialogService],
   templateUrl: './cadastrar-senha.component.html',

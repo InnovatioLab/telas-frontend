@@ -1,21 +1,15 @@
-<div class="menu-side-container" [ngClass]="{'active': menuAberto, 'fixed': menuFixo}">
+<div class="menu-side-container" [ngClass]="{'active': menuAberto}">
   <div class="menu-header">
     <div class="menu-actions">
-      <button class="pin-btn desktop-only" (click)="toggleFixarMenu($event)" [ngClass]="{'pinned': menuFixo}"
-        aria-label="Pin/Unpin menu" pTooltip="{{menuFixo ? 'Unpin menu' : 'Pin menu'}}" tooltipPosition="right">
-        <app-icon-lock *ngIf="menuFixo"></app-icon-lock>
-        <app-icon-lock-open *ngIf="!menuFixo"></app-icon-lock-open>
-      </button>
-
-      <button *ngIf="!menuFixo" class="close-btn" (click)="toggleMenu()" aria-label="Close sidebar"
+      <!-- Botão de fixar menu removido -->
+      <button class="close-btn" (click)="toggleMenu()" aria-label="Close sidebar"
         pTooltip="Close" tooltipPosition="right">
         <app-icon-close></app-icon-close>
       </button>
     </div>
 
-    <span class="menu-title" *ngIf="!menuFixo">Menu</span>
-    <img *ngIf="menuFixo" src="assets/img/logo.png" alt="Company Logo" height="40" width="100" class="menu-logo"
-      (click)="navegarPaginaInicial()">
+    <span class="menu-title">Menu</span>
+    <!-- Logo fixo removido -->
   </div>
 
   <div class="menu-content">
@@ -42,11 +36,11 @@
     <span class="version" pTooltip="Current application version" tooltipPosition="top">v1.0.0</span>
     <ui-toggle></ui-toggle>
   </div>
-  <div class="menu-sidebar" [ngClass]="{'menu-aberto': menuAberto, 'menu-fixo': menuFixo}">
+  <div class="menu-sidebar" [ngClass]="{'menu-aberto': menuAberto}">
   </div>
 </div>
 
-<div class="menu-overlay" *ngIf="menuAberto && !menuFixo" (click)="toggleMenu()" (keydown.escape)="toggleMenu()"
+<div class="menu-overlay" *ngIf="menuAberto" (click)="toggleMenu()" (keydown.escape)="toggleMenu()"
   tabindex="-1" role="presentation"></div>
 
 <p-dialog [(visible)]="showPaymentModal" [modal]="true" [style]="{width: '90%', maxWidth: '500px'}" [draggable]="false"

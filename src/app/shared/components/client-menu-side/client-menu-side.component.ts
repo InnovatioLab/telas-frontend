@@ -17,8 +17,6 @@ import { IconFavoriteComponent } from '../../icons/favorite.icon';
 import { IconSettingsComponent } from '../../icons/settings.icon';
 import { IconHelpComponent } from '../../icons/help.icon';
 import { IconLogoutComponent } from '../../icons/logout.icon';
-import { IconLockComponent } from '../../icons/lock.icon';
-import { IconLockOpenComponent } from '../../icons/lock-open.icon';
 import { IconCloseComponent } from '../../icons/close.icon';
 import { IconPlaceComponent } from '@app/shared/icons/place.icon';
 
@@ -42,8 +40,6 @@ interface MenuItem {
     IconSettingsComponent,
     IconHelpComponent,
     IconLogoutComponent,
-    IconLockComponent,
-    IconLockOpenComponent,
     IconCloseComponent,
     IconPlaceComponent
   ],
@@ -53,7 +49,6 @@ interface MenuItem {
 })
 export class ClientMenuSideComponent implements OnInit, OnDestroy {
   menuAberto = false;
-  menuFixo = false;
   showPaymentModal = false;
   private sidebarSubscription: Subscription;
   refDialogo: DynamicDialogRef | undefined;
@@ -80,26 +75,23 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.carregarEstadoMenuFixo();
-    this.toggleModeService.theme$.subscribe((theme: string) => {
-      this.isDarkMode = theme === 'dark';
-    });
     this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(() => {
       const isVisible = this.sidebarService.visibilidade();
       const tipo = this.sidebarService.tipo();
       
-      if (!this.menuFixo) {
-        if (isVisible && tipo === 'client-menu' && !this.menuAberto) {
+      if (!this.menuAberto) {
+        if (isVisible && tipo === 'client-menu') {
           this.abrirMenu();
-        } else if (!isVisible && this.menuAberto) {
+        } else if (!isVisible) {
           this.fecharMenu();
         }
       }
     });
     
-    if (this.menuFixo) {
-      this.abrirMenu();
-    }
+    // this.menuFixo = false;
+    // if (this.menuFixo) {
+    //   this.abrirMenu();
+    // }
   }
   
   ngOnDestroy(): void {
@@ -110,7 +102,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown.escape')
   fecharMenuComEsc(): void {
-    if (this.menuAberto && !this.menuFixo) {
+    if (this.menuAberto) {
       this.toggleMenu();
     }
     
@@ -120,10 +112,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   toggleMenu(): void {
-    if (this.menuFixo && this.menuAberto) {
-      return;
-    }
-    
     if (this.menuAberto) {
       this.fecharMenu();
     } else {
@@ -131,85 +119,76 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     }
   }
   
-  toggleFixarMenu(event: Event): void {
-    event.stopPropagation();
-    
-    if (window.innerWidth <= 768) {
-      return;
-    }
-    
-    this.menuFixo = !this.menuFixo;
-    
-    this.salvarEstadoMenuFixo();
-    
-    if (this.menuFixo) {
-      this.abrirMenu();
-      this.renderer.addClass(document.body, 'menu-fixed');
-    } else {
-      this.renderer.removeClass(document.body, 'menu-fixed');
-    }
-    
-    this.ajustarEspacoMapa();
-  }
+  // toggleFixarMenu(event: Event): void {
+  //   event.stopPropagation();
+  //   if (window.innerWidth <= 768) {
+  //     return;
+  //   }
+  //   this.menuFixo = !this.menuFixo;
+  //   this.salvarEstadoMenuFixo();
+  //   if (this.menuFixo) {
+  //     this.abrirMenu();
+  //     this.renderer.addClass(document.body, 'menu-fixed');
+  //   } else {
+  //     this.renderer.removeClass(document.body, 'menu-fixed');
+  //   }
+  //   this.ajustarEspacoMapa();
+  // }
   
-  private salvarEstadoMenuFixo(): void {
-    try {
-      localStorage.setItem('menuFixo', this.menuFixo ? 'true' : 'false');
-    } catch (e) {
-      console.error('Não foi possível salvar o estado do menu:', e);
-    }
-  }
+  // private salvarEstadoMenuFixo(): void {
+  //   try {
+  //     localStorage.setItem('menuFixo', this.menuFixo ? 'true' : 'false');
+  //   } catch (e) {
+  //     console.error('Não foi possível salvar o estado do menu:', e);
+  //   }
+  // }
   
-  private carregarEstadoMenuFixo(): void {
-    try {
-      const estadoSalvo = localStorage.getItem('menuFixo');
-      if (estadoSalvo !== null) {
-        if (window.innerWidth <= 768) {
-          this.menuFixo = false;
-          localStorage.setItem('menuFixo', 'false');
-        } else {
-          this.menuFixo = estadoSalvo === 'true';
-          
-          if (this.menuFixo) {
-            this.renderer.addClass(document.body, 'menu-fixed');
-          }
-        }
-      }
-    } catch (e) {
-      console.error('Não foi possível carregar o estado do menu:', e);
-    }
-  }
+  // private carregarEstadoMenuFixo(): void {
+  //   try {
+  //     const estadoSalvo = localStorage.getItem('menuFixo');
+  //     if (estadoSalvo !== null) {
+  //       if (window.innerWidth <= 768) {
+  //         this.menuFixo = false;
+  //         localStorage.setItem('menuFixo', 'false');
+  //       } else {
+  //         this.menuFixo = estadoSalvo === 'true';
+  //         if (this.menuFixo) {
+  //           this.renderer.addClass(document.body, 'menu-fixed');
+  //         }
+  //       }
+  //     }
+  //   } catch (e) {
+  //     console.error('Não foi possível carregar o estado do menu:', e);
+  //   }
+  // }
   
   private abrirMenu(): void {
     this.menuAberto = true;
     this.sidebarService.abrirMenu('client-menu');
-    
     this.renderer.addClass(document.body, 'menu-open');
-    
+    this.renderer.addClass(document.body, 'client-menu-active');
     setTimeout(() => {
       const primeiroItem = this.elementRef.nativeElement.querySelector('.menu-item');
       if (primeiroItem) {
         primeiroItem.focus();
       }
     }, 100);
-    
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
+    // if (this.menuFixo) {
+    //   setTimeout(() => {
+    //     window.dispatchEvent(new Event('resize'));
+    //   }, 300);
+    // }
   }
   
   private fecharMenu(): void {
-    if (this.menuFixo) {
-      return;
-    }
-    
     this.menuAberto = false;
     this.sidebarService.fechar();
-    
     this.renderer.removeClass(document.body, 'menu-open');
-    
+    this.renderer.removeClass(document.body, 'client-menu-active');
     setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
+      // if (this.menuFixo) {
+      //   window.dispatchEvent(new Event('resize'));
+      // }
     }, 300);
   }
 
@@ -252,7 +231,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   navegarParaMyTelas(): void {
     if (this.isLogado()) {
       this.router.navigate(['/client/my-telas']);
-      if (this.menuAberto && !this.menuFixo) {
+      if (this.menuAberto) {
         this.toggleMenu();
       }
     } else {
@@ -316,33 +295,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   isAdministrador(): boolean {
     return this.authentication?._clientSignal()?.role === 'ADMIN';
   }
-
-  private ajustarEspacoMapa(): void {
-    if (this.menuAberto) {
-      this.renderer.addClass(document.body, 'menu-open');
-      if (this.menuFixo) {
-        this.renderer.addClass(document.body, 'menu-fixed');
-      }
-    } else {
-      this.renderer.removeClass(document.body, 'menu-open');
-      this.renderer.removeClass(document.body, 'menu-fixed');
-    }
-    
-    setTimeout(() => {
-      const bodyWidth = document.body.clientWidth;
-      const windowWidth = window.innerWidth;
-      
-      if (bodyWidth > windowWidth) {
-        const mapsContainer = document.querySelector('.maps-container');
-        if (mapsContainer) {
-          this.renderer.setStyle(mapsContainer, 'max-width', `${windowWidth - 20}px`);
-        }
-      }
-      
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
-  }
-
+  
   navegarParaConfiguracoes(): void {
     if (this.isLogado()) {
       this.router.navigate(['/client/settings']);

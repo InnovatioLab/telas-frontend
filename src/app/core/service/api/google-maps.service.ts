@@ -29,7 +29,7 @@ export class GoogleMapsService {
   private readonly callbackName = 'googleMapsInitialized';
   private readonly MAX_HISTORY_ITEMS = 10;
   private apiInitializationAttempts = 0;
-  private readonly MAX_INITIALIZATION_ATTEMPTS = 3;
+  private readonly MAX_INITIALIZATION_ATTEMPTS = 5;
   private apiLoadingInProgress = false;
   
   constructor(
@@ -47,72 +47,65 @@ export class GoogleMapsService {
   public initGoogleMapsApi(): void {
     if (typeof google !== 'undefined' && google.maps) {
       this.apiLoadedSubject.next(true);
+      this.apiErrorSubject.next(null);
+      this.apiInitializationAttempts = 0;
       return;
     }
-    
+
     if (this.apiLoadingInProgress) {
       return;
     }
-    
+
     if ((window as any)[this.callbackName]) {
       return;
     }
-    
+
     this.apiLoadingInProgress = true;
-    console.log('Inicializando carregamento da API do Google Maps');
-    
+    this.apiInitializationAttempts++;
+    console.log('Inicializando carregamento da API do Google Maps, tentativa', this.apiInitializationAttempts);
+
     const timeoutCheck = setTimeout(() => {
-      if (!this.apiLoadedSubject.value) {
-        console.warn('Timeout ao carregar a API do Google Maps, tentando novamente...');
+      if (!this.apiLoadedSubject.getValue() && this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
+        this.removeExistingScripts();
         this.apiLoadingInProgress = false;
-        this.apiInitializationAttempts++;
-        
-        if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
-          this.removeExistingScripts();
-          this.initGoogleMapsApi();
-        } else {
-          const timeoutMessage = 'Timeout ao carregar a API do Google Maps após múltiplas tentativas';
-          this.apiErrorSubject.next(timeoutMessage);
-          console.error(timeoutMessage);
-          this.loadingService.setLoading(false, 'load-google-maps');
-        }
+        this.initGoogleMapsApi();
+      } else if (this.apiInitializationAttempts >= this.MAX_INITIALIZATION_ATTEMPTS) {
+        this.apiErrorSubject.next('Não foi possível carregar o Google Maps. Tente novamente mais tarde.');
+        this.apiLoadingInProgress = false;
       }
     }, 10000);
-    
+
     (window as any)[this.callbackName] = () => {
-      console.log('Google Maps API carregada com sucesso via callback');
       clearTimeout(timeoutCheck);
       this.apiLoadedSubject.next(true);
       this.apiErrorSubject.next(null);
       this.apiLoadingInProgress = false;
       this.apiInitializationAttempts = 0;
     };
-    
+
     const script = document.createElement('script');
     const apiKey = this.env.googleMapsApiKey;
-    
+
     if (!apiKey) {
-      const error = 'Chave da API do Google Maps não encontrada';
-      this.apiErrorSubject.next(error);
-      console.error(error);
+      this.apiErrorSubject.next('API Key do Google Maps não configurada.');
       this.apiLoadingInProgress = false;
-      this.loadingService.setLoading(false, 'load-google-maps');
       return;
     }
-    
+
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${this.callbackName}&v=weekly`;
     script.async = true;
     script.defer = true;
     script.id = 'google-maps-script';
-    
+
     script.onerror = (error) => {
-      const errorMessage = 'Erro ao carregar a API do Google Maps';
-      this.apiErrorSubject.next(errorMessage);
-      console.error(errorMessage, error);
+      clearTimeout(timeoutCheck);
+      this.apiErrorSubject.next('Erro ao carregar o Google Maps. Tentando novamente...');
       this.apiLoadingInProgress = false;
-      this.loadingService.setLoading(false, 'load-google-maps');
+      if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
+        setTimeout(() => this.initGoogleMapsApi(), 2000);
+      }
     };
-    
+
     document.head.appendChild(script);
   }
   

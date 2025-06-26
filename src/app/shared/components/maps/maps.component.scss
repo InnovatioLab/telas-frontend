@@ -49,7 +49,8 @@
   }
 }
 
-:host-context(body.menu-fixed) {
+/* Only apply width adjustments for admin menu, not client menu */
+:host-context(body.menu-fixed:not(.client-menu-active)) {
   .maps-container {
     width: calc(100% - 280px);
     margin-left: 280px;
@@ -59,7 +60,7 @@
   }
 }
 
-:host-context(body.menu-open:not(.menu-fixed)) {
+:host-context(body.menu-open:not(.menu-fixed):not(.client-menu-active)) {
   .maps-container {
     width: calc(100% - 280px);
     margin-left: 280px;
@@ -83,14 +84,15 @@
     }
   }
   
-  :host-context(body.menu-open:not(.menu-fixed)) {
+  /* Only apply width adjustments for admin menu on mobile, not client menu */
+  :host-context(body.menu-open:not(.menu-fixed):not(.client-menu-active)) {
     .maps-container {
       width: 100%;
       margin-left: 0;
     }
   }
   
-  :host-context(body.menu-fixed) {
+  :host-context(body.menu-fixed:not(.client-menu-active)) {
     .maps-container {
       width: calc(100% - 250px);
       margin-left: 250px;

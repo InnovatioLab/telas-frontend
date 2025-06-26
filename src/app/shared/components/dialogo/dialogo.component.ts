@@ -23,6 +23,10 @@ export class DialogoComponent implements AfterViewInit, OnDestroy {
 
   exibir = false;
 
+  get iconComponent() {
+    return typeof this.data.icon === 'function' ? this.data.icon : null;
+  }
+
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,

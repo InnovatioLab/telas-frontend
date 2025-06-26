@@ -45,12 +45,12 @@
     </form>
 
     <div class="flex flex-column gap-3 text-normal text-center">
-      <div class="flex flex-row gap-1 justify-content-center text-normal text-center">
+      <div class="flex flex-row gap-1 justify-content-center text-normal text-center btn-reenviar-codigo">
         Didn't receive it?
         <button
           pButton
           (click)="enviarCodigo()"
-          class="link-text p-0 bg-transparent border-0 justify-content-center cursor-pointer"
+          class="link-text p-0 bg-transparent border-0 justify-content-center cursor-pointer resend-button"
           [disabled]="inativarBotaoReenviarCodigo"
         >
           Resend Code

@@ -20,4 +20,16 @@ label {
   .botoes-card-pequeno {
     padding: 8px;
   }
+
+  .btn-reenviar-codigo {
+    color: var(--cor-primaria);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .resend-button {
+    background-color: var(--cor-primaria) !important;
+    padding: 4px 16px !important;
+  }
 }
