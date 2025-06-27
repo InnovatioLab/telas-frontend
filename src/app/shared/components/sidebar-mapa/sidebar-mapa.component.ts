@@ -7,11 +7,39 @@ import { Environment } from 'src/environments/environment.interface';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { IconsModule } from '@app/shared/icons/icons.module';
+import { IconBackComponent } from '@app/shared/icons/back.icon';
+import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
+import { IconPlaceComponent } from '@app/shared/icons/place.icon';
+import { IconArquivoComponent } from '@app/shared/icons/arquivo.icon';
+import { IconBuildingComponent } from '@app/shared/icons/building.icon';
+import { IconMapMarkerComponent } from '@app/shared/icons/map-marker.icon';
+import { IconKeyComponent } from '@app/shared/icons/key.icon';
+import { IconBoltComponent } from '@app/shared/icons/bolt.icon';
+import { IconCheckComponent } from '@app/shared/icons/check.icon';
+import { IconCloseComponent } from '@app/shared/icons/close.icon';
+import { IconWarningComponent } from '@app/shared/icons/warning.icon';
+import { IconClockComponent } from '@app/shared/icons/clock.icon';
 
 @Component({
   selector: 'app-sidebar-mapa',
   standalone: true,
-  imports: [CommonModule, PrimengModule, IconsModule],
+  imports: [
+    CommonModule, 
+    PrimengModule, 
+    IconsModule,
+    IconBackComponent,
+    IconTvDisplayComponent,
+    IconPlaceComponent,
+    IconArquivoComponent,
+    IconBuildingComponent,
+    IconMapMarkerComponent,
+    IconKeyComponent,
+    IconBoltComponent,
+    IconCheckComponent,
+    IconCloseComponent,
+    IconWarningComponent,
+    IconClockComponent
+  ],
   templateUrl: './sidebar-mapa.component.html',
   styleUrls: ['./sidebar-mapa.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -114,7 +142,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   }
 
   getMonitorData(): any {
-    if (this.pontoSelecionado && this.pontoSelecionado.data) {
+    if (this.pontoSelecionado?.data) {
       return this.pontoSelecionado.data;
     }
     return null;
