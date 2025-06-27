@@ -29,10 +29,8 @@ import { BannerComponent } from "../components/banner/banner.component";
 export class GuestLadingComponent implements OnInit {
 
   constructor() {
-    console.log('GuestLadingComponent constructor');
   }
 
   ngOnInit(): void {
-    console.log('GuestLadingComponent inicializado');
   }
 }

@@ -1,251 +1,196 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { Monitor, MonitorType } from '@app/model/monitors';
+import { Monitor } from '@app/model/monitors';
 import { DefaultStatus } from '@app/model/client';
 import { environment } from 'src/environments/environment';
 import { IMonitorAlert } from './interfaces/monitor';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { ResponseDto } from '@app/model/dto/response/response.dto';
+import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
+import { MonitorResponseDto } from '@app/model/dto/response/monitor-response.dto';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MonitorService {
-  private readonly apiUrl = environment.apiUrl + '/monitors';
+  private readonly apiUrl = environment.apiUrl + 'monitors';
+  storageName = 'telas_token';
+  token = localStorage.getItem(this.storageName);
+
+  headers = {
+    headers: {
+      Authorization: `Bearer ${this.token}`
+    }
+  };
 
   constructor(private readonly http: HttpClient) { }
 
-  getMonitors(searchTerm?: string): Observable<Monitor[]> {
-    console.log('Buscando monitores, termo de busca:', searchTerm);
-    const mockData: Monitor[] = [
-      { 
-        id: '1', 
-        name: 'Monitor Central', 
-        location: 'Downtown', 
-        status: DefaultStatus.ACTIVE, 
-        lastUpdate: new Date(),
-        type: MonitorType.BASIC,
-        active: true,
-        locationDescription: 'Central Business District',
-        size: 42.5,
-        productId: 'PROD-001',
-        maxBlocks: 12,
-        address: {
-          id: '101',
-          street: 'Main St',
-          city: 'New York',
-          state: 'NY',
-          country: 'USA',
-          zipCode: '10001'
-        }
-      },
-      { 
-        id: '2', 
-        name: 'Monitor East Side', 
-        location: 'East Side', 
-        status: DefaultStatus.INACTIVE, 
-        lastUpdate: new Date(),
-        type: MonitorType.PREMIUM,
-        active: false,
-        locationDescription: 'East Side Mall',
-        size: 55.0,
-        productId: 'PROD-002',
-        maxBlocks: 24,
-        address: {
-          id: '102',
-          street: 'Broadway',
-          city: 'New York',
-          state: 'NY',
-          country: 'USA',
-          zipCode: '10002'
-        }
-      },
-      { 
-        id: '3', 
-        name: 'Monitor West Wing', 
-        location: 'West Wing', 
-        status: DefaultStatus.ACTIVE, 
-        lastUpdate: new Date(),
-        type: MonitorType.ADVANCED,
-        active: true,
-        locationDescription: 'West Wing Shopping Center',
-        size: 65.0,
-        productId: 'PROD-003',
-        maxBlocks: 36,
-        address: {
-          id: '103',
-          street: '5th Avenue',
-          city: 'New York',
-          state: 'NY',
-          country: 'USA',
-          zipCode: '10003'
-        }
-      }
-    ];
-
-    if (searchTerm) {
-      const filtered = mockData.filter(monitor => 
-        monitor.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        monitor.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        monitor.type.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      return of(filtered);
-    }
-
-    return of(mockData);
+  getMonitors(filters?: FilterMonitorRequestDto): Observable<Monitor[]> {
+    let params = new HttpParams();
     
-    // Chamada real para a API (descomentar em produção)
-    // let url = this.apiUrl;
-    // if (searchTerm) {
-    //   url += `?search=${searchTerm}`;
-    // }
-    // return this.http.get<Monitor[]>(url).pipe(
-    //   catchError(error => {
-    //     console.error('Erro ao buscar monitores:', error);
-    //     return of([]);
-    //   })
-    // );
+    if (filters) {
+      if (filters.page) params = params.set('page', filters.page.toString());
+      if (filters.size) params = params.set('size', filters.size.toString());
+      if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
+      if (filters.sortDir) params = params.set('sortDir', filters.sortDir);
+      if (filters.genericFilter) params = params.set('genericFilter', filters.genericFilter);
+    }
+    
+    return this.http.get<ResponseDto<PaginationResponseDto<MonitorResponseDto>>>(`${this.apiUrl}/filters`, { params, ...this.headers }).pipe(
+      map((response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>) => {
+        if (response?.data?.list) {
+          return response.data.list.map(this.mapMonitorResponseToMonitor);
+        }
+        return [];
+      }),
+      catchError(error => {
+        return of([]);
+      })
+    );
+  }
+
+  getMonitorsWithPagination(filters?: FilterMonitorRequestDto): Observable<PaginationResponseDto<Monitor>> {
+    let params = new HttpParams();
+    
+    if (filters) {
+      if (filters.page) params = params.set('page', filters.page.toString());
+      if (filters.size) params = params.set('size', filters.size.toString());
+      if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
+      if (filters.sortDir) params = params.set('sortDir', filters.sortDir);
+      if (filters.genericFilter) params = params.set('genericFilter', filters.genericFilter);
+    }
+    
+    return this.http.get<ResponseDto<PaginationResponseDto<MonitorResponseDto>>>(`${this.apiUrl}/filters`, { params, ...this.headers }).pipe(
+      map((response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>) => {
+        if (response?.data) {
+          const monitors = response.data.list.map(this.mapMonitorResponseToMonitor);
+          const result = {
+            list: monitors,
+            totalElements: response.data.totalElements,
+            totalPages: response.data.totalPages,
+            currentPage: response.data.currentPage,
+            size: response.data.size,
+            hasNext: response.data.hasNext,
+            hasPrevious: response.data.hasPrevious
+          };
+          return result;
+        }
+        
+        return {
+          list: [],
+          totalElements: 0,
+          totalPages: 0,
+          currentPage: 1,
+          size: filters?.size || 10,
+          hasNext: false,
+          hasPrevious: false
+        };
+      }),
+      catchError(error => {
+        return of({
+          list: [],
+          totalElements: 0,
+          totalPages: 0,
+          currentPage: 1,
+          size: filters?.size || 10,
+          hasNext: false,
+          hasPrevious: false
+        });
+      })
+    );
   }
 
   getMonitorById(id: string): Observable<Monitor | null> {
-    console.log('Buscando monitor por ID:', id);
-    
-    const mockData: Monitor = {
-      id,
-      name: 'Monitor ' + id,
-      location: 'Location ' + id,
-      status: DefaultStatus.ACTIVE,
-      lastUpdate: new Date(),
-      type: MonitorType.BASIC,
-      active: true,
-      locationDescription: 'Location Description ' + id,
-      size: 55.0,
-      productId: 'PROD-' + id,
-      maxBlocks: 12,
-      address: {
-        id: '10' + id,
-        street: 'Street ' + id,
-        city: 'City ' + id,
-        state: 'State ' + id,
-        country: 'Country ' + id,
-        zipCode: '1000' + id
-      }
-    };
-    
-    return of(mockData);
-    
-    // Chamada real para a API (descomentar em produção)
-    // return this.http.get<Monitor>(`${this.apiUrl}/${id}`).pipe(
-    //   catchError(error => {
-    //     console.error(`Erro ao buscar monitor com ID ${id}:`, error);
-    //     return of(null);
-    //   })
-    // );
+    return this.http.get<ResponseDto<MonitorResponseDto>>(`${this.apiUrl}/${id}`, this.headers).pipe(
+      map((response: ResponseDto<MonitorResponseDto>) => {
+        if (response?.data) {
+          return this.mapMonitorResponseToMonitor(response.data);
+        }
+        return null;
+      }),
+      catchError(error => {
+        return of(null);
+      })
+    );
   }
 
   createMonitor(monitorRequest: CreateMonitorRequestDto): Observable<Monitor> {
-    console.log('Criando novo monitor:', monitorRequest);
-    
-    // Chamada real para a API
-    return this.http.post<ResponseDto<Monitor>>(this.apiUrl, monitorRequest).pipe(
+    return this.http.post<ResponseDto<Monitor>>(this.apiUrl, monitorRequest, this.headers).pipe(
       map((response: ResponseDto<Monitor>) => {
-        console.log('Resposta da API:', response);
-        
-        // A API retorna um ResponseDto, então precisamos extrair os dados
-        if (response && response.data) {
+        if (response?.data) {
           return response.data;
         }
-        
-        // Se não houver data, criar um monitor mock para compatibilidade
-        const generatedProductId = monitorRequest.productId || `PROD-${Math.random().toString(36).substring(2, 9)}`;
-        
-        const newMonitor: Monitor = {
-          id: Math.random().toString(36).substring(2, 9),
-          name: `Monitor ${monitorRequest.type} ${generatedProductId}`,
-          location: monitorRequest.address?.city || 'Sem localização',
-          status: DefaultStatus.ACTIVE,
-          lastUpdate: new Date(),
-          type: monitorRequest.type,
-          active: monitorRequest.active,
-          locationDescription: monitorRequest.locationDescription || '',
-          size: monitorRequest.size || 42.5,
-          productId: generatedProductId,
-          maxBlocks: monitorRequest.maxBlocks || 12,
-          address: {
-            id: Math.random().toString(36).substring(2, 9),
-            street: monitorRequest.address?.street || '',
-            city: monitorRequest.address?.city || '',
-            state: monitorRequest.address?.state || '',
-            country: monitorRequest.address?.country || '',
-            zipCode: monitorRequest.address?.zipCode || ''
-          }
-        };
-        
-        return newMonitor;
+        throw new Error('API não retornou dados do monitor criado');
       }),
       catchError(error => {
-        console.error('Erro ao criar monitor:', error);
         throw error;
       })
     );
   }
 
-  updateMonitor(id: string, monitor: Partial<Monitor>): Observable<Monitor> {
-    console.log('Atualizando monitor:', id, monitor);
-    
-    const updatedMonitor: Monitor = {
-      id,
-      name: monitor.name || 'Monitor ' + id,
-      location: monitor.location || 'Location ' + id,
-      status: monitor.status || DefaultStatus.ACTIVE,
-      lastUpdate: new Date(),
-      type: monitor.type || MonitorType.BASIC,
-      active: monitor.active ?? true,
-      locationDescription: monitor.locationDescription || 'Location Description ' + id,
-      size: monitor.size || 55.0,
-      productId: monitor.productId || 'PROD-' + id,
-      maxBlocks: monitor.maxBlocks || 12,
-      address: monitor.address || {
-        id: '10' + id,
-        street: 'Street ' + id,
-        city: 'City ' + id,
-        state: 'State ' + id,
-        country: 'Country ' + id,
-        zipCode: '1000' + id
-      }
-    };
-    
-    return of(updatedMonitor);
-    
-    // Chamada real para a API (descomentar em produção)
-    // return this.http.put<Monitor>(`${this.apiUrl}/${id}`, monitor).pipe(
-    //   catchError(error => {
-    //     console.error(`Erro ao atualizar monitor com ID ${id}:`, error);
-    //     throw error;
-    //   })
-    // );
+  updateMonitor(id: string, monitorRequest: CreateMonitorRequestDto): Observable<Monitor> {
+    return this.http.put<ResponseDto<MonitorResponseDto>>(`${this.apiUrl}/${id}`, monitorRequest, this.headers).pipe(
+      map((response: ResponseDto<MonitorResponseDto>) => {
+        if (response?.data) {
+          return this.mapMonitorResponseToMonitor(response.data);
+        }
+        throw new Error('API não retornou dados do monitor atualizado');
+      }),
+      catchError(error => {
+        throw error;
+      })
+    );
   }
 
   deleteMonitor(id: string): Observable<boolean> {
-    console.log('Excluindo monitor:', id);
-    
-    return of(true);
-    
-    // Chamada real para a API (descomentar em produção)
-    // return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
-    //   map(() => true),
-    //   catchError(error => {
-    //     console.error(`Erro ao excluir monitor com ID ${id}:`, error);
-    //     return of(false);
-    //   })
-    // );
+    return this.http.delete<ResponseDto<any>>(`${this.apiUrl}/${id}`, this.headers).pipe(
+      map((response: ResponseDto<any>) => {
+        return true;
+      }),
+      catchError(error => {
+        return of(false);
+      })
+    );
+  }
+
+  private mapMonitorResponseToMonitor(monitorResponse: MonitorResponseDto): Monitor {
+    return {
+      id: monitorResponse.id,
+      name: monitorResponse.name || `Monitor ${monitorResponse.id}`,
+      location: monitorResponse.location || monitorResponse.address?.city || 'Sem localização',
+      status: monitorResponse.status || DefaultStatus.ACTIVE,
+      lastUpdate: monitorResponse.lastUpdate || new Date(),
+      type: monitorResponse.type,
+      active: monitorResponse.active,
+      locationDescription: monitorResponse.locationDescription || '',
+      size: monitorResponse.size || 42.5,
+      productId: monitorResponse.productId || `PROD-${monitorResponse.id}`,
+      maxBlocks: monitorResponse.maxBlocks || 12,
+      address: monitorResponse.address ? {
+        id: monitorResponse.address.id,
+        street: monitorResponse.address.street,
+        city: monitorResponse.address.city,
+        state: monitorResponse.address.state,
+        country: monitorResponse.address.country,
+        zipCode: monitorResponse.address.zipCode,
+        complement: monitorResponse.address.complement
+      } : {
+        id: '',
+        street: '',
+        city: '',
+        state: '',
+        country: '',
+        zipCode: ''
+      },
+      createdAt: monitorResponse.createdAt,
+      updatedAt: monitorResponse.updatedAt
+    };
   }
 
   getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {
-    console.log('Buscando alertas, monitor ID:', monitorId);
-    
     const mockAlerts: IMonitorAlert[] = [
       {
         id: '1',
@@ -309,27 +254,12 @@ export class MonitorService {
     }
     
     return of(mockAlerts);
-    
-    // Chamada real para a API (descomentar em produção)
-    // let url = `${this.apiUrl}/alerts`;
-    // if (monitorId) {
-    //   url += `?monitorId=${monitorId}`;
-    // }
-    // return this.http.get<MonitorAlert[]>(url).pipe(
-    //   catchError(error => {
-    //     console.error('Erro ao buscar alertas:', error);
-    //     return of([]);
-    //   })
-    // );
   }
   
   acknowledgeAlert(alertId: string, reason: string): Observable<IMonitorAlert> {
-    console.log('Confirmando alerta:', alertId, 'com razão:', reason);
-    
-    // Implementação mock
     const mockResponse: IMonitorAlert = {
       id: alertId,
-      monitorId: '1', // Valor arbitrário para mock
+      monitorId: '1',
       title: 'Alert Acknowledged',
       description: 'This alert has been acknowledged by an administrator',
       timestamp: new Date(),
@@ -339,23 +269,12 @@ export class MonitorService {
     };
     
     return of(mockResponse);
-    
-    // Chamada real para a API (descomentar em produção)
-    // return this.http.post<MonitorAlert>(`${this.apiUrl}/alerts/${alertId}/acknowledge`, { reason }).pipe(
-    //   catchError(error => {
-    //     console.error('Erro ao confirmar alerta:', error);
-    //     throw error;
-    //   })
-    // );
   }
   
   resolveAlert(alertId: string): Observable<IMonitorAlert> {
-    console.log('Resolvendo alerta:', alertId);
-    
-    // Implementação mock
     const mockResponse: IMonitorAlert = {
       id: alertId,
-      monitorId: '1', // Valor arbitrário para mock
+      monitorId: '1',
       title: 'Alert Resolved',
       description: 'This alert has been marked as resolved',
       timestamp: new Date(),
@@ -364,13 +283,5 @@ export class MonitorService {
     };
     
     return of(mockResponse);
-    
-    // Chamada real para a API (descomentar em produção)
-    // return this.http.post<MonitorAlert>(`${this.apiUrl}/alerts/${alertId}/resolve`, {}).pipe(
-    //   catchError(error => {
-    //     console.error('Erro ao resolver alerta:', error);
-    //     throw error;
-    //   })
-    // );
   }
 }

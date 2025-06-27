@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment';
@@ -118,13 +118,13 @@ export class SearchMonitorsService {
           this.errorSubject.next(errorMsg);
         }
         
-        return response.data;
+        return response.data as NearestMonitorsResponse;
       }),
       catchError(error => {
         this.loadingSubject.next(false);
         const errorMsg = error.error?.message ?? 'Error searching for nearby monitors';
         this.errorSubject.next(errorMsg);
-        throw error;
+        return of({} as NearestMonitorsResponse);
       })
     );
   }
@@ -160,11 +160,9 @@ export class SearchMonitorsService {
         if (points.length === 0) {
           this.errorSubject.next(`No monitors found for ZIP code ${cleanZipCode}`);
         }
-        console.log(`Found ${points.length} monitors for ZIP code ${cleanZipCode}`);
         return points;
       })
       .catch((error): MapPoint[] => {
-        console.error('Error searching by zip code:', error);
         this.errorSubject.next('Error searching monitors by zip code');
         return [];
       })

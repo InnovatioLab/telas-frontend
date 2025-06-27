@@ -135,15 +135,11 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.mapsComponent) {
       this.mapsComponent.ensureMapInitialized();
       
-      // Verificar se o mapa está pronto
       setTimeout(() => {
         if (!this.mapsComponent.isMapReady()) {
-          console.log('Admin map not ready, forcing reinitialization...');
           this.mapsComponent.forceReinitialize();
         }
       }, 2000);
-    } else {
-      console.warn('Admin maps component not available');
     }
   }
 
@@ -174,7 +170,6 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
       this.monitors = monitors;
       this.loadingService.setLoading(false, 'load-nearby-points');
     }).catch(error => {
-      console.error('Error loading nearby points:', error);
       this.loadingService.setLoading(false, 'load-nearby-points');
     });
   }
@@ -196,4 +191,11 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   onMonitorClick(monitor: MapPoint): void {
     this.onMarkerClick(monitor);
   }
+
+  private checkMapInitialization(): void {
+    if (!this.mapsComponent || !this.mapsComponent.isMapReady()) {
+      this.mapsComponent?.forceReinitialize();
+    }
+  }
 }
+

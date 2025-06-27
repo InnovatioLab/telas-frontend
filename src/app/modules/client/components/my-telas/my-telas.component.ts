@@ -125,13 +125,11 @@ export class MyTelasComponent implements OnInit {
   }
 
   viewAd(id: string): void {
-    console.log('View ad:', id);
-    this.toastService.info(`Viewing ad ${id}`);
+    // Implementar visualização do anúncio
   }
 
   editAd(id: string): void {
-    console.log('Edit ad:', id);
-    this.toastService.info(`Editing ad ${id}`);
+    // Implementar edição do anúncio
   }
 
   getStatusClass(status: string): string {

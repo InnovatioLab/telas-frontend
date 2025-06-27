@@ -42,14 +42,12 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.isLoading = true;
     
-    // Aguardar um pouco para garantir que o componente está pronto
     setTimeout(() => {
       this.ensureMapInitialized();
     }, 500);
   }
   
   ngAfterViewInit(): void {
-    // Verificar se o mapa precisa ser inicializado
     setTimeout(() => {
       this.ensureMapInitialized();
     }, 1000);
@@ -63,17 +61,14 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.mapsComponent) {
       this.mapsComponent.ensureMapInitialized();
       
-      // Verificar se o mapa está pronto
       setTimeout(() => {
         if (!this.mapsComponent.isMapReady()) {
-          console.log('Map not ready, forcing reinitialization...');
           this.mapsComponent.forceReinitialize();
         } else {
           this.isLoading = false;
         }
       }, 2000);
     } else {
-      console.warn('Maps component not available');
       this.isLoading = false;
     }
   }
@@ -90,7 +85,6 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       })
       .catch((error: Error) => {
-        console.error('Error getting user location:', error);
         this.toastService.erro('Error accessing your location. Please allow location access.');
         this.isLoading = false;
       });
@@ -101,13 +95,10 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
       .then((monitors: MapPoint[]) => {
         if (monitors && monitors.length > 0) {
           this.emitMonitorsFoundEvent(monitors);
-        } else {
-          console.log('No monitors found near initial location');
         }
         this.isLoading = false;
       })
       .catch((error: Error) => {
-        console.error('Error finding nearby monitors:', error);
         this.toastService.erro('Error searching for nearby monitors');
         this.isLoading = false;
       });

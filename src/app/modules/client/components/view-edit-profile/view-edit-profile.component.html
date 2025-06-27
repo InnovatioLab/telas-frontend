@@ -20,7 +20,9 @@
           <input 
             type="text" 
             id="identificationNumber" 
-            formControlName="identificationNumber">
+            formControlName="identificationNumber"
+            [disabled]="true"
+          >
         </div>
       </div>
       
@@ -61,6 +63,14 @@
             id="phone"
             class="w-full">
           </p-inputMask>
+          <div *ngIf="profileForm.get('phone')?.invalid && (profileForm.get('phone')?.dirty || profileForm.get('phone')?.touched)">
+            <small class="error-message" *ngIf="profileForm.get('phone')?.errors?.['required']">
+              Phone is required.
+            </small>
+            <small class="error-message" *ngIf="profileForm.get('phone')?.errors?.['pattern']">
+              Phone must have 10 or 11 digits (numbers only).
+            </small>
+          </div>
         </div>
       </div>
       

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { Client } from '@app/model/client';
 import { ClientService } from '@app/core/service/api/client.service';
 import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
@@ -31,7 +31,8 @@ export class ViewEditProfileComponent implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly clientService: ClientService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.createForm();
   }
@@ -43,7 +44,7 @@ export class ViewEditProfileComponent implements OnInit {
       industry: ['', Validators.required],
       websiteUrl: [''],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required, this.phoneNumberValidator]],
       ownerFirstName: ['', Validators.required],
       ownerLastName: [''],
       ownerEmail: ['', [Validators.required, Validators.email]],
@@ -56,6 +57,17 @@ export class ViewEditProfileComponent implements OnInit {
       complement: [''],
       socialMedia: this.fb.array([])
     });
+  }
+
+  phoneNumberValidator(control: AbstractControl) {
+    const value = control.value ? String(control.value).replace(/\D/g, '') : '';
+    if (!value) {
+      return { required: true };
+    }
+    if (value.length !== 10 && value.length !== 11) {
+      return { pattern: true };
+    }
+    return null;
   }
 
   get socialMediaArray(): FormArray {
@@ -80,6 +92,13 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.clientService.clientAtual$.subscribe((client) => {
+      if (client) {
+        this.clientData = { ...client };
+        this.populateForm(this.clientData);
+        this.cdr.markForCheck();
+      }
+    });
     this.loadUserProfile();
   }
 
@@ -248,10 +267,8 @@ export class ViewEditProfileComponent implements OnInit {
     
     const formValues = this.profileForm.getRawValue();
     
-    const normalizedPhone = formValues.phone?.replace(/\D/g, '');
-    const formattedPhone = normalizedPhone ? 
-      (normalizedPhone.startsWith('1') ? `+1${normalizedPhone.substring(1)}` : `+${normalizedPhone}`) : 
-      '';
+    const normalizedPhone = formValues.phone?.replace(/\D/g, '') || '';
+    const formattedPhone = normalizedPhone;
     
     const socialMedia: Record<string, string> = {};
     if (formValues.socialMedia && Array.isArray(formValues.socialMedia) && formValues.socialMedia.length > 0) {
@@ -279,7 +296,7 @@ export class ViewEditProfileComponent implements OnInit {
         firstName: formValues.ownerFirstName,
         lastName: formValues.ownerLastName || '',
         email: formValues.ownerEmail || formValues.email,
-        phone: formValues.ownerPhone || formattedPhone
+        phone: formValues.ownerPhone ? formValues.ownerPhone.replace(/\D/g, '') : formattedPhone
       },
       
       addresses: [
@@ -289,8 +306,7 @@ export class ViewEditProfileComponent implements OnInit {
           city: formValues.city,
           state: formValues.state,
           country: formValues.country,
-          complement: formValues.complement || '',
-          partnerAddress: false
+          complement: formValues.complement || ''
         }
       ]
     };
@@ -305,8 +321,11 @@ export class ViewEditProfileComponent implements OnInit {
           this.toastService.sucesso('Profile updated successfully');
           this.isEditMode = false;
           this.disableForm();
-          
-          this.loadUserProfile();
+          this.clientService.buscarClient<Client>(this.clientData.id).subscribe({
+            next: (client) => {
+              this.clientService.setClientAtual(client);
+            }
+          });
         },
         error: () => {
           this.toastService.erro('Error updating profile');

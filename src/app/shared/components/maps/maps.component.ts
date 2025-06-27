@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, effect, EventEmitter, Output, AfterViewInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
-import { AddressSearchResult, GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { SidebarService } from '@app/core/service/state/sidebar.service';
 import { IconsModule } from '@app/shared/icons/icons.module';
@@ -54,7 +54,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   
   private map: google.maps.Map | null = null;
   private markers: google.maps.Marker[] = [];
-  private subscriptions: Subscription[] = [];
+  private readonly subscriptions: Subscription[] = [];
   private _apiLoaded = false;
   private _mapReady = false;
   private markerPositions: google.maps.LatLngLiteral[] = [];
@@ -80,7 +80,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       
-      // Para alert-admin-sidebar: só recalcular quando estiver fixado (sidebar-pinned)
       if (tipo === 'alert-admin-sidebar') {
         const isSidebarPinned = document.body.classList.contains('sidebar-pinned');
         if (isSidebarPinned) {
@@ -89,12 +88,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       
-      // Para outros tipos de sidebar (ex: client-menu): não recalcular
       if (tipo === 'client-menu') {
         return;
       }
       
-      // Para outros tipos não especificados: recalcular normalmente
       if (isVisible !== null) {
         this.updateMapDimensions();
       }
@@ -106,33 +103,24 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   public forceReinitialize(): void {
-    console.log('Forcing map reinitialization');
-    
-    // Limpar o mapa atual
     if (this.map) {
       this.map = null;
     }
     
-    // Limpar marcadores
     this.clearMarkers();
     
-    // Resetar estado
     this._apiLoaded = false;
     this._mapReady = false;
     
-    // Recarregar a API
     this.loadGoogleMapsScript();
   }
 
   public ensureMapInitialized(): void {
     if (!this._apiLoaded) {
-      console.log('API not loaded, initializing...');
       this.loadGoogleMapsScript();
     } else if (!this.map) {
-      console.log('API loaded but map not initialized, initializing map...');
       this.initializeMap();
     } else if (!this._mapReady) {
-      console.log('Map exists but not ready, triggering resize...');
       setTimeout(() => {
         if (this.map) {
           google.maps.event.trigger(this.map, 'resize');
@@ -148,7 +136,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   ngAfterViewInit(): void {
-    // Verificar se a API já está carregada e o mapa não foi inicializado
     if (this._apiLoaded && !this.map && this.mapContainer?.nativeElement) {
     setTimeout(() => {
         this.initializeMap();
@@ -160,7 +147,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.clearMarkers();
     
-    // Limpar o mapa para evitar vazamentos de memória
     if (this.map) {
       this.map = null;
     }
@@ -169,7 +155,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   private loadGoogleMapsScript(): void {
     this.loadingService.setLoading(true, 'load-google-maps');
     
-    // Verificar se a API já está carregada
     if (typeof google !== 'undefined' && google.maps) {
       this._apiLoaded = true;
       this.loadingService.setLoading(false, 'load-google-maps');
@@ -184,7 +169,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         this._apiLoaded = true;
         this.loadingService.setLoading(false, 'load-google-maps');
         
-        // Aguardar um pouco para garantir que o DOM está pronto
         setTimeout(() => {
         this.initializeMap();
         }, 100);
@@ -195,7 +179,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private setupEventListeners(): void {
-    // Adicionar listener para o evento zipcode-location-found
     window.addEventListener('zipcode-location-found', ((e: Event) => {
       const customEvent = e as CustomEvent;
       if (customEvent.detail?.location) {
@@ -206,12 +189,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.map?.setCenter(newCenter);
             this.map?.setZoom(15);
             
-            // Criar um marcador para a localização
             this.clearMarkers();
             const marker = new google.maps.Marker({
               position: newCenter,
               map: this.map,
-              title: location.title || 'Localização do CEP',
+              title: location.title ?? 'Localização do CEP',
               icon: this.mapsService.createRedMarkerIcon()
             });
             this.markers.push(marker);
@@ -220,7 +202,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }) as EventListener);
 
-    // Listener para o evento user-coordinates-updated
     window.addEventListener('user-coordinates-updated', ((e: Event) => {
       const customEvent = e as CustomEvent;
       if (customEvent.detail?.latitude && customEvent.detail?.longitude) {
@@ -234,7 +215,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.map?.setCenter(newCenter);
             this.map?.setZoom(15);
             
-            // Adicionar um marcador na posição atual
             this.clearMarkers();
             const marker = new google.maps.Marker({
               position: newCenter,
@@ -248,74 +228,56 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }) as EventListener);
 
-    // Listener para detectar quando a janela ganha foco
     window.addEventListener('focus', () => {
       if (this._apiLoaded && !this.map) {
-        console.log('Window gained focus, checking map initialization');
         setTimeout(() => {
           this.initializeMap();
         }, 500);
       }
     });
 
-    // Listener para detectar quando o usuário navega de volta para a página
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
-        console.log('Page restored from cache, checking map state');
         setTimeout(() => {
           this.ensureMapInitialized();
         }, 1000);
       }
     });
 
-    // Listener para detectar quando a página se torna visível novamente
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && this._apiLoaded && !this.map) {
-        console.log('Page became visible, checking map initialization');
         setTimeout(() => {
           this.initializeMap();
         }, 500);
       }
     });
 
-    // Listener para detectar quando o admin-menu é fixado/desfixado
     window.addEventListener('admin-menu-pin-changed', () => {
       const isMenuFixed = document.body.classList.contains('menu-fixed');
-      console.log('Admin menu pin changed, menu-fixed:', isMenuFixed);
       setTimeout(() => {
         this.updateMapDimensions();
       }, 300);
     });
 
-    // Listener para detectar quando o alert-admin-sidebar é fixado/desfixado
     window.addEventListener('admin-sidebar-pin-changed', (event: any) => {
       const isPinned = event.detail?.pinned;
-      console.log('Alert admin sidebar pin changed, pinned:', isPinned);
       setTimeout(() => {
         this.updateMapDimensions();
       }, 300);
     });
 
-    // Listener para detectar quando o admin-menu é carregado inicialmente
     window.addEventListener('admin-menu-loaded', () => {
       const isMenuFixed = document.body.classList.contains('menu-fixed');
-      console.log('Admin menu loaded, menu-fixed:', isMenuFixed);
-      if (isMenuFixed) {
-        setTimeout(() => {
-          this.updateMapDimensions();
-        }, 300);
-      }
+      setTimeout(() => {
+        this.updateMapDimensions();
+      }, 300);
     });
 
-    // Listener para detectar quando o admin-menu é fechado
     window.addEventListener('admin-menu-closed', () => {
       const isMenuFixed = document.body.classList.contains('menu-fixed');
-      console.log('Admin menu closed, menu-fixed:', isMenuFixed);
-      if (!isMenuFixed) {
-        setTimeout(() => {
-          this.updateMapDimensions();
-        }, 300);
-      }
+      setTimeout(() => {
+        this.updateMapDimensions();
+      }, 300);
     });
 
     const userCoordsSub = this.mapsService.savedPoints$.subscribe((points: MapPoint[]) => {
@@ -335,56 +297,46 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   
   private initializeMap(): void {
     if (!this.mapContainer?.nativeElement) {
-      console.warn('Map container not available');
       return;
     }
     
     if (!this._apiLoaded) {
-      console.warn('Google Maps API not loaded yet');
       return;
     }
     
     if (typeof google === 'undefined' || !google.maps) {
-      console.warn('Google Maps not available');
       return;
     }
     
-    // Se o mapa já existe, não recriar
     if (this.map) {
-      console.log('Map already initialized');
       return;
     }
 
     try {
-    const defaultCenter = { lat: -3.7327, lng: -38.5270 };
-    const center = this.center || defaultCenter;
+      const defaultCenter = { lat: -3.7327, lng: -38.5270 };
+      const center = this.center || defaultCenter;
 
-    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
-      center,
+      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+        center,
         zoom: this.zoom,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false
-    });
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false
+      });
 
-    this.mapInitialized.emit(this.map);
+      this.mapInitialized.emit(this.map);
       
-      // Adicionar pontos se existirem
       if (this.points && this.points.length > 0) {
-    this.addMapPoints(this.points);
+        this.addMapPoints(this.points);
       }
       
-      // Forçar um resize para garantir que o mapa se ajuste corretamente
       setTimeout(() => {
         if (this.map) {
           google.maps.event.trigger(this.map, 'resize');
           this._mapReady = true;
         }
       }, 200);
-      
-      console.log('Map initialized successfully');
     } catch (error) {
-      console.error('Error initializing map:', error);
       this._apiLoaded = false;
       this._mapReady = false;
     }
@@ -396,7 +348,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   
   public checkMapState(): void {
     if (this._apiLoaded && !this.map && this.mapContainer?.nativeElement) {
-      console.log('Map state check: API loaded but map not initialized, reinitializing...');
       this.initializeMap();
     }
   }
@@ -526,83 +477,36 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private updateMapDimensions(): void {
-    const isMenuOpen = document.body.classList.contains('menu-open');
+    if (!this.map) {
+      return;
+    }
+
     const isMenuFixed = document.body.classList.contains('menu-fixed');
-    const isAdminSidebarOpen = document.body.classList.contains('admin-sidebar-open');
     const isSidebarPinned = document.body.classList.contains('sidebar-pinned');
-    const isMobile = window.innerWidth <= 768;
-    
-    console.log('Updating map dimensions:', {
-      isMenuOpen,
-      isMenuFixed,
-      isAdminSidebarOpen,
-      isSidebarPinned,
-      isMobile
-    });
-    
-    // Calcular largura disponível baseada nos sidebars fixados
-    let availableWidth = window.innerWidth;
-    let marginLeft = 0;
-    let marginRight = 0;
-    
-    // Se o admin-menu está fixado, reduzir largura da esquerda
-    if (isMenuFixed && !isMobile) {
-      const menuWidth = 280;
-      availableWidth -= menuWidth;
-      marginLeft = menuWidth;
-    }
-    
-    // Se o alert-admin-sidebar está fixado, reduzir largura da direita
-    if (isSidebarPinned && !isMobile) {
-      const sidebarWidth = 480;
-      availableWidth -= sidebarWidth;
-      marginRight = sidebarWidth;
-    }
-    
-    // Aplicar as dimensões calculadas
+
+    const originalWidth = this.el.nativeElement.style.width;
+    const originalHeight = this.el.nativeElement.style.height;
+
     if (isMenuFixed || isSidebarPinned) {
-      this.width = `${availableWidth}px`;
-      this.height = '100vh';
-      
-      // Aplicar margens se necessário
-      if (marginLeft > 0) {
-        this.el.nativeElement.style.marginLeft = `${marginLeft}px`;
+      const menuWidth = isMenuFixed ? 280 : 0;
+      const sidebarWidth = isSidebarPinned ? 320 : 0;
+      const totalOffset = menuWidth + sidebarWidth;
+
+      if (totalOffset > 0) {
+        const newWidth = `calc(100% - ${totalOffset}px)`;
+        this.el.nativeElement.style.width = newWidth;
+        this.el.nativeElement.style.height = '100vh';
       }
-      if (marginRight > 0) {
-        this.el.nativeElement.style.marginRight = `${marginRight}px`;
-      }
-      
-      console.log('Map dimensions adjusted for fixed sidebars:', {
-        width: this.width,
-        height: this.height,
-        marginLeft,
-        marginRight,
-        availableWidth
-      });
     } else {
-      // Reset para dimensões padrão quando nenhum sidebar está fixado
-      this.width = '100%';
-      this.height = '100vh';
-      this.el.nativeElement.style.marginLeft = '0';
-      this.el.nativeElement.style.marginRight = '0';
-      
-      console.log('Map dimensions reset to original:', {
-        width: this.width,
-        height: this.height
-      });
+      this.el.nativeElement.style.width = originalWidth;
+      this.el.nativeElement.style.height = originalHeight;
     }
-    
-    // Forçar resize do mapa após ajuste de dimensões
+
     setTimeout(() => {
       if (this.map) {
         google.maps.event.trigger(this.map, 'resize');
       }
-      const mapElement = this.el.nativeElement.querySelector('google-map');
-      if (mapElement) {
-        const event = new Event('resize');
-        window.dispatchEvent(event);
-      }
-    }, 200);
+    }, 100);
   }
   
   private fitBoundsToPoints(points: MapPoint[]): void {

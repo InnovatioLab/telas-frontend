@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -51,6 +51,7 @@ interface AlertCountEvent {
 })
 export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(CheckoutListSideBarComponent) checkoutSidebar: CheckoutListSideBarComponent;
+  @Output() monitorsFound = new EventEmitter<MapPoint[]>();
   
   menuVisible = false;
   searchText: string;
@@ -168,27 +169,23 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   searchAddress(): void {
-    if (!this.searchText?.trim()) return;
-    
     const searchTextCopy = this.searchText.trim();
+    if (!searchTextCopy) return;
+
     const zipRegex = /^\d{5}(-\d{4})?$/;
     
     this.loadingService.setLoading(true, 'address-search');
     
     if (zipRegex.test(searchTextCopy)) {
-      const zipCode = searchTextCopy.split('-')[0]; // Remove o hífen se existir
-      console.log('HeaderComponent: Buscando por CEP:', zipCode);
+      const zipCode = searchTextCopy.split('-')[0];
       
-      // Se é um CEP, usar o ZipCodeService
       this.zipcodeService.findLocationByZipCode(zipCode)
         .subscribe({
           next: (addressData) => {
             if (addressData) {
-              console.log('HeaderComponent: Dados de endereço encontrados:', addressData);
               this.toastService.sucesso(`Localização encontrada: ${addressData.city}, ${addressData.state}`);
               this.searchText = '';
               
-              // Buscar monitores próximos após encontrar o CEP
               this.searchMonitorsService.findByZipCode(zipCode)
                 .then(monitors => {
                   if (monitors && monitors.length > 0) {
@@ -199,19 +196,14 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
                   }
                 })
                 .catch(error => {
-                  console.error('Erro ao buscar monitores por CEP:', error);
                   this.toastService.erro(`Erro ao buscar monitores com o CEP ${zipCode}`);
                 });
             } else {
-              console.log('HeaderComponent: Nenhum dado encontrado, usando Google Maps');
-              // Se não encontrou pelo ZipCodeService, tentar diretamente pelo Google Maps
               this.googleMapsService.performAddressSearch(searchTextCopy);
             }
             this.loadingService.setLoading(false, 'address-search');
           },
           error: (error) => {
-            console.error('HeaderComponent: Erro ao buscar CEP:', error);
-            // Fallback para o Google Maps
             this.googleMapsService.performAddressSearch(searchTextCopy);
             this.searchText = '';
             this.loadingService.setLoading(false, 'address-search');
@@ -221,7 +213,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         });
     } else {
-      // Se não é um CEP, usar o Google Maps normalmente
       this.googleMapsService.performAddressSearch(searchTextCopy);
       this.searchText = '';
       this.loadingService.setLoading(false, 'address-search');
@@ -431,6 +422,81 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       const exactRoutePattern = new RegExp(`^${route}(\\/)?$`);
       return exactRoutePattern.test(currentUrl);
     });
+  }
+
+  private isValidZipCode(zipCode: string): boolean {
+    const zipRegex = /^\d{5}(-\d{4})?$/;
+    return zipRegex.test(zipCode);
+  }
+
+  onSearch(): void {
+    const searchTextCopy = this.searchText.trim();
+    if (!searchTextCopy) return;
+
+    const zipCode = searchTextCopy.split('-')[0];
+    
+    if (this.isValidZipCode(zipCode)) {
+      this.zipcodeService.findLocationByZipCode(zipCode).subscribe({
+        next: (addressData: any) => {
+          if (addressData) {
+            this.searchMonitorsService.findByZipCode(zipCode).then((monitors: any) => {
+              this.monitorsFound.emit(monitors);
+            }).catch((error: any) => {
+              this.monitorsFound.emit([]);
+            });
+          } else {
+            this.googleMapsService.geocodeAddress(searchTextCopy).then((result: any) => {
+              this.searchMonitorsService.findNearestMonitors(
+                result.latitude,
+                result.longitude
+              ).subscribe({
+                next: (monitors: any) => {
+                  this.monitorsFound.emit(monitors);
+                },
+                error: (error: any) => {
+                  this.monitorsFound.emit([]);
+                }
+              });
+            }).catch((error: any) => {
+              this.monitorsFound.emit([]);
+            });
+          }
+        },
+        error: (error: any) => {
+          this.googleMapsService.geocodeAddress(searchTextCopy).then((result: any) => {
+            this.searchMonitorsService.findNearestMonitors(
+              result.latitude,
+              result.longitude
+            ).subscribe({
+              next: (monitors: any) => {
+                this.monitorsFound.emit(monitors);
+              },
+              error: (error: any) => {
+                this.monitorsFound.emit([]);
+              }
+            });
+          }).catch((error: any) => {
+            this.monitorsFound.emit([]);
+          });
+        }
+      });
+    } else {
+      this.googleMapsService.geocodeAddress(searchTextCopy).then((result: any) => {
+        this.searchMonitorsService.findNearestMonitors(
+          result.latitude,
+          result.longitude
+        ).subscribe({
+          next: (monitors: any) => {
+            this.monitorsFound.emit(monitors);
+          },
+          error: (error: any) => {
+            this.monitorsFound.emit([]);
+          }
+        });
+      }).catch((error: any) => {
+        this.monitorsFound.emit([]);
+      });
+    }
   }
 }
 

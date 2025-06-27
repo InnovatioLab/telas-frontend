@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, AfterViewInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommonModule } from '@angular/common';
 import { IConfigDialogo } from '@app/shared/interfaces/dialog-config.interface';
@@ -14,6 +14,8 @@ import { LoadingService } from '@app/core/service/state/loading.service';
     PrimengModule, IconAtencaoComponent]
 })
 export class DialogoComponent implements AfterViewInit, OnDestroy {
+  @Output() onChange = new EventEmitter<any>();
+  
   data: IConfigDialogo = {
     titulo: 'Alert!',
     descricao: '',
@@ -22,6 +24,7 @@ export class DialogoComponent implements AfterViewInit, OnDestroy {
   };
 
   exibir = false;
+  value: any;
 
   get iconComponent() {
     return typeof this.data.icon === 'function' ? this.data.icon : null;
@@ -53,7 +56,6 @@ export class DialogoComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnChanges() {
-    console.log('change');
   }
 
   ngOnDestroy() {
@@ -63,5 +65,9 @@ export class DialogoComponent implements AfterViewInit, OnDestroy {
     if (!document.querySelector('.sidebar-carrinho')) {
       document.body.style.overflow = 'auto';
     }
+  }
+
+  change() {
+    this.onChange.emit(this.value);
   }
 }

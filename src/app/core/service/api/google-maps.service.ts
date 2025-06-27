@@ -12,6 +12,14 @@ export interface AddressSearchResult {
   query?: string;
 }
 
+export interface GeocodingResult {
+  latitude: number;
+  longitude: number;
+  formattedAddress: string;
+  placeId: string;
+  addressComponents: google.maps.GeocoderAddressComponent[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -31,6 +39,8 @@ export class GoogleMapsService {
   private apiInitializationAttempts = 0;
   private readonly MAX_INITIALIZATION_ATTEMPTS = 5;
   private apiLoadingInProgress = false;
+  private apiLoadingPromise: Promise<void> | null = null;
+  private apiCallback: (() => void) | null = null;
   
   constructor(
     @Inject(ENVIRONMENT) private readonly env: Environment,
@@ -45,9 +55,7 @@ export class GoogleMapsService {
   }
 
   public initGoogleMapsApi(): void {
-    // Verificar se a API já está carregada e funcionando
-    if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
-      console.log('Google Maps API already loaded');
+    if (typeof google !== 'undefined' && google.maps?.Map) {
       this.apiLoadedSubject.next(true);
       this.apiErrorSubject.next(null);
       this.apiInitializationAttempts = 0;
@@ -56,27 +64,22 @@ export class GoogleMapsService {
     }
     
     if (this.apiLoadingInProgress) {
-      console.log('Google Maps API loading already in progress');
       return;
     }
     
     if ((window as any)[this.callbackName]) {
-      console.log('Google Maps callback already exists');
       return;
     }
     
     this.apiLoadingInProgress = true;
     this.apiInitializationAttempts++;
-    console.log('Inicializando carregamento da API do Google Maps, tentativa', this.apiInitializationAttempts);
     
     const timeoutCheck = setTimeout(() => {
       if (!this.apiLoadedSubject.getValue() && this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
-        console.log('Timeout reached, retrying...');
         this.removeExistingScripts();
         this.apiLoadingInProgress = false;
-          this.initGoogleMapsApi();
+        this.initGoogleMapsApi();
       } else if (this.apiInitializationAttempts >= this.MAX_INITIALIZATION_ATTEMPTS) {
-        console.error('Max initialization attempts reached');
         this.apiErrorSubject.next('Não foi possível carregar o Google Maps. Tente novamente mais tarde.');
         this.apiLoadingInProgress = false;
       }
@@ -84,7 +87,6 @@ export class GoogleMapsService {
     
     (window as any)[this.callbackName] = () => {
       clearTimeout(timeoutCheck);
-      console.log('Google Maps API loaded successfully');
       this.apiLoadedSubject.next(true);
       this.apiErrorSubject.next(null);
       this.apiLoadingInProgress = false;
@@ -107,7 +109,6 @@ export class GoogleMapsService {
     
     script.onerror = (error) => {
       clearTimeout(timeoutCheck);
-      console.error('Error loading Google Maps script:', error);
       this.apiErrorSubject.next('Erro ao carregar o Google Maps. Tentando novamente...');
       this.apiLoadingInProgress = false;
       if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
@@ -223,7 +224,7 @@ export class GoogleMapsService {
         }
       }
     } catch (error) {
-      console.error('Erro ao carregar coordenadas salvas:', error);
+      // Handle storage errors silently
     }
   }
   
@@ -236,10 +237,7 @@ export class GoogleMapsService {
     if (!addressToGeocode) return;
     
     try {
-      console.log('Geocodificando endereço armazenado:', addressToGeocode);
-      
       if (!this.apiLoadedSubject.value) {
-        console.log('API do Google Maps ainda não está carregada. Aguardando...');
         await new Promise<void>(resolve => {
           const subscription = this.apiLoaded$.subscribe(loaded => {
             if (loaded) {
@@ -273,11 +271,9 @@ export class GoogleMapsService {
           }
         });
         window.dispatchEvent(event);
-        
-        console.log('Endereço geocodificado com sucesso:', result.formattedAddress);
       }
     } catch (error) {
-      console.error('Erro ao geocodificar endereço armazenado:', error);
+      // Handle geocoding errors silently
     }
   }
   
@@ -318,7 +314,6 @@ export class GoogleMapsService {
       
     } catch (error) {
       this.searchErrorSubject.next('Error searching for address');
-      console.error('Error searching for address:', error);
     } finally {
       this.searchingSubject.next(false);
     }
@@ -339,7 +334,7 @@ export class GoogleMapsService {
         this.searchHistorySubject.next(history);
       }
     } catch (error) {
-      console.error('Erro ao carregar histórico de buscas:', error);
+      // Handle storage errors silently
     }
   }
   
@@ -365,7 +360,7 @@ export class GoogleMapsService {
         const points = JSON.parse(savedItems);
         this._savedPoints.next(points);
       } catch (e) {
-        console.error('Erro ao carregar pontos salvos:', e);
+        // Handle storage errors silently
       }
     }
   }
@@ -387,7 +382,6 @@ export class GoogleMapsService {
     }
     
     if (typeof google === 'undefined' || !google.maps) {
-      console.error('API do Google Maps não está disponível');
       return null;
     }
     
@@ -399,7 +393,6 @@ export class GoogleMapsService {
           if (status === google.maps.GeocoderStatus.OK && results && results.length > 0) {
             resolve(results[0]);
           } else {
-            console.error('Falha na geocodificação:', status);
             resolve(null);
           }
         });
@@ -420,7 +413,6 @@ export class GoogleMapsService {
         formattedAddress: result.formatted_address
       };
     } catch (error) {
-      console.error('Erro ao buscar endereço:', error);
       return null;
     }
   }
@@ -540,18 +532,110 @@ export class GoogleMapsService {
   }
 
   public checkAndReinitializeApi(): void {
-    // Verificar se a API está realmente funcionando
-    if (typeof google === 'undefined' || !google.maps || !google.maps.Map) {
-      console.log('Google Maps API not properly loaded, reinitializing...');
-      this.apiLoadedSubject.next(false);
-      this.apiErrorSubject.next(null);
-      this.apiInitializationAttempts = 0;
-      this.apiLoadingInProgress = false;
+    if (!this.apiLoadedSubject.value) {
       this.initGoogleMapsApi();
-    } else {
-      console.log('Google Maps API is properly loaded');
-      this.apiLoadedSubject.next(true);
-      this.apiErrorSubject.next(null);
     }
+  }
+
+  loadGoogleMapsAPI(): Promise<void> {
+    if (this.apiLoadedSubject.value) {
+      return Promise.resolve();
+    }
+
+    if (this.apiLoadingPromise) {
+      return this.apiLoadingPromise;
+    }
+
+    if (this.apiCallback) {
+      return Promise.resolve();
+    }
+
+    this.apiInitializationAttempts++;
+    
+    this.apiLoadingPromise = new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.apiLoadingPromise = null;
+        reject(new Error('Google Maps API loading timeout'));
+      }, 10000);
+
+      this.apiCallback = () => {
+        clearTimeout(timeout);
+        this.apiLoadedSubject.next(true);
+        this.apiErrorSubject.next(null);
+        this.apiLoadingPromise = null;
+        resolve();
+      };
+
+      const script = document.createElement('script');
+      const apiKey = this.env.googleMapsApiKey;
+      
+      if (!apiKey) {
+        this.apiErrorSubject.next('API Key do Google Maps não configurada.');
+        this.apiLoadingInProgress = false;
+        reject(new Error('API Key do Google Maps não configurada.'));
+        return;
+      }
+      
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${this.callbackName}&v=weekly`;
+      script.async = true;
+      script.defer = true;
+      script.id = 'google-maps-script';
+      
+      script.onerror = (error) => {
+        clearTimeout(timeout);
+        this.apiLoadingPromise = null;
+        this.apiErrorSubject.next('Erro ao carregar o Google Maps. Tentando novamente...');
+        if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
+          setTimeout(() => this.initGoogleMapsApi(), 2000);
+        }
+        reject(error);
+      };
+      
+      (window as any).initGoogleMaps = this.apiCallback;
+      document.head.appendChild(script);
+    });
+
+    return this.apiLoadingPromise;
+  }
+
+  private async waitForApiAndGeocode(addressToGeocode: string): Promise<void> {
+    if (!this.apiLoadedSubject.value) {
+      await this.loadGoogleMapsAPI();
+    }
+  }
+
+  async geocodeAddress(addressToGeocode: string): Promise<GeocodingResult> {
+    await this.waitForApiAndGeocode(addressToGeocode);
+
+    return new Promise((resolve, reject) => {
+      const geocoder = new google.maps.Geocoder();
+      
+      geocoder.geocode({ address: addressToGeocode }, (results, status) => {
+        if (status === google.maps.GeocoderStatus.OK && results && results.length > 0) {
+          const result = results[0];
+          const location = result.geometry.location;
+          
+          const geocodingResult: GeocodingResult = {
+            latitude: location.lat(),
+            longitude: location.lng(),
+            formattedAddress: result.formatted_address,
+            placeId: result.place_id,
+            addressComponents: result.address_components
+          };
+          
+          resolve(geocodingResult);
+        } else {
+          reject(new Error(`Geocoding failed: ${status}`));
+        }
+      });
+    });
+  }
+
+  checkApiStatus(): boolean {
+    if (!this.apiLoadedSubject.value) {
+      this.initGoogleMapsApi();
+      return false;
+    }
+    return true;
   }
 }

@@ -35,13 +35,12 @@ export class UserLocationService {
         const location = JSON.parse(savedLocation);
         if (location && this.isValidLocation(location)) {
           this.locationSubject.next({...location, source: location.source ?? 'user'});
-          console.log('Localização carregada do storage:', location);
         }
       }
 
       this.checkAndGeocodeAddress();
     } catch (error) {
-      console.error('Erro ao carregar localização do usuário:', error);
+      // Silently handle storage errors
     }
   }
 
@@ -50,7 +49,6 @@ export class UserLocationService {
     if (!addressToGeocode) return;
 
     try {
-      console.log('Geocodificando endereço:', addressToGeocode);
       const result = await this.mapsService.searchAddress(addressToGeocode);
       
       if (result) {
@@ -62,10 +60,9 @@ export class UserLocationService {
         });
         
         localStorage.removeItem(this.ADDRESS_TO_GEOCODE_KEY);
-        console.log('Endereço geocodificado com sucesso:', result.formattedAddress);
       }
     } catch (error) {
-      console.error('Erro ao geocodificar endereço:', error);
+      // Handle geocoding errors silently
     }
   }
 
@@ -81,27 +78,24 @@ export class UserLocationService {
 
   public setUserLocation(location: UserLocation, priority: boolean = false): void {
     if (!this.isValidLocation(location)) {
-      console.error('Tentativa de definir localização inválida:', location);
       return;
     }
 
     const currentLocation = this.locationSubject.value;
     
     if (currentLocation.source === 'user' && location.source !== 'user' && !priority) {
-      console.log('Mantendo localização do usuário existente');
       return;
     }
     
     this.locationSubject.next({...location});
     this.saveLocationToStorage(location);
-    console.log('Localização do usuário definida:', location);
   }
 
   private saveLocationToStorage(location: UserLocation): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(location));
     } catch (error) {
-      console.error('Erro ao salvar localização do usuário:', error);
+      // Silently handle storage errors
     }
   }
 
@@ -109,7 +103,6 @@ export class UserLocationService {
     if (!address) return;
     
     localStorage.setItem(this.ADDRESS_TO_GEOCODE_KEY, address);
-    console.log('Endereço salvo para geocodificação:', address);
     
     this.checkAndGeocodeAddress();
   }

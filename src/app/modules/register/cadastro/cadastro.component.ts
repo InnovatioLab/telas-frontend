@@ -199,21 +199,11 @@ export class CadastroComponent implements OnInit {
         }
       });
     } else {
-      console.log('Formulário inválido', form);
-      this.formCadastro.cadastroForm.markAllAsTouched();
+      this.markFormGroupTouched(form);
     }
   }
 
   proximoStap() {
-    console.log('Form state:', {
-      dadosPessoais: this.dadosPessoaisForm.value,
-      dadosPessoaisValid: this.dadosPessoaisForm.valid,
-      endereco: this.enderecoForm.value,
-      enderecoValid: this.enderecoForm.valid,
-      contato: this.contatoForm.value,
-      contatoValid: this.contatoForm.valid
-    });
-
     this.dadosPessoaisForm.updateValueAndValidity();
     this.enderecoForm.updateValueAndValidity();
     this.contatoForm.updateValueAndValidity();
@@ -223,13 +213,6 @@ export class CadastroComponent implements OnInit {
     const contatoValid = this.contatoForm.valid;
 
     if (!dadosPessoaisValid || !enderecoValid || !contatoValid) {
-      console.log('Formulários inválidos:', {
-        dadosPessoaisValid,
-        enderecoValid,
-        contatoValid,
-        contatoErrors: this.contatoForm.errors
-      });
-      
       this.dadosPessoaisForm.markAllAsTouched();
       this.dadosPessoaisForm.markAsDirty();
       this.enderecoForm.markAllAsTouched();
@@ -300,5 +283,16 @@ export class CadastroComponent implements OnInit {
     this.dadosPessoaisForm.reset();
     this.contatoForm.reset();
     this.enderecoForm.reset();
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      } else {
+        control?.markAsTouched();
+      }
+    });
   }
 }

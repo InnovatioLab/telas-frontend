@@ -73,15 +73,11 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.mapsComponent) {
       this.mapsComponent.ensureMapInitialized();
       
-      // Verificar se o mapa está pronto
       setTimeout(() => {
         if (!this.mapsComponent.isMapReady()) {
-          console.log('Alert map not ready, forcing reinitialization...');
           this.mapsComponent.forceReinitialize();
         }
       }, 2000);
-    } else {
-      console.warn('Alert maps component not available');
     }
   }
   
@@ -164,8 +160,16 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
   addPointToList(point: MapPoint): void {
     this.mapsService.addToSavedPoints(point);
   }
+
+  private checkMapInitialization(): void {
+    if (!this.mapsComponent || !this.mapsComponent.isMapReady()) {
+      this.mapsComponent?.forceMapReinitialization();
+    }
+  }
 }
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
+}
+
 }

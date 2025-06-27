@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams, HttpBackend } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, Subject, map } from 'rxjs';
+import { Observable, Subject, map, BehaviorSubject } from 'rxjs';
 import { ResponseDTO } from '@app/model/dto/response.dto';
 import { Client } from '@app/model/client';
 import { BaseHttpService } from './base-htttp.service';
@@ -26,6 +26,8 @@ export class ClientService extends BaseHttpService<Client> {
   };
 
   protected baseUrl: string;
+
+  public clientAtual$ = new BehaviorSubject<Client | null>(null);
 
   constructor() {
     const http = inject(HttpClient);
@@ -103,5 +105,16 @@ export class ClientService extends BaseHttpService<Client> {
         return response.data;
       })
     );
+  }
+
+  setClientAtual(client: Client | null) {
+    this.clientAtual$.next(client);
+    if (client) {
+      localStorage.setItem('telas_token_user', JSON.stringify(client));
+    }
+  }
+
+  getClientAtual(): Client | null {
+    return this.clientAtual$.getValue();
   }
 }

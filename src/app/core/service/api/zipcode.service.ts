@@ -51,11 +51,7 @@ export class ZipCodeService {
       return of(null);
     }
     
-    console.log('ZipCodeService: Buscando localização para CEP:', zipCode);
-    
-    // Verificar primeiro no mapa estático
     if (this.zipCodeMap[zipCode]) {
-      console.log('ZipCodeService: Usando dados locais para o CEP:', zipCode);
       const staticData = this.zipCodeMap[zipCode];
       const result: AddressData = {
         zipCode: zipCode,
@@ -66,7 +62,6 @@ export class ZipCodeService {
         longitude: staticData.lng.toString(),
       };
       
-      // Atualizar BehaviorSubject e emitir evento
       this.processAndEmitLocation(result);
       
       return of(result);
@@ -83,7 +78,6 @@ export class ZipCodeService {
         if (localResult) {
           return of(localResult); 
         }
-        console.log('ZipCodeService: Tentando API externa para o CEP:', zipCode);
         return this.findLocationInExternalApi(zipCode);
       }),
       tap(result => {
@@ -92,9 +86,6 @@ export class ZipCodeService {
         }
       }),
       catchError(error => {
-        console.error('ZipCodeService: Erro ao buscar CEP:', error);
-        
-        // Gerar dados simulados quando houver erro
         const result = this.generateMockZipCodeData(zipCode);
         this.processAndEmitLocation(result);
         return of(result);
@@ -238,81 +229,53 @@ export class ZipCodeService {
   findLocationInExternalApi(zipCode: string): Observable<AddressData | null> {
     const apiKey = this.env.zipCodeApiKey || this.apiKeyBackup;
     
-    // Opções para contornar CORS - podemos tentar várias abordagens
-    const useMockData = true; // Definir como true para usar dados mockados diretamente
-    const useProxy = false; // Definir como true para tentar usar um proxy CORS
+    const useMockData = true;
+    const useProxy = false;
     
-    // Se estamos usando dados mockados diretamente
     if (useMockData) {
-      console.log('ZipCodeService: Usando dados mockados devido a problemas de CORS');
-      
-      // Verificar no mapa estático primeiro
       if (this.zipCodeMap[zipCode]) {
         const staticData = this.zipCodeMap[zipCode];
-        return of({
+        const result: AddressData = {
           zipCode: zipCode,
           city: staticData.city,
           state: staticData.state,
           country: 'US',
           latitude: staticData.lat.toString(),
           longitude: staticData.lng.toString(),
-        });
+        };
+        return of(result);
       }
       
-      // Ou gerar dados simulados
-      return of(this.generateMockZipCodeData(zipCode));
+      const mockData = this.generateMockZipCodeData(zipCode);
+      return of(mockData);
     }
     
-    // Se estamos tentando usar um proxy CORS
-    const baseUrlToUse = useProxy 
-      ? `https://cors-anywhere.herokuapp.com/${this.baseUrl}` 
-      : this.baseUrl;
-    
-    const url = `${baseUrlToUse}/search?apikey=${apiKey}&codes=${zipCode}&country=us`;
-    console.log('ZipCodeService: Chamando API externa:', url);
-    
-    const headers = new HttpHeaders({
-      'Origin': window.location.origin,
-      'X-Requested-With': 'XMLHttpRequest'
-    });
-
-    return this.http.get<ZipCodeResponse>(url, { headers }).pipe(
-      map(response => {
-        console.log('ZipCodeService: Resposta da API externa:', response);
-        const location = response?.results?.[zipCode]?.[0];
-        if (location) {
-          return {
-            zipCode: location.postal_code || zipCode,
-            city: location.city || location.city_en || '',
-            state: location.state_code || location.state || location.state_en || '',
-            country: location.country_code || '',
-            latitude: location.latitude || '',
-            longitude: location.longitude || '',
+    if (useProxy) {
+      const url = `https://api.zippopotam.us/us/${zipCode}`;
+      
+      return this.http.get<any>(url).pipe(
+        map(response => {
+          const location: AddressData = {
+            street: response.places?.[0]?.['place name'] || '',
+            city: response.places?.[0]?.['place name'] || '',
+            state: response.places?.[0]?.['state abbreviation'] || '',
+            country: response.country || 'US',
+            zipCode: response['post code'] || zipCode,
+            latitude: response.places?.[0]?.['latitude'] || '0',
+            longitude: response.places?.[0]?.['longitude'] || '0'
           };
-        }
-
-        // Se não encontrou, retornar dados mockados
-        return this.generateMockZipCodeData(zipCode);
-      }),
-      catchError(error => {
-        console.error('ZipCodeService: Erro na API externa (provavelmente CORS):', error);
-        
-        // Falhar silenciosamente com dados mockados
-        if (this.zipCodeMap[zipCode]) {
-          const staticData = this.zipCodeMap[zipCode];
-          return of({
-            zipCode: zipCode,
-            city: staticData.city,
-            state: staticData.state,
-            country: 'US',
-            latitude: staticData.lat.toString(),
-            longitude: staticData.lng.toString(),
-          });
-        }
-        
-        return of(this.generateMockZipCodeData(zipCode));
-      })
-    );
+          
+          return location;
+        }),
+        catchError(error => {
+          const mockData = this.generateMockZipCodeData(zipCode);
+          return of(mockData);
+        })
+      );
+    }
+    
+    const mockData = this.generateMockZipCodeData(zipCode);
+    return of(mockData);
   }
 
   public getStatesList(): Observable<{ code: string; name: string }[]> {

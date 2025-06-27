@@ -6,7 +6,7 @@ export const ALL_STEPS: { key: string; label: string; command: () => void }[] = 
   {
     key: 'dadosCadastrais',
     label: 'Registration Data',
-    command: () => console.log('Dados Cadastrais')
+    command: () => {}
   }
 ];
 

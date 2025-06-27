@@ -87,11 +87,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
         }
       }
     });
-    
-    // this.menuFixo = false;
-    // if (this.menuFixo) {
-    //   this.abrirMenu();
-    // }
   }
   
   ngOnDestroy(): void {
@@ -173,11 +168,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
         primeiroItem.focus();
       }
     }, 100);
-    // if (this.menuFixo) {
-    //   setTimeout(() => {
-    //     window.dispatchEvent(new Event('resize'));
-    //   }, 300);
-    // }
   }
   
   private fecharMenu(): void {
@@ -186,9 +176,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     this.renderer.removeClass(document.body, 'menu-open');
     this.renderer.removeClass(document.body, 'client-menu-active');
     setTimeout(() => {
-      // if (this.menuFixo) {
-      //   window.dispatchEvent(new Event('resize'));
-      // }
     }, 300);
   }
 

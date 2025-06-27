@@ -1,10 +1,8 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { MonitorType } from '@app/model/monitors';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
-import { DisplayType } from '@app/model/enums/display-type.enum';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
 import { debounceTime, distinctUntilChanged, switchMap, Observable, of } from 'rxjs';
 import { AddressData } from '@app/model/dto/request/address-data-request';
@@ -25,15 +23,6 @@ export class CreateMonitorModalComponent {
   @Output() monitorCreated = new EventEmitter<CreateMonitorRequestDto>();
 
   monitorForm: FormGroup;
-  monitorTypes = [
-    { label: 'Basic', value: MonitorType.BASIC },
-    { label: 'Premium', value: MonitorType.PREMIUM }
-  ];
-
-  displayTypes = [
-    { label: 'Continuous', value: DisplayType.CONTINUOUS },
-    { label: 'Interleaved', value: DisplayType.INTERLEAVED }
-  ];
 
   loadingZipCode = false;
 
@@ -42,23 +31,16 @@ export class CreateMonitorModalComponent {
     private readonly zipCodeService: ZipCodeService
   ) {
     this.monitorForm = this.fb.group({
-      // Campos do monitor (sem productId - API já trata)
-      size: [null, [Validators.min(0.01), Validators.max(999.99)]],
+      size: [null, [Validators.required, Validators.min(0.01), Validators.max(999.99)]],
+      maxBlocks: [null, [Validators.required, Validators.min(1)]],
       address: this.fb.group({
         street: ['', [Validators.required, Validators.maxLength(100)]],
         zipCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
         city: ['', [Validators.required, Validators.maxLength(50)]],
         state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
-        country: ['', [Validators.maxLength(100)]],
-        complement: ['', [Validators.maxLength(100)]],
-        latitude: [null],
-        longitude: [null]
-      }),
-      maxBlocks: [null, [Validators.min(1)]],
-      locationDescription: ['', [Validators.maxLength(255)]],
-      type: [MonitorType.BASIC, Validators.required],
-      active: [true],
-      ads: this.fb.array([])
+        country: ['US', [Validators.maxLength(100)]],
+        complement: ['', [Validators.maxLength(100)]]
+      })
     });
 
     // Configurar busca automática de CEP
@@ -108,92 +90,41 @@ export class CreateMonitorModalComponent {
       if (addressData.country) {
         addressGroup.patchValue({ country: addressData.country });
       }
-      if (addressData.latitude) {
-        addressGroup.patchValue({ latitude: parseFloat(addressData.latitude) });
-      }
-      if (addressData.longitude) {
-        addressGroup.patchValue({ longitude: parseFloat(addressData.longitude) });
-      }
     }
   }
 
-  get adsArray(): FormArray {
-    return this.monitorForm.get('ads') as FormArray;
-  }
-
-  addAd(): void {
-    const adGroup = this.fb.group({
-      id: ['', Validators.required],
-      displayType: [DisplayType.INTERLEAVED],
-      orderIndex: [this.adsArray.length + 1, [Validators.required, Validators.min(1)]]
-    });
-    this.adsArray.push(adGroup);
-  }
-
-  removeAd(index: number): void {
-    this.adsArray.removeAt(index);
-    // Reajustar orderIndex
-    this.adsArray.controls.forEach((control, i) => {
-      control.get('orderIndex')?.setValue(i + 1);
-    });
-  }
-
-  submit(): void {
+  onSubmit(): void {
     if (this.monitorForm.valid) {
       const formValue = this.monitorForm.value;
       
-      // Preparar o objeto para envio
       const monitorRequest: CreateMonitorRequestDto = {
-        type: formValue.type,
-        active: formValue.active,
+        size: formValue.size,
+        maxBlocks: formValue.maxBlocks,
         address: {
-          street: formValue.address.street,
-          zipCode: formValue.address.zipCode,
-          city: formValue.address.city,
-          state: formValue.address.state,
-          country: formValue.address.country || 'US',
-          complement: formValue.address.complement || undefined,
-          latitude: formValue.address.latitude || undefined,
-          longitude: formValue.address.longitude || undefined
+          street: formValue.street,
+          city: formValue.city,
+          state: formValue.state,
+          country: formValue.country,
+          zipCode: formValue.zipCode,
+          complement: formValue.complement || null
         }
       };
 
-      // Adicionar campos opcionais apenas se preenchidos
-      if (formValue.size) {
-        monitorRequest.size = formValue.size;
-      }
-      if (formValue.maxBlocks) {
-        monitorRequest.maxBlocks = formValue.maxBlocks;
-      }
-      if (formValue.locationDescription) {
-        monitorRequest.locationDescription = formValue.locationDescription;
-      }
-      if (formValue.ads && formValue.ads.length > 0) {
-        monitorRequest.ads = formValue.ads;
-      }
-
-      console.log('Payload final para API:', monitorRequest);
       this.monitorCreated.emit(monitorRequest);
-      this.close.emit();
-    } else {
-      this.markFormGroupTouched();
+      this.closeModal();
     }
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.monitorForm.controls).forEach(key => {
-      const control = this.monitorForm.get(key);
-      if (control instanceof FormGroup) {
-        Object.keys(control.controls).forEach(nestedKey => {
-          control.get(nestedKey)?.markAsTouched();
-        });
-      } else {
-        control?.markAsTouched();
-      }
-    });
+  submit(): void {
+    this.onSubmit();
   }
 
   cancel(): void {
+    this.closeModal();
+  }
+
+  closeModal(): void {
+    this.monitorForm.reset();
     this.close.emit();
   }
 

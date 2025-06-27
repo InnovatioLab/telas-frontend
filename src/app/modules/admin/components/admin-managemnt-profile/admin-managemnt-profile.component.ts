@@ -115,13 +115,10 @@ export class AdminManagementProfileComponent implements OnInit {
       const userData = AuthenticationStorage.getDataUser();
       if (userData) {
         this.adminUser = JSON.parse(userData) as AdminUserData;
-        console.log('Dados do administrador carregados:', this.adminUser);
       } else {
         this.adminUser = this.auth._clientSignal() as AdminUserData;
-        console.log('Dados do administrador obtidos do clientSignal:', this.adminUser);
       }
     } catch (error) {
-      console.error('Erro ao carregar dados do administrador:', error);
       this.toastService.erro('Não foi possível carregar seus dados. Por favor, tente novamente mais tarde.');
     } finally {
       this.loadingProfile = false;
