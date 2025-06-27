@@ -137,7 +137,6 @@
     p-button {
       flex-shrink: 0;
 
-      // Ajuste para dispositivos móveis
       @media (max-width: 576px) {
         .p-button {
           font-size: var(--fonte-tamanho-pequeno);
@@ -146,7 +145,6 @@
       }
     }
 
-    // Responsividade para telas muito pequenas
     @media (max-width: 480px) {
       flex-direction: column;
 

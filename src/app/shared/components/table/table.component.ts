@@ -131,7 +131,7 @@ export class TableComponent {
     this.first = 0;
 
     const pageChangeData = {
-      page: 0, // PrimeNG usa índice zero
+      page: 0,
       rows: this.rows,
       first: 0
     };

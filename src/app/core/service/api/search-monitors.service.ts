@@ -3,7 +3,7 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ENVIRONMENT } from 'src/environments/environment-token';
-import { Environment } from 'src/environments/environment';
+import { Environment } from 'src/environments/environment.interface';
 import { MapPoint } from '../state/map-point.interface';
 
 export interface MonitorMinResponseDto {

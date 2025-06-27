@@ -108,11 +108,11 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   monitors: MapPoint[] = [];
   mapCenter: { lat: number; lng: number } | null = null;
   private map: google.maps.Map | null = null;
-  private subscriptions: Subscription[] = [];
+  private readonly subscriptions: Subscription[] = [];
 
   constructor(
-    private googleMapsService: GoogleMapsService,
-    private loadingService: LoadingService
+    private readonly googleMapsService: GoogleMapsService,
+    private readonly loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -121,7 +121,6 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   ngAfterViewInit(): void {
-    // Verificar se o mapa precisa ser inicializado
     setTimeout(() => {
       this.ensureMapInitialized();
     }, 1000);

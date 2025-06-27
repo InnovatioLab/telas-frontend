@@ -317,14 +317,14 @@
   .filter-container {
     .p-selectbutton {
       display: flex;
-      flex-wrap: nowrap; // Alterado para nowrap para garantir alinhamento horizontal
+      flex-wrap: nowrap;
       justify-content: space-between;
       width: 100%;
       background-color: transparent;
 
       .p-button {
-        flex: 1; // Cada botão ocupa espaço igual
-        min-width: 0; // Permite que os botões se comprimam se necessário
+        flex: 1; 
+        min-width: 0;
         background: transparent;
         border: 1px solid var(--cor-primaria);
         color: var(--cor-legenda);

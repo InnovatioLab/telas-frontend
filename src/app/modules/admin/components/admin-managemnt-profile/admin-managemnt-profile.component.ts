@@ -163,10 +163,9 @@ export class AdminManagementProfileComponent implements OnInit {
     const phone = this.adminUser?.owner?.phone;
     if (!phone) return 'Not available';
     
-    // Formatar o telefone para exibição
     const digits = phone.replace(/\D/g, '');
     
-    if (digits.length < 10) return phone; // Retorna o original se não tiver formato padrão
+    if (digits.length < 10) return phone;
     
     const countryCode = '+1';
     const areaCode = digits.substring(0, 3);

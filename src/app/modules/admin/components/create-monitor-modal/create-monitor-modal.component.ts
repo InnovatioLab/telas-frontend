@@ -43,7 +43,6 @@ export class CreateMonitorModalComponent {
       })
     });
 
-    // Configurar busca automática de CEP
     this.setupZipCodeSearch();
   }
 
@@ -52,8 +51,8 @@ export class CreateMonitorModalComponent {
     
     if (zipCodeControl) {
       zipCodeControl.valueChanges.pipe(
-        debounceTime(500), // Aguardar 500ms após o usuário parar de digitar
-        distinctUntilChanged(), // Só executar se o valor mudou
+        debounceTime(500), 
+        distinctUntilChanged(), 
         switchMap((zipCode: string): Observable<AddressData | null> => {
           if (zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode)) {
             this.loadingZipCode = true;
@@ -80,7 +79,6 @@ export class CreateMonitorModalComponent {
     const addressGroup = this.monitorForm.get('address');
     
     if (addressGroup && addressData) {
-      // Preencher campos automaticamente
       if (addressData.city) {
         addressGroup.patchValue({ city: addressData.city });
       }

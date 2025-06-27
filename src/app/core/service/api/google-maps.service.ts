@@ -200,11 +200,22 @@ export class GoogleMapsService {
   public createSearchMarkerIcon(): google.maps.Symbol {
     return {
       path: google.maps.SymbolPath.CIRCLE,
-      fillColor: '#4285F4', // Cor azul do Google
+      fillColor: '#4285F4',
       fillOpacity: 1,
       strokeWeight: 2,
       strokeColor: '#FFFFFF',
       scale: 10
+    };
+  }
+  
+  public createMonitorIcon(): google.maps.Symbol {
+    return {
+      path: 'M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z',
+      fillColor: '#FF6B35',
+      fillOpacity: 1,
+      strokeWeight: 1,
+      strokeColor: '#FFFFFF',
+      scale: 1.5
     };
   }
   

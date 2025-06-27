@@ -116,7 +116,6 @@ export class AlertAdminSidebarComponent implements OnInit {
       }
     });
     
-    // Adicionar simulação de novo alerta para demonstração
     if (this.isAdministrador()) {
       setInterval(() => this.addTestAlert(), 30000);
     }
@@ -128,7 +127,7 @@ export class AlertAdminSidebarComponent implements OnInit {
       (alerts: IMonitorAlert[]) => {
         this.alerts = alerts;
         this.applyFilters();
-        this.updateAlertCount(); // Atualizar contagem de alertas
+        this.updateAlertCount();
         this.loadingService.setLoading(false, 'load-alerts');
       },
       (error: Error) => {
@@ -164,7 +163,6 @@ export class AlertAdminSidebarComponent implements OnInit {
     return this.authentication._clientSignal()?.role === 'ADMIN';
   }
   
-  // Método para adicionar um alerta de teste manualmente
   addTestAlert(): void {
     const alertTypes = ['critical', 'warning'] as const;
     const randomType = alertTypes[Math.floor(Math.random() * alertTypes.length)];
@@ -191,16 +189,13 @@ export class AlertAdminSidebarComponent implements OnInit {
     }
   }
   
-  // Método para atualizar a contagem de alertas e emitir evento
   private updateAlertCount(): void {
-    // Contagem de alertas não resolvidos e não confirmados
     const pendingAlerts = this.alerts.filter(
       alert => alert.status === 'critical' || alert.status === 'warning'
     );
     
     const hasCritical = pendingAlerts.some(alert => alert.status === 'critical');
     
-    // Emitir evento global para o header
     const alertCountEvent = new CustomEvent<AlertCountEvent>('admin-alert-count-changed', {
       detail: {
         count: pendingAlerts.length,
@@ -209,7 +204,6 @@ export class AlertAdminSidebarComponent implements OnInit {
     });
     window.dispatchEvent(alertCountEvent);
     
-    // Salvar no localStorage para persistência
     localStorage.setItem('admin_alert_count', pendingAlerts.length.toString());
     localStorage.setItem('admin_has_critical_alert', hasCritical.toString());
   }
@@ -315,7 +309,7 @@ export class AlertAdminSidebarComponent implements OnInit {
         if (index !== -1) {
           this.alerts[index] = updatedAlert;
           this.applyFilters();
-          this.updateAlertCount(); // Atualizar contagem ao resolver
+          this.updateAlertCount();
           this.toastService.sucesso('Alerta marcado como resolvido');
         }
         this.loadingService.setLoading(false, `resolve-alert-${alert.id}`);

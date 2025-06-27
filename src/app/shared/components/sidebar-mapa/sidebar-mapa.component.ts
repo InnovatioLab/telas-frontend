@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, OnInit, Inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
 import { PrimengModule } from '../../primeng/primeng.module';
 import { Subscription } from 'rxjs';
-import { Environment } from 'src/environments/environment';
 import { ENVIRONMENT } from 'src/environments/environment-token';
+import { Environment } from 'src/environments/environment.interface';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { IconsModule } from '@app/shared/icons/icons.module';

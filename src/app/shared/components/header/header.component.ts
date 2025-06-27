@@ -67,9 +67,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   isMobile = false;
   menuAberto = false;
   isDarkMode = false;
-  isAdminSidebarVisible = false; // Inicializando como falso
+  isAdminSidebarVisible = false;
   
-  // Rotas onde o header deve ser mostrado
   headerAllowedRoutes = ['/client', '/admin'];
   
   private resizeListener: () => void;
@@ -179,43 +178,78 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     if (zipRegex.test(searchTextCopy)) {
       const zipCode = searchTextCopy.split('-')[0];
       
-      this.zipcodeService.findLocationByZipCode(zipCode)
+      this.searchMonitorsService.findNearestMonitors(zipCode, undefined, undefined, 3)
+        .subscribe({
+          next: (response) => {
+            this.loadingService.setLoading(false, 'address-search');
+            
+            if (response && Object.keys(response).length > 0) {
+              const monitors: MapPoint[] = [];
+              Object.keys(response).forEach(zipCodeKey => {
+                const monitorsInZip = response[zipCodeKey];
+                monitorsInZip.forEach(monitor => {
+                  const mapPoint: MapPoint = {
+                    id: monitor.id,
+                    title: `Monitor ${monitor.type} - ${monitor.size}"`,
+                    description: `Distance: ${monitor.distanceInKm.toFixed(2)} km`,
+                    latitude: monitor.latitude,
+                    longitude: monitor.longitude,
+                    type: monitor.type,
+                    category: 'MONITOR',
+                    data: monitor
+                  };
+                  monitors.push(mapPoint);
+                });
+              });
+              
+              if (monitors.length > 0) {
+                this.emitMonitorsFoundEvent(monitors);
+                this.toastService.sucesso(`Encontrados ${monitors.length} monitores próximos ao CEP ${zipCode}`);
+                this.searchText = '';
+              } else {
+                this.toastService.aviso(`Nenhum monitor encontrado para o CEP ${zipCode}`);
+              }
+            } else {
+              this.toastService.aviso(`Nenhum monitor encontrado para o CEP ${zipCode}`);
+            }
+          },
+          error: (error) => {
+            this.loadingService.setLoading(false, 'address-search');
+            console.error('Erro ao buscar monitores:', error);
+            this.toastService.erro(`Erro ao buscar monitores com o CEP ${zipCode}`);
+          }
+        });
+    } else {
+      this.zipcodeService.findLocationByZipCode(searchTextCopy)
         .subscribe({
           next: (addressData) => {
             if (addressData) {
               this.toastService.sucesso(`Localização encontrada: ${addressData.city}, ${addressData.state}`);
               this.searchText = '';
               
-              this.searchMonitorsService.findByZipCode(zipCode)
+              this.searchMonitorsService.findByZipCode(addressData.zipCode || searchTextCopy)
                 .then(monitors => {
                   if (monitors && monitors.length > 0) {
                     this.emitMonitorsFoundEvent(monitors);
-                    this.toastService.sucesso(`Encontrados ${monitors.length} monitores próximos ao CEP ${zipCode}`);
+                    this.toastService.sucesso(`Encontrados ${monitors.length} monitores próximos ao CEP ${addressData.zipCode || searchTextCopy}`);
                   } else {
-                    this.toastService.aviso(`Nenhum monitor encontrado para o CEP ${zipCode}`);
+                    this.toastService.aviso(`Nenhum monitor encontrado para o CEP ${addressData.zipCode || searchTextCopy}`);
                   }
                 })
                 .catch(error => {
-                  this.toastService.erro(`Erro ao buscar monitores com o CEP ${zipCode}`);
+                  this.toastService.erro(`Erro ao buscar monitores com o CEP ${addressData.zipCode || searchTextCopy}`);
                 });
             } else {
-              this.googleMapsService.performAddressSearch(searchTextCopy);
+              this.toastService.erro('Endereço não encontrado');
             }
             this.loadingService.setLoading(false, 'address-search');
           },
           error: (error) => {
-            this.googleMapsService.performAddressSearch(searchTextCopy);
-            this.searchText = '';
             this.loadingService.setLoading(false, 'address-search');
-          },
-          complete: () => {
-            this.loadingService.setLoading(false, 'address-search');
+            console.error('Erro ao buscar endereço:', error);
+            this.toastService.erro('Erro ao buscar endereço');
           }
         });
-    } else {
-      this.googleMapsService.performAddressSearch(searchTextCopy);
-      this.searchText = '';
-      this.loadingService.setLoading(false, 'address-search');
     }
   }
   

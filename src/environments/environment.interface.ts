@@ -6,4 +6,6 @@ export interface Environment {
   googleMapsApiKey: string;
   stripePublicKey: string;
   stripePrivateKey: string;
+  nomeToken: string;
+  nomeTokenRefresh: string;
 }

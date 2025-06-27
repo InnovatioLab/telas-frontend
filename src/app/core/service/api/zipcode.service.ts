@@ -115,17 +115,14 @@ export class ZipCodeService {
       }
     }
     
-    // Atualizar o BehaviorSubject
     this.lastLocationSubject.next({
       addressData: result,
       mapPoint
     });
     
-    // Emitir um evento para notificar outras partes da aplicação
     if (mapPoint) {
       this.emitLocationFoundEvent(mapPoint);
       
-      // Salvar as coordenadas no localStorage
       localStorage.setItem('user_coordinates', JSON.stringify({
         latitude: mapPoint.latitude,
         longitude: mapPoint.longitude,
@@ -133,7 +130,6 @@ export class ZipCodeService {
         source: 'zipcode-search'
       }));
       
-      // Emitir evento de coordenadas atualizadas
       const coordsEvent = new CustomEvent('user-coordinates-updated', {
         detail: {
           latitude: mapPoint.latitude,
@@ -144,18 +140,14 @@ export class ZipCodeService {
     }
   }
   
-  // Gera dados de CEP simulados com base no próprio CEP
   private generateMockZipCodeData(zipCode: string): AddressData {
-    // Extrair informações aproximadas com base no código postal
     const firstDigit = parseInt(zipCode.charAt(0), 10);
     
-    // Mapeamento de primeiros dígitos para regiões/estados dos EUA
-    let state = 'CA'; // Estado padrão
+    let state = 'CA';
     let city = 'Unknown City';
-    let lat = 37.0902; // Coordenadas padrão (próximo ao centro dos EUA)
+    let lat = 37.0902;
     let lng = -95.7129;
     
-    // Mapear o primeiro dígito para um estado aproximado
     if (firstDigit === 0) { 
       state = 'MA'; city = 'Boston'; lat = 42.3601; lng = -71.0589; 
     } else if (firstDigit === 1) { 
@@ -178,7 +170,6 @@ export class ZipCodeService {
       state = 'CA'; city = 'Los Angeles'; lat = 34.0522; lng = -118.2437; 
     }
     
-    // Adicionar pequena variação às coordenadas para não ter sempre o mesmo ponto
     const lastTwoDigits = parseInt(zipCode.slice(-2), 10) || 0;
     const latVariation = (lastTwoDigits % 10) * 0.01;
     const lngVariation = (lastTwoDigits % 10) * 0.01;

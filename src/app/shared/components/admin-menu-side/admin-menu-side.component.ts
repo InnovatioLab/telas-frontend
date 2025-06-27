@@ -81,7 +81,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       this.abrirMenu();
     }
     
-    // Disparar evento para notificar que o menu foi carregado
     const loadEvent = new CustomEvent('admin-menu-loaded');
     window.dispatchEvent(loadEvent);
   }
@@ -132,7 +131,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       }
     }
     
-    // Disparar evento para notificar o mapa sobre a mudança de fixação
     const pinEvent = new CustomEvent('admin-menu-pin-changed', {
       detail: { pinned: this.menuFixo }
     });
@@ -197,7 +195,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     
     this.renderer.removeClass(document.body, 'menu-open');
     
-    // Disparar evento para notificar que o menu foi fechado
     const closeEvent = new CustomEvent('admin-menu-closed');
     window.dispatchEvent(closeEvent);
     

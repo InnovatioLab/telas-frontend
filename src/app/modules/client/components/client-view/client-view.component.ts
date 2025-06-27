@@ -42,6 +42,14 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.isLoading = true;
     
+    window.addEventListener('monitors-found', ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.monitors) {
+        const monitors: MapPoint[] = customEvent.detail.monitors;
+        this.mapsComponent.setMapPoints(monitors);
+      }
+    }) as EventListener);
+    
     setTimeout(() => {
       this.ensureMapInitialized();
     }, 500);

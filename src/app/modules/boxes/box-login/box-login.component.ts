@@ -51,7 +51,6 @@ export class BoxLoginComponent {
     const { login, senha } = this.form.value;
     setTimeout(() => {
       this.loading = false;
-      // Mock: login válido se login e senha forem 'admin'
       if (login === 'admin' && senha === 'admin') {
         this.router.navigate(['/boxes/status'], { queryParams: { boxId: this.selectedBox.id } });
       } else {

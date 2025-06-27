@@ -49,7 +49,6 @@ export class ManagementMonitorsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Carregar dados iniciais sem disparar eventos do PrimeNG
     this.loadInitialData();
   }
 
@@ -78,7 +77,6 @@ export class ManagementMonitorsComponent implements OnInit {
   loadMonitors(): void {
     this.loading = true;
     
-    // Aplicar filtro de busca se houver
     const filters: FilterMonitorRequestDto = { ...this.currentFilters };
     if (this.searchTerm.trim()) {
       filters.genericFilter = this.searchTerm.trim();
@@ -101,25 +99,24 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.currentFilters.page = 1; // Reset para primeira página
+    this.currentFilters.page = 1;
     this.loadMonitors();
   }
 
   onPageChange(event: any): void {
-    this.currentFilters.page = event.page + 1; // PrimeNG usa base 0, API usa base 1
+    this.currentFilters.page = event.page + 1;
     this.currentFilters.size = event.rows;
     this.loadMonitors();
   }
 
   onSort(event: any): void {
     if (this.isSorting || this.loading) {
-      return; // Evita chamadas simultâneas
+      return;
     }
     
     const newSortBy = event.field;
     const newSortDir = event.order === 1 ? 'asc' : 'desc';
     
-    // Só atualiza se realmente mudou
     if (this.currentFilters.sortBy === newSortBy && this.currentFilters.sortDir === newSortDir) {
       return;
     }
@@ -178,7 +175,6 @@ export class ManagementMonitorsComponent implements OnInit {
     this.loading = true;
     
     if (monitor.id) {
-      // Converter Monitor para CreateMonitorRequestDto conforme formato esperado pela API
       const monitorRequest: CreateMonitorRequestDto = {
         size: monitor.size,
         maxBlocks: monitor.maxBlocks,

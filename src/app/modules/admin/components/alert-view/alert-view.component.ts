@@ -59,7 +59,6 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   ngAfterViewInit(): void {
-    // Verificar se o mapa precisa ser inicializado
     setTimeout(() => {
       this.ensureMapInitialized();
     }, 1000);

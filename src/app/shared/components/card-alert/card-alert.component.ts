@@ -44,7 +44,7 @@ export class CardAlertComponent {
     
     if (diffMins < 60) {
       return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
-    } else if (diffMins < 1440) { // less than 24 hours
+    } else if (diffMins < 1440) {
       const hours = Math.floor(diffMins / 60);
       return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
     } else {

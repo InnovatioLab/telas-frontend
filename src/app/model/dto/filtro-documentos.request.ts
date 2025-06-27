@@ -11,8 +11,8 @@ export class FiltroDocumentosRequest {
     this.subgrupoID = filtro.subgrupoID;
     this.sort = filtro.sort;
     this.sortType = filtro.sortType;
-    this.page = filtro.page ?? 1; // Default to page 1 if not provided
-    this.size = filtro.size ?? 10; // Default to 10 items per page if not provided
+    this.page = filtro.page ?? 1;
+    this.size = filtro.size ?? 10;
  }
 }
 

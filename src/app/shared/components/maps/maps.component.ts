@@ -52,7 +52,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() mapInitialized = new EventEmitter<google.maps.Map>();
   @Output() markerClicked = new EventEmitter<MapPoint>();
   
-  private map: google.maps.Map | null = null;
+  private _map: google.maps.Map | null = null;
   private markers: google.maps.Marker[] = [];
   private readonly subscriptions: Subscription[] = [];
   private _apiLoaded = false;
@@ -71,7 +71,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       const isVisible = this.sidebarService.visibilidade();
       const tipo = this.sidebarService.tipo();
       
-      // Para admin-menu: só recalcular quando estiver fixado (menu-fixed)
       if (tipo === 'admin-menu') {
         const isMenuFixed = document.body.classList.contains('menu-fixed');
         if (isMenuFixed) {
@@ -103,8 +102,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   public forceReinitialize(): void {
-    if (this.map) {
-      this.map = null;
+    if (this._map) {
+      this._map = null;
     }
     
     this.clearMarkers();
@@ -118,12 +117,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   public ensureMapInitialized(): void {
     if (!this._apiLoaded) {
       this.loadGoogleMapsScript();
-    } else if (!this.map) {
+    } else if (!this._map) {
       this.initializeMap();
     } else if (!this._mapReady) {
       setTimeout(() => {
-        if (this.map) {
-          google.maps.event.trigger(this.map, 'resize');
+        if (this._map) {
+          google.maps.event.trigger(this._map, 'resize');
           this._mapReady = true;
         }
       }, 200);
@@ -136,7 +135,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   ngAfterViewInit(): void {
-    if (this._apiLoaded && !this.map && this.mapContainer?.nativeElement) {
+    if (this._apiLoaded && !this._map && this.mapContainer?.nativeElement) {
     setTimeout(() => {
         this.initializeMap();
       }, 100);
@@ -147,8 +146,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.clearMarkers();
     
-    if (this.map) {
-      this.map = null;
+    if (this._map) {
+      this._map = null;
     }
   }
   
@@ -183,16 +182,16 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       const customEvent = e as CustomEvent;
       if (customEvent.detail?.location) {
         const location = customEvent.detail.location;
-        if (this.map && location.latitude && location.longitude) {
+        if (this._map && location.latitude && location.longitude) {
           this.ngZone.run(() => {
             const newCenter = { lat: location.latitude, lng: location.longitude };
-            this.map?.setCenter(newCenter);
-            this.map?.setZoom(15);
+            this._map?.setCenter(newCenter);
+            this._map?.setZoom(15);
             
             this.clearMarkers();
             const marker = new google.maps.Marker({
               position: newCenter,
-              map: this.map,
+              map: this._map,
               title: location.title ?? 'Localização do CEP',
               icon: this.mapsService.createRedMarkerIcon()
             });
@@ -210,15 +209,15 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
           lng: customEvent.detail.longitude
         };
         
-        if (this.map) {
+        if (this._map) {
           this.ngZone.run(() => {
-            this.map?.setCenter(newCenter);
-            this.map?.setZoom(15);
+            this._map?.setCenter(newCenter);
+            this._map?.setZoom(15);
             
             this.clearMarkers();
             const marker = new google.maps.Marker({
               position: newCenter,
-              map: this.map,
+              map: this._map,
               title: 'Localização atual',
               icon: this.mapsService.createRedMarkerIcon()
             });
@@ -229,7 +228,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     }) as EventListener);
 
     window.addEventListener('focus', () => {
-      if (this._apiLoaded && !this.map) {
+      if (this._apiLoaded && !this._map) {
         setTimeout(() => {
           this.initializeMap();
         }, 500);
@@ -245,7 +244,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && this._apiLoaded && !this.map) {
+      if (!document.hidden && this._apiLoaded && !this._map) {
         setTimeout(() => {
           this.initializeMap();
         }, 500);
@@ -281,16 +280,32 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     const userCoordsSub = this.mapsService.savedPoints$.subscribe((points: MapPoint[]) => {
-      if (this.map && points.length > 0) {
+      if (this._map && points.length > 0) {
         this.addMapPoints(points);
       }
     });
 
     const monitorsSub = this.mapsService.nearestMonitors$.subscribe((monitors: MapPoint[]) => {
-      if (this.map && monitors.length > 0) {
+      if (this._map && monitors.length > 0) {
         this.addMapPoints(monitors);
       }
     });
+
+    window.addEventListener('monitors-found', ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.monitors) {
+        const monitors: MapPoint[] = customEvent.detail.monitors;
+        if (this._map) {
+          this.setMapPoints(monitors);
+        } else {
+          setTimeout(() => {
+            if (this._map) {
+              this.setMapPoints(monitors);
+            }
+          }, 1000);
+        }
+      }
+    }) as EventListener);
 
     this.subscriptions.push(userCoordsSub, monitorsSub);
   }
@@ -308,7 +323,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     
-    if (this.map) {
+    if (this._map) {
       return;
     }
 
@@ -316,7 +331,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       const defaultCenter = { lat: -3.7327, lng: -38.5270 };
       const center = this.center || defaultCenter;
 
-      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+      this._map = new google.maps.Map(this.mapContainer.nativeElement, {
         center,
         zoom: this.zoom,
         mapTypeControl: false,
@@ -324,15 +339,15 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         fullscreenControl: false
       });
 
-      this.mapInitialized.emit(this.map);
+      this.mapInitialized.emit(this._map);
       
       if (this.points && this.points.length > 0) {
         this.addMapPoints(this.points);
       }
       
       setTimeout(() => {
-        if (this.map) {
-          google.maps.event.trigger(this.map, 'resize');
+        if (this._map) {
+          google.maps.event.trigger(this._map, 'resize');
           this._mapReady = true;
         }
       }, 200);
@@ -343,11 +358,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   public isMapReady(): boolean {
-    return this._mapReady && this._apiLoaded && !!this.map;
+    return this._mapReady && this._apiLoaded && !!this._map;
   }
   
   public checkMapState(): void {
-    if (this._apiLoaded && !this.map && this.mapContainer?.nativeElement) {
+    if (this._apiLoaded && !this._map && this.mapContainer?.nativeElement) {
       this.initializeMap();
     }
   }
@@ -402,16 +417,24 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private addMapPoints(points: MapPoint[]): void {
-    if (!this.map) return;
+    if (!this._map) return;
 
     this.clearMarkers();
 
     points.forEach(point => {
+      let icon: google.maps.Symbol;
+      
+      if (point.category === 'MONITOR' || point.type === 'MONITOR') {
+        icon = this.mapsService.createMonitorIcon();
+      } else {
+        icon = this.mapsService.createRedMarkerIcon();
+      }
+
       const marker = new google.maps.Marker({
         position: { lat: point.latitude, lng: point.longitude },
-        map: this.map,
+        map: this._map,
         title: point.title || '',
-        icon: this.mapsService.createRedMarkerIcon()
+        icon: icon
       });
 
       marker.addListener('click', () => {
@@ -424,7 +447,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   
   public setMapPoints(points: MapPoint[]): void {
     this.points = points;
-    this.updateMapPoints();
+    
+    this.addMapPoints(points);
+    
+    if (points.length > 0) {
+      this.fitBoundsToPoints(points);
+    }
   }
  
   private updateMapPoints(): void {
@@ -477,7 +505,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private updateMapDimensions(): void {
-    if (!this.map) {
+    if (!this._map) {
       return;
     }
 
@@ -503,51 +531,31 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     setTimeout(() => {
-      if (this.map) {
-        google.maps.event.trigger(this.map, 'resize');
+      if (this._map) {
+        google.maps.event.trigger(this._map, 'resize');
       }
     }, 100);
   }
   
   private fitBoundsToPoints(points: MapPoint[]): void {
-    if (!points || points.length === 0 || !this._apiLoaded) return;
+    if (!points || points.length === 0 || !this._map) return;
     
     const bounds = new google.maps.LatLngBounds();
     points.forEach((point: MapPoint) => {
       bounds.extend({ lat: point.latitude, lng: point.longitude });
     });
     
-    const center = bounds.getCenter();
-    this.center = { lat: center.lat(), lng: center.lng() };
+    this._map.fitBounds(bounds);
     
-    const northEast = bounds.getNorthEast();
-    const southWest = bounds.getSouthWest();
-    
-    const latDiff = Math.abs(northEast.lat() - southWest.lat());
-    const lngDiff = Math.abs(northEast.lng() - southWest.lng());
-    
-    let calculatedZoom = 15;
-    
-    if (latDiff > 1 || lngDiff > 1) {
-      calculatedZoom = 8;
-    } else if (latDiff > 0.5 || lngDiff > 0.5) {
-      calculatedZoom = 9;
-    } else if (latDiff > 0.25 || lngDiff > 0.25) {
-      calculatedZoom = 10;
-    } else if (latDiff > 0.1 || lngDiff > 0.1) {
-      calculatedZoom = 12;
-    } else if (latDiff > 0.05 || lngDiff > 0.05) {
-      calculatedZoom = 13;
-    } else if (latDiff > 0.025 || lngDiff > 0.025) {
-      calculatedZoom = 14;
-    } else if (latDiff > 0.01 || lngDiff > 0.01) {
-      calculatedZoom = 15;
-    } else {
-      calculatedZoom = 16;
-    }
-    
-    calculatedZoom = Math.max(8, Math.min(18, calculatedZoom));
-    this.zoom = calculatedZoom;
+    const listener = google.maps.event.addListener(this._map, 'bounds_changed', () => {
+      if (this._map) {
+        const currentZoom = this._map.getZoom();
+        if (currentZoom && currentZoom > 15) {
+          this._map.setZoom(15);
+        }
+      }
+      google.maps.event.removeListener(listener);
+    });
   }
 
   private clearMarkers(): void {
@@ -561,5 +569,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   
   get mapReady(): boolean {
     return this._mapReady;
+  }
+
+  get map(): google.maps.Map | null {
+    return this._map;
   }
 }
