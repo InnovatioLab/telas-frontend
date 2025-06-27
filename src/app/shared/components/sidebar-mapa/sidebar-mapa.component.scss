@@ -4,6 +4,7 @@
       width: 40vw;
       max-width: 1013px;
       border-radius: 25px;
+      z-index: 9999 !important;
       
       .p-sidebar-content {
         padding-bottom: 0px;
@@ -161,6 +162,47 @@
     
     .street-view-container {
       height: 250px !important;
+    }
+  }
+}
+
+.monitor-details {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--cor-cinza-medio);
+  
+  .info-grupo {
+    margin-bottom: 0.75rem;
+    
+    .material-symbols-outlined {
+      &.text-success {
+        color: var(--cor-sucesso);
+      }
+      
+      &.text-danger {
+        color: var(--cor-erro);
+      }
+      
+      &.text-warning {
+        color: #ffc107;
+      }
+    }
+    
+    .info-valor {
+      &.text-success {
+        color: var(--cor-sucesso);
+        font-weight: 500;
+      }
+      
+      &.text-danger {
+        color: var(--cor-erro);
+        font-weight: 500;
+      }
+      
+      &.text-warning {
+        color: #ffc107;
+        font-weight: 500;
+      }
     }
   }
 }

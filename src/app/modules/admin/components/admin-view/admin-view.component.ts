@@ -6,12 +6,15 @@ import { MapPoint } from '../../../../core/service/state/map-point.interface';
 import { LoadingService } from '../../../../core/service/state/loading.service';
 import { Subscription } from 'rxjs';
 import { MapsComponent } from '../../../../shared/components/maps/maps.component';
+import { SidebarMapaComponent } from '../../../../shared/components/sidebar-mapa/sidebar-mapa.component';
 
 @Component({
   selector: 'app-admin-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, MapsComponent],
+  imports: [CommonModule, FormsModule, MapsComponent, SidebarMapaComponent],
   template: `
+    <app-sidebar-mapa></app-sidebar-mapa>
+    
     <div class="admin-view">
       <div class="map-container">
         <app-maps
@@ -178,6 +181,9 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onMarkerClick(point: MapPoint): void {
+    // Abrir o sidebar de detalhes do monitor
+    this.googleMapsService.selectPoint(point);
+    
     if (this.map) {
       this.map.setCenter({
         lat: point.latitude,

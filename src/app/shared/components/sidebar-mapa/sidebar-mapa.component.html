@@ -65,6 +65,65 @@
             <span class="info-valor">{{ pontoSelecionado.type || 'Standard' }}</span>
           </div>
         </div>
+
+        <!-- Campos específicos do monitor -->
+        <div *ngIf="getMonitorData()" class="monitor-details">
+          <div class="info-grupo">
+            <span class="material-symbols-outlined">tv</span>
+            <div class="info-detalhe">
+              <span class="info-label">Monitor ID</span>
+              <span class="info-valor">{{ getMonitorData()?.id || 'N/A' }}</span>
+            </div>
+          </div>
+
+          <div class="info-grupo">
+            <span class="material-symbols-outlined">straighten</span>
+            <div class="info-detalhe">
+              <span class="info-label">Size</span>
+              <span class="info-valor">{{ getMonitorData()?.size || 'N/A' }}"</span>
+            </div>
+          </div>
+
+          <div class="info-grupo">
+            <span class="material-symbols-outlined">speed</span>
+            <div class="info-detalhe">
+              <span class="info-label">Distance</span>
+              <span class="info-valor">{{ getMonitorData()?.distanceInKm || 'N/A' }} km</span>
+            </div>
+          </div>
+
+          <div class="info-grupo">
+            <span class="material-symbols-outlined" [class.text-success]="getMonitorData()?.active" [class.text-danger]="!getMonitorData()?.active">
+              {{ getMonitorData()?.active ? 'check_circle' : 'cancel' }}
+            </span>
+            <div class="info-detalhe">
+              <span class="info-label">Status</span>
+              <span class="info-valor" [class.text-success]="getMonitorData()?.active" [class.text-danger]="!getMonitorData()?.active">
+                {{ getMonitorData()?.active ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="getMonitorData()?.hasAvailableSlots !== undefined" class="info-grupo">
+            <span class="material-symbols-outlined" [class.text-success]="getMonitorData()?.hasAvailableSlots" [class.text-warning]="!getMonitorData()?.hasAvailableSlots">
+              {{ getMonitorData()?.hasAvailableSlots ? 'event_available' : 'event_busy' }}
+            </span>
+            <div class="info-detalhe">
+              <span class="info-label">Available Slots</span>
+              <span class="info-valor" [class.text-success]="getMonitorData()?.hasAvailableSlots" [class.text-warning]="!getMonitorData()?.hasAvailableSlots">
+                {{ getMonitorData()?.hasAvailableSlots ? 'Yes' : 'No' }}
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="getMonitorData()?.estimatedSlotReleaseDate" class="info-grupo">
+            <span class="material-symbols-outlined">schedule</span>
+            <div class="info-detalhe">
+              <span class="info-label">Next Available</span>
+              <span class="info-valor">{{ getMonitorData()?.estimatedSlotReleaseDate | date:'short' }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="acoes-container">
@@ -74,9 +133,10 @@
                 class="p-button p-button-secondary" 
                 (click)="abrirGoogleMaps()"></button>
         <button pButton 
-                label="Select This Location" 
-                icon="pi pi-check" 
-                class="p-button"></button>
+                label="Add to List" 
+                icon="pi pi-plus" 
+                class="p-button"
+                (click)="adicionarALista()"></button>
       </div>
     </div>
     

@@ -133,6 +133,11 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     event.stopPropagation();
   }
   
+  handleMarkerClick(point: MapPoint): void {
+    // Abrir o sidebar de detalhes do monitor
+    this.mapsService.selectPoint(point);
+  }
+  
   showPointDetails(point: MapPoint): void {
     this.mapsService.selectPoint(point);
   }

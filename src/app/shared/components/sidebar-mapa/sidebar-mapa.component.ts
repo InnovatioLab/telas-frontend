@@ -27,7 +27,8 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   
   constructor(
     private readonly mapsService: GoogleMapsService,
-    @Inject(ENVIRONMENT) private readonly env: Environment
+    @Inject(ENVIRONMENT) private readonly env: Environment,
+    private readonly cdr: ChangeDetectorRef
   ) {}
   
   ngOnInit(): void {
@@ -37,9 +38,24 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
           this.pontoSelecionado = point;
           this.abrirSidebar();
           this.carregarImagemStreetView();
+          setTimeout(() => {
+            this.cdr.detectChanges();
+          }, 100);
         }
       })
     );
+
+    window.addEventListener('monitor-marker-clicked', ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.point) {
+        this.pontoSelecionado = customEvent.detail.point;
+        this.abrirSidebar();
+        this.carregarImagemStreetView();
+        setTimeout(() => {
+          this.cdr.detectChanges();
+        }, 100);
+      }
+    }) as EventListener);
   }
   
   ngOnDestroy(): void {
@@ -95,5 +111,19 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&query_place_id=${titulo}`;
     
     window.open(url, '_blank');
+  }
+
+  getMonitorData(): any {
+    if (this.pontoSelecionado && this.pontoSelecionado.data) {
+      return this.pontoSelecionado.data;
+    }
+    return null;
+  }
+
+  adicionarALista(): void {
+    if (this.pontoSelecionado) {
+      this.mapsService.addToSavedPoints(this.pontoSelecionado);
+      this.fecharSidebar();
+    }
   }
 }

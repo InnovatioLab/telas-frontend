@@ -421,28 +421,79 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.clearMarkers();
 
+    // Agrupar pontos por localização
+    const locationGroups = new Map<string, MapPoint[]>();
+    
     points.forEach(point => {
-      let icon: google.maps.Symbol;
-      
-      if (point.category === 'MONITOR' || point.type === 'MONITOR') {
-        icon = this.mapsService.createMonitorIcon();
-      } else {
-        icon = this.mapsService.createRedMarkerIcon();
+      const key = `${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`;
+      if (!locationGroups.has(key)) {
+        locationGroups.set(key, []);
       }
-
-      const marker = new google.maps.Marker({
-        position: { lat: point.latitude, lng: point.longitude },
-        map: this._map,
-        title: point.title || '',
-        icon: icon
-      });
-
-      marker.addListener('click', () => {
-        this.markerClicked.emit(point);
-      });
-
-      this.markers.push(marker);
+      locationGroups.get(key)!.push(point);
     });
+
+    // Processar cada grupo de localização
+    locationGroups.forEach((groupPoints, locationKey) => {
+      if (groupPoints.length === 1) {
+        // Apenas um ponto nesta localização
+        this.createMarker(groupPoints[0], groupPoints[0].latitude, groupPoints[0].longitude);
+      } else {
+        // Múltiplos pontos na mesma localização - recalcular posições
+        groupPoints.forEach((point, index) => {
+          const adjustedCoords = this.calculateOffsetPosition(
+            point.latitude, 
+            point.longitude, 
+            index, 
+            groupPoints.length
+          );
+          this.createMarker(point, adjustedCoords.lat, adjustedCoords.lng);
+        });
+      }
+    });
+  }
+
+  private calculateOffsetPosition(lat: number, lng: number, index: number, total: number): { lat: number, lng: number } {
+    const offset = 0.0002; // Aproximadamente 20 metros
+    const angle = (index / total) * 2 * Math.PI;
+    
+    return {
+      lat: lat + (offset * Math.cos(angle)),
+      lng: lng + (offset * Math.sin(angle))
+    };
+  }
+
+  private createMarker(point: MapPoint, lat: number, lng: number): void {
+    let icon: google.maps.Symbol;
+    
+    if (point.category === 'MONITOR' || point.type === 'MONITOR') {
+      icon = this.mapsService.createMonitorIcon();
+    } else {
+      icon = this.mapsService.createRedMarkerIcon();
+    }
+
+    const marker = new google.maps.Marker({
+      position: { lat, lng },
+      map: this._map,
+      title: point.title || '',
+      icon: icon
+    });
+
+    marker.addListener('click', () => {
+      this.ngZone.run(() => {
+        this.markerClicked.emit(point);
+        
+        // Chamar diretamente o serviço para abrir o sidebar
+        this.mapsService.selectPoint(point);
+        
+        // Emitir evento customizado do DOM também
+        const customEvent = new CustomEvent('monitor-marker-clicked', {
+          detail: { point }
+        });
+        window.dispatchEvent(customEvent);
+      });
+    });
+
+    this.markers.push(marker);
   }
   
   public setMapPoints(points: MapPoint[]): void {
