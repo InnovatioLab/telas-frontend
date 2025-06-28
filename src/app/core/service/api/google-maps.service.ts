@@ -54,12 +54,16 @@ export class GoogleMapsService {
     }) as EventListener);
   }
 
-  public initGoogleMapsApi(): void {
+  public initGoogleMapsApi(forceLoad: boolean = false): void {
     if (typeof google !== 'undefined' && google.maps?.Map) {
       this.apiLoadedSubject.next(true);
       this.apiErrorSubject.next(null);
       this.apiInitializationAttempts = 0;
       this.apiLoadingInProgress = false;
+      return;
+    }
+    
+    if (!forceLoad && !this.shouldLoadGoogleMaps()) {
       return;
     }
     
@@ -78,7 +82,7 @@ export class GoogleMapsService {
       if (!this.apiLoadedSubject.getValue() && this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
         this.removeExistingScripts();
         this.apiLoadingInProgress = false;
-        this.initGoogleMapsApi();
+        this.initGoogleMapsApi(forceLoad);
       } else if (this.apiInitializationAttempts >= this.MAX_INITIALIZATION_ATTEMPTS) {
         this.apiErrorSubject.next('Não foi possível carregar o Google Maps. Tente novamente mais tarde.');
         this.apiLoadingInProgress = false;
@@ -112,7 +116,7 @@ export class GoogleMapsService {
       this.apiErrorSubject.next('Erro ao carregar o Google Maps. Tentando novamente...');
       this.apiLoadingInProgress = false;
       if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
-        setTimeout(() => this.initGoogleMapsApi(), 2000);
+        setTimeout(() => this.initGoogleMapsApi(forceLoad), 2000);
       }
     };
     
@@ -544,7 +548,7 @@ export class GoogleMapsService {
 
   public checkAndReinitializeApi(): void {
     if (!this.apiLoadedSubject.value) {
-      this.initGoogleMapsApi();
+      this.initGoogleMapsApi(true);
     }
   }
 
@@ -597,7 +601,7 @@ export class GoogleMapsService {
         this.apiLoadingPromise = null;
         this.apiErrorSubject.next('Erro ao carregar o Google Maps. Tentando novamente...');
         if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
-          setTimeout(() => this.initGoogleMapsApi(), 2000);
+          setTimeout(() => this.initGoogleMapsApi(true), 2000);
         }
         reject(error);
       };
@@ -644,9 +648,19 @@ export class GoogleMapsService {
 
   checkApiStatus(): boolean {
     if (!this.apiLoadedSubject.value) {
-      this.initGoogleMapsApi();
+      this.initGoogleMapsApi(true);
       return false;
     }
     return true;
+  }
+
+  private shouldLoadGoogleMaps(): boolean {
+    const currentUrl = window.location.pathname;
+    const allowedRoutes = ['/client', '/admin'];
+    
+    return allowedRoutes.some(route => {
+      const exactRoutePattern = new RegExp(`^${route}(\\/)?$`);
+      return exactRoutePattern.test(currentUrl);
+    });
   }
 }

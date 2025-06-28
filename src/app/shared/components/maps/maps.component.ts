@@ -98,7 +98,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public reloadMapApi(): void {
-    this.mapsService.initGoogleMapsApi();
+    this.mapsService.initGoogleMapsApi(true);
   }
   
   public forceReinitialize(): void {
@@ -161,7 +161,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     
-    this.mapsService.initGoogleMapsApi();
+    this.mapsService.initGoogleMapsApi(true);
 
     const subscription = this.mapsService.apiLoaded$.subscribe((loaded: boolean) => {
       if (loaded) {

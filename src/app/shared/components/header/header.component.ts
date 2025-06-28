@@ -254,55 +254,61 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   private initializeUserServices() {
-    this.googleMapsService.initGoogleMapsApi();
-    this.googleMapsService.initSavedPoints();
+    // Só inicializa o Google Maps se estiver nas rotas que precisam dele
+    if (this.isInAllowedRoutes()) {
+      this.googleMapsService.initGoogleMapsApi(true);
+      this.googleMapsService.initSavedPoints();
+    }
     
     if (this.savedPointsSubscription) {
       this.savedPointsSubscription.unsubscribe();
     }
     
-    this.savedPointsSubscription = this.googleMapsService.savedPoints$.subscribe(points => {
-      this.itensSalvos.set(points?.length || 0);
-    });
-    
-    this.searchSubscriptions.add(
-      this.googleMapsService.isSearching$.subscribe(
-        isSearching => this._isSearching = isSearching
-      )
-    );
-    
-    this.searchSubscriptions.add(
-      this.googleMapsService.searchError$.subscribe(
-        error => {
-          if (error) {
-            this.toastService.erro(error);
+    // Só subscreve aos pontos salvos se estiver nas rotas permitidas
+    if (this.isInAllowedRoutes()) {
+      this.savedPointsSubscription = this.googleMapsService.savedPoints$.subscribe(points => {
+        this.itensSalvos.set(points?.length || 0);
+      });
+      
+      this.searchSubscriptions.add(
+        this.googleMapsService.isSearching$.subscribe(
+          isSearching => this._isSearching = isSearching
+        )
+      );
+      
+      this.searchSubscriptions.add(
+        this.googleMapsService.searchError$.subscribe(
+          error => {
+            if (error) {
+              this.toastService.erro(error);
+            }
           }
-        }
-      )
-    );
-    
-    this.searchSubscriptions.add(
-      this.googleMapsService.searchResult$.subscribe(
-        result => {
-          if (result) {
-            this.toastService.sucesso(`Address found: ${result.formattedAddress}`);
-            this.searchText = ''; 
-            
-            this.searchMonitorsService.searchNearestMonitorsByAddress(
-              result.formattedAddress,
-              this.googleMapsService
-            ).then(monitors => {
-              if (monitors && monitors.length > 0) {
-                this.emitMonitorsFoundEvent(monitors);
-                this.toastService.sucesso(`Found ${monitors.length} monitors near this address`);
-              } else {
-                this.toastService.info('No monitors found near this address');
-              }
-            });
+        )
+      );
+      
+      this.searchSubscriptions.add(
+        this.googleMapsService.searchResult$.subscribe(
+          result => {
+            if (result) {
+              this.toastService.sucesso(`Address found: ${result.formattedAddress}`);
+              this.searchText = ''; 
+              
+              this.searchMonitorsService.searchNearestMonitorsByAddress(
+                result.formattedAddress,
+                this.googleMapsService
+              ).then(monitors => {
+                if (monitors && monitors.length > 0) {
+                  this.emitMonitorsFoundEvent(monitors);
+                  this.toastService.sucesso(`Found ${monitors.length} monitors near this address`);
+                } else {
+                  this.toastService.info('No monitors found near this address');
+                }
+              });
+            }
           }
-        }
-      )
-    );
+        )
+      );
+    }
     
     if (this.monitorSearchSubscription) {
       this.monitorSearchSubscription.unsubscribe();
@@ -408,7 +414,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   onInputChange() {
-    if (!this.searchText?.trim()) {
+    if (!this.searchText?.trim() && this.isInAllowedRoutes()) {
       this.googleMapsService.clearCurrentSearch();
     }
   }
@@ -466,6 +472,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   onSearch(): void {
     const searchTextCopy = this.searchText.trim();
     if (!searchTextCopy) return;
+
+    // Só permite busca se estiver nas rotas que precisam do Google Maps
+    if (!this.isInAllowedRoutes()) {
+      this.toastService.aviso('Search is only available in the application area');
+      return;
+    }
 
     const zipCode = searchTextCopy.split('-')[0];
     
