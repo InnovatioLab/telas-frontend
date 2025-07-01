@@ -81,8 +81,8 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   private updateHeaderSidebarStatus(isVisible: boolean): void {
-    const header = document.querySelector('app-header') as any;
-    header?.updateAdminSidebarVisibility?.(isVisible);
+    const header = document.querySelector('app-header');
+    (header as any)?.updateAdminSidebarVisibility?.(isVisible);
   }
   
   private loadMonitorData(): void {
@@ -94,19 +94,37 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe({
         next: (monitors) => {
           this.mapPoints = monitors.map(monitor => {
-            const lat = parseFloat((Math.random() * (41.9 - 41.7) + 41.7).toFixed(6));
-            const lng = parseFloat((Math.random() * (-87.6 - -87.8) + -87.8).toFixed(6));
+            // Usar coordenadas reais do monitor ou do endereço
+            let lat: number;
+            let lng: number;
+            
+            if (monitor.latitude && monitor.longitude) {
+              // Coordenadas diretas do monitor
+              lat = typeof monitor.latitude === 'string' ? parseFloat(monitor.latitude) : monitor.latitude;
+              lng = typeof monitor.longitude === 'string' ? parseFloat(monitor.longitude) : monitor.longitude;
+            } else if (monitor.address?.latitude && monitor.address?.longitude) {
+              // Coordenadas do endereço do monitor
+              lat = typeof monitor.address.latitude === 'string' ? parseFloat(monitor.address.latitude) : monitor.address.latitude;
+              lng = typeof monitor.address.longitude === 'string' ? parseFloat(monitor.address.longitude) : monitor.address.longitude;
+            } else {
+              // Fallback para coordenadas padrão se não houver coordenadas
+              console.warn(`Monitor ${monitor.name || monitor.id} não possui coordenadas válidas`);
+              lat = -3.7327; // Coordenada padrão (Fortaleza)
+              lng = -38.5270;
+            }
+            
             return {
               id: monitor.id,
-              title: monitor.name,
+              title: monitor.name || 'Monitor',
               position: {
                 lat,
                 lng
               },
               latitude: lat,
               longitude: lng,
-              type: 'monitor',
-              description: monitor.locationDescription || 'Monitor location',
+              type: 'MONITOR',
+              category: 'MONITOR',
+              description: monitor.locationDescription || monitor.address?.coordinatesParams || 'Monitor location',
               icon: this.getIconForStatus(monitor.status),
               data: monitor
             };
@@ -161,14 +179,12 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private checkMapInitialization(): void {
-    if (!this.mapsComponent || !this.mapsComponent.isMapReady()) {
-      this.mapsComponent?.forceMapReinitialization();
+    if (!this.mapsComponent?.isMapReady()) {
+      this.mapsComponent?.forceReinitialize();
     }
   }
 }
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
-}
-
 }

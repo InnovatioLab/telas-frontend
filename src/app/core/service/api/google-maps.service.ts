@@ -4,6 +4,8 @@ import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment.interface';
 import { MapPoint } from '../state/map-point.interface';
 import { LoadingService } from '../state/loading.service';
+import { MonitorService } from './monitor.service';
+import { Monitor } from '@app/model/monitors';
 
 export interface AddressSearchResult {
   location: MapPoint;
@@ -44,7 +46,8 @@ export class GoogleMapsService {
   
   constructor(
     @Inject(ENVIRONMENT) private readonly env: Environment,
-    private readonly loadingService: LoadingService
+    private readonly loadingService: LoadingService,
+    private readonly monitorService: MonitorService
   ) {
     window.addEventListener('address-to-geocode', ((e: Event) => {
       const customEvent = e as CustomEvent;
@@ -483,43 +486,44 @@ export class GoogleMapsService {
     this.searchingSubject.next(true);
     
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          const points: MapPoint[] = [];
-          
-          const numPoints = 1;
-          for (let i = 0; i < numPoints; i++) {
-            const adjustedCoords = this.adjustCoordinates(latitude, longitude, i);
+      // Usar o MonitorService para buscar monitores reais
+      this.monitorService.getMonitors().subscribe({
+        next: (monitors: Monitor[]) => {
+          try {
+            const mapPoints: MapPoint[] = monitors
+              .filter((monitor: Monitor) => monitor.latitude && monitor.longitude) // Filtrar apenas monitores com coordenadas
+              .map((monitor: Monitor) => {
+                const lat = typeof monitor.latitude === 'string' ? parseFloat(monitor.latitude) : monitor.latitude;
+                const lng = typeof monitor.longitude === 'string' ? parseFloat(monitor.longitude) : monitor.longitude;
+                
+                return {
+                  id: monitor.id,
+                  latitude: lat,
+                  longitude: lng,
+                  position: { lat, lng },
+                  title: monitor.name ?? `Monitor ${monitor.id}`,
+                  description: monitor.locationDescription ?? monitor.address?.coordinatesParams ?? 'Monitor location',
+                  type: 'MONITOR',
+                  category: 'MONITOR',
+                  data: monitor
+                };
+              });
             
-            points.push({
-              id: `monitor-${i}`,
-              latitude: adjustedCoords.latitude,
-              longitude: adjustedCoords.longitude,
-              title: `Monitor ${i + 1}`,
-              description: `Monitor located at the specified address`,
-              type: 'MONITOR',
-              category: 'MONITOR',
-              data: {
-                id: `id-${i}`,
-                active: true,
-                type: i === 0 ? 'BASIC' : 'PREMIUM',
-                size: i === 0 ? 40 : 55,
-                distanceInKm: 0,
-                latitude: adjustedCoords.latitude,
-                longitude: adjustedCoords.longitude
-              }
-            });
+            this.updateNearestMonitors(mapPoints);
+            this.searchingSubject.next(false);
+            resolve(mapPoints);
+          } catch (error) {
+            this.searchingSubject.next(false);
+            this.searchErrorSubject.next('Error processing nearby points');
+            reject(new Error('Error processing nearby points'));
           }
-          
-          this.updateNearestMonitors(points);
+        },
+        error: (error: any) => {
           this.searchingSubject.next(false);
-          resolve(points);
-        } catch (error) {
-          this.searchingSubject.next(false);
-          this.searchErrorSubject.next('Error processing nearby points');
-          reject(error);
+          this.searchErrorSubject.next('Error loading monitors from API');
+          reject(new Error('Error loading monitors from API'));
         }
-      }, 1000);
+      });
     });
   }
   

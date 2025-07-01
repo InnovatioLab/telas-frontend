@@ -13,7 +13,14 @@ declare global {
   interface WindowEventMap {
     'user-coordinates-updated': CustomEvent;
     'monitors-found': CustomEvent;
+    'monitor-cluster-clicked': CustomEvent;
   }
+}
+
+interface MonitorCluster {
+  position: { lat: number; lng: number };
+  monitors: MapPoint[];
+  count: number;
 }
 
 @Component({
@@ -54,11 +61,14 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   
   private _map: google.maps.Map | null = null;
   private markers: google.maps.Marker[] = [];
+  private clusterMarkers: google.maps.Marker[] = [];
   private readonly subscriptions: Subscription[] = [];
   private _apiLoaded = false;
   private _mapReady = false;
   private markerPositions: google.maps.LatLngLiteral[] = [];
   private markersConfig: { position: google.maps.LatLngLiteral, options: google.maps.MarkerOptions }[] = [];
+  private readonly CLUSTER_DISTANCE_THRESHOLD = 0.0001; // Distância muito pequena para agrupar apenas monitores no mesmo endereço
+  private readonly MIN_ZOOM_FOR_CLUSTERING = 14; // Zoom mínimo para mostrar clusters (14 = mais distante)
   
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -341,6 +351,13 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.mapInitialized.emit(this._map);
       
+      // Adicionar listener para mudanças de zoom
+      this._map.addListener('zoom_changed', () => {
+        if (this._map && this.points && this.points.length > 0) {
+          this.updateMarkersBasedOnZoom();
+        }
+      });
+      
       if (this.points && this.points.length > 0) {
         this.addMapPoints(this.points);
       }
@@ -420,36 +437,15 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this._map) return;
 
     this.clearMarkers();
-
-    // Agrupar pontos por localização
-    const locationGroups = new Map<string, MapPoint[]>();
     
-    points.forEach(point => {
-      const key = `${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`;
-      if (!locationGroups.has(key)) {
-        locationGroups.set(key, []);
-      }
-      locationGroups.get(key)!.push(point);
-    });
-
-    // Processar cada grupo de localização
-    locationGroups.forEach((groupPoints, locationKey) => {
-      if (groupPoints.length === 1) {
-        // Apenas um ponto nesta localização
-        this.createMarker(groupPoints[0], groupPoints[0].latitude, groupPoints[0].longitude);
-      } else {
-        // Múltiplos pontos na mesma localização - recalcular posições
-        groupPoints.forEach((point, index) => {
-          const adjustedCoords = this.calculateOffsetPosition(
-            point.latitude, 
-            point.longitude, 
-            index, 
-            groupPoints.length
-          );
-          this.createMarker(point, adjustedCoords.lat, adjustedCoords.lng);
-        });
-      }
-    });
+    // Verificar zoom atual e decidir se deve usar clustering
+    const currentZoom = this._map.getZoom() || 15;
+    
+    if (currentZoom <= this.MIN_ZOOM_FOR_CLUSTERING) {
+      this.createClusteredMarkers();
+    } else {
+      this.createIndividualMarkers();
+    }
   }
 
   private calculateOffsetPosition(lat: number, lng: number, index: number, total: number): { lat: number, lng: number } {
@@ -512,13 +508,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.markerPositions = this.mapsService.convertToMarkerPositions(this.points);
     
     this.markersConfig = this.points.map((point, index) => {
-      if (!point.icon) {
-        point.icon = this.mapsService.createRedMarkerIcon() as any;
-      }
+      point.icon ??= this.mapsService.createRedMarkerIcon() as any;
       
-      if (!point.id) {
-        point.id = `point-${index}`;
-      }
+      point.id ??= `point-${index}`;
       
       return {
         position: {
@@ -531,12 +523,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   public onMarkerClick(point: MapPoint, event: google.maps.MapMouseEvent): void {
-    if (event && event.domEvent) {
+    if (event?.domEvent) {
       if (event.domEvent instanceof MouseEvent) {
         this.pointClick.emit({ point, event: event.domEvent });
       } else {
-        const clientX = (event.domEvent as any).clientX || 0;
-        const clientY = (event.domEvent as any).clientY || 0;
+        const clientX = (event.domEvent as any)?.clientX ?? 0;
+        const clientY = (event.domEvent as any)?.clientY ?? 0;
         const syntheticEvent = new MouseEvent('click', {
           clientX,
           clientY,
@@ -555,6 +547,186 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.markersConfig = [];
   }
   
+  private updateMarkersBasedOnZoom(): void {
+    if (!this._map || !this.points || this.points.length === 0) return;
+    
+    const currentZoom = this._map.getZoom() || 15;
+    this.clearMarkers();
+    
+    if (currentZoom <= this.MIN_ZOOM_FOR_CLUSTERING) {
+      this.createClusteredMarkers();
+    } else {
+      this.createIndividualMarkers();
+    }
+  }
+
+  private createClusteredMarkers(): void {
+    if (!this._map) return;
+    
+    const clusters = this.createClusters(this.points);
+    
+    clusters.forEach((cluster) => {
+      if (cluster.count === 1) {
+        this.createMarker(cluster.monitors[0], cluster.position.lat, cluster.position.lng);
+      } else {
+        this.createClusterMarker(cluster);
+      }
+    });
+  }
+
+  private createIndividualMarkers(): void {
+    // Agrupar pontos por localização exata para evitar sobreposição
+    const locationGroups = new Map<string, MapPoint[]>();
+    
+    this.points.forEach(point => {
+      const key = `${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`;
+      if (!locationGroups.has(key)) {
+        locationGroups.set(key, []);
+      }
+      locationGroups.get(key)!.push(point);
+    });
+
+    // Processar cada grupo de localização
+    locationGroups.forEach((groupPoints) => {
+      if (groupPoints.length === 1) {
+        // Apenas um monitor nesta localização
+        this.createMarker(groupPoints[0], groupPoints[0].latitude, groupPoints[0].longitude);
+      } else {
+        // Múltiplos monitores na mesma localização - aplicar offset
+        groupPoints.forEach((point, index) => {
+          const offsetPosition = this.calculateOffsetPosition(
+            point.latitude, 
+            point.longitude, 
+            index, 
+            groupPoints.length
+          );
+          this.createMarker(point, offsetPosition.lat, offsetPosition.lng);
+        });
+      }
+    });
+  }
+
+  private createClusters(points: MapPoint[]): MonitorCluster[] {
+    const clusters: MonitorCluster[] = [];
+    const locationGroups = new Map<string, MapPoint[]>();
+    
+    // Agrupar pontos por localização exata (mesmo endereço)
+    points.forEach(point => {
+      const locationKey = `${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`;
+      if (!locationGroups.has(locationKey)) {
+        locationGroups.set(locationKey, []);
+      }
+      locationGroups.get(locationKey)!.push(point);
+    });
+    
+    // Criar clusters para cada grupo de localização
+    locationGroups.forEach((groupPoints, locationKey) => {
+      const [lat, lng] = locationKey.split(',').map(coord => parseFloat(coord));
+      
+      clusters.push({
+        position: { lat, lng },
+        monitors: groupPoints,
+        count: groupPoints.length
+      });
+    });
+    
+    return clusters;
+  }
+
+  private calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const dLat = Math.abs(lat1 - lat2);
+    const dLng = Math.abs(lng1 - lng2);
+    return Math.sqrt(dLat * dLat + dLng * dLng);
+  }
+
+  private createClusterMarker(cluster: MonitorCluster): void {
+    if (!this._map) return;
+    
+    const clusterIcon = this.createClusterIcon(cluster.count);
+    
+    const clusterMarker = new google.maps.Marker({
+      position: cluster.position,
+      map: this._map,
+      title: `${cluster.count} monitores neste local`,
+      icon: clusterIcon,
+      zIndex: 1000
+    });
+    
+    clusterMarker.addListener('click', () => {
+      this.ngZone.run(() => {
+        if (this._map) {
+          const currentZoom = this._map.getZoom() || 15;
+          
+          if (currentZoom < 16) {
+            // Se o zoom ainda não está próximo suficiente, fazer zoom para mostrar os monitores individuais
+            this._map.setZoom(16);
+            this._map.setCenter(cluster.position);
+          } else {
+            // Se já está próximo, emitir evento para mostrar detalhes do primeiro monitor do cluster
+            // ou abrir um popup com a lista de monitores
+            this.showClusterDetails(cluster);
+          }
+        }
+      });
+    });
+    
+    this.clusterMarkers.push(clusterMarker);
+  }
+  
+  private showClusterDetails(cluster: MonitorCluster): void {
+    // Emitir evento customizado com os detalhes do cluster
+    const customEvent = new CustomEvent('monitor-cluster-clicked', {
+      detail: { 
+        cluster,
+        monitors: cluster.monitors,
+        position: cluster.position
+      }
+    });
+    window.dispatchEvent(customEvent);
+    
+    // Por enquanto, selecionar o primeiro monitor como fallback
+    if (cluster.monitors.length > 0) {
+      this.mapsService.selectPoint(cluster.monitors[0]);
+    }
+  }
+
+  private createClusterIcon(count: number): google.maps.Icon {
+    // Criar um ícone SVG personalizado para o cluster com tamanho maior
+    const size = Math.min(50 + (count * 4), 80); // Tamanho base maior: 50px + incremento
+    
+    const svg = `
+      <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sombra -->
+        <circle cx="${size/2 + 3}" cy="${size/2 + 3}" r="${size/2 - 3}" fill="rgba(0,0,0,0.3)"/>
+        <!-- Círculo principal -->
+        <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 3}" fill="#FF6B35" stroke="#FFFFFF" stroke-width="4"/>
+        <!-- Ícone de monitor maior -->
+        <rect x="${size/2 - 8}" y="${size/2 - 10}" width="16" height="10" rx="2" fill="#FFFFFF" opacity="0.9"/>
+        <rect x="${size/2 - 7}" y="${size/2 - 9}" width="14" height="8" rx="1" fill="#FF6B35"/>
+        <!-- Contador maior -->
+        <circle cx="${size/2 + 12}" cy="${size/2 - 12}" r="12" fill="#FFFFFF" stroke="#FF6B35" stroke-width="3"/>
+        <text x="${size/2 + 12}" y="${size/2 - 7}" text-anchor="middle" font-family="Arial, sans-serif" 
+              font-size="14" font-weight="bold" fill="#FF6B35">${count}</text>
+      </svg>
+    `;
+    
+    const svgBlob = new Blob([svg], { type: 'image/svg+xml' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    
+    return {
+      url: svgUrl,
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size/2, size/2)
+    };
+  }
+
+  private clearMarkers(): void {
+    this.markers.forEach(marker => marker.setMap(null));
+    this.markers = [];
+    this.clusterMarkers.forEach(marker => marker.setMap(null));
+    this.clusterMarkers = [];
+  }
+
   private updateMapDimensions(): void {
     if (!this._map) {
       return;
@@ -607,22 +779,5 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       google.maps.event.removeListener(listener);
     });
-  }
-
-  private clearMarkers(): void {
-    this.markers.forEach(marker => marker.setMap(null));
-    this.markers = [];
-  }
-
-  get apiLoaded(): boolean {
-    return this._apiLoaded;
-  }
-  
-  get mapReady(): boolean {
-    return this._mapReady;
-  }
-
-  get map(): google.maps.Map | null {
-    return this._map;
   }
 }

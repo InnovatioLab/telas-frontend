@@ -168,7 +168,8 @@ export class MonitorService {
       locationDescription: monitorResponse.locationDescription || '',
       size: monitorResponse.size || 42.5,
       productId: monitorResponse.productId || `PROD-${monitorResponse.id}`,
-      maxBlocks: monitorResponse.maxBlocks || 12,
+      latitude: monitorResponse.address?.latitude,
+      longitude: monitorResponse.address?.longitude,
       address: monitorResponse.address ? {
         id: monitorResponse.address.id,
         street: monitorResponse.address.street,
@@ -176,7 +177,12 @@ export class MonitorService {
         state: monitorResponse.address.state,
         country: monitorResponse.address.country,
         zipCode: monitorResponse.address.zipCode,
-        complement: monitorResponse.address.complement
+        complement: monitorResponse.address.complement,
+        latitude: monitorResponse.address.latitude,
+        longitude: monitorResponse.address.longitude,
+        coordinatesParams: monitorResponse.address.latitude && monitorResponse.address.longitude 
+          ? `${monitorResponse.address.latitude}, ${monitorResponse.address.longitude}`
+          : undefined
       } : {
         id: '',
         street: '',

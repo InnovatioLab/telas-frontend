@@ -4,7 +4,8 @@ export interface MapPoint {
   description?: string;
   latitude: number;
   longitude: number;
-  icon?: any; // Usando any para aceitar tanto string quanto Icon
+  position?: { lat: number; lng: number };
+  icon?: any;
   data?: any;
   type?: string;
   category?: string;
