@@ -7,6 +7,7 @@
   border-radius: var(--borda-raio-padrao);
   overflow: hidden;
   box-shadow: var(--sombra-padrao);
+  animation: slideIn 0.3s ease-out;
 
   .modal-header {
     display: flex;
@@ -87,84 +88,27 @@
         flex-direction: column;
         gap: 0.5rem;
 
-        &.full-width {
-          grid-column: 1 / -1;
-        }
-
         label {
-          font-weight: var(--fonte-peso-medio);
+          font-weight: 600;
           color: var(--cor-cinza-escuro);
-          font-size: var(--fonte-tamanho-medio);
+          font-size: 0.875rem;
         }
 
-        .help-text {
-          font-size: var(--fonte-tamanho-pequeno);
-          color: var(--cor-legenda);
-          font-style: italic;
+        input,
+        p-inputnumber,
+        p-dropdown {
+          width: 100%;
         }
 
         .error-message {
           color: var(--cor-erro);
-          font-size: var(--fonte-tamanho-pequeno);
+          font-size: 0.75rem;
           margin-top: 0.25rem;
         }
-
-        .zipcode-input-container {
-          position: relative;
-          display: flex;
-          align-items: center;
-
-          .loading-icon {
-            position: absolute;
-            right: 0.75rem;
-            color: var(--cor-primaria);
-            font-size: 1rem;
-            animation: spin 1s linear infinite;
-          }
-        }
-
-        :host ::ng-deep {
-          .p-inputtext,
-          .p-dropdown,
-          .p-inputnumber,
-          .p-inputtextarea {
-            width: 100%;
-            border: 1px solid var(--cor-cinza-medio);
-            border-radius: var(--borda-raio-pequeno);
-            padding: 0.75rem;
-            font-size: var(--fonte-tamanho-medio);
-            transition: var(--transicao-padrao);
-
-            &:focus {
-              border-color: var(--cor-primaria);
-              box-shadow: 0 0 0 2px var(--cor-primaria-clara);
-              outline: none;
-            }
-
-            &.ng-invalid.ng-touched {
-              border-color: var(--cor-erro);
-            }
-          }
-
-          .p-dropdown {
-            .p-dropdown-trigger {
-              color: var(--cor-cinza-escuro);
-            }
-          }
-
-          .p-inputswitch {
-            .p-inputswitch-slider {
-              background-color: var(--cor-cinza-medio);
-              
-              &:before {
-                background-color: var(--cor-branca);
-              }
-            }
-
-            &.p-inputswitch-checked .p-inputswitch-slider {
-              background-color: var(--cor-primaria);
-            }
-          }
+        
+        &.full-width {
+          flex: 1;
+          width: 100%;
         }
       }
 
@@ -232,7 +176,6 @@
   }
 }
 
-// Responsividade
 @media (max-width: 768px) {
   .create-monitor-modal {
     .modal-header {
@@ -267,11 +210,6 @@
   }
 }
 
-// Animações
-.create-monitor-modal {
-  animation: slideIn 0.3s ease-out;
-}
-
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -290,4 +228,4 @@
   to {
     transform: rotate(360deg);
   }
-} 
+}

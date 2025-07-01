@@ -181,7 +181,6 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onMarkerClick(point: MapPoint): void {
-    // Abrir o sidebar de detalhes do monitor
     this.googleMapsService.selectPoint(point);
     
     if (this.map) {
@@ -198,7 +197,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private checkMapInitialization(): void {
-    if (!this.mapsComponent || !this.mapsComponent.isMapReady()) {
+    if (!this.mapsComponent?.isMapReady()) {
       this.mapsComponent?.forceReinitialize();
     }
   }

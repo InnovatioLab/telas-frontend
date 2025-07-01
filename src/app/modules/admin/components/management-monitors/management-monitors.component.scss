@@ -115,27 +115,6 @@
     }
   }
 
-  .monitor-form {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem 0;
-
-    .p-field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-
-      label {
-        font-weight: 500;
-      }
-
-      input,
-      p-dropdown {
-        width: 100%;
-      }
-    }
-  }
-
   .text-center {
     text-align: center;
   }
@@ -198,7 +177,6 @@
     }
   }
 
-  // Modal de Ads
   .ads-management {
     .ads-header {
       padding-bottom: 1rem;

@@ -3,7 +3,6 @@ import { DisplayType } from "@app/model/enums/display-type.enum";
 
 export interface CreateMonitorRequestDto {
   size: number;
-  maxBlocks: number;
   address: AddressRequestDTO;
 }
 

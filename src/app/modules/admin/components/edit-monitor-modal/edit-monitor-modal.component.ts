@@ -1,29 +1,30 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { Monitor } from '@app/model/monitors';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
 import { debounceTime, distinctUntilChanged, switchMap, Observable, of } from 'rxjs';
 import { AddressData } from '@app/model/dto/request/address-data-request';
 
 @Component({
-  selector: 'app-create-monitor-modal',
+  selector: 'app-edit-monitor-modal',
   standalone: true,
   imports: [
     CommonModule,
     PrimengModule,
     ReactiveFormsModule
   ],
-  templateUrl: './create-monitor-modal.component.html',
-  styleUrls: ['./create-monitor-modal.component.scss']
+  templateUrl: './edit-monitor-modal.component.html',
+  styleUrls: ['./edit-monitor-modal.component.scss']
 })
-export class CreateMonitorModalComponent {
+export class EditMonitorModalComponent implements OnInit, OnChanges {
+  @Input() monitor: Monitor | null = null;
   @Output() close = new EventEmitter<void>();
-  @Output() monitorCreated = new EventEmitter<CreateMonitorRequestDto>();
+  @Output() monitorUpdated = new EventEmitter<{ id: string; data: CreateMonitorRequestDto }>();
 
   monitorForm: FormGroup;
-
   loadingZipCode = false;
 
   constructor(
@@ -41,8 +42,41 @@ export class CreateMonitorModalComponent {
         complement: ['', [Validators.maxLength(100)]]
       })
     });
+  }
 
+  ngOnInit(): void {
     this.setupZipCodeSearch();
+    if (this.monitor) {
+      this.populateForm();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['monitor'] && this.monitor && this.monitorForm) {
+      this.populateForm();
+    }
+  }
+
+  private populateForm(): void {
+    if (!this.monitor) return;
+
+    console.log('Populating form with monitor:', this.monitor);
+
+    const formData = {
+      size: this.monitor.size || 0,
+      address: {
+        street: this.monitor.address?.street || '',
+        zipCode: this.monitor.address?.zipCode || '',
+        city: this.monitor.address?.city || '',
+        state: this.monitor.address?.state || '',
+        country: this.monitor.address?.country || 'US',
+        complement: this.monitor.address?.complement || ''
+      }
+    };
+
+    console.log('Form data to patch:', formData);
+    this.monitorForm.patchValue(formData);
+    console.log('Form values after patch:', this.monitorForm.value);
   }
 
   private setupZipCodeSearch(): void {
@@ -91,7 +125,7 @@ export class CreateMonitorModalComponent {
   }
 
   onSubmit(): void {
-    if (this.monitorForm.valid) {
+    if (this.monitorForm.valid && this.monitor) {
       const formValue = this.monitorForm.value;
       const addressValue = formValue.address;
       
@@ -107,7 +141,10 @@ export class CreateMonitorModalComponent {
         }
       };
 
-      this.monitorCreated.emit(monitorRequest);
+      this.monitorUpdated.emit({
+        id: this.monitor.id,
+        data: monitorRequest
+      });
       this.closeModal();
     }
   }
@@ -139,4 +176,4 @@ export class CreateMonitorModalComponent {
     }
     return '';
   }
-} 
+}

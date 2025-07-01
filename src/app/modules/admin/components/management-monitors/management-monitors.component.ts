@@ -9,6 +9,7 @@ import { Monitor } from '@app/model/monitors';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { CreateMonitorModalComponent } from '../create-monitor-modal/create-monitor-modal.component';
+import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-modal.component';
 import { MessageService } from 'primeng/api';
 import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
 
@@ -21,6 +22,7 @@ import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
     FormsModule,
     IconsModule,
     CreateMonitorModalComponent,
+    EditMonitorModalComponent,
     IconTvDisplayComponent
   ],
   templateUrl: './management-monitors.component.html',
@@ -28,12 +30,13 @@ import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
 })
 export class ManagementMonitorsComponent implements OnInit {
   @ViewChild('createMonitorModal') createMonitorModal!: CreateMonitorModalComponent;
+  @ViewChild('editMonitorModal') editMonitorModal!: EditMonitorModalComponent;
   monitors: Monitor[] = [];
-  selectedMonitor: Monitor | null = null;
   selectedMonitorForAds: Monitor | null = null;
+  selectedMonitorForEdit: Monitor | null = null;
   loading = false;
-  dialogVisible = false;
   createMonitorModalVisible = false;
+  editMonitorModalVisible = false;
   adsModalVisible = false;
   searchTerm = '';
   totalRecords = 0;
@@ -138,13 +141,13 @@ export class ManagementMonitorsComponent implements OnInit {
   createMonitor(monitorRequest: CreateMonitorRequestDto): void {
     this.monitorService.createMonitor(monitorRequest).subscribe({
       next: (newMonitor) => {
-        this.monitors = [...this.monitors, newMonitor];
         this.closeModal();
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
           detail: 'Monitor criado com sucesso!'
         });
+        this.loadMonitors();
       },
       error: (error) => {
         this.messageService.add({
@@ -169,47 +172,42 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   onSelectMonitor(monitor: Monitor): void {
-    this.selectedMonitor = { ...monitor };
-    this.dialogVisible = true;
+    this.selectedMonitorForEdit = { ...monitor };
+    this.editMonitorModalVisible = true;
   }
 
-  updateMonitor(monitor: Monitor): void {
-    if (!monitor) return;
-    
+  updateMonitor(updateData: { id: string; data: CreateMonitorRequestDto }): void {
     this.loading = true;
     
-    if (monitor.id) {
-      const monitorRequest: CreateMonitorRequestDto = {
-        size: monitor.size,
-        maxBlocks: monitor.maxBlocks,
-        address: {
-          complement: monitor.address.complement || '',
-          street: monitor.address.street,
-          city: monitor.address.city,
-          state: monitor.address.state,
-          country: monitor.address.country || 'US',
-          zipCode: monitor.address.zipCode
-        }
-      };
+    this.monitorService.updateMonitor(updateData.id, updateData.data).subscribe({
+      next: (updatedMonitor) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Monitor atualizado com sucesso!'
+        });
+        this.onEditMonitorModalClose();
+        this.loadMonitors();
+      },
+      error: (error) => {
+        console.error('Error updating monitor:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao atualizar monitor. Verifique os dados e tente novamente.'
+        });
+        this.loading = false;
+      }
+    });
+  }
 
-      this.monitorService.updateMonitor(monitor.id, monitorRequest).subscribe({
-        next: (updatedMonitor) => {
-          const index = this.monitors.findIndex(m => m.id === updatedMonitor.id);
-          if (index !== -1) {
-            this.monitors[index] = updatedMonitor;
-          }
-          this.toastService.sucesso('Monitor updated successfully');
-          this.dialogVisible = false;
-          this.selectedMonitor = null;
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error updating monitor:', error);
-          this.toastService.erro('Error updating monitor');
-          this.loading = false;
-        }
-      });
-    }
+  onEditMonitorModalClose(): void {
+    this.editMonitorModalVisible = false;
+    this.selectedMonitorForEdit = null;
+  }
+
+  onMonitorUpdated(updateData: { id: string; data: CreateMonitorRequestDto }): void {
+    this.updateMonitor(updateData);
   }
 
   deleteMonitor(id: string): void {
@@ -255,11 +253,9 @@ export class ManagementMonitorsComponent implements OnInit {
       this.selectedMonitorForAds.adLinks = [];
     }
 
-    // Verifica se o link já existe
     if (!this.selectedMonitorForAds.adLinks.includes(this.newAdLink.trim())) {
       this.selectedMonitorForAds.adLinks.push(this.newAdLink.trim());
       
-      // Atualiza o monitor na lista principal
       const index = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
       if (index !== -1 && this.selectedMonitorForAds) {
         this.monitors[index] = { ...this.selectedMonitorForAds };
@@ -280,7 +276,6 @@ export class ManagementMonitorsComponent implements OnInit {
     if (confirm('Are you sure you want to remove this ad link?')) {
       this.selectedMonitorForAds.adLinks.splice(index, 1);
       
-      // Atualiza o monitor na lista principal
       const monitorIndex = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
       if (monitorIndex !== -1 && this.selectedMonitorForAds) {
         this.monitors[monitorIndex] = { ...this.selectedMonitorForAds };
@@ -295,12 +290,10 @@ export class ManagementMonitorsComponent implements OnInit {
       return 'N/A';
     }
 
-    // Primeiro tenta coordinatesParams
     if (monitor.address.coordinatesParams) {
       return monitor.address.coordinatesParams;
     }
 
-    // Se não tiver coordinatesParams, monta o endereço manualmente
     const addressParts = [];
     
     if (monitor.address.street) {
