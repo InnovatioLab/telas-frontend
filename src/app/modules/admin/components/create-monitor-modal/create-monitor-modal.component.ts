@@ -94,17 +94,18 @@ export class CreateMonitorModalComponent {
   onSubmit(): void {
     if (this.monitorForm.valid) {
       const formValue = this.monitorForm.value;
+      const addressValue = formValue.address;
       
       const monitorRequest: CreateMonitorRequestDto = {
         size: formValue.size,
         maxBlocks: formValue.maxBlocks,
         address: {
-          street: formValue.street,
-          city: formValue.city,
-          state: formValue.state,
-          country: formValue.country,
-          zipCode: formValue.zipCode,
-          complement: formValue.complement || null
+          street: addressValue.street,
+          city: addressValue.city,
+          state: addressValue.state,
+          country: addressValue.country,
+          zipCode: addressValue.zipCode,
+          complement: addressValue.complement ?? null
         }
       };
 

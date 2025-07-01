@@ -13,7 +13,11 @@
                 [(ngModel)]="searchTerm"
                 (keyup.enter)="onSearch()" />
             </span>
-            <p-button label="Create Monitor" icon="pi pi-plus" (click)="openCreateMonitorModal()"></p-button>
+            <p-button 
+              label="Create Monitor" 
+              icon="pi pi-plus" 
+              (click)="openCreateMonitorModal()"
+              onKeyDown="openCreateMonitorModal()"></p-button>
           </div>
       </div>
     </p-card>
@@ -36,35 +40,41 @@
       [sortOrder]="currentFilters?.sortDir === 'asc' ? 1 : -1">
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
-          <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-          <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
-          <th pSortableColumn="lastUpdate">Last Update <p-sortIcon field="lastUpdate"></p-sortIcon></th>
-          <th>Actions</th>
+          <th scope="col">Name</th>
+          <th scope="col" pSortableColumn="active">Status <p-sortIcon field="active"></p-sortIcon></th>
+          <th scope="col">Address</th>
+          <th scope="col">Actions</th>
         </tr>
       </ng-template>
       
       <ng-template pTemplate="body" let-monitor>
         <tr>
-          <td>{{monitor.id}}</td>
-          <td>{{monitor.name}}</td>
+          <td>{{monitor.name || 'Monitor ' + monitor.id.substring(0, 8)}}</td>
           <td>
-            <p-badge [value]="monitor.status" [severity]="monitor.status === 'active' ? 'success' : 'danger'"></p-badge>
+            <p-badge [value]="monitor.active ? 'Active' : 'Inactive'" [severity]="monitor.active ? 'success' : 'danger'"></p-badge>
           </td>
-          <td>{{monitor.lastUpdate | date:'medium'}}</td>
+          <td>{{getMonitorAddress(monitor)}}</td>
           <td>
             <div class="action-buttons">
+              <button pButton pRipple class="p-button-rounded p-button-info p-button-text custom-ads-button" 
+                      (click)="openAdsModal(monitor)"
+                      pTooltip="Manage Ads">
+                <app-icon-tv-display class="custom-icon"></app-icon-tv-display>
+                <span class="ads-badge" *ngIf="monitor.adLinks && monitor.adLinks.length > 0">{{monitor.adLinks.length}}</span>
+              </button>
               <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-text" 
-                      (click)="onSelectMonitor(monitor)"></button>
+                      (click)="onSelectMonitor(monitor)"
+                      pTooltip="Edit Monitor"></button>
               <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
-                      (click)="deleteMonitor(monitor.id)"></button>
+                      (click)="deleteMonitor(monitor.id)"
+                      pTooltip="Delete Monitor"></button>
             </div>
           </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5" class="text-center">No monitors found.</td>
+          <td colspan="4" class="text-center">No monitors found.</td>
         </tr>
       </ng-template>
     </p-table>
@@ -172,6 +182,67 @@
     </div>
     <ng-template pTemplate="footer">
       <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="updateMonitor(selectedMonitor)"></button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Modal de gerenciamento de Ads -->
+  <p-dialog 
+    header="Manage Monitor Ads" 
+    [(visible)]="adsModalVisible" 
+    [style]="{width: '70vw', maxWidth: '800px'}" 
+    [modal]="true"
+    [closeOnEscape]="true"
+    [dismissableMask]="true">
+    
+    <div class="ads-management" *ngIf="selectedMonitorForAds">
+      <div class="ads-header">
+        <h4>Monitor: {{selectedMonitorForAds.name || 'Monitor ' + selectedMonitorForAds.id.substring(0, 8)}}</h4>
+        <p>Address: {{selectedMonitorForAds.address?.coordinatesParams || 'N/A'}}</p>
+      </div>
+      
+      <div class="ads-content">
+        <div class="current-ads" *ngIf="selectedMonitorForAds.adLinks && selectedMonitorForAds.adLinks.length > 0">
+          <h5>Current Ad Links ({{selectedMonitorForAds.adLinks.length}})</h5>
+          <div class="ad-list">
+            <div class="ad-item" *ngFor="let adLink of selectedMonitorForAds.adLinks; let i = index">
+              <div class="ad-info">
+                <span class="ad-index">{{i + 1}}.</span>
+                <span class="ad-link">{{adLink}}</span>
+              </div>
+              <button pButton pRipple icon="pi pi-trash" 
+                      class="p-button-rounded p-button-danger p-button-text p-button-sm"
+                      (click)="removeAdLink(i)"
+                      pTooltip="Remove Ad Link"></button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="no-ads" *ngIf="!selectedMonitorForAds.adLinks || selectedMonitorForAds.adLinks.length === 0">
+          <i class="pi pi-info-circle"></i>
+          <span>No ad links configured for this monitor.</span>
+        </div>
+        
+        <div class="add-ad-section">
+          <h5>Add New Ad Link</h5>
+          <div class="add-ad-form">
+            <input type="text" 
+                   pInputText 
+                   [(ngModel)]="newAdLink" 
+                   placeholder="Enter ad link URL"
+                   class="ad-input" />
+            <button pButton pRipple 
+                    label="Add" 
+                    icon="pi pi-plus" 
+                    (click)="addAdLink()"
+                    [disabled]="!newAdLink || newAdLink.trim().length === 0"
+                    class="add-button"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Close" icon="pi pi-times" class="p-button-text" (click)="closeAdsModal()"></button>
     </ng-template>
   </p-dialog>
 </div>

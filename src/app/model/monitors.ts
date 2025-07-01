@@ -10,10 +10,10 @@ export interface Monitor {
   id: string;
   active: boolean;
   type: MonitorType;
-  locationDescription: string;
+  locationDescription?: string;
   size: number;
-  productId: string;
-  maxBlocks: number;
+  productId?: string;
+  maxBlocks?: number;
   address: Address;
   status?: DefaultStatus;
   lastUpdate?: Date;
@@ -21,6 +21,9 @@ export interface Monitor {
   updatedAt?: Date;
   name?: string;
   location?: string;
+  latitude?: number;
+  longitude?: number;
+  adLinks?: string[];
 }
 
 export interface MonitorAd {

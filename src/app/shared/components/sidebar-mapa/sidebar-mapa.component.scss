@@ -25,6 +25,17 @@
         padding: 0;
         background: var(--cor-branca);
         border-radius: 0 0 16px 16px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        
+        
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        
+        &::-webkit-scrollbar {
+          display: none;
+        }
       }
     }
   }
@@ -65,6 +76,17 @@
   
   .ponto-detalhes {
     padding: 2rem;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    
+    /* Oculta a barra de scroll mas mantém a funcionalidade */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    
+    &::-webkit-scrollbar {
+      display: none; /* WebKit browsers */
+    }
     
     .ponto-titulo {
       font-size: 1.75rem;
@@ -136,6 +158,18 @@
       flex-direction: column;
       gap: 2rem;
       margin-bottom: 2.5rem;
+      max-height: 60vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 0.5rem;
+      
+      /* Oculta a barra de scroll mas mantém a funcionalidade */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* Internet Explorer 10+ */
+      
+      &::-webkit-scrollbar {
+        display: none; /* WebKit browsers */
+      }
       
       .info-grupo {
         display: flex;
@@ -260,6 +294,7 @@
     
     .ponto-detalhes {
       padding: 1.5rem;
+      max-height: calc(100vh - 120px);
       
       .street-view-container {
         height: 300px;
@@ -267,6 +302,10 @@
       
       .ponto-titulo {
         font-size: 1.5rem;
+      }
+      
+      .ponto-info {
+        max-height: 50vh;
       }
     }
   }
@@ -278,9 +317,14 @@
     
     .ponto-detalhes {
       padding: 1rem;
+      max-height: calc(100vh - 100px);
       
       .street-view-container {
         height: 250px;
+      }
+      
+      .ponto-info {
+        max-height: 40vh;
       }
       
       .acoes-container {
