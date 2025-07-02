@@ -9,4 +9,5 @@ export interface MapPoint {
   data?: any;
   type?: string;
   category?: string;
+  hasAvailableSlots?: boolean;
 }

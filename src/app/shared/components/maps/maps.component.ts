@@ -67,8 +67,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   private _mapReady = false;
   private markerPositions: google.maps.LatLngLiteral[] = [];
   private markersConfig: { position: google.maps.LatLngLiteral, options: google.maps.MarkerOptions }[] = [];
-  private readonly CLUSTER_DISTANCE_THRESHOLD = 0.0001; // Distância muito pequena para agrupar apenas monitores no mesmo endereço
-  private readonly MIN_ZOOM_FOR_CLUSTERING = 14; // Zoom mínimo para mostrar clusters (14 = mais distante)
+  private readonly CLUSTER_DISTANCE_THRESHOLD = 0.0001;
+  private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
   
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -262,28 +262,24 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     window.addEventListener('admin-menu-pin-changed', () => {
-      const isMenuFixed = document.body.classList.contains('menu-fixed');
       setTimeout(() => {
         this.updateMapDimensions();
       }, 300);
     });
 
-    window.addEventListener('admin-sidebar-pin-changed', (event: any) => {
-      const isPinned = event.detail?.pinned;
+    window.addEventListener('admin-sidebar-pin-changed', () => {
       setTimeout(() => {
         this.updateMapDimensions();
       }, 300);
     });
 
     window.addEventListener('admin-menu-loaded', () => {
-      const isMenuFixed = document.body.classList.contains('menu-fixed');
       setTimeout(() => {
         this.updateMapDimensions();
       }, 300);
     });
 
     window.addEventListener('admin-menu-closed', () => {
-      const isMenuFixed = document.body.classList.contains('menu-fixed');
       setTimeout(() => {
         this.updateMapDimensions();
       }, 300);
@@ -351,7 +347,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.mapInitialized.emit(this._map);
       
-      // Adicionar listener para mudanças de zoom
       this._map.addListener('zoom_changed', () => {
         if (this._map && this.points && this.points.length > 0) {
           this.updateMarkersBasedOnZoom();
@@ -369,6 +364,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }, 200);
     } catch (error) {
+      console.error('Error initializing map:', error);
       this._apiLoaded = false;
       this._mapReady = false;
     }
@@ -420,7 +416,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       const savedData = localStorage.getItem('user_coordinates');
       if (savedData) {
         const parsed = JSON.parse(savedData);
-        if (parsed && parsed.latitude && parsed.longitude) {
+        if (parsed?.latitude && parsed?.longitude) {
           return {
             latitude: parsed.latitude,
             longitude: parsed.longitude
@@ -438,7 +434,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.clearMarkers();
     
-    // Verificar zoom atual e decidir se deve usar clustering
     const currentZoom = this._map.getZoom() || 15;
     
     if (currentZoom <= this.MIN_ZOOM_FOR_CLUSTERING) {
@@ -449,7 +444,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private calculateOffsetPosition(lat: number, lng: number, index: number, total: number): { lat: number, lng: number } {
-    const offset = 0.0002; // Aproximadamente 20 metros
+    const offset = 0.0002;
     const angle = (index / total) * 2 * Math.PI;
     
     return {
@@ -462,7 +457,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     let icon: google.maps.Symbol;
     
     if (point.category === 'MONITOR' || point.type === 'MONITOR') {
-      icon = this.mapsService.createMonitorIcon();
+      icon = this.mapsService.createMonitorIcon(point.hasAvailableSlots);
     } else {
       icon = this.mapsService.createRedMarkerIcon();
     }
@@ -478,10 +473,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ngZone.run(() => {
         this.markerClicked.emit(point);
         
-        // Chamar diretamente o serviço para abrir o sidebar
         this.mapsService.selectPoint(point);
         
-        // Emitir evento customizado do DOM também
         const customEvent = new CustomEvent('monitor-marker-clicked', {
           detail: { point }
         });
@@ -575,7 +568,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private createIndividualMarkers(): void {
-    // Agrupar pontos por localização exata para evitar sobreposição
     const locationGroups = new Map<string, MapPoint[]>();
     
     this.points.forEach(point => {
@@ -583,16 +575,16 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!locationGroups.has(key)) {
         locationGroups.set(key, []);
       }
-      locationGroups.get(key)!.push(point);
+      const group = locationGroups.get(key);
+      if (group) {
+        group.push(point);
+      }
     });
 
-    // Processar cada grupo de localização
     locationGroups.forEach((groupPoints) => {
       if (groupPoints.length === 1) {
-        // Apenas um monitor nesta localização
         this.createMarker(groupPoints[0], groupPoints[0].latitude, groupPoints[0].longitude);
       } else {
-        // Múltiplos monitores na mesma localização - aplicar offset
         groupPoints.forEach((point, index) => {
           const offsetPosition = this.calculateOffsetPosition(
             point.latitude, 
@@ -610,16 +602,17 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     const clusters: MonitorCluster[] = [];
     const locationGroups = new Map<string, MapPoint[]>();
     
-    // Agrupar pontos por localização exata (mesmo endereço)
     points.forEach(point => {
       const locationKey = `${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`;
       if (!locationGroups.has(locationKey)) {
         locationGroups.set(locationKey, []);
       }
-      locationGroups.get(locationKey)!.push(point);
+      const group = locationGroups.get(locationKey);
+      if (group) {
+        group.push(point);
+      }
     });
     
-    // Criar clusters para cada grupo de localização
     locationGroups.forEach((groupPoints, locationKey) => {
       const [lat, lng] = locationKey.split(',').map(coord => parseFloat(coord));
       
@@ -642,7 +635,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   private createClusterMarker(cluster: MonitorCluster): void {
     if (!this._map) return;
     
-    const clusterIcon = this.createClusterIcon(cluster.count);
+    const clusterIcon = this.createClusterIcon(cluster.count, cluster.monitors);
     
     const clusterMarker = new google.maps.Marker({
       position: cluster.position,
@@ -658,12 +651,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
           const currentZoom = this._map.getZoom() || 15;
           
           if (currentZoom < 16) {
-            // Se o zoom ainda não está próximo suficiente, fazer zoom para mostrar os monitores individuais
             this._map.setZoom(16);
             this._map.setCenter(cluster.position);
           } else {
-            // Se já está próximo, emitir evento para mostrar detalhes do primeiro monitor do cluster
-            // ou abrir um popup com a lista de monitores
             this.showClusterDetails(cluster);
           }
         }
@@ -674,7 +664,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private showClusterDetails(cluster: MonitorCluster): void {
-    // Emitir evento customizado com os detalhes do cluster
     const customEvent = new CustomEvent('monitor-cluster-clicked', {
       detail: { 
         cluster,
@@ -684,29 +673,31 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     window.dispatchEvent(customEvent);
     
-    // Por enquanto, selecionar o primeiro monitor como fallback
     if (cluster.monitors.length > 0) {
       this.mapsService.selectPoint(cluster.monitors[0]);
     }
   }
 
-  private createClusterIcon(count: number): google.maps.Icon {
-    // Criar um ícone SVG personalizado para o cluster com tamanho maior
-    const size = Math.min(50 + (count * 4), 80); // Tamanho base maior: 50px + incremento
+  private createClusterIcon(count: number, monitors: MapPoint[]): google.maps.Icon {
+    const size = Math.min(50 + (count * 4), 80);
+    
+    const fillColor = '#232F3E';
     
     const svg = `
       <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
         <!-- Sombra -->
-        <circle cx="${size/2 + 3}" cy="${size/2 + 3}" r="${size/2 - 3}" fill="rgba(0,0,0,0.3)"/>
+        <circle cx="${size/2 + 2}" cy="${size/2 + 2}" r="${size/2 - 2}" fill="rgba(0,0,0,0.2)"/>
         <!-- Círculo principal -->
-        <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 3}" fill="#FF6B35" stroke="#FFFFFF" stroke-width="4"/>
-        <!-- Ícone de monitor maior -->
-        <rect x="${size/2 - 8}" y="${size/2 - 10}" width="16" height="10" rx="2" fill="#FFFFFF" opacity="0.9"/>
-        <rect x="${size/2 - 7}" y="${size/2 - 9}" width="14" height="8" rx="1" fill="#FF6B35"/>
-        <!-- Contador maior -->
-        <circle cx="${size/2 + 12}" cy="${size/2 - 12}" r="12" fill="#FFFFFF" stroke="#FF6B35" stroke-width="3"/>
-        <text x="${size/2 + 12}" y="${size/2 - 7}" text-anchor="middle" font-family="Arial, sans-serif" 
-              font-size="14" font-weight="bold" fill="#FF6B35">${count}</text>
+        <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 2}" fill="${fillColor}" stroke="#FFFFFF" stroke-width="3"/>
+        <!-- Ícone de TV/Monitor (mesmo design do IconTvDisplayComponent) -->
+        <g transform="translate(${size/2 - 8}, ${size/2 - 8}) scale(0.67)">
+          <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17Z" fill="#FFFFFF"/>
+          <path d="M6 7H18V15H6V7Z" fill="#FFFFFF"/>
+        </g>
+        <!-- Badge contador -->
+        <circle cx="${size/2 + 10}" cy="${size/2 - 10}" r="10" fill="#FFFFFF" stroke="${fillColor}" stroke-width="2"/>
+        <text x="${size/2 + 10}" y="${size/2 - 6}" text-anchor="middle" font-family="Arial, sans-serif" 
+              font-size="12" font-weight="bold" fill="${fillColor}">${count}</text>
       </svg>
     `;
     
