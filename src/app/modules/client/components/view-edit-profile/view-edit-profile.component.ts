@@ -92,50 +92,54 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Carregar dados sempre da API
+    this.loadUserProfile();
+    
+    // Manter subscription para atualizações do service (se necessário)
     this.clientService.clientAtual$.subscribe((client) => {
-      if (client) {
+      if (client && !this.loading) {
         this.clientData = { ...client };
         this.populateForm(this.clientData);
         this.cdr.markForCheck();
       }
     });
-    this.loadUserProfile();
   }
 
   loadUserProfile(): void {
     this.loading = true;
     
+    // Buscar apenas o ID do localStorage
     const userDataStr = localStorage.getItem('telas_token_user');
     
     if (userDataStr) {
       try {
-        this.clientData = JSON.parse(userDataStr);
-        this.populateForm(this.clientData);
-        this.loading = false;
+        const userData = JSON.parse(userDataStr);
+        const userId = userData.id;
+        
+        if (userId) {
+          // Buscar dados atualizados da API usando o ID
+          this.clientService.buscarClient<Client>(userId).subscribe({
+            next: (client) => {
+              this.clientData = client;
+              this.populateForm(client);
+              this.loading = false;
+            },
+            error: () => {
+              this.loading = false;
+              this.toastService.erro('Could not load profile data');
+            }
+          });
+        } else {
+          this.loading = false;
+          this.toastService.erro('User ID not found');
+        }
       } catch (error) {
         this.loading = false;
         this.toastService.erro('Error loading profile data');
       }
     } else {
-      const userId = localStorage.getItem('telas_token_user') ? 
-        JSON.parse(localStorage.getItem('telas_token_user')).id : null;
-      
-      if (userId) {
-        this.clientService.buscarClient<Client>(userId).subscribe({
-          next: (client) => {
-            this.clientData = client;
-            this.populateForm(client);
-            this.loading = false;
-          },
-          error: () => {
-            this.loading = false;
-            this.toastService.erro('Could not load profile data');
-          }
-        });
-      } else {
-        this.loading = false;
-        this.toastService.erro('User ID not found');
-      }
+      this.loading = false;
+      this.toastService.erro('User data not found');
     }
   }
 
@@ -173,7 +177,7 @@ export class ViewEditProfileComponent implements OnInit {
       complement: client.addresses && client.addresses.length > 0 ? client.addresses[0].complement || '' : '',
     };
 
-    this.profileForm.patchValue(formData);
+    this.profileForm.patchValue(formData, { emitEvent: false });
     
     while (this.socialMediaArray.length !== 0) {
       this.socialMediaArray.removeAt(0);
@@ -207,16 +211,16 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   addSocialMediaWithValues(platform: string, url: string): void {
-    this.socialMediaArray.push(
-      this.fb.group({
-        platform: [platform, Validators.required], 
-        url: [url, [
-          Validators.required,
-          Validators.maxLength(200), 
-          Validators.pattern(/^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/)
-        ]],
-      })
-    );
+    const socialMediaGroup = this.fb.group({
+      platform: [platform, Validators.required], 
+      url: [url, [
+        Validators.required,
+        Validators.maxLength(200), 
+        Validators.pattern(/^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/)
+      ]],
+    });
+    
+    this.socialMediaArray.push(socialMediaGroup, { emitEvent: false });
   }
 
   disableForm(): void {
@@ -258,17 +262,24 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   saveProfile(): void {
-    if (this.profileForm.invalid) {
-      this.toastService.aviso('Please correct the errors in the form before saving');
-      return;
-    }
-    
     this.loading = true;
     
     const formValues = this.profileForm.getRawValue();
     
-    const normalizedPhone = formValues.phone?.replace(/\D/g, '') || '';
-    const formattedPhone = normalizedPhone;
+    // Remover máscara do telefone e garantir tamanho correto (10-11 dígitos)
+    let normalizedPhone = formValues.phone?.replace(/\D/g, '') || '';
+    
+    // Se o telefone tem mais de 11 dígitos, pegar apenas os últimos 11
+    if (normalizedPhone.length > 11) {
+      normalizedPhone = normalizedPhone.slice(-11);
+    }
+    
+    // Se o telefone tem menos de 10 dígitos, não enviar
+    if (normalizedPhone.length < 10) {
+      this.toastService.erro('Phone number must be between 10 and 11 digits');
+      this.loading = false;
+      return;
+    }
     
     const socialMedia: Record<string, string> = {};
     if (formValues.socialMedia && Array.isArray(formValues.socialMedia) && formValues.socialMedia.length > 0) {
@@ -288,7 +299,7 @@ export class ViewEditProfileComponent implements OnInit {
       
       contact: {
         email: formValues.email,
-        phone: formattedPhone
+        phone: normalizedPhone
       },
       
       owner: {
@@ -296,7 +307,7 @@ export class ViewEditProfileComponent implements OnInit {
         firstName: formValues.ownerFirstName,
         lastName: formValues.ownerLastName || '',
         email: formValues.ownerEmail || formValues.email,
-        phone: formValues.ownerPhone ? formValues.ownerPhone.replace(/\D/g, '') : formattedPhone
+        phone: normalizedPhone
       },
       
       addresses: [
@@ -316,22 +327,38 @@ export class ViewEditProfileComponent implements OnInit {
     }
     
     if (this.clientData?.id) {
+      // Primeiro: Fazer o PUT (editar)
       this.clientService.editar(this.clientData.id, clientRequest).subscribe({
         next: () => {
           this.toastService.sucesso('Profile updated successfully');
-          this.isEditMode = false;
-          this.disableForm();
+          
+          // Segundo: Buscar dados atualizados do cliente
           this.clientService.buscarClient<Client>(this.clientData.id).subscribe({
-            next: (client) => {
-              this.clientService.setClientAtual(client);
+            next: (updatedClient) => {
+              // Atualizar o cliente atual no service
+              this.clientService.setClientAtual(updatedClient);
+              
+              // Atualizar localStorage com os dados mais recentes da API
+              localStorage.setItem('telas_token_user', JSON.stringify(updatedClient));
+              
+              // Atualizar dados locais
+              this.clientData = updatedClient;
+              
+              // Sair do modo de edição e atualizar formulário
+              this.isEditMode = false;
+              this.disableForm();
+              this.populateForm(updatedClient);
+              
+              this.loading = false;
+            },
+            error: () => {
+              this.toastService.erro('Error loading updated profile data');
+              this.loading = false;
             }
           });
         },
         error: () => {
           this.toastService.erro('Error updating profile');
-          this.loading = false;
-        },
-        complete: () => {
           this.loading = false;
         }
       });
