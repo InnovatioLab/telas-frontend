@@ -157,7 +157,9 @@ export class MonitorService {
   }
 
   private mapMonitorResponseToMonitor(monitorResponse: MonitorResponseDto): Monitor {
-    return {
+    console.log('[MonitorService] Mapeando monitor:', monitorResponse.id, 'hasAvailableSlots:', (monitorResponse as any)?.hasAvailableSlots);
+    
+    const monitor: Monitor = {
       id: monitorResponse.id,
       name: monitorResponse.name || `Monitor ${monitorResponse.id}`,
       location: monitorResponse.location || monitorResponse.address?.city || 'Sem localização',
@@ -194,6 +196,13 @@ export class MonitorService {
       createdAt: monitorResponse.createdAt,
       updatedAt: monitorResponse.updatedAt
     };
+    
+    // Adicionar campos que podem vir da API
+    if ((monitorResponse as any)?.hasAvailableSlots !== undefined) {
+      monitor.hasAvailableSlots = (monitorResponse as any).hasAvailableSlots;
+    }
+    
+    return monitor;
   }
 
   getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {

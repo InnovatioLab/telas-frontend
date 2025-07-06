@@ -93,6 +93,7 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe({
         next: (monitors) => {
+          console.log('[AlertView] Monitors recebidos:', monitors);
           this.mapPoints = monitors.map(monitor => {
             // Usar coordenadas reais do monitor ou do endereço
             let lat: number;
@@ -113,6 +114,9 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
               lng = -38.5270;
             }
             
+            const hasAvailableSlots = monitor.hasAvailableSlots;
+            console.log(`[AlertView] Monitor ${monitor.id}: hasAvailableSlots = ${hasAvailableSlots}`);
+            
             return {
               id: monitor.id,
               title: monitor.name || 'Monitor',
@@ -125,6 +129,7 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
               type: 'MONITOR',
               category: 'MONITOR',
               description: monitor.locationDescription || monitor.address?.coordinatesParams || 'Monitor location',
+              hasAvailableSlots: hasAvailableSlots,
               icon: this.getIconForStatus(monitor.status),
               data: monitor
             };

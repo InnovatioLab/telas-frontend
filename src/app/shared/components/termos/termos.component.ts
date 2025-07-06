@@ -5,11 +5,12 @@ import { PrimengModule } from '../../primeng/primeng.module';
 import { Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MENSAGENS } from '@app/utility/src';
-import { TermoCondicaoService } from '@app/core/service/termo-condicao.service';
-import { ClientService } from '@app/core/service/client.service';
+import { TermoCondicaoService } from '@app/core/service/api/termo-condicao.service';
+import { ClientService } from '@app/core/service/api/client.service';
 import { Authentication } from '@app/core/service/auth/autenthication';
 import { TermoCondicao } from '@app/model/termo-condicao';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { Role } from '@app/model/client';
 
 
 @Component({
@@ -55,8 +56,14 @@ export class TermosComponent implements OnInit {
   aceitar() {
     this.clientService.aceitarTermosDeCondicao().subscribe(() => {
       this.emitirResposta(true);
-      this.authentication.pegarDadosAutenticado();
-      this.router.navigate(['/']);
+      this.authentication.pegarDadosAutenticado().then(() => {
+        const client = this.authentication._clientSignal();
+        if (client?.role === Role.ADMIN) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/client']);
+        }
+      });
     });
   }
 

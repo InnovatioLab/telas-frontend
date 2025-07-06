@@ -218,17 +218,33 @@ export class GoogleMapsService {
   public createMonitorIcon(hasAvailableSlots?: boolean): google.maps.Symbol {
     let fillColor: string;
     
+    console.log(`[GoogleMapsService] Criando ícone monitor com hasAvailableSlots: ${hasAvailableSlots}`);
+    
     if (hasAvailableSlots === true) {
       fillColor = '#28a745'; // --cor-sucesso (verde)
+      console.log('[GoogleMapsService] Usando cor VERDE (disponível)');
     } else if (hasAvailableSlots === false) {
       fillColor = '#6c757d'; // --cor-cinza
+      console.log('[GoogleMapsService] Usando cor CINZA (indisponível)');
     } else {
       fillColor = '#232F3E'; // --cor-primaria (padrão)
+      console.log('[GoogleMapsService] Usando cor PADRÃO (indefinido)');
     }
     
     return {
       path: 'M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z',
       fillColor: fillColor,
+      fillOpacity: 1,
+      strokeWeight: 2,
+      strokeColor: '#FFFFFF',
+      scale: 1.8
+    };
+  }
+  
+  public createMonitorIconWithColor(color: string): google.maps.Symbol {
+    return {
+      path: 'M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z',
+      fillColor: color,
       fillOpacity: 1,
       strokeWeight: 2,
       strokeColor: '#FFFFFF',
@@ -500,9 +516,17 @@ export class GoogleMapsService {
       this.monitorService.getMonitors().subscribe({
         next: (monitors: Monitor[]) => {
           try {
+            console.log('[GoogleMapsService] Monitors recebidos do service:', monitors);
+            
             const mapPoints: MapPoint[] = monitors
               .filter((monitor: Monitor) => monitor.latitude && monitor.longitude) // Filtrar apenas monitores com coordenadas
               .map((monitor: Monitor) => {
+                console.log(`[GoogleMapsService] Processando monitor ${monitor.id}:`, {
+                  hasAvailableSlots: monitor.hasAvailableSlots,
+                  latitude: monitor.latitude,
+                  longitude: monitor.longitude
+                });
+                
                 const lat = typeof monitor.latitude === 'string' ? parseFloat(monitor.latitude) : monitor.latitude;
                 const lng = typeof monitor.longitude === 'string' ? parseFloat(monitor.longitude) : monitor.longitude;
                 
@@ -515,10 +539,12 @@ export class GoogleMapsService {
                   description: monitor.locationDescription ?? monitor.address?.coordinatesParams ?? 'Monitor location',
                   type: 'MONITOR',
                   category: 'MONITOR',
+                  hasAvailableSlots: monitor.hasAvailableSlots,
                   data: monitor
                 };
               });
             
+            console.log('[GoogleMapsService] MapPoints criados:', mapPoints);
             this.updateNearestMonitors(mapPoints);
             this.searchingSubject.next(false);
             resolve(mapPoints);
