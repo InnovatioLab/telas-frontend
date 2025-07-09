@@ -114,49 +114,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     }
   }
   
-  // toggleFixarMenu(event: Event): void {
-  //   event.stopPropagation();
-  //   if (window.innerWidth <= 768) {
-  //     return;
-  //   }
-  //   this.menuFixo = !this.menuFixo;
-  //   this.salvarEstadoMenuFixo();
-  //   if (this.menuFixo) {
-  //     this.abrirMenu();
-  //     this.renderer.addClass(document.body, 'menu-fixed');
-  //   } else {
-  //     this.renderer.removeClass(document.body, 'menu-fixed');
-  //   }
-  //   this.ajustarEspacoMapa();
-  // }
-  
-  // private salvarEstadoMenuFixo(): void {
-  //   try {
-  //     localStorage.setItem('menuFixo', this.menuFixo ? 'true' : 'false');
-  //   } catch (e) {
-  //     console.error('Não foi possível salvar o estado do menu:', e);
-  //   }
-  // }
-  
-  // private carregarEstadoMenuFixo(): void {
-  //   try {
-  //     const estadoSalvo = localStorage.getItem('menuFixo');
-  //     if (estadoSalvo !== null) {
-  //       if (window.innerWidth <= 768) {
-  //         this.menuFixo = false;
-  //         localStorage.setItem('menuFixo', 'false');
-  //       } else {
-  //         this.menuFixo = estadoSalvo === 'true';
-  //         if (this.menuFixo) {
-  //           this.renderer.addClass(document.body, 'menu-fixed');
-  //         }
-  //       }
-  //     }
-  //   } catch (e) {
-  //     console.error('Não foi possível carregar o estado do menu:', e);
-  //   }
-  // }
-  
   private abrirMenu(): void {
     this.menuAberto = true;
     this.sidebarService.abrirMenu('client-menu');

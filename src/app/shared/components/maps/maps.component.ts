@@ -67,8 +67,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   private _mapReady = false;
   private markerPositions: google.maps.LatLngLiteral[] = [];
   private markersConfig: { position: google.maps.LatLngLiteral, options: google.maps.MarkerOptions }[] = [];
-  private readonly CLUSTER_DISTANCE_THRESHOLD = 0.0001; // Distância muito pequena para agrupar apenas monitores no mesmo endereço
-  private readonly MIN_ZOOM_FOR_CLUSTERING = 14; // Zoom mínimo para mostrar clusters (14 = mais distante)
+  private readonly CLUSTER_DISTANCE_THRESHOLD = 0.0001;
+  private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
   
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -351,7 +351,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.mapInitialized.emit(this._map);
       
-      // Adicionar listener para mudanças de zoom
       this._map.addListener('zoom_changed', () => {
         if (this._map && this.points && this.points.length > 0) {
           this.updateMarkersBasedOnZoom();
@@ -438,7 +437,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.clearMarkers();
     
-    // Verificar zoom atual e decidir se deve usar clustering
     const currentZoom = this._map.getZoom() || 15;
     
     if (currentZoom <= this.MIN_ZOOM_FOR_CLUSTERING) {
@@ -449,7 +447,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private calculateOffsetPosition(lat: number, lng: number, index: number, total: number): { lat: number, lng: number } {
-    const offset = 0.0002; // Aproximadamente 20 metros
+    const offset = 0.0002;
     const angle = (index / total) * 2 * Math.PI;
     
     return {
@@ -481,10 +479,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ngZone.run(() => {
         this.markerClicked.emit(point);
         
-        // Chamar diretamente o serviço para abrir o sidebar
         this.mapsService.selectPoint(point);
         
-        // Emitir evento customizado do DOM também
         const customEvent = new CustomEvent('monitor-marker-clicked', {
           detail: { point }
         });
@@ -578,7 +574,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private createIndividualMarkers(): void {
-    // Agrupar pontos por localização exata para evitar sobreposição
     const locationGroups = new Map<string, MapPoint[]>();
     
     this.points.forEach(point => {
@@ -589,13 +584,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       locationGroups.get(key)!.push(point);
     });
 
-    // Processar cada grupo de localização
     locationGroups.forEach((groupPoints) => {
       if (groupPoints.length === 1) {
-        // Apenas um monitor nesta localização
         this.createMarker(groupPoints[0], groupPoints[0].latitude, groupPoints[0].longitude);
       } else {
-        // Múltiplos monitores na mesma localização - aplicar offset
         groupPoints.forEach((point, index) => {
           const offsetPosition = this.calculateOffsetPosition(
             point.latitude, 
@@ -613,7 +605,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     const clusters: MonitorCluster[] = [];
     const locationGroups = new Map<string, MapPoint[]>();
     
-    // Agrupar pontos por localização exata (mesmo endereço)
     points.forEach(point => {
       const locationKey = `${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`;
       if (!locationGroups.has(locationKey)) {
@@ -622,7 +613,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       locationGroups.get(locationKey)!.push(point);
     });
     
-    // Criar clusters para cada grupo de localização
     locationGroups.forEach((groupPoints, locationKey) => {
       const [lat, lng] = locationKey.split(',').map(coord => parseFloat(coord));
       
@@ -661,12 +651,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
           const currentZoom = this._map.getZoom() || 15;
           
           if (currentZoom < 16) {
-            // Se o zoom ainda não está próximo suficiente, fazer zoom para mostrar os monitores individuais
             this._map.setZoom(16);
             this._map.setCenter(cluster.position);
           } else {
-            // Se já está próximo, emitir evento para mostrar detalhes do primeiro monitor do cluster
-            // ou abrir um popup com a lista de monitores
             this.showClusterDetails(cluster);
           }
         }
@@ -677,7 +664,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private showClusterDetails(cluster: MonitorCluster): void {
-    // Emitir evento customizado com os detalhes do cluster
     const customEvent = new CustomEvent('monitor-cluster-clicked', {
       detail: { 
         cluster,
@@ -687,38 +673,30 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     window.dispatchEvent(customEvent);
     
-    // Por enquanto, selecionar o primeiro monitor como fallback
     if (cluster.monitors.length > 0) {
       this.mapsService.selectPoint(cluster.monitors[0]);
     }
   }
 
   private createClusterIcon(count: number, monitors: MapPoint[]): google.maps.Icon {
-    // Criar um ícone SVG personalizado para o cluster com tamanho maior
-    const size = Math.min(50 + (count * 4), 80); // Tamanho base maior: 50px + incremento
+    const size = Math.min(50 + (count * 4), 80);
     
-    // Determinar cor baseada na disponibilidade dos monitores
-    let fillColor = '#FF6B35'; // Cor padrão (laranja)
+    let fillColor = '#FF6B35';
     const availableCount = monitors.filter(m => m.hasAvailableSlots === true).length;
     const unavailableCount = monitors.filter(m => m.hasAvailableSlots === false).length;
     
     if (availableCount === count) {
-      fillColor = '#28a745'; // Verde - todos disponíveis
+      fillColor = '#28a745';
     } else if (unavailableCount === count) {
-      fillColor = '#6c757d'; // Cinza - todos indisponíveis
+      fillColor = '#6c757d';
     }
-    // Se tem mix de disponíveis/indisponíveis, mantém laranja padrão
     
     const svg = `
       <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-        <!-- Sombra -->
         <circle cx="${size/2 + 3}" cy="${size/2 + 3}" r="${size/2 - 3}" fill="rgba(0,0,0,0.3)"/>
-        <!-- Círculo principal -->
         <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 3}" fill="${fillColor}" stroke="#FFFFFF" stroke-width="4"/>
-        <!-- Ícone de monitor maior -->
         <rect x="${size/2 - 8}" y="${size/2 - 10}" width="16" height="10" rx="2" fill="#FFFFFF" opacity="0.9"/>
         <rect x="${size/2 - 7}" y="${size/2 - 9}" width="14" height="8" rx="1" fill="${fillColor}"/>
-        <!-- Contador maior -->
         <circle cx="${size/2 + 12}" cy="${size/2 - 12}" r="12" fill="#FFFFFF" stroke="${fillColor}" stroke-width="3"/>
         <text x="${size/2 + 12}" y="${size/2 - 7}" text-anchor="middle" font-family="Arial, sans-serif" 
               font-size="14" font-weight="bold" fill="${fillColor}">${count}</text>

@@ -172,51 +172,47 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!searchTextCopy) return;
 
     const zipRegex = /^\d{5}(-\d{4})?$/;
-    
     this.loadingService.setLoading(true, 'address-search');
-    
     if (zipRegex.test(searchTextCopy)) {
       const zipCode = searchTextCopy.split('-')[0];
-      
       this.searchMonitorsService.findNearestMonitors(zipCode, undefined, undefined, 3)
         .subscribe({
           next: (response) => {
             this.loadingService.setLoading(false, 'address-search');
-            
+            let monitors: MapPoint[] = [];
             if (response && Object.keys(response).length > 0) {
-              const monitors: MapPoint[] = [];
               Object.keys(response).forEach(zipCodeKey => {
                 const monitorsInZip = response[zipCodeKey];
-                monitorsInZip.forEach(monitor => {
-                  const mapPoint: MapPoint = {
-                    id: monitor.id,
-                    title: `Monitor ${monitor.type} - ${monitor.size}"`,
-                    description: `Distance: ${monitor.distanceInKm.toFixed(2)} km`,
-                    latitude: monitor.latitude,
-                    longitude: monitor.longitude,
-                    type: monitor.type,
-                    category: 'MONITOR',
-                    data: monitor
-                  };
-                  monitors.push(mapPoint);
-                });
+                if (Array.isArray(monitorsInZip)) {
+                  monitorsInZip.forEach(monitor => {
+                    const mapPoint: MapPoint = {
+                      id: monitor.id,
+                      title: `Monitor ${monitor.type} - ${monitor.size}"`,
+                      description: `Distance: ${monitor.distanceInKm.toFixed(2)} km`,
+                      latitude: monitor.latitude,
+                      longitude: monitor.longitude,
+                      type: monitor.type,
+                      category: 'MONITOR',
+                      data: monitor
+                    };
+                    monitors.push(mapPoint);
+                  });
+                }
               });
-              
-              if (monitors.length > 0) {
-                this.emitMonitorsFoundEvent(monitors);
-                this.toastService.sucesso(`Encontrados ${monitors.length} monitores próximos ao CEP ${zipCode}`);
-                this.searchText = '';
-              } else {
-                this.toastService.aviso(`Nenhum monitor encontrado para o CEP ${zipCode}`);
-              }
+            }
+            if (monitors.length > 0) {
+              this.emitMonitorsFoundEvent(monitors);
+              this.toastService.sucesso(`Found ${monitors.length} monitors near ZIP code ${zipCode}`);
+              this.searchText = '';
             } else {
-              this.toastService.aviso(`Nenhum monitor encontrado para o CEP ${zipCode}`);
+              console.log('No monitors found! Disparando toast...');
+              this.toastService.aviso('No monitors found in this region');
             }
           },
           error: (error) => {
             this.loadingService.setLoading(false, 'address-search');
-            console.error('Erro ao buscar monitores:', error);
-            this.toastService.erro(`Erro ao buscar monitores com o CEP ${zipCode}`);
+            console.error('Error searching monitors:', error);
+            this.toastService.erro(`Error searching monitors with ZIP code ${zipCode}`);
           }
         });
     } else {
@@ -224,37 +220,34 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
         .subscribe({
           next: (addressData) => {
             if (addressData) {
-              this.toastService.sucesso(`Localização encontrada: ${addressData.city}, ${addressData.state}`);
+              this.toastService.sucesso(`Location found: ${addressData.city}, ${addressData.state}`);
               this.searchText = '';
-              
               this.searchMonitorsService.findByZipCode(addressData.zipCode || searchTextCopy)
                 .then(monitors => {
                   if (monitors && monitors.length > 0) {
                     this.emitMonitorsFoundEvent(monitors);
-                    this.toastService.sucesso(`Encontrados ${monitors.length} monitores próximos ao CEP ${addressData.zipCode || searchTextCopy}`);
+                    this.toastService.sucesso(`Found ${monitors.length} monitors near ZIP code ${addressData.zipCode || searchTextCopy}`);
                   } else {
-                    this.toastService.aviso(`Nenhum monitor encontrado para o CEP ${addressData.zipCode || searchTextCopy}`);
+                    this.toastService.aviso('No monitors found in this region');
                   }
                 })
                 .catch(error => {
-                  this.toastService.erro(`Erro ao buscar monitores com o CEP ${addressData.zipCode || searchTextCopy}`);
+                  this.toastService.erro(`Error searching monitors with ZIP code ${addressData.zipCode || searchTextCopy}`);
                 });
             } else {
-              this.toastService.erro('Endereço não encontrado');
+              this.toastService.erro('Address not found');
             }
             this.loadingService.setLoading(false, 'address-search');
           },
           error: (error) => {
             this.loadingService.setLoading(false, 'address-search');
-            console.error('Erro ao buscar endereço:', error);
-            this.toastService.erro('Erro ao buscar endereço');
+            this.toastService.aviso('Error searching address');
           }
         });
     }
   }
   
   private initializeUserServices() {
-    // Só inicializa o Google Maps se estiver nas rotas que precisam dele
     if (this.isInAllowedRoutes()) {
       this.googleMapsService.initGoogleMapsApi(true);
       this.googleMapsService.initSavedPoints();
@@ -264,7 +257,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       this.savedPointsSubscription.unsubscribe();
     }
     
-    // Só subscreve aos pontos salvos se estiver nas rotas permitidas
     if (this.isInAllowedRoutes()) {
       this.savedPointsSubscription = this.googleMapsService.savedPoints$.subscribe(points => {
         this.itensSalvos.set(points?.length || 0);
@@ -473,7 +465,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     const searchTextCopy = this.searchText.trim();
     if (!searchTextCopy) return;
 
-    // Só permite busca se estiver nas rotas que precisam do Google Maps
     if (!this.isInAllowedRoutes()) {
       this.toastService.aviso('Search is only available in the application area');
       return;
@@ -486,9 +477,16 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
         next: (addressData: any) => {
           if (addressData) {
             this.searchMonitorsService.findByZipCode(zipCode).then((monitors: any) => {
-              this.monitorsFound.emit(monitors);
+              if (monitors && monitors.length > 0) {
+                this.monitorsFound.emit(monitors);
+                this.toastService.sucesso(`Found ${monitors.length} monitors near ZIP code ${zipCode}`);
+              } else {
+                this.monitorsFound.emit([]);
+                this.toastService.aviso('No monitors found in this region');
+              }
             }).catch((error: any) => {
               this.monitorsFound.emit([]);
+              this.toastService.aviso('No monitors found in this region');
             });
           } else {
             this.googleMapsService.geocodeAddress(searchTextCopy).then((result: any) => {
@@ -497,14 +495,22 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
                 result.longitude
               ).subscribe({
                 next: (monitors: any) => {
-                  this.monitorsFound.emit(monitors);
+                  if (monitors && monitors.length > 0) {
+                    this.monitorsFound.emit(monitors);
+                    this.toastService.sucesso(`Found ${monitors.length} monitors near this address`);
+                  } else {
+                    this.monitorsFound.emit([]);
+                    this.toastService.aviso('No monitors found in this region');
+                  }
                 },
                 error: (error: any) => {
                   this.monitorsFound.emit([]);
+                  this.toastService.aviso('No monitors found in this region');
                 }
               });
             }).catch((error: any) => {
               this.monitorsFound.emit([]);
+              this.toastService.aviso('No monitors found in this region');
             });
           }
         },
@@ -515,14 +521,22 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
               result.longitude
             ).subscribe({
               next: (monitors: any) => {
-                this.monitorsFound.emit(monitors);
+                if (monitors && monitors.length > 0) {
+                  this.monitorsFound.emit(monitors);
+                  this.toastService.sucesso(`Found ${monitors.length} monitors near this address`);
+                } else {
+                  this.monitorsFound.emit([]);
+                  this.toastService.aviso('No monitors found in this region');
+                }
               },
               error: (error: any) => {
                 this.monitorsFound.emit([]);
+                this.toastService.aviso('No monitors found in this region');
               }
             });
           }).catch((error: any) => {
             this.monitorsFound.emit([]);
+            this.toastService.aviso('No monitors found in this region');
           });
         }
       });
@@ -533,14 +547,22 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
           result.longitude
         ).subscribe({
           next: (monitors: any) => {
-            this.monitorsFound.emit(monitors);
+            if (monitors && monitors.length > 0) {
+              this.monitorsFound.emit(monitors);
+              this.toastService.sucesso(`Found ${monitors.length} monitors near this address`);
+            } else {
+              this.monitorsFound.emit([]);
+              this.toastService.aviso('No monitors found in this region');
+            }
           },
           error: (error: any) => {
             this.monitorsFound.emit([]);
+            this.toastService.aviso('No monitors found in this region');
           }
         });
       }).catch((error: any) => {
         this.monitorsFound.emit([]);
+        this.toastService.aviso('No monitors found in this region');
       });
     }
   }

@@ -7,12 +7,7 @@ import { ToastComponent } from './shared/components/toast/toast.component';
 import packageJson from '../../package.json';
 import { DotsLoadingComponent } from "./shared/components/dots-loading/dots-loading.component";
 import { PrimengModule } from './shared/primeng/primeng.module';
-import { DialogoUtils } from './shared/utils/dialogo-config.utils';
-import { DIALOGOS } from './shared/utils/dialogos';
-import { TEXTO_ACAO } from './utility/src';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DialogoComponent } from './shared/components/dialogo/dialogo.component';
-import { AutenticacaoStorage } from './core/service/auth/autenticacao-storage';
 
 @Component({
   selector: 'app-root',

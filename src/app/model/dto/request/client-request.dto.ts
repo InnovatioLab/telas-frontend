@@ -26,6 +26,7 @@ export interface OwnerRequestDTO {
 }
 
 export interface AddressRequestDTO {
+  id?: string;
   street: string;
   zipCode: string;
   city: string;

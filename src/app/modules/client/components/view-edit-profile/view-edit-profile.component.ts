@@ -92,10 +92,8 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Carregar dados sempre da API
     this.loadUserProfile();
     
-    // Manter subscription para atualizações do service (se necessário)
     this.clientService.clientAtual$.subscribe((client) => {
       if (client && !this.loading) {
         this.clientData = { ...client };
@@ -108,7 +106,6 @@ export class ViewEditProfileComponent implements OnInit {
   loadUserProfile(): void {
     this.loading = true;
     
-    // Buscar apenas o ID do localStorage
     const userDataStr = localStorage.getItem('telas_token_user');
     
     if (userDataStr) {
@@ -117,7 +114,6 @@ export class ViewEditProfileComponent implements OnInit {
         const userId = userData.id;
         
         if (userId) {
-          // Buscar dados atualizados da API usando o ID
           this.clientService.buscarClient<Client>(userId).subscribe({
             next: (client) => {
               this.clientData = client;
@@ -266,15 +262,12 @@ export class ViewEditProfileComponent implements OnInit {
     
     const formValues = this.profileForm.getRawValue();
     
-    // Remover máscara do telefone e garantir tamanho correto (10-11 dígitos)
     let normalizedPhone = formValues.phone?.replace(/\D/g, '') || '';
     
-    // Se o telefone tem mais de 11 dígitos, pegar apenas os últimos 11
     if (normalizedPhone.length > 11) {
       normalizedPhone = normalizedPhone.slice(-11);
     }
     
-    // Se o telefone tem menos de 10 dígitos, não enviar
     if (normalizedPhone.length < 10) {
       this.toastService.erro('Phone number must be between 10 and 11 digits');
       this.loading = false;
@@ -290,6 +283,10 @@ export class ViewEditProfileComponent implements OnInit {
       });
     }
     
+    const addressId = this.clientData?.addresses && this.clientData.addresses.length > 0
+      ? this.clientData.addresses[0].id
+      : undefined;
+
     const clientRequest: ClientRequestDTO = {
       businessName: formValues.businessName,
       identificationNumber: this.clientData?.identificationNumber || '',
@@ -312,6 +309,7 @@ export class ViewEditProfileComponent implements OnInit {
       
       addresses: [
         {
+          id: addressId,
           street: formValues.street,
           zipCode: formValues.zipCode,
           city: formValues.city,
@@ -327,24 +325,18 @@ export class ViewEditProfileComponent implements OnInit {
     }
     
     if (this.clientData?.id) {
-      // Primeiro: Fazer o PUT (editar)
       this.clientService.editar(this.clientData.id, clientRequest).subscribe({
         next: () => {
           this.toastService.sucesso('Profile updated successfully');
           
-          // Segundo: Buscar dados atualizados do cliente
           this.clientService.buscarClient<Client>(this.clientData.id).subscribe({
             next: (updatedClient) => {
-              // Atualizar o cliente atual no service
               this.clientService.setClientAtual(updatedClient);
               
-              // Atualizar localStorage com os dados mais recentes da API
               localStorage.setItem('telas_token_user', JSON.stringify(updatedClient));
               
-              // Atualizar dados locais
               this.clientData = updatedClient;
               
-              // Sair do modo de edição e atualizar formulário
               this.isEditMode = false;
               this.disableForm();
               this.populateForm(updatedClient);
