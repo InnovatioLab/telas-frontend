@@ -6,13 +6,14 @@ import { ClientService } from '@app/core/service/api/client.service';
 import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { ErrorComponent } from '@app/shared/components/error/error.component';
 
 @Component({
   selector: 'app-view-edit-profile',
   templateUrl: './view-edit-profile.component.html',
   styleUrls: ['./view-edit-profile.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PrimengModule]
+  imports: [CommonModule, ReactiveFormsModule, PrimengModule, ErrorComponent]
 })
 export class ViewEditProfileComponent implements OnInit {
   profileForm: FormGroup;
@@ -106,37 +107,52 @@ export class ViewEditProfileComponent implements OnInit {
   loadUserProfile(): void {
     this.loading = true;
     
+    const userId = this.getUserIdFromStorage();
+    
+    if (!userId) {
+      this.loading = false;
+      return;
+    }
+    
+    this.fetchClientProfile(userId);
+  }
+
+  private getUserIdFromStorage(): string | null {
     const userDataStr = localStorage.getItem('telas_token_user');
     
-    if (userDataStr) {
-      try {
-        const userData = JSON.parse(userDataStr);
-        const userId = userData.id;
-        
-        if (userId) {
-          this.clientService.buscarClient<Client>(userId).subscribe({
-            next: (client) => {
-              this.clientData = client;
-              this.populateForm(client);
-              this.loading = false;
-            },
-            error: () => {
-              this.loading = false;
-              this.toastService.erro('Could not load profile data');
-            }
-          });
-        } else {
-          this.loading = false;
-          this.toastService.erro('User ID not found');
-        }
-      } catch (error) {
-        this.loading = false;
-        this.toastService.erro('Error loading profile data');
-      }
-    } else {
-      this.loading = false;
+    if (!userDataStr) {
       this.toastService.erro('User data not found');
+      return null;
     }
+    
+    try {
+      const userData = JSON.parse(userDataStr);
+      const userId = userData.id;
+      
+      if (!userId) {
+        this.toastService.erro('User ID not found');
+        return null;
+      }
+      
+      return userId;
+    } catch (error) {
+      this.toastService.erro('Error loading profile data');
+      return null;
+    }
+  }
+
+  private fetchClientProfile(userId: string): void {
+    this.clientService.buscarClient<Client>(userId).subscribe({
+      next: (client) => {
+        this.clientData = client;
+        this.populateForm(client);
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.toastService.erro('Could not load profile data');
+      }
+    });
   }
 
   populateForm(client: Client): void {
@@ -144,66 +160,82 @@ export class ViewEditProfileComponent implements OnInit {
       return;
     }
 
-    let phoneNumber = client.contact?.phone || '';
-    if (phoneNumber && !phoneNumber.includes('+')) {
-      if (phoneNumber.length >= 10) {
-        phoneNumber = `+1 ${phoneNumber.substring(0, 3)} ${phoneNumber.substring(3, 6)} ${phoneNumber.substring(6)}`;
-      }
-    }
+    const formData = this.buildFormData(client);
+    this.profileForm.patchValue(formData, { emitEvent: false });
+    
+    this.clearSocialMediaArray();
+    this.populateSocialMedia(client.socialMedia);
+    this.disableForm();
+  }
 
-    const formData = {
+  private buildFormData(client: Client): any {
+    const phoneNumber = this.formatPhoneNumber(client.contact?.phone || '');
+    const address = this.getFirstAddress(client);
+
+    return {
       businessName: client.businessName || '',
       identificationNumber: client.identificationNumber || '',
       industry: client.industry || '',
       websiteUrl: client.websiteUrl || '',
-      
       email: client.contact?.email || '',
       phone: phoneNumber,
-      
       ownerFirstName: client.owner?.firstName || '',
       ownerLastName: client.owner?.lastName || '',
       ownerEmail: client.owner?.email || '',
       ownerPhone: client.owner?.phone || '',
-      
-      street: client.addresses && client.addresses.length > 0 ? client.addresses[0].street || '' : '',
-      zipCode: client.addresses && client.addresses.length > 0 ? client.addresses[0].zipCode || '' : '',
-      city: client.addresses && client.addresses.length > 0 ? client.addresses[0].city || '' : '',
-      state: client.addresses && client.addresses.length > 0 ? client.addresses[0].state || '' : '',
-      country: client.addresses && client.addresses.length > 0 ? client.addresses[0].country || '' : '',
-      complement: client.addresses && client.addresses.length > 0 ? client.addresses[0].complement || '' : '',
+      ...address
     };
+  }
 
-    this.profileForm.patchValue(formData, { emitEvent: false });
+  private formatPhoneNumber(phoneNumber: string): string {
+    if (!phoneNumber || phoneNumber.includes('+')) {
+      return phoneNumber;
+    }
     
+    if (phoneNumber.length >= 10) {
+      return `+1 ${phoneNumber.substring(0, 3)} ${phoneNumber.substring(3, 6)} ${phoneNumber.substring(6)}`;
+    }
+    
+    return phoneNumber;
+  }
+
+  private getFirstAddress(client: Client): any {
+    const address = client.addresses?.[0];
+    
+    return {
+      street: address?.street || '',
+      zipCode: address?.zipCode || '',
+      city: address?.city || '',
+      state: address?.state || '',
+      country: address?.country || '',
+      complement: address?.complement || ''
+    };
+  }
+
+  private clearSocialMediaArray(): void {
     while (this.socialMediaArray.length !== 0) {
       this.socialMediaArray.removeAt(0);
     }
-    
-    if (client.socialMedia) {
-      const socialMedia = client.socialMedia;
-      
-      if (socialMedia.instagramUrl) {
-        this.addSocialMediaWithValues('instagram', socialMedia.instagramUrl);
-      }
-      
-      if (socialMedia.facebookUrl) {
-        this.addSocialMediaWithValues('facebook', socialMedia.facebookUrl);
-      }
-      
-      if (socialMedia.linkedinUrl) {
-        this.addSocialMediaWithValues('linkedin', socialMedia.linkedinUrl);
-      }
-      
-      if (socialMedia.xUrl) {
-        this.addSocialMediaWithValues('x', socialMedia.xUrl);
-      }
-      
-      if (socialMedia.tiktokUrl) {
-        this.addSocialMediaWithValues('tiktok', socialMedia.tiktokUrl);
-      }
+  }
+
+  private populateSocialMedia(socialMedia: any): void {
+    if (!socialMedia) {
+      return;
     }
-    
-    this.disableForm();
+
+    const socialPlatforms = [
+      { key: 'instagramUrl', platform: 'instagram' },
+      { key: 'facebookUrl', platform: 'facebook' },
+      { key: 'linkedinUrl', platform: 'linkedin' },
+      { key: 'xUrl', platform: 'x' },
+      { key: 'tiktokUrl', platform: 'tiktok' }
+    ];
+
+    socialPlatforms.forEach(({ key, platform }) => {
+      if (socialMedia[key]) {
+        this.addSocialMediaWithValues(platform, socialMedia[key]);
+      }
+    });
   }
 
   addSocialMediaWithValues(platform: string, url: string): void {
@@ -261,8 +293,19 @@ export class ViewEditProfileComponent implements OnInit {
     this.loading = true;
     
     const formValues = this.profileForm.getRawValue();
+    const normalizedPhone = this.validateAndNormalizePhone(formValues.phone);
     
-    let normalizedPhone = formValues.phone?.replace(/\D/g, '') || '';
+    if (!normalizedPhone) {
+      this.loading = false;
+      return;
+    }
+    
+    const clientRequest = this.buildClientRequest(formValues, normalizedPhone);
+    this.updateClient(clientRequest);
+  }
+
+  private validateAndNormalizePhone(phone: string): string | null {
+    let normalizedPhone = phone?.replace(/\D/g, '') || '';
     
     if (normalizedPhone.length > 11) {
       normalizedPhone = normalizedPhone.slice(-11);
@@ -270,22 +313,15 @@ export class ViewEditProfileComponent implements OnInit {
     
     if (normalizedPhone.length < 10) {
       this.toastService.erro('Phone number must be between 10 and 11 digits');
-      this.loading = false;
-      return;
+      return null;
     }
     
-    const socialMedia: Record<string, string> = {};
-    if (formValues.socialMedia && Array.isArray(formValues.socialMedia) && formValues.socialMedia.length > 0) {
-      formValues.socialMedia.forEach((item: { platform: string; url: string }) => {
-        if (item.platform && item.url) {
-          socialMedia[`${item.platform}Url`] = item.url;
-        }
-      });
-    }
-    
-    const addressId = this.clientData?.addresses && this.clientData.addresses.length > 0
-      ? this.clientData.addresses[0].id
-      : undefined;
+    return normalizedPhone;
+  }
+
+  private buildClientRequest(formValues: any, normalizedPhone: string): ClientRequestDTO {
+    const socialMedia = this.buildSocialMediaObject(formValues.socialMedia);
+    const addressId = this.getExistingAddressId();
 
     const clientRequest: ClientRequestDTO = {
       businessName: formValues.businessName,
@@ -323,38 +359,69 @@ export class ViewEditProfileComponent implements OnInit {
     if (Object.keys(socialMedia).length > 0) {
       clientRequest.socialMedia = socialMedia;
     }
+
+    return clientRequest;
+  }
+
+  private buildSocialMediaObject(socialMediaArray: any[]): Record<string, string> {
+    const socialMedia: Record<string, string> = {};
     
-    if (this.clientData?.id) {
-      this.clientService.editar(this.clientData.id, clientRequest).subscribe({
-        next: () => {
-          this.toastService.sucesso('Profile updated successfully');
-          
-          this.clientService.buscarClient<Client>(this.clientData.id).subscribe({
-            next: (updatedClient) => {
-              this.clientService.setClientAtual(updatedClient);
-              
-              localStorage.setItem('telas_token_user', JSON.stringify(updatedClient));
-              
-              this.clientData = updatedClient;
-              
-              this.isEditMode = false;
-              this.disableForm();
-              this.populateForm(updatedClient);
-              
-              this.loading = false;
-            },
-            error: () => {
-              this.toastService.erro('Error loading updated profile data');
-              this.loading = false;
-            }
-          });
-        },
-        error: () => {
-          this.toastService.erro('Error updating profile');
-          this.loading = false;
+    if (socialMediaArray && Array.isArray(socialMediaArray) && socialMediaArray.length > 0) {
+      socialMediaArray.forEach((item: { platform: string; url: string }) => {
+        if (item.platform && item.url) {
+          socialMedia[`${item.platform}Url`] = item.url;
         }
       });
     }
+    
+    return socialMedia;
+  }
+
+  private getExistingAddressId(): string | undefined {
+    return this.clientData?.addresses && this.clientData.addresses.length > 0
+      ? this.clientData.addresses[0].id
+      : undefined;
+  }
+
+  private updateClient(clientRequest: ClientRequestDTO): void {
+    if (!this.clientData?.id) {
+      this.loading = false;
+      return;
+    }
+
+    this.clientService.editar(this.clientData.id, clientRequest).subscribe({
+      next: () => {
+        this.toastService.sucesso('Profile updated successfully');
+        this.reloadUpdatedProfile();
+      },
+      error: () => {
+        this.toastService.erro('Error updating profile');
+        this.loading = false;
+      }
+    });
+  }
+
+  private reloadUpdatedProfile(): void {
+    this.clientService.buscarClient<Client>(this.clientData.id).subscribe({
+      next: (updatedClient) => {
+        this.handleUpdatedClient(updatedClient);
+      },
+      error: () => {
+        this.toastService.erro('Error loading updated profile data');
+        this.loading = false;
+      }
+    });
+  }
+
+  private handleUpdatedClient(updatedClient: Client): void {
+    this.clientService.setClientAtual(updatedClient);
+    localStorage.setItem('telas_token_user', JSON.stringify(updatedClient));
+    
+    this.clientData = updatedClient;
+    this.isEditMode = false;
+    this.disableForm();
+    this.populateForm(updatedClient);
+    this.loading = false;
   }
 
   cancelEdit(): void {
