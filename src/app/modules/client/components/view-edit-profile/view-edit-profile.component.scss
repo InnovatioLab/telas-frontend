@@ -214,23 +214,23 @@
 
       input {
         &.ng-invalid.ng-touched {
-          border-color: #dc3545;
-          box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+          border-color: var(--cor-erro);
+          box-shadow: 0 0 0 0.2rem rgba(var(--cor-erro-rgb), 0.25);
         }
 
         &.ng-invalid.ng-dirty {
-          border-color: #dc3545;
-          box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+          border-color: var(--cor-erro);
+          box-shadow: 0 0 0 0.2rem rgba(var(--cor-erro-rgb), 0.25);
         }
 
         &.ng-valid.ng-touched {
-          border-color: #28a745;
+          border-color: var(--cor-sucesso);
         }
 
         &[readonly] {
-          background-color: #f8f9fa;
-          border-color: #e9ecef;
-          color: #6c757d;
+          background-color: var(--cor-cinza-fundo);
+          border-color: var(--cor-cinza-medio);
+          color: var(--cor-cinza);
           cursor: default;
         }
       }
@@ -238,30 +238,30 @@
   }
 
   .no-social-media {
-    color: #777;
+    color: var(--cor-legenda);
     font-style: italic;
     margin: 10px 0 20px;
   }
 
   .no-social-media-edit {
-    color: #6c757d;
+    color: var(--cor-cinza);
     font-style: italic;
     margin: 10px 0 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border: 1px dashed #dee2e6;
-    border-radius: 4px;
+    padding: var(--espacamento-padrao);
+    background-color: var(--cor-cinza-fundo);
+    border: 1px dashed var(--cor-cinza-medio);
+    border-radius: var(--borda-raio-pequeno);
     text-align: center;
 
     p {
       margin: 0;
-      font-size: 14px;
+      font-size: var(--fonte-tamanho-padrao);
     }
   }
 
   .error-message {
-    color: #dc3545;
-    font-size: 12px;
+    color: var(--cor-erro);
+    font-size: var(--fonte-tamanho-pequeno);
     margin-top: 4px;
     display: block;
   }
@@ -271,25 +271,25 @@
       width: 100%;
       
       .p-dropdown-trigger {
-        border-color: #ddd;
+        border-color: var(--cor-cinza-medio);
       }
 
       &.p-dropdown-disabled {
-        background-color: #f8f9fa;
+        background-color: var(--cor-cinza-fundo);
         
         .p-dropdown-label {
-          color: #6c757d;
+          color: var(--cor-cinza);
         }
       }
 
       &.ng-invalid.ng-touched {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        border-color: var(--cor-erro);
+        box-shadow: 0 0 0 0.2rem rgba(var(--cor-erro-rgb), 0.25);
       }
 
       &.ng-invalid.ng-dirty {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        border-color: var(--cor-erro);
+        box-shadow: 0 0 0 0.2rem rgba(var(--cor-erro-rgb), 0.25);
       }
     }
 
@@ -300,18 +300,18 @@
     .p-inputmask {
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
+      border: 1px solid var(--cor-cinza-medio);
+      border-radius: var(--borda-raio-pequeno);
+      font-size: var(--fonte-tamanho-padrao);
       transition: border-color 0.2s;
 
       &:focus {
         outline: none;
-        border-color: var(--primary-color);
+        border-color: var(--cor-primaria);
       }
 
       &:disabled {
-        background-color: #f9f9f9;
+        background-color: var(--cor-cinza-fundo);
         cursor: not-allowed;
       }
     }
@@ -324,8 +324,8 @@
   .button-container {
     display: flex;
     justify-content: center;
-    gap: 16px;
-    margin-top: 40px;
+    gap: var(--espacamento-padrao);
+    margin-top: var(--espacamento-extra-grande);
 
     button {
       min-width: 120px;
@@ -358,7 +358,8 @@
       color: var(--cor-branca);
 
       &:hover {
-        background-color: #218838;
+        background-color: var(--cor-sucesso);
+        filter: brightness(0.9);
       }
 
       &:disabled {
@@ -371,7 +372,8 @@
       color: var(--cor-cinza-escuro);
 
       &:hover {
-        background-color: #dae0e5;
+        background-color: var(--cor-cinza-medio);
+        filter: brightness(0.9);
       }
     }
   }

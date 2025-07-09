@@ -36,6 +36,7 @@ import { IconClockComponent } from './clock.icon';
 import { IconPlayComponent } from './play.icon';
 import { IconFecharComponent } from './fechar.icon';
 import { IconWifiComponent } from './wifi.icon';
+import { IconBoxComponent } from './box.icon';
 
 @NgModule({
   imports: [
@@ -75,7 +76,8 @@ import { IconWifiComponent } from './wifi.icon';
     IconClockComponent,
     IconPlayComponent,
     IconFecharComponent,
-    IconWifiComponent
+    IconWifiComponent,
+    IconBoxComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -113,7 +115,8 @@ import { IconWifiComponent } from './wifi.icon';
     IconClockComponent,
     IconPlayComponent,
     IconFecharComponent,
-    IconWifiComponent
+    IconWifiComponent,
+    IconBoxComponent
   ],
   declarations: []
 })

@@ -1,0 +1,225 @@
+::ng-deep {
+  .p-card-body {
+    width: 100%;
+    display: flex;
+
+    .card-header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    p-button {
+      flex-shrink: 0;
+
+      @media (max-width: 576px) {
+        .p-button {
+          font-size: var(--fonte-tamanho-pequeno);
+          padding: var(--espacamento-pequeno);
+        }
+      }
+    }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+
+      .p-input-icon-left {
+        width: 100%;
+        margin-bottom: var(--espacamento-pequeno);
+      }
+
+      p-button {
+        width: 100%;
+
+        .p-button {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .container {
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 600;
+      }
+    }
+
+    .content {
+      .filters {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--espacamento-padrao);
+        flex-wrap: wrap;
+
+        .p-input-icon-left {
+          flex: 1;
+          margin: 0;
+
+          input {
+            width: 100%;
+          }
+        }
+
+        .p-button {
+          margin-left: var(--espacamento-padrao);
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+
+        .p-button-rounded {
+          position: relative;
+        }
+        
+        .custom-icon {
+          width: 16px;
+          height: 16px;
+          
+          ::ng-deep svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+          }
+        }
+      }
+
+      .monitor-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .monitor-icon {
+          width: 16px;
+          height: 16px;
+          color: var(--cor-primaria);
+
+          ::ng-deep svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+          }
+        }
+
+        .monitor-count {
+          font-size: var(--fonte-tamanho-padrao);
+          color: var(--cor-cinza-escuro);
+        }
+      }
+    }
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .card-header {
+    padding: var(--espacamento-padrao);
+  }
+
+  .p-card-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacamento-padrao);
+
+    .p-input-icon-left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      position: relative;
+
+      app-icon-search {
+        position: absolute;
+        left: 0.75rem;
+        z-index: 1;
+      }
+
+      input {
+        width: 100%;
+        padding-left: 2.5rem;
+      }
+    }
+
+    p-button {
+      flex-shrink: 0;
+
+      @media (max-width: 576px) {
+        .p-button {
+          font-size: var(--fonte-tamanho-pequeno);
+          padding: var(--espacamento-pequeno);
+        }
+      }
+    }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+
+      .p-input-icon-left {
+        width: 100%;
+        margin-bottom: var(--espacamento-pequeno);
+      }
+
+      p-button {
+        width: 100%;
+
+        .p-button {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .box-form {
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: var(--fonte-peso-medio);
+        color: var(--cor-cinza-escuro);
+      }
+
+      input,
+      ::ng-deep p-multiselect {
+        width: 100%;
+      }
+
+      ::ng-deep p-checkbox {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .help-text {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.875rem;
+      color: var(--text-color-secondary);
+      font-style: italic;
+    }
+  }
+
+  @media screen and (max-width: 576px) {
+    .filters {
+      flex-direction: column;
+
+      .p-button {
+        margin-left: 0;
+        margin-top: var(--espacamento-pequeno);
+        width: 100%;
+      }
+    }
+  }
+}

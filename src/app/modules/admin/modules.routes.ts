@@ -4,6 +4,7 @@ import { AdminViewComponent } from './components/admin-view/admin-view.component
 import { AdminAuthenticatedGuard } from '@app/core/service/guard/admin-authenticated.guard';
 import { ManagementMonitorsComponent } from './components/management-monitors/management-monitors.component';
 import { AdminManagementProfileComponent } from './components/admin-managemnt-profile/admin-managemnt-profile.component';
+import { ManagementBoxesComponent } from './components/management-boxes/management-boxes.component';
 
 export const ROUTES: Route[] = [
   {
@@ -22,6 +23,10 @@ export const ROUTES: Route[] = [
       {
         path: 'profile',
         component: AdminManagementProfileComponent
+      },
+      {
+        path: 'boxes',
+        component: ManagementBoxesComponent
       }
     ]
   }

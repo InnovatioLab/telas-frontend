@@ -1,0 +1,201 @@
+<div class="container">
+  <div class="content">
+    <p-card styleClass="card-header">
+      <div class="card-header-content">
+          <i class="pi pi-search"></i>
+          <div class="p-card-content">
+            <span class="p-input-icon-left">
+              <app-icon-search></app-icon-search>
+              <input 
+                type="text" 
+                pInputText 
+                placeholder="Search boxes..." 
+                [(ngModel)]="searchTerm"
+                (keyup.enter)="onSearch()" />
+            </span>
+            <p-button 
+              label="Create Box" 
+              icon="pi pi-plus" 
+              (click)="openCreateBoxModal()"
+              onKeyDown="openCreateBoxModal()"></p-button>
+          </div>
+      </div>
+    </p-card>
+
+    <p-table 
+      [value]="boxes" 
+      [loading]="loading" 
+      styleClass="p-datatable-sm" 
+      [paginator]="true" 
+      [rows]="currentFilters?.size || 10" 
+      [totalRecords]="totalRecords"
+      [rowsPerPageOptions]="[5,10,25,50]" 
+      [showCurrentPageReport]="true" 
+      responsiveLayout="scroll"
+      [lazy]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} boxes"
+      (onPage)="onPageChange($event)"
+      (onSort)="onSort($event)"
+      [sortField]="currentFilters?.sortBy || 'active'"
+      [sortOrder]="currentFilters?.sortDir === 'asc' ? 1 : -1">
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col">IP Address</th>
+          <th scope="col" pSortableColumn="active">Status <p-sortIcon field="active"></p-sortIcon></th>
+          <th scope="col">Monitors</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-box>
+        <tr>
+          <td>{{box.ip}}</td>
+          <td>
+            <p-badge [value]="box.active ? 'Active' : 'Inactive'" [severity]="box.active ? 'success' : 'danger'"></p-badge>
+          </td>
+          <td>
+            <div class="monitor-info">
+              <app-icon-tv-display class="monitor-icon"></app-icon-tv-display>
+              <span class="monitor-count">{{box.monitorCount || 0}} monitor(s)</span>
+            </div>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button pButton pRipple class="p-button-rounded p-button-info p-button-text" 
+                      (click)="onSelectBox(box)"
+                      pTooltip="Manage Box">
+                <app-icon-box class="custom-icon"></app-icon-box>
+              </button>
+              <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-text" 
+                      (click)="onSelectBox(box)"
+                      pTooltip="Edit Box"></button>
+              <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                      (click)="deleteBox(box.id)"
+                      pTooltip="Delete Box"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center">No boxes found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Modal de criação de box -->
+  <p-dialog 
+    header="Create New Box"
+    [(visible)]="createBoxModalVisible" 
+    [modal]="true" 
+    [style]="{width: '70vw', maxWidth: '600px'}" 
+    [draggable]="false"
+    [resizable]="false"
+    [closeOnEscape]="true"
+    [dismissableMask]="true">
+    
+    <div class="box-form">
+      <div class="form-group">
+        <label for="ip">IP Address *</label>
+        <input type="text" 
+               id="ip" 
+               pInputText 
+               [(ngModel)]="newBox.ip"
+               (ngModelChange)="onIpChange($event, false)"
+               placeholder="192.168.1.100"
+               class="w-full" />
+      </div>
+      
+      <div class="form-group">
+        <label for="monitors">Select Monitors</label>
+        <p-multiSelect 
+          id="monitors"
+          [options]="filteredMonitorsByIp" 
+          [(ngModel)]="newBox.monitorIds"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Enter an IP address first to load monitors"
+          class="w-full"
+          [showHeader]="false"
+          [disabled]="!newBox.ip?.trim() || loadingMonitors"
+          [loading]="loadingMonitors">
+        </p-multiSelect>
+        <small class="help-text" *ngIf="!newBox.ip?.trim()">Enter an IP address to see available monitors</small>
+        <small class="help-text" *ngIf="loadingMonitors">Loading monitors...</small>
+        <small class="help-text" *ngIf="newBox.ip?.trim() && !loadingMonitors && filteredMonitorsByIp.length === 0">No monitors found for this IP</small>
+      </div>
+      
+      <div class="form-group">
+        <p-checkbox 
+          inputId="active" 
+          [(ngModel)]="newBox.active"
+          [binary]="true" 
+          label="Active">
+        </p-checkbox>
+      </div>
+    </div>
+    
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="onCreateBoxModalClose()"></button>
+      <button pButton pRipple label="Create" icon="pi pi-check" (click)="onCreateBox()"></button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Modal de edição de box -->
+  <p-dialog 
+    header="Edit Box"
+    [(visible)]="editBoxModalVisible" 
+    [modal]="true" 
+    [style]="{width: '70vw', maxWidth: '600px'}" 
+    [draggable]="false"
+    [resizable]="false"
+    [closeOnEscape]="true"
+    [dismissableMask]="true">
+    
+    <div class="box-form" *ngIf="selectedBoxForEdit">
+      <div class="form-group">
+        <label for="editIp">IP Address *</label>
+        <input type="text" 
+               id="editIp" 
+               pInputText 
+               [(ngModel)]="selectedBoxForEdit.ip"
+               (ngModelChange)="onIpChange($event, true)"
+               class="w-full" />
+      </div>
+      
+      <div class="form-group">
+        <label for="editMonitors">Select Monitors</label>
+        <p-multiSelect 
+          id="editMonitors"
+          [options]="filteredMonitorsByIp" 
+          [(ngModel)]="selectedBoxForEdit.monitorIds"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Enter an IP address first to load monitors"
+          class="w-full"
+          [showHeader]="false"
+          [disabled]="!selectedBoxForEdit.ip?.trim() || loadingMonitors"
+          [loading]="loadingMonitors">
+        </p-multiSelect>
+        <small class="help-text" *ngIf="!selectedBoxForEdit.ip?.trim()">Enter an IP address to see available monitors</small>
+        <small class="help-text" *ngIf="loadingMonitors">Loading monitors...</small>
+        <small class="help-text" *ngIf="selectedBoxForEdit.ip?.trim() && !loadingMonitors && filteredMonitorsByIp.length === 0">No monitors found for this IP</small>
+      </div>
+      
+      <div class="form-group">
+        <p-checkbox 
+          inputId="editActive" 
+          [(ngModel)]="selectedBoxForEdit.active"
+          [binary]="true" 
+          label="Active">
+        </p-checkbox>
+      </div>
+    </div>
+    
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="onEditBoxModalClose()"></button>
+      <button pButton pRipple label="Update" icon="pi pi-check" (click)="onEditBox()"></button>
+    </ng-template>
+  </p-dialog>
+</div>
