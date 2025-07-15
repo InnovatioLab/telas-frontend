@@ -10,7 +10,7 @@
       <h3>Monitor Information</h3>
       
       <div class="form-row">
-        <div class="form-field full-width">
+        <div class="form-field">
           <label for="size">Size (inches)*</label>
           <p-inputNumber 
             id="size" 
@@ -22,6 +22,18 @@
             placeholder="Enter size">
           </p-inputNumber>
           <small class="error-message" *ngIf="getFieldError('size')">{{ getFieldError('size') }}</small>
+        </div>
+
+        <div class="form-field">
+          <label for="locationDescription">Location Description</label>
+          <textarea 
+            pInputTextarea 
+            id="locationDescription" 
+            formControlName="locationDescription" 
+            placeholder="Enter location description"
+            rows="3">
+          </textarea>
+          <small class="error-message" *ngIf="getFieldError('locationDescription')">{{ getFieldError('locationDescription') }}</small>
         </div>
       </div>
     </div>

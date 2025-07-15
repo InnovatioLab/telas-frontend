@@ -325,7 +325,7 @@ export class ViewEditProfileComponent implements OnInit {
 
     const clientRequest: ClientRequestDTO = {
       businessName: formValues.businessName,
-      identificationNumber: this.clientData?.identificationNumber || '',
+      identificationNumber: formValues.identificationNumber,
       industry: formValues.industry,
       websiteUrl: formValues.websiteUrl || '',
       status: this.clientData?.status,
@@ -336,7 +336,7 @@ export class ViewEditProfileComponent implements OnInit {
       },
       
       owner: {
-        identificationNumber: this.clientData?.identificationNumber || '',
+        identificationNumber: formValues.identificationNumber,
         firstName: formValues.ownerFirstName,
         lastName: formValues.ownerLastName || '',
         email: formValues.ownerEmail || formValues.email,

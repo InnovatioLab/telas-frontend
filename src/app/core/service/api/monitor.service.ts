@@ -6,6 +6,7 @@ import { DefaultStatus } from '@app/model/client';
 import { environment } from 'src/environments/environment';
 import { IMonitorAlert } from './interfaces/monitor';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { ResponseDto } from '@app/model/dto/response/response.dto';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
@@ -42,7 +43,8 @@ export class MonitorService {
     return this.http.get<ResponseDto<PaginationResponseDto<MonitorResponseDto>>>(`${this.apiUrl}/filters`, { params, ...this.headers }).pipe(
       map((response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>) => {
         if (response?.data?.list) {
-          return response.data.list.map(this.mapMonitorResponseToMonitor);
+          const mappedList = response.data.list.map(this.mapMonitorResponseToMonitor);
+          return mappedList;
         }
         return [];
       }),
@@ -63,42 +65,19 @@ export class MonitorService {
       if (filters.genericFilter) params = params.set('genericFilter', filters.genericFilter);
     }
     
-    return this.http.get<ResponseDto<PaginationResponseDto<MonitorResponseDto>>>(`${this.apiUrl}/filters`, { params, ...this.headers }).pipe(
+    return this.http.get<ResponseDto<PaginationResponseDto<MonitorResponseDto>>>(`${this.apiUrl}/filters`, { params }).pipe(
       map((response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>) => {
         if (response?.data) {
-          const monitors = response.data.list.map(this.mapMonitorResponseToMonitor);
-          const result = {
-            list: monitors,
-            totalElements: response.data.totalElements,
-            totalPages: response.data.totalPages,
-            currentPage: response.data.currentPage,
-            size: response.data.size,
-            hasNext: response.data.hasNext,
-            hasPrevious: response.data.hasPrevious
+          const mappedList = response.data.list.map(this.mapMonitorResponseToMonitor);
+          return {
+            ...response.data,
+            list: mappedList
           };
-          return result;
         }
-        
-        return {
-          list: [],
-          totalElements: 0,
-          totalPages: 0,
-          currentPage: 1,
-          size: filters?.size || 10,
-          hasNext: false,
-          hasPrevious: false
-        };
+        throw new Error('API não retornou dados dos monitores');
       }),
       catchError(error => {
-        return of({
-          list: [],
-          totalElements: 0,
-          totalPages: 0,
-          currentPage: 1,
-          size: filters?.size || 10,
-          hasNext: false,
-          hasPrevious: false
-        });
+        throw error;
       })
     );
   }
@@ -107,7 +86,8 @@ export class MonitorService {
     return this.http.get<ResponseDto<MonitorResponseDto>>(`${this.apiUrl}/${id}`, this.headers).pipe(
       map((response: ResponseDto<MonitorResponseDto>) => {
         if (response?.data) {
-          return this.mapMonitorResponseToMonitor(response.data);
+          const mappedMonitor = this.mapMonitorResponseToMonitor(response.data);
+          return mappedMonitor;
         }
         return null;
       }),
@@ -118,10 +98,11 @@ export class MonitorService {
   }
 
   createMonitor(monitorRequest: CreateMonitorRequestDto): Observable<Monitor> {
-    return this.http.post<ResponseDto<Monitor>>(this.apiUrl, monitorRequest, this.headers).pipe(
-      map((response: ResponseDto<Monitor>) => {
+    return this.http.post<ResponseDto<MonitorResponseDto>>(this.apiUrl, monitorRequest, this.headers).pipe(
+      map((response: ResponseDto<MonitorResponseDto>) => {
         if (response?.data) {
-          return response.data;
+          const mappedMonitor = this.mapMonitorResponseToMonitor(response.data);
+          return mappedMonitor;
         }
         throw new Error('API não retornou dados do monitor criado');
       }),
@@ -131,11 +112,12 @@ export class MonitorService {
     );
   }
 
-  updateMonitor(id: string, monitorRequest: CreateMonitorRequestDto): Observable<Monitor> {
+  updateMonitor(id: string, monitorRequest: UpdateMonitorRequestDto): Observable<Monitor> {
     return this.http.put<ResponseDto<MonitorResponseDto>>(`${this.apiUrl}/${id}`, monitorRequest, this.headers).pipe(
       map((response: ResponseDto<MonitorResponseDto>) => {
         if (response?.data) {
-          return this.mapMonitorResponseToMonitor(response.data);
+          const mappedMonitor = this.mapMonitorResponseToMonitor(response.data);
+          return mappedMonitor;
         }
         throw new Error('API não retornou dados do monitor atualizado');
       }),
@@ -156,36 +138,22 @@ export class MonitorService {
     );
   }
 
+  canDeleteMonitor(monitor: Monitor): boolean {
+    return true;
+  }
+
+  getDeleteRestrictionReason(monitor: Monitor): string | null {
+    return null;
+  }
+
   private mapMonitorResponseToMonitor(monitorResponse: MonitorResponseDto): Monitor {
-    console.log('[MonitorService] Mapeando monitor:', monitorResponse.id, 'hasAvailableSlots:', (monitorResponse as any)?.hasAvailableSlots);
-    
-    const monitor: Monitor = {
+    const mappedMonitor = {
       id: monitorResponse.id,
-      name: monitorResponse.name || `Monitor ${monitorResponse.id}`,
-      location: monitorResponse.location || monitorResponse.address?.city || 'Sem localização',
-      status: monitorResponse.status || DefaultStatus.ACTIVE,
-      lastUpdate: monitorResponse.lastUpdate || new Date(),
-      type: monitorResponse.type,
+      size: monitorResponse.size || 0,
       active: monitorResponse.active,
-      locationDescription: monitorResponse.locationDescription || '',
-      size: monitorResponse.size || 42.5,
-      productId: monitorResponse.productId || `PROD-${monitorResponse.id}`,
-      latitude: monitorResponse.address?.latitude,
-      longitude: monitorResponse.address?.longitude,
-      address: monitorResponse.address ? {
-        id: monitorResponse.address.id,
-        street: monitorResponse.address.street,
-        city: monitorResponse.address.city,
-        state: monitorResponse.address.state,
-        country: monitorResponse.address.country,
-        zipCode: monitorResponse.address.zipCode,
-        complement: monitorResponse.address.complement,
-        latitude: monitorResponse.address.latitude,
-        longitude: monitorResponse.address.longitude,
-        coordinatesParams: monitorResponse.address.latitude && monitorResponse.address.longitude 
-          ? `${monitorResponse.address.latitude}, ${monitorResponse.address.longitude}`
-          : undefined
-      } : {
+      type: monitorResponse.type,
+      locationDescription: monitorResponse.locationDescription,
+      address: monitorResponse.address || {
         id: '',
         street: '',
         city: '',
@@ -193,16 +161,11 @@ export class MonitorService {
         country: '',
         zipCode: ''
       },
+      adLinks: [] as string[],
       createdAt: monitorResponse.createdAt,
       updatedAt: monitorResponse.updatedAt
     };
-    
-    // Adicionar campos que podem vir da API
-    if ((monitorResponse as any)?.hasAvailableSlots !== undefined) {
-      monitor.hasAvailableSlots = (monitorResponse as any).hasAvailableSlots;
-    }
-    
-    return monitor;
+    return mappedMonitor;
   }
 
   getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {

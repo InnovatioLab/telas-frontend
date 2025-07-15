@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
-import { Monitor } from '@app/model/monitors';
+import { UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { Monitor, MonitorType } from '@app/model/monitors';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
 import { debounceTime, distinctUntilChanged, switchMap, Observable, of } from 'rxjs';
 import { AddressData } from '@app/model/dto/request/address-data-request';
@@ -22,10 +23,11 @@ import { AddressData } from '@app/model/dto/request/address-data-request';
 export class EditMonitorModalComponent implements OnInit, OnChanges {
   @Input() monitor: Monitor | null = null;
   @Output() close = new EventEmitter<void>();
-  @Output() monitorUpdated = new EventEmitter<{ id: string; data: CreateMonitorRequestDto }>();
+  @Output() monitorUpdated = new EventEmitter<{ id: string; data: UpdateMonitorRequestDto }>();
 
   monitorForm: FormGroup;
   loadingZipCode = false;
+  monitorTypes = Object.values(MonitorType);
 
   constructor(
     private readonly fb: FormBuilder,
@@ -33,13 +35,19 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
   ) {
     this.monitorForm = this.fb.group({
       size: [null, [Validators.required, Validators.min(0.01), Validators.max(999.99)]],
+      type: [MonitorType.BASIC, [Validators.required]],
+      active: [true, [Validators.required]],
+      locationDescription: ['', [Validators.maxLength(200)]],
       address: this.fb.group({
+        id: [''],
         street: ['', [Validators.required, Validators.maxLength(100)]],
         zipCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
         city: ['', [Validators.required, Validators.maxLength(50)]],
         state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
         country: ['US', [Validators.maxLength(100)]],
-        complement: ['', [Validators.maxLength(100)]]
+        complement: ['', [Validators.maxLength(100)]],
+        latitude: [null],
+        longitude: [null]
       })
     });
   }
@@ -60,23 +68,26 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
   private populateForm(): void {
     if (!this.monitor) return;
 
-    console.log('Populating form with monitor:', this.monitor);
-
     const formData = {
       size: this.monitor.size || 0,
+      type: this.monitor.type || MonitorType.BASIC,
+      active: this.monitor.active || true,
+      locationDescription: this.monitor.locationDescription || '',
       address: {
+        id: this.monitor.address?.id || '',
         street: this.monitor.address?.street || '',
         zipCode: this.monitor.address?.zipCode || '',
         city: this.monitor.address?.city || '',
         state: this.monitor.address?.state || '',
         country: this.monitor.address?.country || 'US',
-        complement: this.monitor.address?.complement || ''
+        complement: this.monitor.address?.complement || '',
+        latitude: this.monitor.address?.latitude || null,
+        longitude: this.monitor.address?.longitude || null
       }
     };
 
-    console.log('Form data to patch:', formData);
     this.monitorForm.patchValue(formData);
-    console.log('Form values after patch:', this.monitorForm.value);
+    this.monitorForm.markAllAsTouched();
   }
 
   private setupZipCodeSearch(): void {
@@ -102,7 +113,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
         },
         error: (error) => {
           this.loadingZipCode = false;
-          console.error('Erro ao buscar CEP:', error);
         }
       });
     }
@@ -129,15 +139,21 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
       const formValue = this.monitorForm.value;
       const addressValue = formValue.address;
       
-      const monitorRequest: CreateMonitorRequestDto = {
+      const monitorRequest: UpdateMonitorRequestDto = {
         size: formValue.size,
+        type: formValue.type,
+        active: formValue.active,
+        locationDescription: formValue.locationDescription,
         address: {
+          id: addressValue.id,
           street: addressValue.street,
           city: addressValue.city,
           state: addressValue.state,
           country: addressValue.country,
           zipCode: addressValue.zipCode,
-          complement: addressValue.complement ?? null
+          complement: addressValue.complement ?? null,
+          latitude: addressValue.latitude ?? null,
+          longitude: addressValue.longitude ?? null
         }
       };
 

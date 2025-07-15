@@ -34,7 +34,7 @@ export class SearchMonitorsService {
   private readonly nearestMonitorsSubject = new BehaviorSubject<MapPoint[]>([]);
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
   private readonly errorSubject = new BehaviorSubject<string | null>(null);
-  private readonly storageName = 'raizes_ce_token';
+  private readonly storageName = 'telas_token';
 
   constructor(
     private readonly http: HttpClient,

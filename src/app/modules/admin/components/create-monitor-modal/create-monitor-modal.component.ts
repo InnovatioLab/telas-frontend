@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
@@ -18,7 +18,7 @@ import { AddressData } from '@app/model/dto/request/address-data-request';
   templateUrl: './create-monitor-modal.component.html',
   styleUrls: ['./create-monitor-modal.component.scss']
 })
-export class CreateMonitorModalComponent {
+export class CreateMonitorModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() monitorCreated = new EventEmitter<CreateMonitorRequestDto>();
 
@@ -32,6 +32,7 @@ export class CreateMonitorModalComponent {
   ) {
     this.monitorForm = this.fb.group({
       size: [null, [Validators.required, Validators.min(0.01), Validators.max(999.99)]],
+      locationDescription: ['', [Validators.maxLength(200)]],
       address: this.fb.group({
         street: ['', [Validators.required, Validators.maxLength(100)]],
         zipCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
@@ -41,7 +42,9 @@ export class CreateMonitorModalComponent {
         complement: ['', [Validators.maxLength(100)]]
       })
     });
+  }
 
+  ngOnInit(): void {
     this.setupZipCodeSearch();
   }
 
@@ -68,7 +71,6 @@ export class CreateMonitorModalComponent {
         },
         error: (error) => {
           this.loadingZipCode = false;
-          console.error('Erro ao buscar CEP:', error);
         }
       });
     }
@@ -97,6 +99,7 @@ export class CreateMonitorModalComponent {
       
       const monitorRequest: CreateMonitorRequestDto = {
         size: formValue.size,
+        locationDescription: formValue.locationDescription,
         address: {
           street: addressValue.street,
           city: addressValue.city,
@@ -109,6 +112,19 @@ export class CreateMonitorModalComponent {
 
       this.monitorCreated.emit(monitorRequest);
       this.closeModal();
+    } else {
+      Object.keys(this.monitorForm.controls).forEach(key => {
+        const control = this.monitorForm.get(key);
+        control?.markAsTouched();
+      });
+      
+      const addressGroup = this.monitorForm.get('address') as FormGroup;
+      if (addressGroup) {
+        Object.keys(addressGroup.controls).forEach(key => {
+          const control = addressGroup.get(key);
+          control?.markAsTouched();
+        });
+      }
     }
   }
 
@@ -139,4 +155,4 @@ export class CreateMonitorModalComponent {
     }
     return '';
   }
-} 
+}

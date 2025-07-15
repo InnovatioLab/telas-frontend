@@ -7,6 +7,7 @@ import { MonitorService } from '@app/core/service/api/monitor.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { Monitor } from '@app/model/monitors';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { CreateMonitorModalComponent } from '../create-monitor-modal/create-monitor-modal.component';
 import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-modal.component';
@@ -34,10 +35,12 @@ export class ManagementMonitorsComponent implements OnInit {
   monitors: Monitor[] = [];
   selectedMonitorForAds: Monitor | null = null;
   selectedMonitorForEdit: Monitor | null = null;
+  selectedMonitorForDelete: Monitor | null = null;
   loading = false;
   createMonitorModalVisible = false;
   editMonitorModalVisible = false;
   adsModalVisible = false;
+  deleteConfirmModalVisible = false;
   searchTerm = '';
   totalRecords = 0;
   newAdLink = '';
@@ -69,12 +72,11 @@ export class ManagementMonitorsComponent implements OnInit {
     
     this.monitorService.getMonitorsWithPagination(filters).subscribe({
       next: (result) => {
-        this.monitors = result.list;
-        this.totalRecords = result.totalElements;
+        this.monitors = result.list || [];
+        this.totalRecords = this.ensureValidNumber(result.totalElements);
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading initial monitors:', error);
         this.toastService.erro('Error loading monitors');
         this.loading = false;
       }
@@ -91,18 +93,22 @@ export class ManagementMonitorsComponent implements OnInit {
     
     this.monitorService.getMonitorsWithPagination(filters).subscribe({
       next: (result) => {
-        this.monitors = result.list;
-        this.totalRecords = result.totalElements;
+        this.monitors = result.list || [];
+        this.totalRecords = this.ensureValidNumber(result.totalElements);
         this.loading = false;
         this.isSorting = false;
       },
       error: (error) => {
-        console.error('Error loading monitors:', error);
         this.toastService.erro('Error loading monitors');
         this.loading = false;
         this.isSorting = false;
       }
     });
+  }
+
+  ensureValidNumber(value: any): number {
+    const num = Number(value);
+    return isNaN(num) ? 0 : num;
   }
 
   onSearch(): void {
@@ -144,17 +150,19 @@ export class ManagementMonitorsComponent implements OnInit {
         this.closeModal();
         this.messageService.add({
           severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Monitor criado com sucesso!'
+          summary: 'Success',
+          detail: 'Monitor created successfully!'
         });
         this.loadMonitors();
       },
       error: (error) => {
+        this.closeModal();
         this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Erro ao criar monitor. Verifique os dados e tente novamente.'
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Monitor created, but API response did not return the monitor. Reloading table.'
         });
+        this.loadMonitors();
       }
     });
   }
@@ -176,25 +184,24 @@ export class ManagementMonitorsComponent implements OnInit {
     this.editMonitorModalVisible = true;
   }
 
-  updateMonitor(updateData: { id: string; data: CreateMonitorRequestDto }): void {
+  updateMonitor(updateData: { id: string; data: UpdateMonitorRequestDto }): void {
     this.loading = true;
     
     this.monitorService.updateMonitor(updateData.id, updateData.data).subscribe({
       next: (updatedMonitor) => {
         this.messageService.add({
           severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Monitor atualizado com sucesso!'
+          summary: 'Success',
+          detail: 'Monitor updated successfully!'
         });
         this.onEditMonitorModalClose();
         this.loadMonitors();
       },
       error: (error) => {
-        console.error('Error updating monitor:', error);
         this.messageService.add({
           severity: 'error',
-          summary: 'Erro',
-          detail: 'Erro ao atualizar monitor. Verifique os dados e tente novamente.'
+          summary: 'Error',
+          detail: 'Error updating monitor. Please check the data and try again.'
         });
         this.loading = false;
       }
@@ -206,30 +213,66 @@ export class ManagementMonitorsComponent implements OnInit {
     this.selectedMonitorForEdit = null;
   }
 
-  onMonitorUpdated(updateData: { id: string; data: CreateMonitorRequestDto }): void {
+  onMonitorUpdated(updateData: { id: string; data: UpdateMonitorRequestDto }): void {
     this.updateMonitor(updateData);
   }
 
-  deleteMonitor(id: string): void {
-    if (confirm('Are you sure you want to delete this monitor?')) {
-      this.loading = true;
-      this.monitorService.deleteMonitor(id).subscribe({
-        next: (success) => {
-          if (success) {
-            this.monitors = this.monitors.filter(m => m.id !== id);
-            this.toastService.sucesso('Monitor deleted successfully');
-          } else {
-            this.toastService.erro('Error deleting monitor');
-          }
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error deleting monitor:', error);
-          this.toastService.erro('Error deleting monitor');
-          this.loading = false;
-        }
+  deleteMonitor(monitor: Monitor): void {
+    if (!this.monitorService.canDeleteMonitor(monitor)) {
+      const restrictionReason = this.monitorService.getDeleteRestrictionReason(monitor);
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: restrictionReason || 'This monitor cannot be deleted at this time.'
       });
+      return;
     }
+    
+    this.selectedMonitorForDelete = { ...monitor };
+    this.deleteConfirmModalVisible = true;
+  }
+
+  confirmDelete(): void {
+    if (!this.selectedMonitorForDelete) {
+      return;
+    }
+
+    this.loading = true;
+    
+    this.monitorService.deleteMonitor(this.selectedMonitorForDelete.id).subscribe({
+      next: (success) => {
+        if (success) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Monitor deleted successfully!'
+          });
+          this.loadMonitors();
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error deleting monitor. Please try again.'
+          });
+        }
+        this.loading = false;
+        this.closeDeleteConfirmModal();
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error deleting monitor. Please check your connection and try again.'
+        });
+        this.loading = false;
+        this.closeDeleteConfirmModal();
+      }
+    });
+  }
+
+  closeDeleteConfirmModal(): void {
+    this.deleteConfirmModalVisible = false;
+    this.selectedMonitorForDelete = null;
   }
 
   openAdsModal(monitor: Monitor): void {
@@ -313,5 +356,44 @@ export class ManagementMonitorsComponent implements OnInit {
     }
 
     return addressParts.length > 0 ? addressParts.join(', ') : 'N/A';
+  }
+
+  getMonitorDetails(monitor: Monitor): string {
+    const details = [];
+    
+    if (monitor.size) {
+      details.push(`Size: ${monitor.size}"`);
+    }
+    
+    if (monitor.type) {
+      details.push(`Type: ${monitor.type}`);
+    }
+    
+    if (monitor.adLinks && monitor.adLinks.length > 0) {
+      details.push(`Ads: ${monitor.adLinks.length}`);
+    }
+    
+    return details.join(' • ');
+  }
+
+  canDeleteMonitor(monitor: Monitor): boolean {
+    return this.monitorService.canDeleteMonitor(monitor);
+  }
+
+  getDeleteTooltip(monitor: Monitor): string {
+    if (this.canDeleteMonitor(monitor)) {
+      return 'Delete Monitor';
+    }
+    
+    const restrictionReason = this.monitorService.getDeleteRestrictionReason(monitor);
+    return restrictionReason || 'This monitor cannot be deleted';
+  }
+
+  getDeleteButtonClass(monitor: Monitor): string {
+    const baseClass = 'p-button-rounded p-button-danger p-button-text';
+    if (!this.canDeleteMonitor(monitor)) {
+      return baseClass + ' p-button-disabled';
+    }
+    return baseClass;
   }
 }
