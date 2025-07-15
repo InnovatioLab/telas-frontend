@@ -73,7 +73,7 @@ export class ManagementMonitorsComponent implements OnInit {
     this.monitorService.getMonitorsWithPagination(filters).subscribe({
       next: (result) => {
         this.monitors = result.list || [];
-        this.totalRecords = this.ensureValidNumber(result.totalElements);
+        this.totalRecords = this.ensureValidNumber(result.totalElements ?? (result as any).totalRecords ?? 0);
         this.loading = false;
       },
       error: (error) => {
@@ -94,7 +94,7 @@ export class ManagementMonitorsComponent implements OnInit {
     this.monitorService.getMonitorsWithPagination(filters).subscribe({
       next: (result) => {
         this.monitors = result.list || [];
-        this.totalRecords = this.ensureValidNumber(result.totalElements);
+        this.totalRecords = this.ensureValidNumber(result.totalElements ?? result.totalRecords ?? 0);
         this.loading = false;
         this.isSorting = false;
       },
