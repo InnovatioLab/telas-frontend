@@ -95,6 +95,9 @@
   --modal-header-bg: var(--cor-branca);
   --modal-content-bg: var(--cor-branca);
   --modal-footer-bg: var(--cor-branca);
+
+  --p-datatable-header-cell-background: var(--cor-primaria) !important;
+  --p-datatable-header-cell-color: #fff !important;
 }
 
 html,
@@ -989,10 +992,10 @@ p {
   overflow: hidden;
   
   .p-datatable-thead {
-    background-color: var(--cor-branca);
+    background-color: var(--cor-primaria) !important;
     
     th {
-      color: var(--cor-branca);
+      color: #fff !important;
       font-weight: var(--fonte-peso-medio);
       font-size: var(--fonte-tamanho-padrao);
       padding: var(--espacamento-padrao);
@@ -1261,4 +1264,14 @@ p {
 
 .p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider:before {
   background-color: var(--cor-cinza-fundo) !important;
+}
+
+.p-datatable-thead th,
+.p-datatable-thead > tr > th,
+.p-datatable .p-datatable-thead th,
+.p-datatable .p-datatable-thead > tr > th,
+th.p-datatable-sortable-column,
+th.p-datatable-column-sorted {
+  background-color: var(--cor-primaria) !important;
+  color: #fff !important;
 }

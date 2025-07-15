@@ -327,3 +327,8 @@
     }
   }
 }
+
+:host ::ng-deep .p-datatable-thead > tr > th {
+  background: var(--cor-primaria) !important;
+  color: #fff !important;
+}
