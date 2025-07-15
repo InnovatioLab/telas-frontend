@@ -1,148 +1,172 @@
-.edit-monitor-modal {
-  width: 100%;
-  max-width: 800px;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
+:host {
+  color: var(--cor-branca);
+  .edit-monitor-modal {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
 
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 2rem;
-    background: var(--cor-primaria);
-    color: white;
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background: var(--cor-primaria);
+      color: white;
 
-    h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 600;
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .close-btn {
+        color: white !important;
+      }
     }
 
-    .close-btn {
-      color: white !important;
+    .modal-content {
+      padding: 2rem;
+      max-height: 70vh;
+      overflow-y: auto;
+
+      .form-section {
+        margin-bottom: 2rem;
+
+        h3 {
+          margin: 0 0 1.5rem 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--cor-cinza-escuro);
+          border-bottom: 2px solid var(--cor-cinza-medio);
+          padding-bottom: 0.5rem;
+        }
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+
+          @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+        }
+
+        .form-field {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+
+          label {
+            font-weight: 600;
+            color: var(--cor-cinza-escuro);
+            font-size: 0.9rem;
+          }
+
+          .zipcode-input-container {
+            position: relative;
+
+            .loading-icon {
+              position: absolute;
+              right: 0.75rem;
+              top: 50%;
+              transform: translateY(-50%);
+              color: var(--cor-primaria);
+            }
+          }
+
+          .help-text {
+            color: var(--cor-cinza);
+            font-size: 0.8rem;
+            font-style: italic;
+          }
+
+          .error-message {
+            color: var(--cor-erro);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+          }
+
+          &.full-width {
+            grid-column: 1 / -1;
+            width: 100%;
+          }
+        }
+
+        .address-group {
+          .form-row:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--cor-cinza-medio);
+
+        button {
+          min-width: 120px;
+          height: 40px;
+        }
+
+        @media (max-width: 576px) {
+          flex-direction: column;
+
+          button {
+            width: 100%;
+          }
+        }
+      }
     }
   }
 
   .modal-content {
-    padding: 2rem;
-    max-height: 70vh;
-    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cor-cinza-medio) transparent;
 
-    .form-section {
-      margin-bottom: 2rem;
-
-      h3 {
-        margin: 0 0 1.5rem 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--cor-cinza-escuro);
-        border-bottom: 2px solid var(--cor-cinza-medio);
-        padding-bottom: 0.5rem;
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-
-        @media (max-width: 768px) {
-          grid-template-columns: 1fr;
-          gap: 1rem;
-        }
-      }
-
-      .form-field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-
-        label {
-          font-weight: 600;
-          color: var(--cor-cinza-escuro);
-          font-size: 0.9rem;
-        }
-
-        .zipcode-input-container {
-          position: relative;
-
-          .loading-icon {
-            position: absolute;
-            right: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--cor-primaria);
-          }
-        }
-
-        .help-text {
-          color: var(--cor-cinza);
-          font-size: 0.8rem;
-          font-style: italic;
-        }
-
-        .error-message {
-          color: var(--cor-erro);
-          font-size: 0.75rem;
-          margin-top: 0.25rem;
-        }
-
-        &.full-width {
-          grid-column: 1 / -1;
-          width: 100%;
-        }
-      }
-
-      .address-group {
-        .form-row:last-child {
-          margin-bottom: 0;
-        }
-      }
+    &::-webkit-scrollbar {
+      width: 6px;
     }
 
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      margin-top: 2rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--cor-cinza-medio);
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-      button {
-        min-width: 120px;
-        height: 40px;
-      }
+    &::-webkit-scrollbar-thumb {
+      background: var(--cor-cinza-medio);
+      border-radius: 3px;
+    }
 
-      @media (max-width: 576px) {
-        flex-direction: column;
-
-        button {
-          width: 100%;
-        }
-      }
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--cor-cinza);
     }
   }
 }
 
-.modal-content {
-  scrollbar-width: thin;
-  scrollbar-color: var(--cor-cinza-medio) transparent;
+.form-field textarea,
+.form-field textarea[pInputTextarea] {
+  min-height: 40px;
+  border-radius: var(--borda-raio-padrao);
+  padding: 0.5rem 0.75rem;
+  border: var(--borda-padrao);
+  font-size: 1rem;
+  color: var(--cor-cinza-escuro);
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: vertical;
+  box-shadow: none;
+}
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--cor-cinza-medio);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: var(--cor-cinza);
-  }
+.form-field textarea:focus,
+.form-field textarea[pInputTextarea]:focus {
+  border-color: var(--cor-primaria);
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(56, 142, 60, 0.15); // igual ao input PrimeNG
 }

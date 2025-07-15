@@ -39,13 +39,16 @@
       <div class="form-row">
         <div class="form-field">
           <label for="active">Status</label>
-          <p-selectButton 
-            id="active" 
-            formControlName="active" 
-            [options]="[{label: 'Active', value: true}, {label: 'Inactive', value: false}]"
-            optionLabel="label"
-            optionValue="value">
-          </p-selectButton>
+          <div class="status-toggle-row" style="display: flex; align-items: center;">
+            <p-inputSwitch 
+              id="active" 
+              formControlName="active">
+            </p-inputSwitch>
+            <span class="status-label" style="margin-left: 1rem; font-weight: bold;"
+              [ngStyle]="{ color: monitorForm.get('active')?.value ? '#388e3c' : '#d32f2f' }">
+              {{ monitorForm.get('active')?.value ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
           <small class="error-message" *ngIf="getFieldError('active')">{{ getFieldError('active') }}</small>
         </div>
 
@@ -141,21 +144,23 @@
       </div>
     </div>
 
-    <div class="form-actions">
+    <div class="form-actions" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem;">
       <button 
         pButton 
         pRipple 
         type="button" 
         label="Cancel" 
         class="p-button-outlined" 
-        (click)="cancel()">
+        (click)="cancel()"
+        style="width: 50%;">
       </button>
       <button 
         pButton 
         pRipple 
         type="submit" 
         label="Update Monitor" 
-        [disabled]="monitorForm.invalid">
+        [disabled]="monitorForm.invalid"
+        style="width: 50%;">
       </button>
     </div>
   </form>
