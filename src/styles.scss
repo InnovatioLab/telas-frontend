@@ -24,7 +24,7 @@
   --cor-desabilitado: #696f74cc;
   --cor-branca: #ffffff;
   --cor-preto-claro: #16191b;
-  --cor-alerta: #F59C00;
+  --cor-alerta: #f59c00;
 
   /* Cor para RGB - usado em transparências */
   --cor-erro-rgb: 220, 53, 69;
@@ -34,8 +34,8 @@
   --fonte-familia: "Montserrat", sans-serif;
   --fonte-tamanho-pequeno: 12px;
   --fonte-tamanho-padrao: 14px;
-  --fonte-tamanho-medio: 16px;
-  --fonte-tamanho-grande: 18px;
+  --fonte-tamanho-medio: 18px;
+  --fonte-tamanho-grande: 20px;
   --fonte-tamanho-extra-grande: 24px;
   --fonte-tamanho-titulo: 26px;
   --fonte-tamanho-h5: 30px;
@@ -113,12 +113,12 @@ body {
 }
 
 body {
-  font-family: var(--font-family);
+  font-family: var(--fonte-familia) !important;
   font-size: 1rem;
   font-weight: normal;
 
   .p-component {
-    font-family: var(--font-family);
+    font-family: var(--fonte-familia) !important;
   }
 
   span,
@@ -153,7 +153,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 *:not(span.pi, span.material-symbols-outlined) {
-  font-family: var(--font-family);
+  font-family: var(--fonte-familia) !important;
 }
 
 .text-danger {
@@ -466,10 +466,10 @@ select {
   height: var(--altura-input);
   border: 1px solid var(--cor-cinza-medio);
   border-radius: var(--borda-raio-pequeno);
-  font-size: var(--fonte-tamanho-medio);
+  font-size: var(--fonte-tamanho-padrao);
   font-weight: var(--fonte-peso-regular);
   color: var(--cor-cinza-escuro);
-  background-color: var(--cor-branca);
+  background-color: transparent;
   padding-left: var(--espacamento-padrao);
   transition: border-color 0.2s;
 
@@ -685,10 +685,6 @@ select {
   }
 }
 
-.p-inputtext {
-  background-color: transparent;
-}
-
 .p-select {
   display: flex;
   align-items: center;
@@ -792,7 +788,7 @@ h5,
 h6 {
   margin-top: 0;
   margin-bottom: 0.5rem;
-  font-family: var(--fonte-familia);
+  font-family: var(--fonte-familia) !important;
   font-weight: var(--fonte-peso-negrito);
   font-size: var(--fonte-tamanho-extra-grande);
   line-height: 1.2;
@@ -800,6 +796,13 @@ h6 {
 
 h1 {
   font-size: var(--fonte-tamanho-titulo);
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--fonte-tamanho-grande);
+  font-weight: var(--fonte-peso-medio);
 }
 
 h5 {
@@ -832,13 +835,6 @@ p {
 }
 
 /* Outras classes utilitárias importantes */
-.mt-0 {
-  margin-top: 0 !important;
-}
-
-.mb-0 {
-  margin-bottom: 0 !important;
-}
 
 .text-xlarge-bold {
   font-size: var(--fonte-tamanho-h5);
