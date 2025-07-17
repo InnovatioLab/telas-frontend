@@ -11,10 +11,13 @@
           class="w-full"
           id="inp-numero"
         />
-        <app-error id="error-msg-numero" [control]="contatoForm.get('numeroContato')"></app-error>
+        <app-error
+          id="error-msg-numero"
+          [control]="contatoForm.get('numeroContato')"
+        ></app-error>
       </div>
       <div class="col-12 lg:col-6">
-        <label id="ld-email" for="txt-email" class="reqappred">E-mail</label>
+        <label id="ld-email" for="txt-email" class="required">E-mail</label>
         <input
           type="text"
           pInputText

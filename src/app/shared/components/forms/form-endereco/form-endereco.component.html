@@ -69,8 +69,10 @@
           formControlName="state"
           placeholder="State"
           class="w-full input-form"
+          minlingth="2"
           maxlength="2"
           id="inp-state"
+          uiTextOnly
         />
         <app-error id="error-msg-state" [control]="enderecoForm.get('state')"></app-error>
       </div>
@@ -85,6 +87,7 @@
           placeholder="Country"
           class="w-full input-form"
           maxlength="100"
+          uiTextOnly
           id="inp-country"
         />
         <app-error id="error-msg-country" [control]="enderecoForm.get('country')"></app-error>

@@ -1,4 +1,4 @@
-<div class="text-danger" *ngIf="control && control.errors && (control.dirty || control.touched)">
+<div class="text-danger mt-1" *ngIf="control && control.errors && (control.dirty || control.touched)">
   <small  *ngIf="control.errors.required"><small>Required field not filled!</small></small>
   <small  *ngIf="control.errors.email"><small>Invalid email format</small></small>
   <small  *ngIf="control.errors.minlength"><small>{{'The field must have at least ' + control.errors.minlength.requiredLength}} characters</small></small>

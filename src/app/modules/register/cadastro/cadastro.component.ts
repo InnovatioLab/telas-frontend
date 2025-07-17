@@ -1,26 +1,26 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { MenuItem } from 'primeng/api';
-import { CLIENT_FORM } from '@app/shared/constants/campos-cadastro.constants';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ALL_STEPS, USER_TYPE_STEPS, userFriendlyNames } from '@app/shared/constants/etapas-cadastro.constants';
-import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
-import { normalizePhoneNumber } from '@app/utility/src/lib/utils/normalize-inputs.utils';
-import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { MENSAGENS } from '@app/utility/src';
-import { FormCadastro } from './utils/form-cadastro';
-import { FormEnderecoComponent } from '@app/shared/components/forms/form-endereco/form-endereco.component';
-import { FormDadosPessoaisComponent } from '@app/shared/components/forms/form-dados-pessoais/form-dados-pessoais.component';
-import { ButtonFooterComponent } from '@app/shared/components/button-footer/button-footer.component';
-import { FormContatoComponent } from '@app/shared/components/forms/form-contato/form-contato.component';
-import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
-import { LoadingService } from '@app/core/service/state/loading.service';
 import { ClientService } from '@app/core/service/api/client.service';
+import { LoadingService } from '@app/core/service/state/loading.service';
+import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
+import { ButtonFooterComponent } from '@app/shared/components/button-footer/button-footer.component';
+import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
+import { FormContatoComponent } from '@app/shared/components/forms/form-contato/form-contato.component';
+import { FormDadosPessoaisComponent } from '@app/shared/components/forms/form-dados-pessoais/form-dados-pessoais.component';
+import { FormEnderecoComponent } from '@app/shared/components/forms/form-endereco/form-endereco.component';
+import { CLIENT_FORM } from '@app/shared/constants/campos-cadastro.constants';
+import { ALL_STEPS, USER_TYPE_STEPS, userFriendlyNames } from '@app/shared/constants/etapas-cadastro.constants';
 import { IconsModule } from '@app/shared/icons/icons.module';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { MENSAGENS } from '@app/utility/src';
+import { normalizePhoneNumber } from '@app/utility/src/lib/utils/normalize-inputs.utils';
+import { MenuItem } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { FormCadastro } from './utils/form-cadastro';
 
 @Component({
   selector: 'feat-cadastro',
@@ -159,26 +159,27 @@ export class CadastroComponent implements OnInit {
         businessName: dadosCliente.businessName,
         identificationNumber: dadosCliente.identificationNumber,
         industry: dadosCliente.industry,
-        websiteUrl: dadosCliente.websiteUrl,
-        socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : undefined,
+        websiteUrl: dadosCliente.websiteUrl ?? null,
+        socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : null,
         contact: {
           email: contato.email,
-          phone: normalizedPhone
+          phone: normalizedPhone,
         },
         owner: {
           identificationNumber: dadosCliente.identificationNumber,
-          firstName: dadosCliente.businessName?.split(' ')[0] ?? '',
-          lastName: dadosCliente.businessName?.split(' ').slice(1).join(' ') ?? '',
+          firstName: dadosCliente.businessName?.split(" ")[0] ?? "",
+          lastName:
+            dadosCliente.businessName?.split(" ").slice(1).join(" ") ?? "",
           email: contato.email,
-          phone: normalizedPhone
+          phone: normalizedPhone,
         },
         addresses: [
           {
-            complement: enderecoCliente.complement ?? '',
+            complement: enderecoCliente.complement ?? null,
             street: enderecoCliente.street,
             city: enderecoCliente.city,
             state: enderecoCliente.state,
-            country: enderecoCliente.country,
+            country: enderecoCliente.country ?? null,
             zipCode: enderecoCliente.zipCode,
           },
         ],

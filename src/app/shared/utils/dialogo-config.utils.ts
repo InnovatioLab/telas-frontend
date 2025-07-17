@@ -23,9 +23,10 @@ export class DialogoUtils {
   static exibirSucesso(descricao: string, config?: IConfigDialogo): DynamicDialogConfig {
     const data: IConfigDialogo = {
       ...config,
-      titulo: 'Sucess!',
+      titulo: 'Success!',
       descricao,
-      icon: IconCheckComponent,
+      icon: 'check_circle',
+      iconClass: 'success',
       acaoPrimaria: 'Ok'
     };
 
@@ -44,6 +45,7 @@ export class DialogoUtils {
     const data: IConfigDialogo = {
       titulo: 'Alert!',
       icon: IconWarningComponent,
+      iconClass: 'alert',
       ...config,
       descricao,
       acaoPrimaria: config?.acaoPrimaria ?? 'Ok'

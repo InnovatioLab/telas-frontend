@@ -1,37 +1,36 @@
 /* Custom Styles */
-@use './app/shared/styles/variables' as *;
-@use './app/shared/styles/utilities' as *;
+@use "./app/shared/styles/variables" as *;
+@use "./app/shared/styles/utilities" as *;
 
 /* External Components */
-@import 'primeicons/primeicons.css';
-@import 'primeflex/primeflex.css';
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
 
 /* Base Styles */
 :root {
   /* Colors */
-  --cor-primaria: #232F3E;
+  --cor-primaria: #232f3e;
   --cor-primaria-clara: #496382;
   --cor-primaria-escura: #131921;
   --cor-cinza-fundo: #f8f9fa;
   --cor-cinza: #6c757d;
   --cor-cinza-medio: #e9ecef;
   --cor-cinza-escuro: #212529;
-  --cor-legenda: #696F74;
+  --cor-legenda: #696f74;
   --cor-sucesso: #28a745;
   --cor-erro: #dc3545;
   --cor-erro-claro: #f8d7da;
   --cor-erro-escuro: #b02a37;
-  --cor-desabilitado: #696F74CC;
-  --cor-branca: #FFFFFF;
-  --cor-preto-claro: #16191B;
-  
+  --cor-desabilitado: #696f74cc;
+  --cor-branca: #ffffff;
+  --cor-preto-claro: #16191b;
+
   /* Cor para RGB - usado em transparências */
   --cor-erro-rgb: 220, 53, 69;
   --cor-primaria-rgb: 35, 47, 62;
 
-
   /* Typography */
-  --fonte-familia: 'Montserrat', sans-serif;
+  --fonte-familia: "Montserrat", sans-serif;
   --fonte-tamanho-pequeno: 12px;
   --fonte-tamanho-padrao: 14px;
   --fonte-tamanho-medio: 16px;
@@ -58,7 +57,8 @@
   --borda-raio-circular: 50%;
   --borda-largura: 1px;
   --borda-estilo: solid;
-  --borda-padrao: var(--borda-largura) var(--borda-estilo) var(--cor-cinza-medio);
+  --borda-padrao: var(--borda-largura) var(--borda-estilo)
+    var(--cor-cinza-medio);
 
   /* Spacing */
   --espacamento-pequeno: 8px;
@@ -135,7 +135,6 @@ body {
       text-decoration: none;
     }
   }
-
 }
 
 html::-webkit-scrollbar {
@@ -161,7 +160,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .border-danger,
-.border-danger>input {
+.border-danger > input {
   border-color: var(--cor-erro) !important;
 }
 
@@ -527,7 +526,6 @@ select {
     border-bottom: var(--borda-padrao);
 
     .p-datepicker-title {
-
       .p-datepicker-month,
       .p-datepicker-year,
       .p-datepicker-select-month,
@@ -576,7 +574,7 @@ select {
     td {
       padding: var(--espacamento-pequeno);
 
-      >span {
+      > span {
         width: var(--altura-botao-pequeno);
         height: var(--altura-botao-pequeno);
         border-radius: var(--borda-raio-circular);
@@ -593,7 +591,7 @@ select {
         }
       }
 
-      &.p-datepicker-today>span {
+      &.p-datepicker-today > span {
         background-color: var(--cor-primaria-escura) !important;
         color: var(--cor-branca) !important;
       }
@@ -758,43 +756,26 @@ select {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-family: var(--fonte-familia);
-  font-weight: var(--fonte-peso-medio);
+  font-weight: var(--fonte-peso-negrito);
+  font-size: var(--fonte-tamanho-extra-grande);
   line-height: 1.2;
 }
 
 h1 {
-  font-size: var(--fonte-tamanho-extra-grande);
-  font-weight: var(--fonte-peso-negrito);
-}
-
-h2 {
-  font-size: var(--fonte-tamanho-grande);
-  font-weight: var(--fonte-peso-negrito);
-}
-
-h3 {
-  font-size: var(--fonte-tamanho-medio);
-  font-weight: var(--fonte-peso-medio);
-}
-
-h4 {
-  font-size: var(--fonte-tamanho-padrao);
-  font-weight: var(--fonte-peso-medio);
+  font-size: var(--fonte-tamanho-titulo);
 }
 
 h5 {
-  font-size: var(--fonte-tamanho-h5);
-  font-weight: var(--fonte-peso-negrito);
   margin-bottom: var(--espacamento-pequeno);
-}
-
-h6 {
-  font-size: var(--fonte-tamanho-padrao);
-  font-weight: var(--fonte-peso-medio);
 }
 
 p {
@@ -897,30 +878,30 @@ p {
   overflow: hidden;
   box-shadow: var(--sombra-padrao);
   background-color: var(--cor-branca) !important;
-  
+
   .p-dialog-header {
     background-color: var(--modal-header-bg);
     color: var(--cor-primaria);
     padding: 1rem var(--modal-padding);
     border-bottom: 1px solid var(--cor-cinza-medio);
-    
+
     .p-dialog-title {
       font-size: var(--fonte-tamanho-medio);
       font-weight: var(--fonte-peso-medio);
       color: var(--cor-primaria);
     }
-    
+
     .p-dialog-header-close {
       color: var(--cor-primaria);
     }
   }
-  
+
   .p-dialog-content {
     background-color: var(--modal-content-bg);
     padding: var(--modal-padding);
     color: var(--cor-cinza-escuro);
   }
-  
+
   .p-dialog-footer {
     background-color: var(--modal-footer-bg);
     padding: var(--modal-padding);
@@ -934,17 +915,17 @@ p {
     min-width: 350px;
     max-width: 95vw;
     background-color: var(--cor-branca) !important;
-    
+
     &.acknowledge-dialog-container {
       width: 500px !important;
-      
+
       .p-dialog-content {
         padding: 1rem !important;
         background-color: var(--cor-branca) !important;
       }
     }
   }
-  
+
   .p-dialog-mask.p-component-overlay {
     background-color: rgba(0, 0, 0, 0.4);
   }
@@ -964,11 +945,11 @@ p {
 .p-dynamicdialog .p-inputtextarea {
   width: 100%;
   background-color: transparent;
-  
+
   &::placeholder {
     color: var(--cor-legenda);
   }
-  
+
   &:focus {
     border-color: var(--cor-primaria);
     box-shadow: 0 0 0 1px var(--cor-primaria-clara);
@@ -990,10 +971,10 @@ p {
   box-shadow: var(--sombra-padrao);
   margin-bottom: var(--espacamento-padrao);
   overflow: hidden;
-  
+
   .p-datatable-thead {
     background-color: var(--cor-primaria) !important;
-    
+
     th {
       color: #fff !important;
       font-weight: var(--fonte-peso-medio);
@@ -1002,27 +983,27 @@ p {
       text-align: left;
       border: none;
       transition: var(--transicao-rapida);
-      
+
       &:hover {
         background-color: var(--cor-primaria);
       }
     }
   }
-  
+
   .p-datatable-tbody {
     > tr.ng-star-inserted {
       border-bottom: var(--borda-padrao);
       background-color: var(--cor-branca);
       transition: var(--transicao-rapida);
-      
+
       &:nth-child(even) {
         background-color: var(--cor-cinza-fundo);
       }
-      
+
       &:hover {
         background-color: var(--cor-cinza-medio);
       }
-      
+
       > td {
         padding: var(--espacamento-padrao);
         border-bottom: var(--borda-padrao);
@@ -1031,17 +1012,17 @@ p {
       }
     }
   }
-  
+
   &.p-datatable-sm {
     .p-datatable-thead th {
       padding: var(--espacamento-pequeno) var(--espacamento-padrao);
     }
-    
+
     .p-datatable-tbody td {
       padding: var(--espacamento-pequeno) var(--espacamento-padrao);
     }
   }
-  
+
   .p-datatable-table-container {
     border-radius: var(--borda-raio-padrao);
     overflow: hidden;
@@ -1052,25 +1033,25 @@ p {
   display: flex;
   gap: var(--espacamento-pequeno);
   justify-content: center;
-  
+
   .p-button-rounded {
     width: 2rem;
     height: 2rem;
-    
+
     &.p-button-text {
       background-color: transparent;
-      
+
       &.p-button-success {
         color: var(--cor-sucesso);
-        
+
         &:hover {
           background-color: rgba(40, 167, 69, 0.1);
         }
       }
-      
+
       &.p-button-danger {
         color: var(--cor-erro);
-        
+
         &:hover {
           background-color: rgba(220, 53, 69, 0.1);
         }
@@ -1085,16 +1066,16 @@ p {
   font-weight: var(--fonte-peso-medio);
   padding: 0.25rem 0.5rem;
   border-radius: var(--borda-raio-pequeno);
-  
+
   &.p-badge-danger {
     &:has(:-webkit-any(:-internal-pseudo, ACTIVE)) {
       background-color: var(--cor-sucesso);
     }
-    
+
     &:has(:contains("ACTIVE")) {
       background-color: var(--cor-sucesso);
     }
-    
+
     &:has(:contains("INACTIVE")) {
       background-color: var(--cor-erro);
     }
@@ -1109,12 +1090,12 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   .p-paginator-current {
     color: var(--cor-legenda);
     margin-right: var(--espacamento-medio);
   }
-  
+
   .p-paginator-page,
   .p-paginator-first,
   .p-paginator-prev,
@@ -1126,22 +1107,22 @@ p {
     border-radius: var(--borda-raio-circular);
     color: var(--cor-primaria);
     transition: var(--transicao-rapida);
-    
+
     &:hover:not(.p-disabled):not(.p-highlight) {
       background-color: var(--cor-cinza-medio);
     }
-    
+
     &.p-highlight {
       background-color: var(--cor-primaria);
       color: var(--cor-branca);
     }
-    
+
     &.p-disabled {
       opacity: 0.5;
       cursor: default;
     }
   }
-  
+
   .p-paginator-rpp-dropdown {
     margin-left: var(--espacamento-medio);
     width: 5rem;
@@ -1151,7 +1132,7 @@ p {
     }
   }
 
-  .p-paginator-page.p-paginator-page-selected  {
+  .p-paginator-page.p-paginator-page-selected {
     color: var(--cor-primaria) !important;
   }
 }
@@ -1163,33 +1144,33 @@ p {
   justify-content: space-between;
   margin-bottom: var(--espacamento-medio);
   gap: var(--espacamento-padrao);
-  
+
   .p-input-icon-left {
     flex: 1;
     width: 100%;
-    
+
     input {
       width: 100%;
       padding-left: 2.5rem;
       height: var(--altura-botao);
     }
-    
+
     i {
       left: var(--espacamento-padrao);
       color: var(--cor-legenda);
     }
   }
-  
+
   .p-button {
     height: var(--altura-botao);
     background-color: var(--cor-primaria);
     border-color: var(--cor-primaria);
-    
+
     &:hover {
       background-color: var(--cor-primaria-escura);
       border-color: var(--cor-primaria-escura);
     }
-    
+
     .p-button-icon {
       margin-right: var(--espacamento-pequeno);
     }
@@ -1197,15 +1178,15 @@ p {
 }
 
 /* For smaller screens, stack them vertically */
-@include responsive('mobile') {
+@include responsive("mobile") {
   .filters {
     flex-direction: column;
     align-items: stretch;
-    
+
     .p-input-icon-left {
       margin-bottom: var(--espacamento-pequeno);
     }
-    
+
     .p-button {
       width: 100%;
     }
@@ -1213,25 +1194,25 @@ p {
 }
 
 /* Responsive styles */
-@include responsive('mobile') {
+@include responsive("mobile") {
   .container {
     padding: var(--spacing-base);
   }
 }
 
-@include responsive('tablet') {
+@include responsive("tablet") {
   .container {
     padding: var(--spacing-medium);
   }
 }
 
-@include responsive('desktop') {
+@include responsive("desktop") {
   .container {
     padding: var(--spacing-large);
   }
 }
 
-@include responsive('mobile') {
+@include responsive("mobile") {
   .p-datatable {
     .p-datatable-thead {
       th {
@@ -1239,7 +1220,7 @@ p {
         font-size: var(--fonte-tamanho-pequeno);
       }
     }
-    
+
     .p-datatable-tbody {
       td {
         padding: var(--espacamento-pequeno);
@@ -1247,12 +1228,12 @@ p {
       }
     }
   }
-  
+
   .p-paginator {
     flex-wrap: wrap;
     gap: var(--espacamento-pequeno);
     background-color: var(--cor-cinza-fundo);
-    
+
     .p-paginator-current {
       width: 100%;
       text-align: center;
@@ -1274,4 +1255,101 @@ th.p-datatable-sortable-column,
 th.p-datatable-column-sorted {
   background-color: var(--cor-primaria) !important;
   color: #fff !important;
+}
+
+label.required::after {
+  content: " *";
+  color: var(--cor-erro);
+}
+
+/* =========================================
+   FIX AUTOCOMPLETE STYLES
+   ========================================= */
+
+/* Remove background amarelo do autocomplete do browser */
+.p-inputtext:-webkit-autofill,
+.p-inputtext:-webkit-autofill:hover :not(.ng-invalid),
+.p-inputtext:-webkit-autofill:focus :not(.ng-invalid),
+.p-inputtext:-webkit-autofill:active,
+.p-password .p-inputtext:-webkit-autofill,
+.p-password .p-inputtext:-webkit-autofill:hover,
+.p-password .p-inputtext:-webkit-autofill:focus,
+.p-password .p-inputtext:-webkit-autofill:active,
+.p-autocomplete .p-autocomplete-input:-webkit-autofill,
+.p-autocomplete .p-autocomplete-input:-webkit-autofill:hover,
+.p-autocomplete .p-autocomplete-input:-webkit-autofill:focus,
+.p-autocomplete .p-autocomplete-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--cor-branca) inset !important;
+  -webkit-text-fill-color: var(--cor-cinza-escuro) !important;
+  background-color: var(--cor-branca) !important;
+  color: var(--cor-cinza-escuro) !important;
+  transition: color 5000s ease-in-out 0s, background-color 5000s ease-in-out 0s !important;
+}
+
+.ng-dirty.ng-invalid > .p-autocomplete > .p-inputtext,
+.ng-dirty.ng-invalid > .p-calendar > .p-inputtext,
+.ng-dirty.ng-invalid > .p-cascadeselect,
+.ng-dirty.ng-invalid > .p-checkbox > .p-checkbox-box,
+.ng-dirty.ng-invalid > .p-chips > .p-inputtext,
+.ng-dirty.ng-invalid > .p-dropdown,
+.ng-touched.ng-invalid > .p-dropdown,
+.ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext,
+.ng-touched.ng-invalid > .p-inputnumber > .p-inputtext,
+.ng-dirty.ng-invalid > .p-inputswitch,
+.p-inputtext.ng-dirty.ng-invalid,
+.p-inputtext.ng-touched.ng-invalid,
+.ng-dirty.ng-invalid > .p-listbox,
+.p-multiselect.ng-touched.ng-invalid > .p-multiselect:not(.p-disabled).p-focus,
+.p-multiselect.ng-dirty.ng-invalid > .p-multiselect:not(.p-disabled).p-focus,
+.ng-dirty.ng-invalid > .p-multiselect,
+.ng-touched.ng-invalid > .p-multiselect,
+.ng-invalid.ng-dirty > .p-password > .p-inputtext,
+.ng-dirty.ng-invalid > .p-radiobutton > .p-radiobutton-box,
+.ng-dirty.ng-invalid > .p-selectbutton > .p-button,
+.ng-dirty.ng-invalid > .p-togglebutton.p-button,
+.ng-invalid.ng-dirty > .p-treeselect,
+.p-inputwrapper.invalid > .p-inputnumber > .p-inputtext,
+.ng-dirty.ng-invalid > .p-autocomplete > .p-inputtext:focus,
+.ng-dirty.ng-invalid > .p-calendar > .p-inputtext:focus,
+.ng-dirty.ng-invalid > .p-cascadeselect:focus,
+.ng-dirty.ng-invalid > .p-checkbox > .p-checkbox-box:focus,
+.ng-dirty.ng-invalid > .p-chips > .p-inputtext:focus,
+.ng-dirty.ng-invalid > .p-dropdown:focus,
+.ng-touched.ng-invalid > .p-dropdown:focus,
+.ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext:focus,
+.ng-touched.ng-invalid > .p-inputnumber > .p-inputtext:focus,
+.ng-dirty.ng-invalid > .p-inputswitch:focus,
+.p-inputtext.ng-touched.ng-invalid:enabled:focus,
+.p-inputtext.ng-dirty.ng-invalid:focus,
+.p-inputtext.ng-touched.ng-invalid:focus,
+.ng-dirty.ng-invalid > .p-listbox:focus,
+.ng-dirty.ng-invalid > .p-multiselect:focus,
+.ng-touched.ng-invalid > .p-multiselect:focus,
+.ng-dirty.ng-invalid > .p-radiobutton > .p-radiobutton-box:focus,
+.ng-dirty.ng-invalid > .p-selectbutton > .p-button:focus,
+.ng-dirty.ng-invalid > .p-togglebutton.p-button:focus,
+.ng-invalid.ng-dirty > .p-treeselect:focus,
+.p-inputwrapper.invalid > .p-inputnumber > .p-inputtext:focus,
+.ng-dirty.ng-invalid > .p-autocomplete > .p-inputtext:hover,
+.ng-dirty.ng-invalid > .p-calendar > .p-inputtext:hover,
+.ng-dirty.ng-invalid > .p-cascadeselect:hover,
+.ng-dirty.ng-invalid > .p-checkbox > .p-checkbox-box:hover,
+.ng-dirty.ng-invalid > .p-chips > .p-inputtext:hover,
+.ng-dirty.ng-invalid > .p-dropdown:hover,
+.ng-touched.ng-invalid > .p-dropdown:hover,
+.ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext:hover,
+.ng-touched.ng-invalid > .p-inputnumber > .p-inputtext:hover,
+.ng-dirty.ng-invalid > .p-inputswitch:hover,
+.p-inputtext.ng-touched.ng-invalid:enabled:hover,
+.p-inputtext.ng-dirty.ng-invalid:hover,
+.p-inputtext.ng-touched.ng-invalid:hover,
+.ng-dirty.ng-invalid > .p-listbox:hover,
+.ng-dirty.ng-invalid > .p-multiselect:hover,
+.ng-touched.ng-invalid > .p-multiselect:hover,
+.ng-dirty.ng-invalid > .p-radiobutton > .p-radiobutton-box:hover,
+.ng-dirty.ng-invalid > .p-selectbutton > .p-button:hover,
+.ng-dirty.ng-invalid > .p-togglebutton.p-button:hover,
+.ng-invalid.ng-dirty > .p-treeselect:hover,
+.p-inputwrapper.invalid > .p-inputnumber > .p-inputtext:hover {
+  border-color: var(--cor-erro) !important;
 }

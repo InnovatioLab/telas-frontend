@@ -1,5 +1,8 @@
 :host ::ng-deep {
   #container-termo {
+    p.surface-overlay {
+    background-color: var(--cor-branca) !important;
+  }
     .p-dialog .p-dialog-content {
       padding: 0px 93px;
       overflow: hidden;

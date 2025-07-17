@@ -1,14 +1,15 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, ReactiveFormsModule, Validators, FormArray, FormBuilder } from '@angular/forms';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { ErrorComponent } from '../../error/error.component';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { ENVIRONMENT } from 'src/environments/environment-token';
-import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
-import { DialogoComponent } from '../../dialogo/dialogo.component';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TextOnlyDirective } from '@app/core/directives/text-only.directive';
 import { ClientService } from '@app/core/service/api/client.service';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ENVIRONMENT } from 'src/environments/environment-token';
+import { DialogoComponent } from '../../dialogo/dialogo.component';
+import { ErrorComponent } from '../../error/error.component';
 
 @Component({
   selector: 'ui-form-dados-pessoais',
@@ -18,6 +19,7 @@ import { ClientService } from '@app/core/service/api/client.service';
     PrimengModule,
     ReactiveFormsModule,
     ErrorComponent,
+    TextOnlyDirective
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: './form-dados-pessoais.component.html',
@@ -95,8 +97,9 @@ export class FormDadosPessoaisComponent implements OnInit {
       Validators.maxLength(9),
       Validators.pattern('^[0-9]{9}$')
     ]);
-    AbstractControlUtils.atualizatualizarValidators(this.cadastroForm, 'businessField', [
-      Validators.maxLength(100),
+    AbstractControlUtils.atualizatualizarValidators(this.cadastroForm, 'industry', [
+      Validators.maxLength(50),
+      Validators.pattern('^[a-zA-ZÀ-ÖØ-öø-ÿ\\s]*$'),
       Validators.required
     ]);
     AbstractControlUtils.atualizatualizarValidators(this.cadastroForm, 'websiteUrl', [

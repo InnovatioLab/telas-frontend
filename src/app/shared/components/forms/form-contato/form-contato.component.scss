@@ -11,9 +11,12 @@
     margin-bottom: var(--espacamento-grande);
 
     label {
+      color: var(--cor-primaria);
       margin-left: var(--espacamento-pequeno);
+      
       &.required::after {
         content: ' *';
+        color: var(--cor-erro);
       }
     }
   }

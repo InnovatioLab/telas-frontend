@@ -15,6 +15,7 @@
       color: var(--cor-primaria);
       &.required::after {
         content: ' *';
+        color: var(--cor-erro);
       }
     }
   }

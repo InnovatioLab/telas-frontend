@@ -1,9 +1,9 @@
 import { Route } from '@angular/router';
-import { RetomarCadastroComponent } from './retomar-cadastro/retomar-cadastro.component';
-import { CadastroComponent } from './cadastro/cadastro.component';
-import { ValidacaoCadastroComponent } from './validacao-cadastro/validacao-cadastro.component';
 import { RecuperarSenhaComponent } from '../manage-access/recuperar-senha/recuperar-senha.component';
 import { ValidacaoRecuperaSenhaComponent } from '../manage-access/validacao-recuperar-senha/validacao-recuperar-senha.component';
+import { CadastroComponent } from './cadastro/cadastro.component';
+import { RetomarCadastroComponent } from './retomar-cadastro/retomar-cadastro.component';
+import { ValidacaoCadastroComponent } from './validacao-cadastro/validacao-cadastro.component';
 
 export const ROUTES: Route[] = [
   {

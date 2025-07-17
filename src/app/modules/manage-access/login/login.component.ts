@@ -1,22 +1,22 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BaseModule } from '@app/shared/base/base.module';
-import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { Client, Role } from '@app/model/client';
-import { ILoginRequest } from '@app/model/dto/request/login.request';
-import { finalize, catchError, of, firstValueFrom } from 'rxjs';
-import { Authentication } from '@app/core/service/auth/autenthication';
-import { TermosComponent } from '@app/modules/register/termos-condicoes/termos.component';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { ClientService } from '@app/core/service/api/client.service';
+import { Authentication } from '@app/core/service/auth/autenthication';
 import { AuthenticationStorage } from '@app/core/service/auth/authentication-storage';
+import { Client, Role } from '@app/model/client';
+import { ILoginRequest } from '@app/model/dto/request/login.request';
+import { TermosComponent } from '@app/modules/register/termos-condicoes/termos.component';
+import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
+import { BaseModule } from '@app/shared/base/base.module';
+import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
 import { IconsModule } from '@app/shared/icons/icons.module';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { catchError, finalize, firstValueFrom, of } from 'rxjs';
 
 @Component({
     selector: 'app-login',

@@ -1,60 +1,72 @@
-<app-card-centralizado type="formulario-pequeno" *ngIf="!codigoValido && !exibirTermos">
-  <ng-template pTemplate="content">
-    <ng-container>
-      <h5 class="text-center text-xlarge-bold mt-0">Registration Validation</h5>
-      <p class="text-center text-medium-medium">
-        To validate your registration, we sent a code to your primary contact. The code is valid for 15 minutes.
-      </p>
-    </ng-container>
-    <form [formGroup]="validacaoForm" class="mt-6">
-      <div class="col-12">
-        <label htmlFor="codigo" id="lb-codigo" class="required">Enter your code</label>
-        <br />
-        <input
-          type="text"
-          pInputText
-          formControlName="codigo"
-          placeholder="Information"
-          class="w-full input-form"
-          maxlength="6"
-          minlength="6"
-          id="codigo"
-          (input)="onInput($event)"
-        />
-        <app-error id="error-msg-login" [control]="validacaoForm.get('codigo')"></app-error>
-      </div>
-      <div class="text-center">
-        <button
-          pButton
-          class="w-6 my-5 justify-content-center custom-button"
-          [disabled]="!validacaoForm.valid"
-          (click)="validarCodigo()"
-        >
-          {{ TEXTO_ACAO.validar }}
-        </button>
-      </div>
-    </form>
+<div class="validacao-cadastro h-full w-full">
+  <app-card-centralizado
+    type="formulario-pequeno"
+    *ngIf="!codigoValido && !exibirTermos"
+  >
+    <ng-template pTemplate="content">
+      <ng-container>
+        <h5 class="text-center text-xlarge-bold mt-0 mb-4">
+          Registration Validation
+        </h5>
+        <p class="text-center text-medium-medium">
+          To validate your registration, we sent a code to your primary contact.
+          The code is valid for 15 minutes.
+        </p>
+      </ng-container>
+      <form [formGroup]="validacaoForm" class="mt-4">
+        <div class="col-12 flex flex-column gap-1">
+          <label htmlFor="codigo" id="lb-codigo" class="required"
+            >Enter your code</label
+          >
+          <input
+            type="text"
+            pInputText
+            formControlName="codigo"
+            placeholder="Information"
+            class="w-full input-form"
+            maxlength="6"
+            minlength="6"
+            id="codigo"
+            (input)="onInput($event)"
+          />
+          <app-error
+            id="error-msg-login"
+            [control]="validacaoForm.get('codigo')"
+          ></app-error>
+        </div>
+        <div class="text-center">
+          <button
+            pButton
+            class="w-full max-w-12rem my-3 justify-content-center custom-button"
+            [disabled]="!validacaoForm.valid"
+            (click)="validarCodigo()"
+          >
+            {{ TEXTO_ACAO.validar }}
+          </button>
+        </div>
+      </form>
 
-    <div class="flex flex-column gap-3 text-normal text-center">
-      <div class="flex flex-row gap-1 justify-content-center text-normal text-center btn-reenviar-codigo">
-        <span>Didn't receive it?</span>
+      <div
+        class="flex flex-column justify-content-center align-items-center gap-3 text-center"
+      >
+        <p class="mb-0">Didn't receive it?</p>
         <button
           pButton
           (click)="enviarCodigo()"
-          class="link-text p-0 bg-transparent border-0 justify-content-center cursor-pointer resend-button"
+          class="w-full max-w-12rem link-text bg-transparent border-0 cursor-pointer resend-button"
           [disabled]="inativarBotaoReenviarCodigo"
         >
           Resend Code
         </button>
       </div>
-    </div>
-  </ng-template>
-</app-card-centralizado>
+    </ng-template>
+  </app-card-centralizado>
 
-<feat-cadastrar-senha
-  *ngIf="codigoValido && !exibirTermos"
-  class="fadein animation-duration-500"
-  (cadastroConcluído)="cadastroSenhaFinalizado($event)"
-/>
+  <feat-cadastrar-senha
+    *ngIf="codigoValido && !exibirTermos"
+    class="fadein animation-duration-500"
+    (cadastroConcluído)="cadastroSenhaFinalizado($event)"
+  />
 
-<app-termos *ngIf="exibirTermos" class="fadein animation-duration-500" />
+  <app-termos *ngIf="exibirTermos" class="fadein animation-duration-500" />
+</div>
