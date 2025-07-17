@@ -24,6 +24,7 @@
   --cor-desabilitado: #696f74cc;
   --cor-branca: #ffffff;
   --cor-preto-claro: #16191b;
+  --cor-alerta: #F59C00;
 
   /* Cor para RGB - usado em transparências */
   --cor-erro-rgb: 220, 53, 69;
@@ -174,7 +175,17 @@ textarea {
 }
 
 label {
+  display: block;
+  margin-bottom: 6px;
   font-size: var(--fonte-tamanho-padrao);
+  font-weight: var(--fonte-peso-regular);
+  color: var(--cor-legenda);
+  margin-left: var(--espacamento-pequeno);
+
+  &.required::after {
+    content: " *";
+    color: var(--cor-erro);
+  }
 }
 
 td {
@@ -453,22 +464,39 @@ input[type="date"],
 select {
   width: 100%;
   height: var(--altura-input);
-  border-radius: var(--borda-raio-padrao);
+  border: 1px solid var(--cor-cinza-medio);
+  border-radius: var(--borda-raio-pequeno);
   font-size: var(--fonte-tamanho-medio);
   font-weight: var(--fonte-peso-regular);
   color: var(--cor-cinza-escuro);
   background-color: var(--cor-branca);
   padding-left: var(--espacamento-padrao);
+  transition: border-color 0.2s;
 
   &::placeholder {
-    color: var(--cor-legenda);
-    font-weight: var(--fonte-peso-regular);
-    font-size: var(--fonte-tamanho-medio);
+    color: var(--cor-desabilitado);
   }
 
   &:enabled:focus,
   &:focus {
     box-shadow: none !important;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+  }
+
+  &:disabled {
+    color: var(--cor-branca);
+    background-color: var(--cor-desabilitado);
+    cursor: not-allowed;
+  }
+
+  &[readonly] {
+    color: var(--cor-branca);
+    background-color: var(--cor-desabilitado);
+    cursor: default;
   }
 }
 
@@ -1283,7 +1311,9 @@ label.required::after {
   -webkit-text-fill-color: var(--cor-cinza-escuro) !important;
   background-color: var(--cor-branca) !important;
   color: var(--cor-cinza-escuro) !important;
-  transition: color 5000s ease-in-out 0s, background-color 5000s ease-in-out 0s !important;
+  transition:
+    color 5000s ease-in-out 0s,
+    background-color 5000s ease-in-out 0s !important;
 }
 
 .ng-dirty.ng-invalid > .p-autocomplete > .p-inputtext,

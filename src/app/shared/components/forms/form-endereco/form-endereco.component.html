@@ -1,18 +1,28 @@
 <div class="dados-endereco">
   <div class="flex justify-content-between align-items-center">
-    <span class="titulo">Address {{index > 0 ? (index + 1) : ''}}</span>
+    <span class="titulo">Address {{ index > 0 ? index + 1 : "" }}</span>
     <div class="address-actions" *ngIf="showRemoveButton">
-      <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-sm" 
-        (click)="removeThisAddress()" [disabled]="index === 0 && !showRemoveButton">
-      </button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-trash"
+        class="p-button-danger p-button-sm"
+        (click)="removeThisAddress()"
+        [disabled]="index === 0 && !showRemoveButton"
+      ></button>
     </div>
   </div>
 
   <form [formGroup]="enderecoForm">
     <div class="grid form-group">
       <div class="col-12 md:col-4 lg:col-4">
-        <label htmlFor="zipCode" id="lb-zip-code" [class.required]="campoObrigatorio('zipCode')">ZIP Code</label>
-        <br />
+        <label
+          htmlFor="zipCode"
+          id="lb-zip-code"
+          [class.required]="campoObrigatorio('zipCode')"
+          >ZIP Code</label
+        >
+
         <p-inputMask
           mask="99999"
           formControlName="zipCode"
@@ -26,12 +36,20 @@
         <div *ngIf="isLoading" class="mt-1 text-sm">
           <span>Loading address data...</span>
         </div>
-        <app-error id="error-msg-zip-code" [control]="enderecoForm.get('zipCode')"></app-error>
+        <app-error
+          id="error-msg-zip-code"
+          [control]="enderecoForm.get('zipCode')"
+        ></app-error>
       </div>
 
       <div class="col-12 md:col-4 lg:col-4">
-        <label htmlFor="street" id="lb-street" [class.required]="campoObrigatorio('street')">Street</label>
-        <br />
+        <label
+          htmlFor="street"
+          id="lb-street"
+          [class.required]="campoObrigatorio('street')"
+          >Street</label
+        >
+
         <input
           type="text"
           pInputText
@@ -41,12 +59,20 @@
           maxlength="100"
           id="inp-street"
         />
-        <app-error id="error-msg-street" [control]="enderecoForm.get('street')"></app-error>
+        <app-error
+          id="error-msg-street"
+          [control]="enderecoForm.get('street')"
+        ></app-error>
       </div>
 
       <div class="col-12 md:col-4 lg:col-4">
-        <label htmlFor="city" id="lb-city" [class.required]="campoObrigatorio('city')">City</label>
-        <br />
+        <label
+          htmlFor="city"
+          id="lb-city"
+          [class.required]="campoObrigatorio('city')"
+          >City</label
+        >
+
         <input
           type="text"
           pInputText
@@ -56,13 +82,21 @@
           maxlength="50"
           id="inp-city"
         />
-        <app-error id="error-msg-city" [control]="enderecoForm.get('city')"></app-error>
+        <app-error
+          id="error-msg-city"
+          [control]="enderecoForm.get('city')"
+        ></app-error>
       </div>
 
       <!-- Segunda linha: state, country, complement -->
       <div class="col-12 md:col-4 lg:col-4">
-        <label htmlFor="state" id="lb-state" [class.required]="campoObrigatorio('state')">State</label>
-        <br />
+        <label
+          htmlFor="state"
+          id="lb-state"
+          [class.required]="campoObrigatorio('state')"
+          >State</label
+        >
+
         <input
           type="text"
           pInputText
@@ -74,12 +108,20 @@
           id="inp-state"
           uiTextOnly
         />
-        <app-error id="error-msg-state" [control]="enderecoForm.get('state')"></app-error>
+        <app-error
+          id="error-msg-state"
+          [control]="enderecoForm.get('state')"
+        ></app-error>
       </div>
 
       <div class="col-12 md:col-4 lg:col-4">
-        <label htmlFor="country" id="lb-country" [class.required]="campoObrigatorio('country')">Country</label>
-        <br />
+        <label
+          htmlFor="country"
+          id="lb-country"
+          [class.required]="campoObrigatorio('country')"
+          >Country</label
+        >
+
         <input
           type="text"
           pInputText
@@ -90,12 +132,20 @@
           uiTextOnly
           id="inp-country"
         />
-        <app-error id="error-msg-country" [control]="enderecoForm.get('country')"></app-error>
+        <app-error
+          id="error-msg-country"
+          [control]="enderecoForm.get('country')"
+        ></app-error>
       </div>
 
       <div class="col-12 md:col-4 lg:col-4">
-        <label htmlFor="complement" id="lb-complement" [class.required]="campoObrigatorio('complement')">Complement</label>
-        <br />
+        <label
+          htmlFor="complement"
+          id="lb-complement"
+          [class.required]="campoObrigatorio('complement')"
+          >Complement</label
+        >
+
         <input
           type="text"
           pInputText
@@ -105,7 +155,10 @@
           maxlength="100"
           id="inp-complement"
         />
-        <app-error id="error-msg-complement" [control]="enderecoForm.get('complement')"></app-error>
+        <app-error
+          id="error-msg-complement"
+          [control]="enderecoForm.get('complement')"
+        ></app-error>
       </div>
     </div>
   </form>

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IConfigDialogo } from '../interfaces/dialog-config.interface';
-import { IconCheckComponent } from '../icons/check.icon';
-import { IconWarningComponent } from '../icons/warning.icon';
 
 @Injectable({
   providedIn: 'root'
@@ -43,12 +41,12 @@ export class DialogoUtils {
 
   static exibirAlerta(descricao: string, config?: IConfigDialogo): DynamicDialogConfig {
     const data: IConfigDialogo = {
-      titulo: 'Alert!',
-      icon: IconWarningComponent,
-      iconClass: 'alert',
+      titulo: "Alert!",
+      icon: "warning",
+      iconClass: "alert",
       ...config,
       descricao,
-      acaoPrimaria: config?.acaoPrimaria ?? 'Ok'
+      acaoPrimaria: config?.acaoPrimaria ?? "Ok",
     };
 
     return {

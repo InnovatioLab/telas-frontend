@@ -9,15 +9,6 @@
   .form-group {
     margin-top: var(--espacamento-padrao);
     margin-bottom: var(--espacamento-grande);
-
-    label {
-      margin-left: var(--espacamento-pequeno);
-      color: var(--cor-primaria);
-      &.required::after {
-        content: ' *';
-        color: var(--cor-erro);
-      }
-    }
   }
 }
 

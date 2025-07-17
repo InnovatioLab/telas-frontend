@@ -97,46 +97,6 @@
     @media (max-width: 768px) {
       flex: 1 0 calc(100% - 20px);
     }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: var(--fonte-peso-medio);
-      color: var(--cor-legenda);
-    }
-
-    input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--cor-cinza-medio);
-      border-radius: var(--borda-raio-pequeno);
-      font-size: var(--fonte-tamanho-padrao);
-      transition: border-color 0.2s;
-
-      &:focus {
-        outline: none;
-        border-color: var(--cor-primaria);
-      }
-
-      &:disabled {
-        background-color: var(--cor-cinza-fundo);
-        cursor: not-allowed;
-      }
-
-      &.ng-invalid.ng-touched {
-        border-color: var(--cor-erro);
-      }
-
-      &.ng-invalid.ng-dirty {
-        border-color: var(--cor-erro);
-      }
-
-      &[readonly] {
-        background-color: var(--cor-cinza-fundo);
-        color: var(--cor-cinza);
-        cursor: default;
-      }
-    }
   }
 
   .loading-indicator {
@@ -269,14 +229,14 @@
   :host ::ng-deep {
     .social-dropdown .p-dropdown {
       width: 100%;
-      
+
       .p-dropdown-trigger {
         border-color: var(--cor-cinza-medio);
       }
 
       &.p-dropdown-disabled {
         background-color: var(--cor-cinza-fundo);
-        
+
         .p-dropdown-label {
           color: var(--cor-cinza);
         }

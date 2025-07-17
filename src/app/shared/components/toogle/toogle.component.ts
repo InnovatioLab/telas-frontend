@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
-import { IconSunComponent } from '../../icons/sun.icon';
 import { IconMoonComponent } from '../../icons/moon.icon';
+import { IconSunComponent } from '../../icons/sun.icon';
 
 @Component({
   selector: 'ui-toggle',

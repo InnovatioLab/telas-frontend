@@ -9,16 +9,6 @@
   .form-group {
     margin-top: var(--espacamento-padrao);
     margin-bottom: var(--espacamento-grande);
-
-    label {
-      color: var(--cor-primaria);
-      margin-left: var(--espacamento-pequeno);
-      
-      &.required::after {
-        content: ' *';
-        color: var(--cor-erro);
-      }
-    }
   }
 
   @media (min-width: 768px) {
