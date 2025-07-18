@@ -1,15 +1,15 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { IconsModule } from "@app/shared/icons/icons.module";
-import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { BoxService } from "@app/core/service/api/box.service";
+import { MonitorService } from "@app/core/service/api/monitor.service";
+import { ToastService } from "@app/core/service/state/toast.service";
 import { Box } from "@app/model/box";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
-import { BoxService } from "@app/core/service/api/box.service";
-import { MonitorService } from "@app/core/service/api/monitor.service";
 import { Monitor } from "@app/model/monitors";
-import { ToastService } from "@app/core/service/state/toast.service";
+import { IconsModule } from "@app/shared/icons/icons.module";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { MessageService } from "primeng/api";
 
 @Component({

@@ -490,7 +490,7 @@ textarea {
 
   &:disabled {
     color: var(--cor-branca);
-    background-color: var(--cor-desabilitado);
+    background-color: var(--cor-desabilitado) !important;
     cursor: not-allowed;
   }
 
@@ -499,6 +499,34 @@ textarea {
     background-color: var(--cor-desabilitado);
     cursor: default;
   }
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled,
+input:disabled::placeholder,
+textarea:disabled::placeholder,
+select:disabled::placeholder,
+.p-multiselect-panel
+  .p-multiselect-items
+  .p-multiselect-item.p-highlight.p-disabled,
+.p-dropdown.p-component.p-disabled .p-inputtext,
+.p-dropdown.p-component.p-disabled,
+.p-multiselect-label.p-placeholder {
+  color: var(--cor-branca) !important;
+}
+
+.p-multiselect.p-disabled {
+  background-color: var(--cor-desabilitado) !important;
+  border: 1px solid var(--cor-cinza-medio) !important;
+  color: var(--cor-branca) !important;
+
+  .p-multiselect-dropdown-icon {
+    color: var(--cor-branca) !important;
+  }
+}
+.p-multiselect-label {
+  padding: 0.75rem 0rem !important;
 }
 
 .p-dropdown,
