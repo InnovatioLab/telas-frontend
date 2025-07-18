@@ -110,13 +110,15 @@
         }
         
         .custom-ads-button {
+          height: 40px !important;
+          padding: var(--espacamento-pequeno) 0px !important;
+
           .custom-icon {
             width: 16px;
-            height: 16px;
+            height: 17px;
+            
             
             ::ng-deep svg {
-              width: 100%;
-              height: 100%;
               fill: currentColor;
             }
           }
