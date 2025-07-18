@@ -1414,3 +1414,7 @@ label.required::after {
 .p-inputwrapper.invalid > .p-inputnumber > .p-inputtext:hover {
   border-color: var(--cor-erro) !important;
 }
+
+.p-toggleswitch-slider {
+  color: var(--cor-branca);
+}

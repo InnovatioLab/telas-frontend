@@ -1,13 +1,12 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ZipCodeService } from '@app/core/service/api/zipcode.service';
+import { AddressData } from '@app/model/dto/request/address-data-request';
 import { UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { Monitor, MonitorType } from '@app/model/monitors';
-import { ZipCodeService } from '@app/core/service/api/zipcode.service';
-import { debounceTime, distinctUntilChanged, switchMap, Observable, of } from 'rxjs';
-import { AddressData } from '@app/model/dto/request/address-data-request';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { debounceTime, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-edit-monitor-modal',
