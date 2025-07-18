@@ -40,9 +40,12 @@
       [sortOrder]="currentFilters?.sortDir === 'asc' ? 1 : -1">
       <ng-template pTemplate="header">
         <tr>
-          <th scope="col">IP Address</th>
+          <th scope="col" pSortableColumn="ip">IP Address <p-sortIcon field="ip"></p-sortIcon></th>
+          <th scope="col">MAC Address</th>
           <th scope="col" pSortableColumn="active">Status <p-sortIcon field="active"></p-sortIcon></th>
           <th scope="col">Monitors</th>
+          <th scope="col">Created At</th>
+          <th scope="col">Updated At</th>
           <th scope="col">Actions</th>
         </tr>
       </ng-template>
@@ -50,6 +53,7 @@
       <ng-template pTemplate="body" let-box>
         <tr>
           <td>{{box.ip}}</td>
+          <td>{{box.macAddress || 'N/A'}}</td>
           <td>
             <p-badge [value]="box.active ? 'Active' : 'Inactive'" [severity]="box.active ? 'success' : 'danger'"></p-badge>
           </td>
@@ -59,6 +63,8 @@
               <span class="monitor-count">{{box.monitorCount || 0}} monitor(s)</span>
             </div>
           </td>
+          <td>{{box.createdAt | date:'short'}}</td>
+          <td>{{box.updatedAt | date:'short'}}</td>
           <td>
             <div class="action-buttons">
               <button pButton pRipple class="p-button-rounded p-button-info p-button-text" 
@@ -78,7 +84,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="4" class="text-center">No boxes found.</td>
+          <td colspan="7" class="text-center">No boxes found.</td>
         </tr>
       </ng-template>
     </p-table>
@@ -97,43 +103,38 @@
     
     <div class="box-form">
       <div class="form-group">
-        <label for="ip">IP Address *</label>
-        <input type="text" 
-               id="ip" 
-               pInputText 
-               [(ngModel)]="newBox.ip"
-               (ngModelChange)="onIpChange($event, false)"
-               placeholder="192.168.1.100"
-               class="w-full" />
+        <label for="boxAddress">IP Address *</label>
+        <p-select 
+          id="boxAddress"
+          [options]="availableBoxAddresses" 
+          [(ngModel)]="selectedBoxAddress"
+          optionLabel="ip"
+          placeholder="Select an IP address"
+          class="w-full"
+          [loading]="loadingBoxAddresses"
+          [disabled]="loadingBoxAddresses"
+          (onChange)="onBoxAddressChange($event.value)">
+        </p-select>
       </div>
       
       <div class="form-group">
         <label for="monitors">Select Monitors</label>
         <p-multiSelect 
           id="monitors"
-          [options]="filteredMonitorsByIp" 
+          [options]="availableMonitors" 
           [(ngModel)]="newBox.monitorIds"
-          optionLabel="name"
+          optionLabel="id"
           optionValue="id"
-          placeholder="Enter an IP address first to load monitors"
+          placeholder="Select monitors"
           class="w-full"
           [showHeader]="false"
-          [disabled]="!newBox.ip?.trim() || loadingMonitors"
-          [loading]="loadingMonitors">
+          [loading]="loadingMonitors"
+          [disabled]="loadingMonitors">
         </p-multiSelect>
-        <small class="help-text" *ngIf="!newBox.ip?.trim()">Enter an IP address to see available monitors</small>
         <small class="help-text" *ngIf="loadingMonitors">Loading monitors...</small>
-        <small class="help-text" *ngIf="newBox.ip?.trim() && !loadingMonitors && filteredMonitorsByIp.length === 0">No monitors found for this IP</small>
+        <small class="help-text" *ngIf="!loadingMonitors && availableMonitors.length === 0">No monitors available</small>
       </div>
       
-      <div class="form-group">
-        <p-checkbox 
-          inputId="active" 
-          [(ngModel)]="newBox.active"
-          [binary]="true" 
-          label="Active">
-        </p-checkbox>
-      </div>
     </div>
     
     <ng-template pTemplate="footer">
@@ -155,42 +156,38 @@
     
     <div class="box-form" *ngIf="selectedBoxForEdit">
       <div class="form-group">
-        <label for="editIp">IP Address *</label>
-        <input type="text" 
-               id="editIp" 
-               pInputText 
-               [(ngModel)]="selectedBoxForEdit.ip"
-               (ngModelChange)="onIpChange($event, true)"
-               class="w-full" />
+        <label for="editBoxAddress">IP Address *</label>
+        <p-select 
+          id="editBoxAddress"
+          [options]="availableBoxAddresses" 
+          [(ngModel)]="selectedBoxAddress"
+          optionLabel="ip"
+          placeholder="Select an IP address"
+          class="w-full"
+          [loading]="loadingBoxAddresses"
+          [disabled]="loadingBoxAddresses"
+          (onChange)="onEditBoxAddressChange($event.value)">
+        </p-select>
       </div>
       
       <div class="form-group">
         <label for="editMonitors">Select Monitors</label>
         <p-multiSelect 
           id="editMonitors"
-          [options]="filteredMonitorsByIp" 
+          [options]="availableMonitors" 
           [(ngModel)]="selectedBoxForEdit.monitorIds"
-          optionLabel="name"
+          optionLabel="id"
           optionValue="id"
-          placeholder="Enter an IP address first to load monitors"
+          placeholder="Select monitors"
           class="w-full"
           [showHeader]="false"
-          [disabled]="!selectedBoxForEdit.ip?.trim() || loadingMonitors"
-          [loading]="loadingMonitors">
+          [loading]="loadingMonitors"
+          [disabled]="loadingMonitors">
         </p-multiSelect>
-        <small class="help-text" *ngIf="!selectedBoxForEdit.ip?.trim()">Enter an IP address to see available monitors</small>
         <small class="help-text" *ngIf="loadingMonitors">Loading monitors...</small>
-        <small class="help-text" *ngIf="selectedBoxForEdit.ip?.trim() && !loadingMonitors && filteredMonitorsByIp.length === 0">No monitors found for this IP</small>
+        <small class="help-text" *ngIf="!loadingMonitors && availableMonitors.length === 0">No monitors available</small>
       </div>
       
-      <div class="form-group">
-        <p-checkbox 
-          inputId="editActive" 
-          [(ngModel)]="selectedBoxForEdit.active"
-          [binary]="true" 
-          label="Active">
-        </p-checkbox>
-      </div>
     </div>
     
     <ng-template pTemplate="footer">

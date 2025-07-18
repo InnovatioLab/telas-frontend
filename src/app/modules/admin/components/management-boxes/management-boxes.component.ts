@@ -8,6 +8,7 @@ import { Box } from "@app/model/box";
 import { BoxAddress } from "@app/model/box-address";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
+import { MonitorBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
 import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -29,6 +30,7 @@ export class ManagementBoxesComponent implements OnInit {
   boxes: Box[] = [];
   availableBoxAddresses: BoxAddress[] = [];
   selectedBoxForEdit: Box | null = null;
+  selectedBoxAddress: BoxAddress | null = null;
   loading = false;
   createBoxModalVisible = false;
   editBoxModalVisible = false;
@@ -37,15 +39,14 @@ export class ManagementBoxesComponent implements OnInit {
   private isSorting = false;
   
   newBox: BoxRequestDto = {
-    ip: '',
+    boxAddressId: '',
     monitorIds: [],
     active: true
   };
   
-  availableMonitors: Monitor[] = [];
-  filteredMonitorsByIp: Monitor[] = [];
+  availableMonitors: MonitorBoxMinResponseDto[] = [];
   loadingMonitors = false;
-  previousIp = '';
+  loadingBoxAddresses = false;
   
   currentFilters: FilterBoxRequestDto = {
     page: 1,
@@ -80,72 +81,50 @@ export class ManagementBoxesComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading initial boxes:', error);
         this.toastService.erro('Error loading boxes');
         this.loading = false;
       }
     });
   }
 
+  loadAvailableBoxAddresses(): void {
+    this.loadingBoxAddresses = true;
+    this.boxService.getAvailableBoxAddresses().subscribe({
+      next: (boxAddresses) => {
+        this.availableBoxAddresses = boxAddresses || [];
+        this.loadingBoxAddresses = false;
+      },
+      error: (error) => {
+        this.toastService.erro('Error loading box addresses');
+        this.loadingBoxAddresses = false;
+      }
+    });
+  }
+
   loadAvailableMonitors(): void {
-    this.monitorService.getMonitors().subscribe({
+    this.loadingMonitors = true;
+    this.boxService.getAvailableMonitors().subscribe({
       next: (monitors) => {
         this.availableMonitors = monitors;
+        this.loadingMonitors = false;
       },
       error: (error) => {
-        console.error('Error loading monitors:', error);
         this.toastService.erro('Error loading monitors');
+        this.loadingMonitors = false;
       }
     });
   }
 
-  loadMonitorsByIp(ip: string): void {
-    if (!ip?.trim()) {
-      this.filteredMonitorsByIp = [];
-      return;
+  onBoxAddressChange(selectedBoxAddress: BoxAddress): void {
+    if (selectedBoxAddress) {
+      this.newBox.boxAddressId = selectedBoxAddress.id;
     }
-
-    if (ip === this.previousIp) {
-      return;
-    }
-
-    this.loadingMonitors = true;
-    this.previousIp = ip;
-
-    this.boxService.getMonitorsAdsByIp(ip.trim()).subscribe({
-      next: (monitors) => {
-        this.filteredMonitorsByIp = monitors;
-        this.loadingMonitors = false;
-        
-        if (monitors.length === 0) {
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Warning',
-            detail: 'No monitors found for this IP address.'
-          });
-        }
-      },
-      error: (error) => {
-        console.error('Error loading monitors by IP:', error);
-        this.filteredMonitorsByIp = [];
-        this.loadingMonitors = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error loading monitors for this IP address.'
-        });
-      }
-    });
   }
 
-  onIpChange(ip: string, isEdit: boolean = false): void {
-    if (isEdit && this.selectedBoxForEdit) {
-      this.selectedBoxForEdit.monitorIds = [];
-    } else {
-      this.newBox.monitorIds = [];
+  onEditBoxAddressChange(selectedBoxAddress: BoxAddress): void {
+    if (selectedBoxAddress && this.selectedBoxForEdit) {
+      this.selectedBoxForEdit.boxAddressId = selectedBoxAddress.id;
     }
-    
-    this.loadMonitorsByIp(ip);
   }
 
   loadBoxes(): void {
@@ -164,7 +143,6 @@ export class ManagementBoxesComponent implements OnInit {
         this.isSorting = false;
       },
       error: (error) => {
-        console.error('Error loading boxes:', error);
         this.toastService.erro('Error loading boxes');
         this.loading = false;
         this.isSorting = false;
@@ -203,21 +181,23 @@ export class ManagementBoxesComponent implements OnInit {
 
   openCreateBoxModal(): void {
     this.newBox = {
-      ip: '',
+      boxAddressId: '',
       monitorIds: [],
       active: true
     };
-    this.filteredMonitorsByIp = [];
-    this.previousIp = '';
+    this.selectedBoxAddress = null;
+    this.loadAvailableBoxAddresses();
+    this.loadAvailableMonitors();
     this.createBoxModalVisible = true;
   }
 
   onCreateBox(): void {
-    if (!this.newBox.ip.trim()) {
+    
+    if (!this.newBox.boxAddressId) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'IP Address is required'
+        detail: 'Box Address is required'
       });
       return;
     }
@@ -226,6 +206,7 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   createBox(boxRequest: BoxRequestDto): void {
+    
     this.boxService.createBox(boxRequest).subscribe({
       next: (newBox) => {
         this.closeModal();
@@ -252,8 +233,6 @@ export class ManagementBoxesComponent implements OnInit {
 
   onCreateBoxModalClose(): void {
     this.createBoxModalVisible = false;
-    this.filteredMonitorsByIp = [];
-    this.previousIp = '';
   }
 
   onBoxCreated(boxRequest: BoxRequestDto): void {
@@ -263,56 +242,58 @@ export class ManagementBoxesComponent implements OnInit {
   onEditBox(): void {
     if (!this.selectedBoxForEdit) return;
     
-    if (!this.selectedBoxForEdit.ip.trim()) {
+    if (!this.selectedBoxForEdit.boxAddressId) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'IP Address is required'
+        detail: 'Box Address is required'
       });
       return;
     }
     
-    const updateData: BoxRequestDto = {
-      ip: this.selectedBoxForEdit.ip,
-      monitorIds: this.selectedBoxForEdit.monitorIds || [],
-      active: this.selectedBoxForEdit.active
-    };
-    
-    this.updateBox({ id: this.selectedBoxForEdit.id, data: updateData });
+    this.updateBox({
+      id: this.selectedBoxForEdit.id,
+      data: {
+        boxAddressId: this.selectedBoxForEdit.boxAddressId,
+        monitorIds: this.selectedBoxForEdit.monitorIds,
+        active: this.selectedBoxForEdit.active
+      }
+    });
   }
 
   onSelectBox(box: Box): void {
     this.selectedBoxForEdit = { ...box };
-    this.previousIp = '';
-    if (box.ip) {
-      this.loadMonitorsByIp(box.ip);
-    } else {
-      this.filteredMonitorsByIp = [];
+    this.selectedBoxAddress = null;
+    
+    const boxAddress = this.availableBoxAddresses.find(addr => addr.ip === box.ip);
+    if (boxAddress) {
+      this.selectedBoxAddress = boxAddress;
+      this.selectedBoxForEdit.boxAddressId = boxAddress.id;
     }
+    
+    this.loadAvailableBoxAddresses();
+    this.loadAvailableMonitors();
     this.editBoxModalVisible = true;
   }
 
   updateBox(updateData: { id: string; data: BoxRequestDto }): void {
-    this.loading = true;
-    
     this.boxService.updateBox(updateData.id, updateData.data).subscribe({
       next: (updatedBox) => {
+        this.editBoxModalVisible = false;
+        this.selectedBoxForEdit = null;
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
           detail: 'Box updated successfully!'
         });
-        this.onEditBoxModalClose();
         this.loadBoxes();
       },
       error: (error) => {
-        console.error('Error updating box:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
           detail: 'Error updating box. Please check the data and try again.'
         });
-        this.loading = false;
       }
     });
   }
@@ -320,8 +301,6 @@ export class ManagementBoxesComponent implements OnInit {
   onEditBoxModalClose(): void {
     this.editBoxModalVisible = false;
     this.selectedBoxForEdit = null;
-    this.filteredMonitorsByIp = [];
-    this.previousIp = '';
   }
 
   onBoxUpdated(updateData: { id: string; data: BoxRequestDto }): void {
@@ -329,31 +308,34 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   deleteBox(id: string): void {
-    if (confirm('Are you sure you want to delete this box?')) {
-      this.loading = true;
-      this.boxService.deleteBox(id).subscribe({
-        next: () => {
+    this.boxService.deleteBox(id).subscribe({
+      next: (success) => {
+        if (success) {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
             detail: 'Box deleted successfully!'
           });
           this.loadBoxes();
-        },
-        error: (error) => {
-          console.error('Error deleting box:', error);
+        } else {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: 'Error deleting box.'
           });
-          this.loading = false;
         }
-      });
-    }
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error deleting box.'
+        });
+      }
+    });
   }
 
   getBoxDisplayName(box: Box): string {
-    return `Box ${box.ip}`;
+    return `${box.ip} (${box.monitorCount || 0} monitors)`;
   }
 }

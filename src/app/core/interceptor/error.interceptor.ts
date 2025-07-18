@@ -13,13 +13,12 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
   const router = inject(Router);
   const autenticacaoService = inject(AutenticacaoService);
 
-
   let configDialogo: DynamicDialogConfig;
   let refDialog: DynamicDialogRef | undefined;
   const rotaLogin = 'token';
+  
   return next(req).pipe(
     catchError(({ error, status, url }: HttpErrorResponse) => {
-
       if (status === HttpStatusCode.Unauthorized && !url?.includes(rotaLogin)) {
         configDialogo = DialogoUtils.exibirAlerta(error?.detail ?? 'Unauthorized access. Please log in again.', {
           acaoPrimariaCallback: () => {
@@ -28,7 +27,6 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
             router.navigate(['/login']);
           }
         });
-
       }
 
       if (status === HttpStatusCode.Unauthorized && url?.includes(rotaLogin)) {
@@ -41,9 +39,26 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
         });
       }
 
-      refDialog = dialogService.open(DialogoComponent, configDialogo);
+      if (configDialogo) {
+        refDialog = dialogService.open(DialogoComponent, configDialogo);
+      }
 
-      return throwError(() => new Error(error?.mensagem ?? error?.errors?.[0]));
+      // Extrair mensagem de erro de forma mais segura
+      let errorMessage = 'An error occurred';
+      
+      if (error?.mensagem) {
+        errorMessage = error.mensagem;
+      } else if (error?.errors && Array.isArray(error.errors) && error.errors.length > 0) {
+        errorMessage = error.errors[0];
+      } else if (error?.detail) {
+        errorMessage = error.detail;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      return throwError(() => new Error(errorMessage));
     })
   );
 }

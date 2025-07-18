@@ -1,8 +1,20 @@
+export interface BoxAddressDto {
+  id: string;
+  mac: string;
+  ip: string;
+}
+
+export interface MonitorDto {
+  id: string;
+  active: boolean;
+  type: string;
+  size: number;
+  maxBlocks: number;
+}
+
 export interface BoxResponseDto {
   id: string;
-  ip: string;
-  monitorIds: string[];
   active: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  boxAddress: BoxAddressDto;
+  monitors: MonitorDto[];
 }

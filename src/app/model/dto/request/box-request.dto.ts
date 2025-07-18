@@ -1,5 +1,5 @@
 export interface BoxRequestDto {
-  ip: string;
+  boxAddressId: string;
   monitorIds: string[];
   active?: boolean;
 }

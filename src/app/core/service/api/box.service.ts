@@ -6,6 +6,7 @@ import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { BoxAddressResponseDto } from "@app/model/dto/response/box-address-response.dto";
 import { BoxResponseDto } from "@app/model/dto/response/box-response.dto";
+import { MonitorBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { ResponseDto } from "@app/model/dto/response/response.dto";
 import { Monitor } from "@app/model/monitors";
@@ -41,8 +42,22 @@ export class BoxService {
             : null;
         }),
         catchError((error) => {
-          console.error("Error loading available box addresses:", error);
           return of(null);
+        })
+      );
+  }
+
+  getAvailableMonitors(): Observable<MonitorBoxMinResponseDto[]> {
+    return this.http
+      .get<
+        ResponseDto<MonitorBoxMinResponseDto[]>
+      >(`${environment.apiUrl}monitors`, this.headers)
+      .pipe(
+        map((response: ResponseDto<MonitorBoxMinResponseDto[]>) => {
+          return response.data || [];
+        }),
+        catchError((error) => {
+          return of([]);
         })
       );
   }
@@ -64,16 +79,20 @@ export class BoxService {
     return this.http
       .get<
         ResponseDto<PaginationResponseDto<BoxResponseDto>>
-      >(`${this.apiUrl}/filters`, { params, ...this.headers })
+      >(`${this.apiUrl}`, { params, ...this.headers })
       .pipe(
         map((response: ResponseDto<PaginationResponseDto<BoxResponseDto>>) => {
-          return (
-            response.data?.list?.map((box) => this.mapBoxResponseToBox(box)) ||
-            []
-          );
+          let boxes: BoxResponseDto[] = [];
+          
+          if (Array.isArray(response.data)) {
+            boxes = response.data;
+          } else if (response.data?.list) {
+            boxes = response.data.list;
+          }
+          
+          return boxes.map((box) => this.mapBoxResponseToBox(box));
         }),
         catchError((error) => {
-          console.error("Error loading boxes:", error);
           return of([]);
         })
       );
@@ -98,24 +117,33 @@ export class BoxService {
     return this.http
       .get<
         ResponseDto<PaginationResponseDto<BoxResponseDto>>
-      >(`${this.apiUrl}/filters`, { params, ...this.headers })
+      >(`${this.apiUrl}`, { params, ...this.headers })
       .pipe(
         map((response: ResponseDto<PaginationResponseDto<BoxResponseDto>>) => {
-          const mappedBoxes =
-            response.data?.list?.map((box) => this.mapBoxResponseToBox(box)) ||
-            [];
+          let boxes: BoxResponseDto[] = [];
+          let totalElements = 0;
+          
+          if (Array.isArray(response.data)) {
+            boxes = response.data;
+            totalElements = response.data.length;
+          } else if (response.data?.list) {
+            boxes = response.data.list;
+            totalElements = response.data.totalElements || 0;
+          }
+          
+          const mappedBoxes = boxes.map((box) => this.mapBoxResponseToBox(box));
+          
           return {
             list: mappedBoxes,
-            totalElements: response.data?.totalElements || 0,
-            totalPages: response.data?.totalPages || 0,
-            currentPage: response.data?.currentPage || 0,
-            size: response.data?.size || 0,
+            totalElements: totalElements,
+            totalPages: response.data?.totalPages || 1,
+            currentPage: response.data?.currentPage || 1,
+            size: response.data?.size || totalElements,
             hasNext: response.data?.hasNext || false,
             hasPrevious: response.data?.hasPrevious || false,
           };
         }),
         catchError((error) => {
-          console.error("Error loading boxes with pagination:", error);
           return of({
             list: [],
             totalElements: 0,
@@ -137,7 +165,6 @@ export class BoxService {
           return response.data ? this.mapBoxResponseToBox(response.data) : null;
         }),
         catchError((error) => {
-          console.error("Error loading box by id:", error);
           return of(null);
         })
       );
@@ -151,7 +178,6 @@ export class BoxService {
           return response.data || ({} as Box);
         }),
         catchError((error) => {
-          console.error("Error creating box:", error);
           throw error;
         })
       );
@@ -169,7 +195,6 @@ export class BoxService {
             : ({} as Box);
         }),
         catchError((error) => {
-          console.error("Error updating box:", error);
           throw error;
         })
       );
@@ -183,7 +208,6 @@ export class BoxService {
           return response.success || false;
         }),
         catchError((error) => {
-          console.error("Error deleting box:", error);
           return of(false);
         })
       );
@@ -202,7 +226,6 @@ export class BoxService {
           return response.data || [];
         }),
         catchError((error) => {
-          console.error("Error loading monitors ads by IP:", error);
           return of([]);
         })
       );
@@ -211,12 +234,12 @@ export class BoxService {
   private mapBoxResponseToBox(boxResponse: BoxResponseDto): Box {
     const box: Box = {
       id: boxResponse.id,
-      ip: boxResponse.ip,
-      monitorIds: boxResponse.monitorIds || [],
+      ip: boxResponse.boxAddress.ip,
+      macAddress: boxResponse.boxAddress.mac,
+      boxAddressId: boxResponse.boxAddress.id,
+      monitorIds: boxResponse.monitors.map(monitor => monitor.id),
       active: boxResponse.active,
-      createdAt: boxResponse.createdAt,
-      updatedAt: boxResponse.updatedAt,
-      monitorCount: boxResponse.monitorIds?.length || 0,
+      monitorCount: boxResponse.monitors.length,
     };
 
     return box;
