@@ -461,9 +461,10 @@ input[type="email"],
 input[type="number"],
 input[type="tel"],
 input[type="date"],
-select {
+select,
+textarea {
   width: 100%;
-  height: var(--altura-input);
+
   border: 1px solid var(--cor-cinza-medio);
   border-radius: var(--borda-raio-pequeno);
   font-size: var(--fonte-tamanho-padrao);
@@ -498,6 +499,22 @@ select {
     background-color: var(--cor-desabilitado);
     cursor: default;
   }
+}
+
+.p-dropdown,
+.p-multiselect,
+.p-password .p-inputtext,
+.p-inputnumber .p-inputtext,
+.p-autocomplete .p-autocomplete-input,
+.p-inputtext,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+select {
+  height: var(--altura-input);
 }
 
 .p-select-overlay {
@@ -538,6 +555,10 @@ select {
   &.p-dropdown:not(.p-disabled).p-focus {
     box-shadow: none !important;
   }
+}
+
+textarea {
+  padding-top: var(--espacamento-padrao);
 }
 
 .p-datepicker,
@@ -906,7 +927,7 @@ p {
   .p-dialog-header {
     background-color: var(--modal-header-bg);
     color: var(--cor-primaria);
-    padding: 1rem var(--modal-padding);
+    padding: 8px 8px 0px 0px !important;
     border-bottom: 1px solid var(--cor-cinza-medio);
 
     .p-dialog-title {
@@ -966,7 +987,8 @@ p {
 .p-dialog .p-inputnumber,
 .p-dynamicdialog .p-inputnumber,
 .p-dialog .p-inputtextarea,
-.p-dynamicdialog .p-inputtextarea {
+.p-dynamicdialog .p-inputtextarea,
+textarea {
   width: 100%;
   background-color: transparent;
 
@@ -1001,10 +1023,10 @@ p {
 
     th {
       color: #fff !important;
-      font-weight: var(--fonte-peso-medio);
+      font-weight: var(--fonte-peso-negrito);
       font-size: var(--fonte-tamanho-padrao);
       padding: var(--espacamento-padrao);
-      text-align: left;
+      text-align: center;
       border: none;
       transition: var(--transicao-rapida);
 
@@ -1033,6 +1055,7 @@ p {
         border-bottom: var(--borda-padrao);
         font-size: var(--fonte-tamanho-padrao);
         color: var(--cor-cinza-escuro);
+        text-align: center;
       }
     }
   }
@@ -1114,6 +1137,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
+  row-gap: 1rem !important;
 
   .p-paginator-current {
     color: var(--cor-legenda);
@@ -1158,6 +1182,17 @@ p {
 
   .p-paginator-page.p-paginator-page-selected {
     color: var(--cor-primaria) !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .p-paginator .p-paginator-prev,
+  .p-paginator .p-paginator-next {
+    display: none !important;
+  }
+
+  .p-paginator {
+    font-size: var(--fonte-tamanho-pequeno);
   }
 }
 

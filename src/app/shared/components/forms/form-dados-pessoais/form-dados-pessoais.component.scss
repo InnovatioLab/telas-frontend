@@ -5,6 +5,19 @@
     margin-top: var(--espacamento-padrao);
     margin-bottom: var(--espacamento-grande);
   }
+
+  #social-media-input {
+    padding: 6px 0px;
+    border-radius: var(--borda-raio-pequeno);
+    background-color: var(--cor-cinza);
+    border-color: var(--cor-cinza);
+    transition: var(--transicao-padrao);
+
+    &:hover {
+      border-color: var(--cor-primaria-clara) !important;
+      background-color: var(--cor-primaria-clara) !important;
+    }
+  }
 }
 
 .label-left {
