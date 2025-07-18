@@ -44,8 +44,6 @@
           <th scope="col">MAC Address</th>
           <th scope="col" pSortableColumn="active">Status <p-sortIcon field="active"></p-sortIcon></th>
           <th scope="col">Monitors</th>
-          <th scope="col">Created At</th>
-          <th scope="col">Updated At</th>
           <th scope="col">Actions</th>
         </tr>
       </ng-template>
@@ -63,15 +61,8 @@
               <span class="monitor-count">{{box.monitorCount || 0}} monitor(s)</span>
             </div>
           </td>
-          <td>{{box.createdAt | date:'short'}}</td>
-          <td>{{box.updatedAt | date:'short'}}</td>
           <td>
             <div class="action-buttons">
-              <button pButton pRipple class="p-button-rounded p-button-info p-button-text" 
-                      (click)="onSelectBox(box)"
-                      pTooltip="Manage Box">
-                <app-icon-box class="custom-icon"></app-icon-box>
-              </button>
               <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-text" 
                       (click)="onSelectBox(box)"
                       pTooltip="Edit Box"></button>
@@ -84,7 +75,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7" class="text-center">No boxes found.</td>
+          <td colspan="5" class="text-center">No boxes found.</td>
         </tr>
       </ng-template>
     </p-table>
