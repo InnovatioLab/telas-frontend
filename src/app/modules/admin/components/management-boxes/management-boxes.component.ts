@@ -5,6 +5,7 @@ import { BoxService } from "@app/core/service/api/box.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Box } from "@app/model/box";
+import { BoxAddress } from "@app/model/box-address";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { Monitor } from "@app/model/monitors";
@@ -26,6 +27,7 @@ import { MessageService } from "primeng/api";
 })
 export class ManagementBoxesComponent implements OnInit {
   boxes: Box[] = [];
+  availableBoxAddresses: BoxAddress[] = [];
   selectedBoxForEdit: Box | null = null;
   loading = false;
   createBoxModalVisible = false;
