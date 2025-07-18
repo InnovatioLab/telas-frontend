@@ -1,14 +1,12 @@
-<div class="edit-monitor-modal">
+<div class="monitor-modal">
   <div class="modal-header">
-    <h2>Edit Monitor</h2>
-    <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-text p-button-secondary close-btn" 
-            (click)="cancel()"></button>
+    <h2>{{ mode === 'edit' ? 'Edit Monitor' : 'Create New Monitor' }}</h2>
+    <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-text p-button-secondary close-btn" (click)="cancel()"></button>
   </div>
 
   <form [formGroup]="monitorForm" (ngSubmit)="submit()" class="modal-content">
     <div class="form-section">
       <h3>Monitor Information</h3>
-      
       <div class="form-row">
         <div class="form-field">
           <label for="size">Size (inches)*</label>
@@ -21,8 +19,7 @@
           </p-inputNumber>
           <small class="error-message" *ngIf="getFieldError('size')">{{ getFieldError('size') }}</small>
         </div>
-
-        <div class="form-field">
+        <div class="form-field" *ngIf="mode === 'edit'">
           <label for="type">Type*</label>
           <p-dropdown 
             id="type" 
@@ -32,10 +29,7 @@
           </p-dropdown>
           <small class="error-message" *ngIf="getFieldError('type')">{{ getFieldError('type') }}</small>
         </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-field">
+        <div class="form-field" *ngIf="mode === 'edit'">
           <label for="active">Status</label>
           <div class="status-toggle-row" style="display: flex; align-items: center;">
             <p-inputSwitch 
@@ -49,7 +43,6 @@
           </div>
           <small class="error-message" *ngIf="getFieldError('active')">{{ getFieldError('active') }}</small>
         </div>
-
         <div class="form-field">
           <label for="locationDescription">Location Description</label>
           <textarea 
@@ -57,7 +50,8 @@
             id="locationDescription" 
             formControlName="locationDescription" 
             placeholder="Enter location description"
-            rows="3">
+            rows="3"
+            class="standard-textarea">
           </textarea>
           <small class="error-message" *ngIf="getFieldError('locationDescription')">{{ getFieldError('locationDescription') }}</small>
         </div>
@@ -66,7 +60,6 @@
 
     <div class="form-section">
       <h3>Address Information</h3>
-      
       <div formGroupName="address" class="address-group">
         <div class="form-row">
           <div class="form-field">
@@ -83,7 +76,6 @@
             <small class="help-text">Enter the zip code to automatically fill city and state</small>
             <small class="error-message" *ngIf="getFieldError('address', 'zipCode')">{{ getFieldError('address', 'zipCode') }}</small>
           </div>
-
           <div class="form-field">
             <label for="street">Street*</label>
             <input 
@@ -94,7 +86,6 @@
             <small class="error-message" *ngIf="getFieldError('address', 'street')">{{ getFieldError('address', 'street') }}</small>
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-field">
             <label for="city">City*</label>
@@ -105,7 +96,6 @@
               placeholder="Enter city">
             <small class="error-message" *ngIf="getFieldError('address', 'city')">{{ getFieldError('address', 'city') }}</small>
           </div>
-
           <div class="form-field">
             <label for="state">State*</label>
             <input 
@@ -117,7 +107,6 @@
             <small class="error-message" *ngIf="getFieldError('address', 'state')">{{ getFieldError('address', 'state') }}</small>
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-field">
             <label for="country">Country</label>
@@ -128,7 +117,6 @@
               placeholder="Enter country">
             <small class="error-message" *ngIf="getFieldError('address', 'country')">{{ getFieldError('address', 'country') }}</small>
           </div>
-
           <div class="form-field">
             <label for="complement">Complement</label>
             <input 
@@ -142,24 +130,22 @@
       </div>
     </div>
 
-    <div class="form-actions" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem;">
+    <div class="form-actions action-buttons">
       <button 
         pButton 
         pRipple 
         type="button" 
         label="Cancel" 
-        class="p-button-outlined" 
-        (click)="cancel()"
-        style="width: 50%;">
+        class="p-button-outlined"
+        (click)="cancel()">
       </button>
       <button 
         pButton 
         pRipple 
         type="submit" 
-        label="Update Monitor" 
-        [disabled]="monitorForm.invalid"
-        style="width: 50%;">
+        [label]="mode === 'edit' ? 'Update Monitor' : 'Create Monitor'" 
+        [disabled]="monitorForm.invalid">
       </button>
     </div>
   </form>
-</div>
+</div> 

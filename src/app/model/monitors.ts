@@ -25,6 +25,7 @@ export interface Monitor {
   longitude?: number;
   adLinks?: string[];
   hasAvailableSlots?: boolean;
+  fullAddress?: string;
 }
 
 export interface MonitorAd {

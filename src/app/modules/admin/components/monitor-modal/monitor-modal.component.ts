@@ -1,30 +1,35 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { Monitor, MonitorType } from '@app/model/monitors';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
 import { debounceTime, distinctUntilChanged, switchMap, Observable, of } from 'rxjs';
 import { AddressData } from '@app/model/dto/request/address-data-request';
 
 @Component({
-  selector: 'app-create-monitor-modal',
+  selector: 'app-monitor-modal',
   standalone: true,
   imports: [
     CommonModule,
     PrimengModule,
     ReactiveFormsModule
   ],
-  templateUrl: './create-monitor-modal.component.html',
-  styleUrls: ['./create-monitor-modal.component.scss']
+  templateUrl: './monitor-modal.component.html',
+  styleUrls: ['./monitor-modal.component.scss']
 })
-export class CreateMonitorModalComponent implements OnInit {
+export class MonitorModalComponent implements OnInit, OnChanges {
+  @Input() mode: 'create' | 'edit' = 'create';
+  @Input() monitor: Monitor | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() monitorCreated = new EventEmitter<CreateMonitorRequestDto>();
+  @Output() monitorUpdated = new EventEmitter<{ id: string, data: UpdateMonitorRequestDto }>();
 
   monitorForm: FormGroup;
-
   loadingZipCode = false;
+  monitorTypes = Object.values(MonitorType);
 
   constructor(
     private readonly fb: FormBuilder,
@@ -32,10 +37,12 @@ export class CreateMonitorModalComponent implements OnInit {
   ) {
     this.monitorForm = this.fb.group({
       size: [null, [Validators.required, Validators.min(0.01), Validators.max(999.99)]],
+      type: [MonitorType.BASIC, [Validators.required]],
+      active: [true, [Validators.required]],
       locationDescription: ['', [Validators.maxLength(200)]],
       address: this.fb.group({
         street: ['', [Validators.required, Validators.maxLength(100)]],
-        zipCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
+        zipCode: ['', [Validators.required, Validators.pattern(/^[0-9]{5}$/)]],
         city: ['', [Validators.required, Validators.maxLength(50)]],
         state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
         country: ['US', [Validators.maxLength(100)]],
@@ -46,17 +53,58 @@ export class CreateMonitorModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.setupZipCodeSearch();
+    if (this.mode === 'edit' && this.monitor) {
+      this.patchFormWithMonitor(this.monitor);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['monitor'] && this.monitor && this.mode === 'edit') {
+      this.patchFormWithMonitor(this.monitor);
+    }
+    if (changes['mode'] && this.mode === 'create') {
+      this.monitorForm.reset({
+        size: null,
+        type: MonitorType.BASIC,
+        active: true,
+        locationDescription: '',
+        address: {
+          street: '',
+          zipCode: '',
+          city: '',
+          state: '',
+          country: 'US',
+          complement: ''
+        }
+      });
+    }
+  }
+
+  private patchFormWithMonitor(monitor: Monitor): void {
+    this.monitorForm.patchValue({
+      size: monitor.size,
+      type: monitor.type ?? MonitorType.BASIC,
+      active: monitor.active,
+      locationDescription: monitor.locationDescription,
+      address: {
+        street: monitor.address?.street ?? '',
+        zipCode: monitor.address?.zipCode ?? '',
+        city: monitor.address?.city ?? '',
+        state: monitor.address?.state ?? '',
+        country: monitor.address?.country ?? 'US',
+        complement: monitor.address?.complement ?? ''
+      }
+    });
   }
 
   private setupZipCodeSearch(): void {
     const zipCodeControl = this.monitorForm.get('address.zipCode');
-    
     if (zipCodeControl) {
       zipCodeControl.valueChanges.pipe(
-        debounceTime(500), 
-        distinctUntilChanged(), 
+        debounceTime(500),
+        distinctUntilChanged(),
         switchMap((zipCode: string): Observable<AddressData | null> => {
-          if (zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode)) {
+          if (zipCode && zipCode.length === 5 && /^[0-9]{5}$/.test(zipCode)) {
             this.loadingZipCode = true;
             return this.zipCodeService.findLocationByZipCode(zipCode);
           }
@@ -69,7 +117,7 @@ export class CreateMonitorModalComponent implements OnInit {
             this.fillAddressFields(addressData);
           }
         },
-        error: (error) => {
+        error: () => {
           this.loadingZipCode = false;
         }
       });
@@ -78,7 +126,6 @@ export class CreateMonitorModalComponent implements OnInit {
 
   private fillAddressFields(addressData: AddressData): void {
     const addressGroup = this.monitorForm.get('address');
-    
     if (addressGroup && addressData) {
       if (addressData.city) {
         addressGroup.patchValue({ city: addressData.city });
@@ -92,32 +139,48 @@ export class CreateMonitorModalComponent implements OnInit {
     }
   }
 
-  onSubmit(): void {
+  submit(): void {
     if (this.monitorForm.valid) {
       const formValue = this.monitorForm.value;
       const addressValue = formValue.address;
-      
-      const monitorRequest: CreateMonitorRequestDto = {
-        size: formValue.size,
-        locationDescription: formValue.locationDescription,
-        address: {
-          street: addressValue.street,
-          city: addressValue.city,
-          state: addressValue.state,
-          country: addressValue.country,
-          zipCode: addressValue.zipCode,
-          complement: addressValue.complement ?? null
-        }
-      };
-
-      this.monitorCreated.emit(monitorRequest);
-      this.closeModal();
+      if (this.mode === 'create') {
+        const monitorRequest: CreateMonitorRequestDto = {
+          size: formValue.size,
+          locationDescription: formValue.locationDescription,
+          address: {
+            street: addressValue.street,
+            city: addressValue.city,
+            state: addressValue.state,
+            country: addressValue.country,
+            zipCode: addressValue.zipCode,
+            complement: addressValue.complement ?? null
+          }
+        };
+        this.monitorCreated.emit(monitorRequest);
+        this.closeModal();
+      } else if (this.mode === 'edit' && this.monitor) {
+        const updateRequest: UpdateMonitorRequestDto = {
+          size: formValue.size,
+          type: formValue.type,
+          active: formValue.active,
+          locationDescription: formValue.locationDescription,
+          address: {
+            street: addressValue.street,
+            city: addressValue.city,
+            state: addressValue.state,
+            country: addressValue.country,
+            zipCode: addressValue.zipCode,
+            complement: addressValue.complement ?? null
+          }
+        };
+        this.monitorUpdated.emit({ id: this.monitor.id, data: updateRequest });
+        this.closeModal();
+      }
     } else {
       Object.keys(this.monitorForm.controls).forEach(key => {
         const control = this.monitorForm.get(key);
         control?.markAsTouched();
       });
-      
       const addressGroup = this.monitorForm.get('address') as FormGroup;
       if (addressGroup) {
         Object.keys(addressGroup.controls).forEach(key => {
@@ -126,10 +189,6 @@ export class CreateMonitorModalComponent implements OnInit {
         });
       }
     }
-  }
-
-  submit(): void {
-    this.onSubmit();
   }
 
   cancel(): void {
@@ -145,7 +204,6 @@ export class CreateMonitorModalComponent implements OnInit {
     const control = nestedField 
       ? this.monitorForm.get(fieldName)?.get(nestedField)
       : this.monitorForm.get(fieldName);
-    
     if (control?.errors && control.touched) {
       if (control.errors['required']) return 'This field is required';
       if (control.errors['maxlength']) return `Maximum ${control.errors['maxlength'].requiredLength} characters`;

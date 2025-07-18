@@ -1,4 +1,4 @@
-.create-monitor-modal {
+.monitor-modal {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -29,7 +29,6 @@
       background: none;
       border: none;
       color: var(--cor-branca);
-      
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);
       }
@@ -59,25 +58,11 @@
         padding-bottom: 0.5rem;
       }
 
-      .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-
-        h3 {
-          margin: 0;
-          border-bottom: none;
-          padding-bottom: 0;
-        }
-      }
-
       .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
         margin-bottom: 1rem;
-
         @media (max-width: 768px) {
           grid-template-columns: 1fr;
         }
@@ -129,17 +114,6 @@
           opacity: 1;
         }
 
-        .error-message {
-          color: var(--cor-erro);
-          font-size: 0.75rem;
-          margin-top: 0.25rem;
-        }
-        
-        &.full-width {
-          flex: 1;
-          width: 100%;
-        }
-
         // Remover borda duplicada do p-inputnumber
         ::ng-deep .p-inputnumber {
           border: var(--borda-padrao) !important;
@@ -156,6 +130,16 @@
           height: 100% !important;
           border-radius: var(--borda-raio-padrao) !important;
         }
+
+        .error-message {
+          color: var(--cor-erro);
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+        }
+        &.full-width {
+          flex: 1;
+          width: 100%;
+        }
       }
 
       .address-group {
@@ -165,46 +149,6 @@
         background-color: var(--cor-cinza-muito-claro);
         margin-top: 1rem;
       }
-
-      .ads-container {
-        .ad-item {
-          border: 1px solid var(--cor-cinza-claro);
-          border-radius: var(--borda-raio-pequeno);
-          padding: 1rem;
-          margin-bottom: 1rem;
-          background-color: var(--cor-branca);
-
-          .ad-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--cor-cinza-claro);
-
-            h4 {
-              margin: 0;
-              color: var(--cor-primaria);
-              font-size: var(--fonte-tamanho-medio);
-              font-weight: var(--fonte-peso-negrito);
-            }
-          }
-
-          .form-row {
-            margin-bottom: 0.5rem;
-          }
-        }
-
-        .no-ads {
-          text-align: center;
-          padding: 2rem;
-          color: var(--cor-legenda);
-          font-style: italic;
-          border: 2px dashed var(--cor-cinza-claro);
-          border-radius: var(--borda-raio-pequeno);
-          background-color: var(--cor-cinza-muito-claro);
-        }
-      }
     }
   }
 
@@ -212,7 +156,6 @@
     display: flex;
     gap: 5px;
     margin-top: var(--espacamento-padrao);
-
     button, .p-button {
       flex: 1 1 50%;
       width: 50%;
@@ -227,7 +170,6 @@
     padding: 1.5rem 2rem;
     background-color: var(--cor-cinza-muito-claro);
     border-top: 1px solid var(--cor-cinza-claro);
-
     button {
       min-width: 120px;
     }
@@ -235,32 +177,26 @@
 }
 
 @media (max-width: 768px) {
-  .create-monitor-modal {
+  .monitor-modal {
     .modal-header {
       padding: 1rem;
-      
       h2 {
         font-size: var(--fonte-tamanho-grande);
       }
     }
-
     .modal-content {
       padding: 1rem;
       gap: 1rem;
-
       .form-section {
         padding: 1rem;
-
         .form-row {
           gap: 0.75rem;
         }
       }
     }
-
     .modal-footer {
       padding: 1rem;
       flex-direction: column;
-
       button {
         width: 100%;
       }
@@ -277,13 +213,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+} 

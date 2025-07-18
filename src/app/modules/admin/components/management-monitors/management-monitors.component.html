@@ -53,7 +53,11 @@
           <td>
             <p-badge [value]="monitor.active ? 'Active' : 'Inactive'" [severity]="monitor.active ? 'success' : 'danger'"></p-badge>
           </td>
-          <td>{{getMonitorAddress(monitor)}}</td>
+          <td>
+            <span [pTooltip]="monitor.fullAddress" tooltipPosition="top">
+              {{getMonitorAddress(monitor)}}
+            </span>
+          </td>
           <td>
             <div class="action-buttons">
               <button pButton pRipple class="p-button-rounded p-button-info p-button-text custom-ads-button" 
@@ -83,9 +87,9 @@
     </p-table>
   </div>
 
-  <!-- Modal de criação de monitor -->
+  <!-- Modal de criação/edição de monitor unificado -->
   <p-dialog 
-    [(visible)]="createMonitorModalVisible" 
+    [(visible)]="monitorModalVisible" 
     [modal]="true" 
     [style]="{width: '90vw', maxWidth: '800px', height: '90vh'}" 
     [draggable]="false"
@@ -95,31 +99,14 @@
     [showHeader]="false"
     [contentStyle]="{'padding': '0', 'border-radius': '8px', 'overflow': 'hidden'}">
     
-    <app-create-monitor-modal
-      #createMonitorModal
-      (close)="onCreateMonitorModalClose()"
-      (monitorCreated)="onMonitorCreated($event)">
-    </app-create-monitor-modal>
-  </p-dialog>
-
-  <!-- Modal de edição de monitor -->
-  <p-dialog 
-    [(visible)]="editMonitorModalVisible" 
-    [modal]="true" 
-    [style]="{width: '90vw', maxWidth: '800px', height: '90vh'}" 
-    [draggable]="false"
-    [resizable]="false"
-    [closeOnEscape]="true"
-    [dismissableMask]="true"
-    [showHeader]="false"
-    [contentStyle]="{'padding': '0', 'border-radius': '8px', 'overflow': 'hidden'}">
-    
-    <app-edit-monitor-modal
-      #editMonitorModal
-      [monitor]="selectedMonitorForEdit"
-      (close)="onEditMonitorModalClose()"
+    <app-monitor-modal
+      #monitorModal
+      [mode]="monitorModalMode"
+      [monitor]="monitorToEdit"
+      (close)="closeMonitorModal()"
+      (monitorCreated)="onMonitorCreated($event)"
       (monitorUpdated)="onMonitorUpdated($event)">
-    </app-edit-monitor-modal>
+    </app-monitor-modal>
   </p-dialog>
 
   <!-- Modal de gerenciamento de Ads -->

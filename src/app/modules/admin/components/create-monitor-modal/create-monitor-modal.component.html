@@ -17,8 +17,6 @@
             formControlName="size" 
             [min]="0.01" 
             [max]="999.99" 
-            [minFractionDigits]="2" 
-            [maxFractionDigits]="2"
             placeholder="Enter size">
           </p-inputNumber>
           <small class="error-message" *ngIf="getFieldError('size')">{{ getFieldError('size') }}</small>
@@ -31,7 +29,8 @@
             id="locationDescription" 
             formControlName="locationDescription" 
             placeholder="Enter location description"
-            rows="3">
+            rows="3"
+            class="standard-textarea">
           </textarea>
           <small class="error-message" *ngIf="getFieldError('locationDescription')">{{ getFieldError('locationDescription') }}</small>
         </div>
@@ -116,13 +115,13 @@
       </div>
     </div>
 
-    <div class="form-actions">
+    <div class="form-actions action-buttons">
       <button 
         pButton 
         pRipple 
         type="button" 
         label="Cancel" 
-        class="p-button-outlined" 
+        class="p-button-outlined"
         (click)="cancel()">
       </button>
       <button 

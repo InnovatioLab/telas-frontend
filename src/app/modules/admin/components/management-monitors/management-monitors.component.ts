@@ -9,8 +9,7 @@ import { Monitor } from '@app/model/monitors';
 import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
-import { CreateMonitorModalComponent } from '../create-monitor-modal/create-monitor-modal.component';
-import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-modal.component';
+import { MonitorModalComponent } from '../monitor-modal/monitor-modal.component';
 import { MessageService } from 'primeng/api';
 import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
 
@@ -22,23 +21,22 @@ import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
     PrimengModule,
     FormsModule,
     IconsModule,
-    CreateMonitorModalComponent,
-    EditMonitorModalComponent,
+    MonitorModalComponent,
     IconTvDisplayComponent
   ],
   templateUrl: './management-monitors.component.html',
   styleUrls: ['./management-monitors.component.scss']
 })
 export class ManagementMonitorsComponent implements OnInit {
-  @ViewChild('createMonitorModal') createMonitorModal!: CreateMonitorModalComponent;
-  @ViewChild('editMonitorModal') editMonitorModal!: EditMonitorModalComponent;
+  @ViewChild('monitorModal') monitorModal!: MonitorModalComponent;
   monitors: Monitor[] = [];
   selectedMonitorForAds: Monitor | null = null;
   selectedMonitorForEdit: Monitor | null = null;
   selectedMonitorForDelete: Monitor | null = null;
   loading = false;
-  createMonitorModalVisible = false;
-  editMonitorModalVisible = false;
+  monitorModalVisible = false;
+  monitorModalMode: 'create' | 'edit' = 'create';
+  monitorToEdit: Monitor | null = null;
   adsModalVisible = false;
   deleteConfirmModalVisible = false;
   searchTerm = '';
@@ -141,13 +139,15 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   openCreateMonitorModal(): void {
-    this.createMonitorModalVisible = true;
+    this.monitorModalMode = 'create';
+    this.monitorToEdit = null;
+    this.monitorModalVisible = true;
   }
 
   createMonitor(monitorRequest: CreateMonitorRequestDto): void {
     this.monitorService.createMonitor(monitorRequest).subscribe({
       next: (newMonitor) => {
-        this.closeModal();
+        this.closeMonitorModal();
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
@@ -156,7 +156,7 @@ export class ManagementMonitorsComponent implements OnInit {
         this.loadMonitors();
       },
       error: (error) => {
-        this.closeModal();
+        this.closeMonitorModal();
         this.messageService.add({
           severity: 'warn',
           summary: 'Warning',
@@ -167,12 +167,8 @@ export class ManagementMonitorsComponent implements OnInit {
     });
   }
 
-  closeModal(): void {
-    this.createMonitorModalVisible = false;
-  }
-
-  onCreateMonitorModalClose(): void {
-    this.createMonitorModalVisible = false;
+  closeMonitorModal(): void {
+    this.monitorModalVisible = false;
   }
 
   onMonitorCreated(monitorRequest: CreateMonitorRequestDto): void {
@@ -180,8 +176,9 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   onSelectMonitor(monitor: Monitor): void {
-    this.selectedMonitorForEdit = { ...monitor };
-    this.editMonitorModalVisible = true;
+    this.monitorModalMode = 'edit';
+    this.monitorToEdit = { ...monitor };
+    this.monitorModalVisible = true;
   }
 
   updateMonitor(updateData: { id: string; data: UpdateMonitorRequestDto }): void {
@@ -194,7 +191,7 @@ export class ManagementMonitorsComponent implements OnInit {
           summary: 'Success',
           detail: 'Monitor updated successfully!'
         });
-        this.onEditMonitorModalClose();
+        this.onMonitorUpdated(updateData);
         this.loadMonitors();
       },
       error: (error) => {
@@ -206,11 +203,6 @@ export class ManagementMonitorsComponent implements OnInit {
         this.loading = false;
       }
     });
-  }
-
-  onEditMonitorModalClose(): void {
-    this.editMonitorModalVisible = false;
-    this.selectedMonitorForEdit = null;
   }
 
   onMonitorUpdated(updateData: { id: string; data: UpdateMonitorRequestDto }): void {
@@ -237,38 +229,38 @@ export class ManagementMonitorsComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+      this.loading = true;
     
     this.monitorService.deleteMonitor(this.selectedMonitorForDelete.id).subscribe({
-      next: (success) => {
-        if (success) {
+        next: (success) => {
+          if (success) {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
             detail: 'Monitor deleted successfully!'
           });
           this.loadMonitors();
-        } else {
+          } else {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: 'Error deleting monitor. Please try again.'
           });
-        }
-        this.loading = false;
+          }
+          this.loading = false;
         this.closeDeleteConfirmModal();
-      },
-      error: (error) => {
+        },
+        error: (error) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
           detail: 'Error deleting monitor. Please check your connection and try again.'
         });
-        this.loading = false;
+          this.loading = false;
         this.closeDeleteConfirmModal();
-      }
-    });
-  }
+        }
+      });
+    }
 
   closeDeleteConfirmModal(): void {
     this.deleteConfirmModalVisible = false;
@@ -329,33 +321,25 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   getMonitorAddress(monitor: Monitor): string {
-    if (!monitor.address) {
-      return 'N/A';
+    let address = monitor.fullAddress || '';
+    if (!address && monitor.address) {
+      if (monitor.address.coordinatesParams) {
+        address = monitor.address.coordinatesParams;
+      } else {
+        const addressParts = [];
+        if (monitor.address.street) addressParts.push(monitor.address.street);
+        if (monitor.address.city) addressParts.push(monitor.address.city);
+        if (monitor.address.state) addressParts.push(monitor.address.state);
+        if (monitor.address.zipCode) addressParts.push(monitor.address.zipCode);
+        address = addressParts.length > 0 ? addressParts.join(', ') : 'N/A';
+      }
     }
-
-    if (monitor.address.coordinatesParams) {
-      return monitor.address.coordinatesParams;
+    if (!address) address = 'N/A';
+    const maxLen = 32;
+    if (address.length > maxLen) {
+      return address.slice(0, maxLen - 3) + '...';
     }
-
-    const addressParts = [];
-    
-    if (monitor.address.street) {
-      addressParts.push(monitor.address.street);
-    }
-    
-    if (monitor.address.city) {
-      addressParts.push(monitor.address.city);
-    }
-    
-    if (monitor.address.state) {
-      addressParts.push(monitor.address.state);
-    }
-    
-    if (monitor.address.zipCode) {
-      addressParts.push(monitor.address.zipCode);
-    }
-
-    return addressParts.length > 0 ? addressParts.join(', ') : 'N/A';
+    return address;
   }
 
   getMonitorDetails(monitor: Monitor): string {
