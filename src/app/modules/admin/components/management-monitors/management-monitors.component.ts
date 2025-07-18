@@ -1,18 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IconsModule } from '@app/shared/icons/icons.module';
 import { MonitorService } from '@app/core/service/api/monitor.service';
 import { ToastService } from '@app/core/service/state/toast.service';
-import { Monitor } from '@app/model/monitors';
-import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
-import { UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { CreateMonitorRequestDto, UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
+import { Monitor } from '@app/model/monitors';
+import { IconsModule } from '@app/shared/icons/icons.module';
+import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { MessageService } from 'primeng/api';
 import { CreateMonitorModalComponent } from '../create-monitor-modal/create-monitor-modal.component';
 import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-modal.component';
-import { MessageService } from 'primeng/api';
-import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
 
 @Component({
   selector: 'app-management-monitors',

@@ -1,7 +1,7 @@
 import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
-import { select } from './components/select';
 import { inputtext } from './components/inputtext';
+import { select } from './components/select';
 
 const colors = {
   primary: '#232F3E',

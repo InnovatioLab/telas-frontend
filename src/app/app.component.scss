@@ -235,13 +235,4 @@
   input {
     border: 1px solid var(--p-inputtext-border-color);
   }
-
-  .p-inputtext {
-    &:focus {
-      border-color: blue
-
-    }
-  }
-
-
 }

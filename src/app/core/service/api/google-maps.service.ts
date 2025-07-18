@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@angular/core';
+import { Monitor } from '@app/model/monitors';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment.interface';
-import { MapPoint } from '../state/map-point.interface';
 import { LoadingService } from '../state/loading.service';
+import { MapPoint } from '../state/map-point.interface';
 import { MonitorService } from './monitor.service';
-import { Monitor } from '@app/model/monitors';
 
 export interface AddressSearchResult {
   location: MapPoint;

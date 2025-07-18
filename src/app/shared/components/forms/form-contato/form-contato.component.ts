@@ -1,13 +1,13 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { ErrorComponent } from '../../error/error.component';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
-import { DialogoComponent } from '../../dialogo/dialogo.component';
+import { Component, inject, Input, OnInit } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClientService } from '@app/core/service/api/client.service';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogoComponent } from '../../dialogo/dialogo.component';
+import { ErrorComponent } from '../../error/error.component';
 
 @Component({
   selector: 'ui-form-contato',

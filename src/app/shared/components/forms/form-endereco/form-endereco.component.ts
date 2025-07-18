@@ -1,14 +1,16 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DialogService } from 'primeng/dynamicdialog';
-import { AddressData } from '../../../../model/dto/request/address-data-request';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { ErrorComponent } from '../../error/error.component';
+import { TextOnlyDirective } from '@app/core/directives/text-only.directive';
 import { ZipCodeValidatorDirective } from '@app/core/directives/zip-code-validator.directive';
-import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
 import { LoadingService } from '@app/core/service/state/loading.service';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
+import { DialogService } from 'primeng/dynamicdialog';
+import { AddressData } from '../../../../model/dto/request/address-data-request';
+import { ErrorComponent } from '../../error/error.component';
+
 
 @Component({
   selector: 'ui-form-endereco',
@@ -19,7 +21,8 @@ import { LoadingService } from '@app/core/service/state/loading.service';
     ErrorComponent,
     ZipCodeValidatorDirective,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TextOnlyDirective
   ],
   templateUrl: './form-endereco.component.html',
   styleUrl: './form-endereco.component.scss',

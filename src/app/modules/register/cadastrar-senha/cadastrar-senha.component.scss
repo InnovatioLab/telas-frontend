@@ -11,8 +11,8 @@ label,
 }
 
 .text-error {
-  font-size: 12px;
-  font-weight: 400;
+  // font-size: 12px;
+  // font-weight: 400;
 }
 
 :host ::ng-deep {
@@ -49,7 +49,6 @@ label,
   .icone-olho {
     position: absolute;
     right: 0.75rem;
-    top: 10px;
     bottom: 0;
     height: 100%;
     width: 2.5rem;

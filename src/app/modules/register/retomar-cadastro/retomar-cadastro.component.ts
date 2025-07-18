@@ -2,17 +2,17 @@ import { CommonModule, Location } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ClientService } from '@app/core/service/api/client.service';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { NgxMaskDirective } from 'ngx-mask';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CardCentralizadoComponent } from '../../../shared/components/card-centralizado/card-centralizado.component';
-import { ErrorComponent } from '../../../shared/components/error/error.component';
-import { ENVIRONMENT } from 'src/environments/environment-token';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
 import { MensagensUtils } from '@app/utility/src/lib/utils/mensagens-utils.utils';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { NgxMaskDirective } from 'ngx-mask';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ENVIRONMENT } from 'src/environments/environment-token';
+import { CardCentralizadoComponent } from '../../../shared/components/card-centralizado/card-centralizado.component';
 import { DialogoComponent } from '../../../shared/components/dialogo/dialogo.component';
-import { ClientService } from '@app/core/service/api/client.service';
+import { ErrorComponent } from '../../../shared/components/error/error.component';
 
 @Component({
   selector: 'feat-retomar-cadastro',

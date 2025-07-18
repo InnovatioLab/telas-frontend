@@ -6,7 +6,7 @@
   </div>
 
   <form [formGroup]="monitorForm" (ngSubmit)="submit()" class="modal-content">
-    <div class="form-section">
+    <div class="form-section p-0">
       <h3>Monitor Information</h3>
       
       <div class="form-row">
@@ -38,10 +38,10 @@
       </div>
     </div>
 
-    <div class="form-section">
+    <div class="form-section p-0">
       <h3>Address Information</h3>
       
-      <div formGroupName="address" class="address-group">
+      <div formGroupName="address" class="address-group p-0">
         <div class="form-row">
           <div class="form-field">
             <label for="zipCode">Zip Code*</label>
@@ -116,7 +116,7 @@
       </div>
     </div>
 
-    <div class="form-actions">
+    <div class="flex justify-content-center align-items-center gap-4">
       <button 
         pButton 
         pRipple 
