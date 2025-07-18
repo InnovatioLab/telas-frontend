@@ -32,63 +32,63 @@
 
   /* Typography */
   --fonte-familia: "Montserrat", sans-serif;
-  --fonte-tamanho-pequeno: 12px;
-  --fonte-tamanho-padrao: 14px;
-  --fonte-tamanho-medio: 18px;
-  --fonte-tamanho-grande: 20px;
-  --fonte-tamanho-extra-grande: 24px;
-  --fonte-tamanho-titulo: 26px;
-  --fonte-tamanho-h5: 30px;
+  --fonte-tamanho-pequeno: 0.75rem;
+  --fonte-tamanho-padrao: 0.875rem;
+  --fonte-tamanho-medio: 1.125rem;
+  --fonte-tamanho-grande: 1.25rem;
+  --fonte-tamanho-extra-grande: 1.5rem;
+  --fonte-tamanho-titulo: 1.625rem;
+  --fonte-tamanho-h5: 1.875rem;
 
   --fonte-peso-regular: 400;
   --fonte-peso-medio: 500;
   --fonte-peso-negrito: 700;
 
   /* Dimensions */
-  --altura-input: 45px;
-  --altura-botao: 47px;
-  --altura-botao-pequeno: 36px;
-  --largura-botao-padrao: 250px;
-  --largura-botao-pequeno: 150px;
+  --altura-input: 2.8125rem;
+  --altura-botao: 2.9375rem;
+  --altura-botao-pequeno: 2.25rem;
+  --largura-botao-padrao: 15.625rem;
+  --largura-botao-pequeno: 9.375rem;
   --largura-dropdown-trigger: 3rem;
 
   /* Borders */
-  --borda-raio-padrao: 15px;
-  --borda-raio-pequeno: 8px;
+  --borda-raio-padrao: 0.9375rem;
+  --borda-raio-pequeno: 0.5rem;
   --borda-raio-circular: 50%;
-  --borda-largura: 1px;
+  --borda-largura: 0.0625rem;
   --borda-estilo: solid;
   --borda-padrao: var(--borda-largura) var(--borda-estilo)
     var(--cor-cinza-medio);
 
   /* Spacing */
-  --espacamento-pequeno: 8px;
-  --espacamento-padrao: 16px;
-  --espacamento-medio: 24px;
-  --espacamento-grande: 32px;
-  --espacamento-extra-grande: 48px;
+  --espacamento-pequeno: 0.5rem;
+  --espacamento-padrao: 1rem;
+  --espacamento-medio: 1.5rem;
+  --espacamento-grande: 2rem;
+  --espacamento-extra-grande: 3rem;
 
   /* Shadows */
-  --sombra-padrao: 0 2px 12px rgba(0, 0, 0, 0.1);
-  --sombra-hover: 0 4px 15px rgba(0, 0, 0, 0.15);
+  --sombra-padrao: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.1);
+  --sombra-hover: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.15);
 
   /* Transitions */
   --transicao-padrao: all 0.3s ease;
   --transicao-rapida: all 0.15s ease;
 
   /* Component Dimensions */
-  --largura-max-card-grande: 1100px;
-  --altura-max-card-grande: 930px;
-  --largura-max-card-pequeno: 700px;
-  --largura-min-card-pequeno: 600px;
-  --altura-max-form-mobile: 700px;
-  --largura-sidebar: 300px;
-  --largura-sidebar-compacto: 90px;
-  --altura-box-fechar: 60px;
-  --altura-box-usuario: 80px;
-  --largura-iniciais-usuario: 60px;
-  --altura-iniciais-usuario: 60px;
-  --altura-link-rotas: 60px;
+  --largura-max-card-grande: 68.75rem;
+  --altura-max-card-grande: 58.125rem;
+  --largura-max-card-pequeno: 43.75rem;
+  --largura-min-card-pequeno: 37.5rem;
+  --altura-max-form-mobile: 43.75rem;
+  --largura-sidebar: 18.75rem;
+  --largura-sidebar-compacto: 5.625rem;
+  --altura-box-fechar: 3.75rem;
+  --altura-box-usuario: 5rem;
+  --largura-iniciais-usuario: 3.75rem;
+  --altura-iniciais-usuario: 3.75rem;
+  --altura-link-rotas: 3.75rem;
 
   /* Modal */
   --modal-padding: 1.5rem;
