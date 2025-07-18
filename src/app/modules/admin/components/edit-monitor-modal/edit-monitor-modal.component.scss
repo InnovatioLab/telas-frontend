@@ -3,6 +3,7 @@
   .edit-monitor-modal {
     width: 100%;
     max-width: 800px;
+    height: 100%;
     background: white;
     border-radius: 8px;
     overflow: hidden;
@@ -11,7 +12,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.5rem 2rem;
+      padding: 1rem 2rem;
       background: var(--cor-primaria);
       color: white;
 
@@ -28,7 +29,6 @@
 
     .modal-content {
       padding: 2rem;
-      max-height: 70vh;
       overflow-y: auto;
 
       .form-section {
@@ -64,57 +64,6 @@
             font-weight: 600;
             color: var(--cor-cinza-escuro);
             font-size: 0.9rem;
-          }
-
-          input,
-          textarea,
-          p-inputnumber,
-          p-dropdown {
-            width: 100%;
-            height: var(--altura-input);
-            border-radius: var(--borda-raio-padrao) !important;
-            font-size: var(--fonte-tamanho-medio);
-            font-weight: var(--fonte-peso-regular);
-            color: var(--cor-cinza-escuro);
-            background-color: var(--cor-branca);
-            padding-left: var(--espacamento-padrao);
-            border: var(--borda-padrao);
-            box-shadow: none;
-            resize: none;
-            display: flex;
-            align-items: center;
-          }
-
-          textarea,
-          .standard-textarea {
-            padding-top: calc((var(--altura-input) - 1.2em) / 2);
-            padding-bottom: calc((var(--altura-input) - 1.2em) / 2);
-            line-height: 1.2em;
-          }
-
-          input::placeholder,
-          textarea::placeholder {
-            color: var(--cor-legenda);
-            font-weight: var(--fonte-peso-regular);
-            font-size: var(--fonte-tamanho-medio);
-            opacity: 1;
-          }
-
-          // Remover borda duplicada do p-inputnumber
-          ::ng-deep .p-inputnumber {
-            border: var(--borda-padrao) !important;
-            border-radius: var(--borda-raio-padrao) !important;
-            background: var(--cor-branca) !important;
-            height: var(--altura-input) !important;
-            display: flex;
-            align-items: center;
-          }
-          ::ng-deep .p-inputnumber input {
-            border: none !important;
-            box-shadow: none !important;
-            background: transparent !important;
-            height: 100% !important;
-            border-radius: var(--borda-raio-padrao) !important;
           }
 
           .zipcode-input-container {
@@ -219,5 +168,5 @@
 .form-field textarea[pInputTextarea]:focus {
   border-color: var(--cor-primaria);
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(56, 142, 60, 0.15); // igual ao input PrimeNG
+  box-shadow: 0 0 0 0.2rem rgba(56, 142, 60, 0.15);
 }

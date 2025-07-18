@@ -147,32 +147,23 @@ export class MonitorService {
   }
 
   private mapMonitorResponseToMonitor(monitorResponse: MonitorResponseDto): Monitor {
-    const address = monitorResponse.address || {
-      id: '',
-      street: '',
-      city: '',
-      state: '',
-      country: '',
-      zipCode: ''
-    };
-    // Construir fullAddress
-    const addressParts = [];
-    if (address.street) addressParts.push(address.street);
-    if (address.city) addressParts.push(address.city);
-    if (address.state) addressParts.push(address.state);
-    if (address.zipCode) addressParts.push(address.zipCode);
-    const fullAddress = addressParts.join(', ');
     const mappedMonitor = {
       id: monitorResponse.id,
       size: monitorResponse.size || 0,
       active: monitorResponse.active,
       type: monitorResponse.type,
       locationDescription: monitorResponse.locationDescription,
-      address,
+      address: monitorResponse.address || {
+        id: '',
+        street: '',
+        city: '',
+        state: '',
+        country: '',
+        zipCode: ''
+      },
       adLinks: [] as string[],
       createdAt: monitorResponse.createdAt,
-      updatedAt: monitorResponse.updatedAt,
-      fullAddress: fullAddress || undefined
+      updatedAt: monitorResponse.updatedAt
     };
     return mappedMonitor;
   }

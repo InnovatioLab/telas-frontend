@@ -9,7 +9,9 @@
       class="mt-6 flex flex-column justify-content-center sm:justify-content-between"
     >
       <div class="col-12">
-        <label htmlFor="senha" id="lb-senha" class="required">Create Password</label>
+        <label htmlFor="senha" id="lb-senha" class="required"
+          >Create Password</label
+        >
         <br />
         <p-password
           [toggleMask]="true"
@@ -27,8 +29,9 @@
               class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
               id="icone-olho-off"
             >
-              <app-icon-olho-fechado class="small text-primary"></app-icon-olho-fechado>
-              <small class="text-icon">Hide password</small>
+              <app-icon-olho-fechado
+                class="small text-primary"
+              ></app-icon-olho-fechado>
             </div>
           </ng-template>
           <ng-template pTemplate="showicon">
@@ -36,8 +39,9 @@
               class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
               id="icone-olho"
             >
-              <app-icon-olho class="text-caption-small text-primary"></app-icon-olho>
-              <small class="text-caption-small">Show password</small>
+              <app-icon-olho
+                class="text-caption-small text-primary"
+              ></app-icon-olho>
             </div>
           </ng-template>
         </p-password>
@@ -47,7 +51,10 @@
           [control]="alterarContatoForm.get('senha')"
         ></app-error>
 
-        <div class="text-caption margin-label" *ngIf="alterarContatoForm.get('senha').errors">
+        <div
+          class="text-caption margin-label mt-2"
+          *ngIf="alterarContatoForm.get('senha').errors"
+        >
           Your password must contain:
           <ul class="m-0">
             <li>8 to 32 characters</li>
@@ -56,7 +63,9 @@
       </div>
 
       <div class="col-12 mt-2">
-        <label htmlFor="confirmarSenha" id="lb-confirmarSenha" class="required">Confirm Password</label>
+        <label htmlFor="confirmarSenha" id="lb-confirmarSenha" class="required"
+          >Confirm Password</label
+        >
         <br />
         <p-password
           [toggleMask]="true"
@@ -75,8 +84,9 @@
               class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
               id="icone-olho-off"
             >
-              <app-icon-olho-fechado class="small text-primary"></app-icon-olho-fechado>
-              <small class="text-icon">Hide password</small>
+              <app-icon-olho-fechado
+                class="small text-primary"
+              ></app-icon-olho-fechado>
             </div>
           </ng-template>
           <ng-template pTemplate="showicon">
@@ -84,19 +94,30 @@
               class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
               id="icone-olho"
             >
-              <app-icon-olho class="text-caption-small text-primary"></app-icon-olho>
-              <small class="text-caption-small">Show password</small>
+              <app-icon-olho
+                class="text-caption-small text-primary"
+              ></app-icon-olho>
             </div>
           </ng-template>
         </p-password>
-        <app-error id="error-msg-login" [control]="alterarContatoForm.get('confirmarSenha')"></app-error>
-        <small *ngIf="exibirErroSenhaDiferente()" class="text-danger text-error margin-label">
+        <app-error
+          id="error-msg-login"
+          [control]="alterarContatoForm.get('confirmarSenha')"
+        ></app-error>
+        <small
+          *ngIf="exibirErroSenhaDiferente()"
+          class="text-danger text-error margin-label"
+        >
           {{ MENSAGENS.validacao.senhasNaoCorrespondem }}
         </small>
       </div>
 
       <div class="flex justify-content-center mt-5">
-        <button pButton (click)="salvar()" class="w-full md:w-6 btn-fill my-2 justify-content-center">
+        <button
+          pButton
+          (click)="salvar()"
+          class="w-full md:w-6 btn-fill my-2 justify-content-center"
+        >
           {{ TEXTO_ACAO.salvar }}
         </button>
       </div>

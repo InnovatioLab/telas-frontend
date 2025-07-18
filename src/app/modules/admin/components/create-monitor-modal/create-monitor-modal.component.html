@@ -6,7 +6,7 @@
   </div>
 
   <form [formGroup]="monitorForm" (ngSubmit)="submit()" class="modal-content">
-    <div class="form-section">
+    <div class="form-section p-0">
       <h3>Monitor Information</h3>
       
       <div class="form-row">
@@ -17,6 +17,8 @@
             formControlName="size" 
             [min]="0.01" 
             [max]="999.99" 
+            [minFractionDigits]="2" 
+            [maxFractionDigits]="2"
             placeholder="Enter size">
           </p-inputNumber>
           <small class="error-message" *ngIf="getFieldError('size')">{{ getFieldError('size') }}</small>
@@ -29,18 +31,17 @@
             id="locationDescription" 
             formControlName="locationDescription" 
             placeholder="Enter location description"
-            rows="3"
-            class="standard-textarea">
+            rows="3">
           </textarea>
           <small class="error-message" *ngIf="getFieldError('locationDescription')">{{ getFieldError('locationDescription') }}</small>
         </div>
       </div>
     </div>
 
-    <div class="form-section">
+    <div class="form-section p-0">
       <h3>Address Information</h3>
       
-      <div formGroupName="address" class="address-group">
+      <div formGroupName="address" class="address-group p-0">
         <div class="form-row">
           <div class="form-field">
             <label for="zipCode">Zip Code*</label>
@@ -115,13 +116,13 @@
       </div>
     </div>
 
-    <div class="form-actions action-buttons">
+    <div class="flex justify-content-center align-items-center gap-4">
       <button 
         pButton 
         pRipple 
         type="button" 
         label="Cancel" 
-        class="p-button-outlined"
+        class="p-button-outlined" 
         (click)="cancel()">
       </button>
       <button 

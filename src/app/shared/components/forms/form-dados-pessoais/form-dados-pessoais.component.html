@@ -1,44 +1,116 @@
 <div class="informacoes-pessoais">
-  <span class="titulo">Identification Data</span>
+  <h5 class="titulo">Identification Data</h5>
   <form [formGroup]="cadastroForm">
     <div class="grid form-group">
       <div class="col-12 md:col-6 lg:col-3" *ngIf="exibirCampo('businessName')">
-        <label htmlFor="businessName" id="lb-business-name" [class.required]="campoObrigatorio('businessName')">Business Name</label>
-        <br />
-        <input type="text" pInputText formControlName="businessName" placeholder="Business Name" class="w-full input-form"
-          maxlength="100" id="inp-business-name" />
-        <app-error id="error-msg-business-name" [control]="cadastroForm.get('businessName')"></app-error>
+        <label
+          htmlFor="businessName"
+          id="lb-business-name"
+          [class.required]="campoObrigatorio('businessName')"
+          >Business Name</label
+        >
+        <input
+          type="text"
+          pInputText
+          formControlName="businessName"
+          placeholder="Business Name"
+          class="w-full input-form"
+          maxlength="100"
+          id="inp-business-name"
+        />
+        <app-error
+          id="error-msg-business-name"
+          [control]="cadastroForm.get('businessName')"
+        ></app-error>
       </div>
 
-      <div class="col-12 md:col-6 lg:col-3" *ngIf="exibirCampo('identificationNumber')">
-        <label htmlFor="identificationNumber" id="lb-identification-number" [class.required]="campoObrigatorio('identificationNumber')">Identification Number</label>
-        <br />
+      <div
+        class="col-12 md:col-6 lg:col-3"
+        *ngIf="exibirCampo('identificationNumber')"
+      >
+        <label
+          htmlFor="identificationNumber"
+          id="lb-identification-number"
+          [class.required]="campoObrigatorio('identificationNumber')"
+          >Identification Number</label
+        >
+
         <!-- Substituindo o p-inputMask por um input normal -->
-        <p-inputMask mask="999999999" formControlName="identificationNumber" placeholder="000000000" id="inp-identification-number"
-          class="w-full input-form" autoClear="false"></p-inputMask>
-        <app-error id="error-msg-identification-number" [control]="cadastroForm.get('identificationNumber')"></app-error>
+        <p-inputMask
+          mask="999999999"
+          formControlName="identificationNumber"
+          placeholder="000000000"
+          id="inp-identification-number"
+          class="w-full input-form"
+          autoClear="false"
+        ></p-inputMask>
+        <app-error
+          id="error-msg-identification-number"
+          [control]="cadastroForm.get('identificationNumber')"
+        ></app-error>
       </div>
 
       <div class="col-12 md:col-6 lg:col-3" *ngIf="exibirCampo('industry')">
-        <label htmlFor="industry" id="lb-business-field" [class.required]="campoObrigatorio('industry')">Industry</label>
-        <br />
-        <input type="text" pInputText formControlName="industry" placeholder="Industry" class="w-full input-form"
-          maxlength="100" id="inp-business-field" />
-        <app-error id="error-msg-business-field" [control]="cadastroForm.get('industry')"></app-error>
+        <label
+          htmlFor="industry"
+          id="lb-business-field"
+          [class.required]="campoObrigatorio('industry')"
+          >Industry</label
+        >
+
+        <input
+          type="text"
+          pInputText
+          uiTextOnly
+          formControlName="industry"
+          placeholder="Industry"
+          class="w-full input-form"
+          maxlength="50"
+          id="inp-business-field"
+        />
+        <app-error
+          id="error-msg-business-field"
+          [control]="cadastroForm.get('industry')"
+        ></app-error>
       </div>
 
       <div class="col-12 md:col-6 lg:col-3" *ngIf="exibirCampo('websiteUrl')">
-        <label htmlFor="websiteUrl" id="lb-website-url" [class.required]="campoObrigatorio('websiteUrl')">Website</label>
-        <br />
-        <input type="url" pInputText formControlName="websiteUrl" placeholder="https://www.example.com" class="w-full input-form"
-          maxlength="200" id="inp-website-url" />
-        <app-error id="error-msg-website-url" [control]="cadastroForm.get('websiteUrl')"></app-error>
+        <label
+          htmlFor="websiteUrl"
+          id="lb-website-url"
+          [class.required]="campoObrigatorio('websiteUrl')"
+          >Website</label
+        >
+
+        <input
+          type="url"
+          pInputText
+          formControlName="websiteUrl"
+          placeholder="https://www.example.com"
+          class="w-full input-form"
+          maxlength="200"
+          id="inp-website-url"
+        />
+        <app-error
+          id="error-msg-website-url"
+          [control]="cadastroForm.get('websiteUrl')"
+        ></app-error>
       </div>
 
       <div class="col-12">
-        <div class="flex align-items-center">
-          <label id="lb-social-media" for="social-media-input">Social Media</label>
-          <button class="ml-2" id="social-media-input" type="button" pButton icon="pi pi-plus" label="" aria-label="Add Social Media" (click)="adicionarSocialMedia()"></button>
+        <div class="flex align-items-center gap-2">
+          <label id="lb-social-media" for="social-media-input" class="ml-0 mb-0"
+            >Social Media</label
+          >
+          <button
+            id="social-media-input"
+            type="button"
+            pButton
+            icon="pi pi-plus"
+            label=""
+            aria-label="Add Social Media"
+            (click)="adicionarSocialMedia()"
+          ></button>
           <button
             *ngIf="socialMediaArray.length > 0"
             type="button"
@@ -46,12 +118,15 @@
             icon="pi pi-trash"
             class="p-button-danger ml-2"
             (click)="removerUltimoSocialMedia()"
-          >
-          </button>
+          ></button>
         </div>
       </div>
 
-      <div formArrayName="socialMedia" *ngFor="let socialMedia of socialMediaArray.controls; let i = index" class="col-12">
+      <div
+        formArrayName="socialMedia"
+        *ngFor="let socialMedia of socialMediaArray.controls; let i = index"
+        class="col-12"
+      >
         <div [formGroupName]="i" class="grid">
           <div class="col-6">
             <p-dropdown
@@ -60,8 +135,13 @@
               placeholder="Select Social Media"
               class="w-full"
             ></p-dropdown>
-            <app-error *ngIf="socialMedia.get('platform')?.touched && socialMedia.get('platform')?.invalid" 
-                       [control]="socialMedia.get('platform')"></app-error>
+            <app-error
+              *ngIf="
+                socialMedia.get('platform')?.touched &&
+                socialMedia.get('platform')?.invalid
+              "
+              [control]="socialMedia.get('platform')"
+            ></app-error>
           </div>
           <div class="col-6">
             <input
@@ -72,8 +152,13 @@
               class="w-full input-form"
               maxlength="200"
             />
-            <app-error *ngIf="socialMedia.get('url')?.touched && socialMedia.get('url')?.invalid" 
-                       [control]="socialMedia.get('url')"></app-error>
+            <app-error
+              *ngIf="
+                socialMedia.get('url')?.touched &&
+                socialMedia.get('url')?.invalid
+              "
+              [control]="socialMedia.get('url')"
+            ></app-error>
           </div>
         </div>
       </div>

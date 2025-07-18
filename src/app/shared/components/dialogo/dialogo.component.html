@@ -6,7 +6,7 @@
         <ng-container *ngComponentOutlet="iconComponent"></ng-container>
       </ng-container>
       <ng-template #iconeString>
-        <span *ngIf="data.icon && typeof data.icon === 'string' && data.icon !== 'report'" [class]="'icon-fill material-symbols-outlined dialogo-icone ' + data.icon">
+        <span *ngIf="data.icon && typeof data.icon === 'string' && data.icon !== 'report'" [ngClass]="data.iconClass ?? ''" [class]="'icon-fill material-symbols-outlined dialogo-icone ' + data.icon">
           {{ data.icon }}
         </span>
         <app-icon-atencao *ngIf="data.icon === 'report'"/>
@@ -18,7 +18,7 @@
   </div>
   <div
     id="test-descricao-dialog"
-    class="w-full text-center dialogo-descricao"
+    class="w-full sm:text-justify md:text-center lg:text-center dialogo-descricao"
     [innerHTML]="data?.descricao"
   ></div>
   <div

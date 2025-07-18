@@ -1,4 +1,4 @@
-.formulario-login{
+.formulario-login {
   .header-container {
     display: flex;
     flex-direction: column;
@@ -8,7 +8,7 @@
     margin-bottom: 32px;
   }
 
-  .imagem-logo{
+  .imagem-logo {
     height: 88px;
     width: 296.42px;
     margin-bottom: 42px;
@@ -22,7 +22,7 @@
     min-height: 35px;
     display: flex;
     align-items: center;
-    color: #16191B;
+    color: #16191b;
   }
 
   .descricao {
@@ -34,20 +34,20 @@
     align-items: center;
   }
 
-  .label-input{
+  .label-input {
     height: 45px;
     display: flex;
     align-items: center;
     margin-left: 10px;
 
-    label{
+    label {
       font-weight: 400;
       font-size: 16px;
       color: var(--cor-cinza-claro);
     }
   }
 
-  .btn-enter{
+  .btn-enter {
     margin-top: 107px;
 
     display: flex;
@@ -65,7 +65,6 @@
 
     font-weight: 500;
     font-size: 18px;
-    background-color: var(--cor-cinza-claro);
   }
 
   .botao-entrar:disabled {
@@ -111,7 +110,7 @@
     }
 
     .p-inputmask,
-    .p-password-input{
+    .p-password-input {
       height: 45px;
       border-radius: 15px;
       padding: 10.5px 16px;
@@ -126,9 +125,8 @@
     .card .p-card .p-card-body,
     .p-card,
     .card .p-card .p-card-content {
-    border-radius: 35px;
-    background: var(--cor-primaria-escura);
-
+      border-radius: 35px;
+      color: var(--cor-primaria);
     }
 
     .card .p-card .p-card-content {
@@ -144,6 +142,12 @@
       flex-direction: column;
     }
   }
+}
+
+#test-link-cadastre-se,
+#test-link-retomar-cadastro,
+#test-link-clique-aqui {
+  color: var(--cor-principal);
 }
 
 @media screen and (max-height: 800px) {

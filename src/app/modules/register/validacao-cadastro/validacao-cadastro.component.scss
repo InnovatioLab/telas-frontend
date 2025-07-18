@@ -1,47 +1,47 @@
 label {
   margin-left: 10px;
   &.required::after {
-    content: ' *';
+    content: " *";
   }
 }
 
 :host ::ng-deep {
-  .input-form {
-    height: 48px;
-    border-radius: 10px !important;
-  }
-
-  #error-msg-login {
-    .text-danger {
-      padding-left: 10px;
+  .validacao-cadastro {
+    .card .p-card .p-card-body,
+    .p-card,
+    .card .p-card .p-card-content {
+      border-radius: 35px;
+      color: var(--cor-primaria);
     }
-  }
 
-  .btn-reenviar-codigo {
-    color: var(--cor-primaria);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    .input-form {
+      height: 48px;
+      border-radius: 10px !important;
+    }
 
-  .resend-button {
-    background-color: var(--cor-primaria) !important;
-    padding: 4px 16px !important;
+    #error-msg-login {
+      .text-danger {
+        padding-left: 10px;
+      }
+    }
+
+    .resend-button {
+      background-color: var(--cor-primaria) !important;
+      border-radius: 8px;
+      font-weight: 600;
+    }
   }
 }
 
 .custom-button {
-  width: 240px;   
   height: 48px;
   border-radius: 8px;
-
-  font-size: 16px; 
+  font-size: 16px;
   font-weight: 600;
 
-  &:disabled{
+  &:disabled {
     background-color: var(--color-disabled-fundo-botao);
     color: var(--color-disabled-text-botao);
     border: 1px solid var(--color-disabled-borda-botao);
   }
 }
-

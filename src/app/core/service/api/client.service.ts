@@ -1,12 +1,12 @@
-import { HttpClient, HttpParams, HttpBackend } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, Subject, map, BehaviorSubject } from 'rxjs';
-import { ResponseDTO } from '@app/model/dto/response.dto';
 import { Client } from '@app/model/client';
-import { BaseHttpService } from './base-htttp.service';
 import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
-import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
+import { ResponseDTO } from '@app/model/dto/response.dto';
+import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
+import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
+import { BaseHttpService } from './base-htttp.service';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService extends BaseHttpService<Client> {

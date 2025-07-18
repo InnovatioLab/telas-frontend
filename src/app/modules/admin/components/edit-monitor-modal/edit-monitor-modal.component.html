@@ -17,6 +17,8 @@
             formControlName="size" 
             [min]="0.01" 
             [max]="999.99" 
+            [minFractionDigits]="2" 
+            [maxFractionDigits]="2"
             placeholder="Enter size">
           </p-inputNumber>
           <small class="error-message" *ngIf="getFieldError('size')">{{ getFieldError('size') }}</small>

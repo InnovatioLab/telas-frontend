@@ -3,27 +3,22 @@
   flex-direction: column;
   height: 100%;
   max-height: 90vh;
-  background-color: var(--cor-branca);
-  border-radius: var(--borda-raio-padrao);
   overflow: hidden;
   box-shadow: var(--sombra-padrao);
   animation: slideIn 0.3s ease-out;
+
+  h2 {
+    margin-bottom: 0px !important;
+  }
 
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem;
+    padding: 1rem 2rem;
     background-color: var(--cor-primaria);
     color: var(--cor-branca);
     border-bottom: 1px solid var(--cor-cinza-medio);
-
-    h2 {
-      margin: 0;
-      font-size: var(--fonte-tamanho-extra-grande);
-      font-weight: var(--fonte-peso-negrito);
-      color: var(--cor-branca);
-    }
 
     .close-btn {
       background: none;
@@ -95,38 +90,9 @@
         }
 
         input,
-        textarea,
-        .standard-textarea,
         p-inputnumber,
         p-dropdown {
           width: 100%;
-          height: var(--altura-input);
-          border-radius: var(--borda-raio-padrao) !important;
-          font-size: var(--fonte-tamanho-medio);
-          font-weight: var(--fonte-peso-regular);
-          color: var(--cor-cinza-escuro);
-          background-color: var(--cor-branca);
-          padding-left: var(--espacamento-padrao);
-          border: var(--borda-padrao);
-          box-shadow: none;
-          resize: none;
-          display: flex;
-          align-items: center;
-        }
-
-        textarea,
-        .standard-textarea {
-          padding-top: calc((var(--altura-input) - 1.2em) / 2);
-          padding-bottom: calc((var(--altura-input) - 1.2em) / 2);
-          line-height: 1.2em;
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-          color: var(--cor-legenda);
-          font-weight: var(--fonte-peso-regular);
-          font-size: var(--fonte-tamanho-medio);
-          opacity: 1;
         }
 
         .error-message {
@@ -138,23 +104,6 @@
         &.full-width {
           flex: 1;
           width: 100%;
-        }
-
-        // Remover borda duplicada do p-inputnumber
-        ::ng-deep .p-inputnumber {
-          border: var(--borda-padrao) !important;
-          border-radius: var(--borda-raio-padrao) !important;
-          background: var(--cor-branca) !important;
-          height: var(--altura-input) !important;
-          display: flex;
-          align-items: center;
-        }
-        ::ng-deep .p-inputnumber input {
-          border: none !important;
-          box-shadow: none !important;
-          background: transparent !important;
-          height: 100% !important;
-          border-radius: var(--borda-raio-padrao) !important;
         }
       }
 
@@ -205,18 +154,6 @@
           background-color: var(--cor-cinza-muito-claro);
         }
       }
-    }
-  }
-
-  .action-buttons {
-    display: flex;
-    gap: 5px;
-    margin-top: var(--espacamento-padrao);
-
-    button, .p-button {
-      flex: 1 1 50%;
-      width: 50%;
-      min-width: 0;
     }
   }
 

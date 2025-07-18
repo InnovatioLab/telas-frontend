@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
-import { debounceTime, distinctUntilChanged, switchMap, Observable, of } from 'rxjs';
 import { AddressData } from '@app/model/dto/request/address-data-request';
+import { CreateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { debounceTime, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-create-monitor-modal',
@@ -155,4 +155,4 @@ export class CreateMonitorModalComponent implements OnInit {
     }
     return '';
   }
-} 
+}

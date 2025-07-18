@@ -9,13 +9,6 @@
   .form-group {
     margin-top: var(--espacamento-padrao);
     margin-bottom: var(--espacamento-grande);
-
-    label {
-      margin-left: var(--espacamento-pequeno);
-      &.required::after {
-        content: ' *';
-      }
-    }
   }
 
   @media (min-width: 768px) {
