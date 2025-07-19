@@ -168,6 +168,17 @@ export class MonitorService {
     return mappedMonitor;
   }
 
+  getValidAds(monitorId: string): Observable<any[]> {
+    return this.http.get<ResponseDto<any[]>>(`${this.apiUrl}/valid-ads/${monitorId}`, this.headers).pipe(
+      map((response: ResponseDto<any[]>) => {
+        return response.data || [];
+      }),
+      catchError(error => {
+        return of([]);
+      })
+    );
+  }
+
   getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {
     const mockAlerts: IMonitorAlert[] = [
       {

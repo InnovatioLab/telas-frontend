@@ -278,6 +278,21 @@ export class ManagementMonitorsComponent implements OnInit {
     this.selectedMonitorForAds = { ...monitor };
     this.adsModalVisible = true;
     this.newAdLink = '';
+    
+    this.loadValidAds(monitor.id);
+  }
+
+  loadValidAds(monitorId: string): void {
+    this.monitorService.getValidAds(monitorId).subscribe({
+      next: (validAds) => {
+        if (this.selectedMonitorForAds) {
+          this.selectedMonitorForAds.validAds = validAds;
+        }
+      },
+      error: (error) => {
+        this.toastService.erro('Error loading valid ads');
+      }
+    });
   }
 
   closeAdsModal(): void {
@@ -307,6 +322,30 @@ export class ManagementMonitorsComponent implements OnInit {
       this.toastService.sucesso('Ad link added successfully');
     } else {
       this.toastService.erro('This ad link already exists');
+    }
+  }
+
+  addValidAd(ad: any): void {
+    if (!this.selectedMonitorForAds) {
+      return;
+    }
+
+    if (!this.selectedMonitorForAds.adLinks) {
+      this.selectedMonitorForAds.adLinks = [];
+    }
+
+    const adUrl = ad.url || ad.link || ad.id;
+    if (adUrl && !this.selectedMonitorForAds.adLinks.includes(adUrl)) {
+      this.selectedMonitorForAds.adLinks.push(adUrl);
+      
+      const index = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
+      if (index !== -1 && this.selectedMonitorForAds) {
+        this.monitors[index] = { ...this.selectedMonitorForAds };
+      }
+      
+      this.toastService.sucesso('Ad link added successfully');
+    } else {
+      this.toastService.erro('This ad link already exists or is invalid');
     }
   }
 

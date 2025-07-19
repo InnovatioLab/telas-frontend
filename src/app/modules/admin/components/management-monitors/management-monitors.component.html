@@ -128,16 +128,39 @@
     [(visible)]="adsModalVisible" 
     [style]="{width: '70vw', maxWidth: '800px'}" 
     [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
     [closeOnEscape]="true"
     [dismissableMask]="true">
     
     <div class="ads-management" *ngIf="selectedMonitorForAds">
       <div class="ads-header">
         <h4>Monitor: {{selectedMonitorForAds.name || 'Monitor ' + selectedMonitorForAds.id.substring(0, 8)}}</h4>
-        <p>Address: {{selectedMonitorForAds.address?.coordinatesParams || 'N/A'}}</p>
       </div>
       
       <div class="ads-content">
+        <div class="valid-ads" *ngIf="selectedMonitorForAds.validAds && selectedMonitorForAds.validAds.length > 0">
+          <h5>Available Ads ({{selectedMonitorForAds.validAds.length}})</h5>
+          <div class="ad-list">
+            <div class="ad-item" *ngFor="let ad of selectedMonitorForAds.validAds; let i = index">
+              <div class="ad-info">
+                <span class="ad-index">{{i + 1}}.</span>
+                <span class="ad-title">{{ad.title || 'Ad ' + (i + 1)}}</span>
+                <span class="ad-description">{{ad.description || 'No description available'}}</span>
+              </div>
+              <button pButton pRipple icon="pi pi-plus" 
+                      class="p-button-rounded p-button-success p-button-text p-button-sm"
+                      (click)="addValidAd(ad)"
+                      pTooltip="Add Ad Link"></button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="no-valid-ads" *ngIf="!selectedMonitorForAds.validAds || selectedMonitorForAds.validAds.length === 0">
+          <app-icon-help></app-icon-help>
+          <span>No valid ads available for this monitor.</span>
+        </div>
+        
         <div class="current-ads" *ngIf="selectedMonitorForAds.adLinks && selectedMonitorForAds.adLinks.length > 0">
           <h5>Current Ad Links ({{selectedMonitorForAds.adLinks.length}})</h5>
           <div class="ad-list">
@@ -155,7 +178,7 @@
         </div>
         
         <div class="no-ads" *ngIf="!selectedMonitorForAds.adLinks || selectedMonitorForAds.adLinks.length === 0">
-          <i class="pi pi-info-circle"></i>
+          <app-icon-help></app-icon-help>
           <span>No ad links configured for this monitor.</span>
         </div>
         

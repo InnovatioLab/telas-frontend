@@ -209,6 +209,77 @@
     }
 
     .ads-content {
+      .valid-ads {
+        margin-bottom: 2rem;
+
+        h5 {
+          margin: 0 0 1rem 0;
+          color: var(--cor-cinza-escuro);
+          font-weight: 600;
+        }
+
+        .ad-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+
+          .ad-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: var(--cor-cinza-fundo);
+            border-radius: 8px;
+            border: 1px solid var(--cor-cinza-medio);
+
+            .ad-info {
+              display: flex;
+              flex-direction: column;
+              gap: 0.25rem;
+              flex: 1;
+
+              .ad-index {
+                font-weight: 600;
+                color: var(--cor-primaria);
+                min-width: 20px;
+              }
+
+              .ad-title {
+                color: var(--cor-cinza-escuro);
+                font-weight: 500;
+              }
+
+              .ad-description {
+                color: var(--cor-cinza);
+                font-size: 0.875rem;
+              }
+            }
+          }
+        }
+      }
+
+      .no-valid-ads {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: var(--cor-cinza-fundo);
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        color: var(--cor-cinza);
+
+        app-icon-help {
+          width: 20px;
+          height: 20px;
+          
+          ::ng-deep svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+          }
+        }
+      }
+
       .current-ads {
         margin-bottom: 2rem;
 
@@ -265,8 +336,15 @@
         border-radius: 8px;
         margin-bottom: 2rem;
 
-        i {
-          font-size: 1.25rem;
+        app-icon-help {
+          width: 20px;
+          height: 20px;
+          
+          ::ng-deep svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+          }
         }
       }
 

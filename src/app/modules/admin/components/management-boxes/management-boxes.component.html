@@ -50,18 +50,16 @@
       
       <ng-template pTemplate="body" let-box>
         <tr>
-          <td>{{box.ip}}</td>
-          <td>{{box.macAddress || 'N/A'}}</td>
-          <td>
+          <td class="text-center">{{box.ip}}</td>
+          <td class="text-center">{{box.macAddress || 'N/A'}}</td>
+          <td class="text-center">
             <p-badge [value]="box.active ? 'Active' : 'Inactive'" [severity]="box.active ? 'success' : 'danger'"></p-badge>
           </td>
-          <td>
-            <div class="monitor-info">
-              <app-icon-tv-display class="monitor-icon"></app-icon-tv-display>
-              <span class="monitor-count">{{box.monitorCount || 0}} monitor(s)</span>
-            </div>
+          <td class="text-center">
+            <app-icon-tv-display class="monitor-icon"></app-icon-tv-display>
+            <span class="monitor-count">{{box.monitorCount || 0}} monitor(s)</span>
           </td>
-          <td>
+          <td class="text-center">
             <div class="action-buttons">
               <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-text" 
                       (click)="onSelectBox(box)"
