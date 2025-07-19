@@ -76,9 +76,13 @@
       .action-buttons {
         display: flex;
         gap: 0.5rem;
+        align-items: center;
 
         .p-button-rounded {
           position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
           .ads-badge {
             position: absolute;
@@ -116,10 +120,30 @@
           .custom-icon {
             width: 16px;
             height: 17px;
-            
+            display: flex;
+            align-items: center;
+            justify-content: center;
             
             ::ng-deep svg {
               fill: currentColor;
+            }
+          }
+        }
+
+        .p-button-secondary {
+          .custom-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            line-height: 1;
+            
+            ::ng-deep svg {
+              width: 18px;
+              height: 18px;
+              fill: currentColor;
+              vertical-align: middle;
             }
           }
         }

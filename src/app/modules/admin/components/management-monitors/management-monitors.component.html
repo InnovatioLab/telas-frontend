@@ -65,6 +65,11 @@
               <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-text" 
                       (click)="onSelectMonitor(monitor)"
                       pTooltip="Edit Monitor"></button>
+              <button pButton pRipple class="p-button-rounded p-button-secondary p-button-text" 
+                      (click)="viewMonitorDetails(monitor)"
+                      pTooltip="Upload ads">
+                <app-icon-upload class="custom-icon"></app-icon-upload>
+              </button>
               <button pButton pRipple icon="pi pi-trash" 
                       [class]="getDeleteButtonClass(monitor)"
                       (click)="deleteMonitor(monitor)"

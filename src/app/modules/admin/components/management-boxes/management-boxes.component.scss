@@ -242,14 +242,19 @@
         display: flex;
         align-items: center;
       }
-    }
 
-    .help-text {
-      display: block;
-      margin-top: 4px;
-      font-size: 0.875rem;
-      color: var(--text-color-secondary);
-      font-style: italic;
+      .help-text {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.875rem;
+        color: var(--cor-legenda);
+        font-style: italic;
+
+        &.error-text {
+          color: var(--cor-erro);
+          font-weight: var(--fonte-peso-medio);
+        }
+      }
     }
   }
 

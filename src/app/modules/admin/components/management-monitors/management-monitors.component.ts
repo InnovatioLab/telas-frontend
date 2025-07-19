@@ -434,4 +434,12 @@ export class ManagementMonitorsComponent implements OnInit {
     }
     return baseClass;
   }
+
+  viewMonitorDetails(monitor: Monitor): void {
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Monitor Details',
+      detail: `Monitor: ${monitor.name || 'Monitor ' + monitor.id.substring(0, 8)} | Address: ${this.getMonitorAddress(monitor)} | Details: ${this.getMonitorDetails(monitor)}`
+    });
+  }
 }
