@@ -65,6 +65,8 @@ export class MonitorService {
       if (filters.genericFilter) params = params.set('genericFilter', filters.genericFilter);
     }
     
+    params = params.set('_t', Date.now().toString());
+    
     return this.http.get<ResponseDto<PaginationResponseDto<MonitorResponseDto>>>(`${this.apiUrl}/filters`, { params }).pipe(
       map((response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>) => {
         if (response?.data) {

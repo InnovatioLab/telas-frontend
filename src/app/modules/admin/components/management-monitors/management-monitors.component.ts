@@ -194,7 +194,10 @@ export class ManagementMonitorsComponent implements OnInit {
           detail: 'Monitor updated successfully!'
         });
         this.onEditMonitorModalClose();
-        this.loadMonitors();
+        
+        setTimeout(() => {
+          this.loadMonitors();
+        }, 100);
       },
       error: (error) => {
         this.messageService.add({
@@ -210,6 +213,10 @@ export class ManagementMonitorsComponent implements OnInit {
   onEditMonitorModalClose(): void {
     this.editMonitorModalVisible = false;
     this.selectedMonitorForEdit = null;
+    
+    setTimeout(() => {
+      this.loadMonitors();
+    }, 50);
   }
 
   onMonitorUpdated(updateData: { id: string; data: UpdateMonitorRequestDto }): void {

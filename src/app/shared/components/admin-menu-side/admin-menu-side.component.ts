@@ -13,6 +13,8 @@ import { SidebarService } from '@app/core/service/state/sidebar.service';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
 import { IconsModule } from '@app/shared/icons/icons.module';
+import { IconDocumentoComponent } from "@app/shared/icons/documento.icon";
+import { IconEtiquetaComponent } from "@app/shared/icons/etiqueta.icon";
 
 interface MenuItem {
   id: string;
@@ -25,12 +27,14 @@ interface MenuItem {
   selector: 'app-admin-menu-side',
   standalone: true,
   imports: [
-    CommonModule, 
-    PrimengModule, 
-    DialogModule, 
+    CommonModule,
+    PrimengModule,
+    DialogModule,
     ToggleComponent,
     IconsModule,
-  ],
+    IconDocumentoComponent,
+    IconEtiquetaComponent
+],
   providers: [DialogService, DialogoUtils],
   templateUrl: './admin-menu-side.component.html',
   styleUrls: ['./admin-menu-side.component.scss']
@@ -46,6 +50,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     { id: 'home', label: 'Map', icon: 'dashboard' },
     { id: 'monitors', label: 'Monitors', icon: 'tv-display' },
     { id: 'boxes', label: 'Boxes', icon: 'box'},
+    { id: 'advertisements', label: 'Advertisements', icon: 'etiqueta' },
     { id: 'logout', label: 'Logout', icon: 'sair' },
   ];
 
@@ -218,6 +223,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case 'boxes':
         this.navegarParaBoxes();
         break;
+      case 'advertisements':
+        this.navegarParaAdvertisements();
+        break;
       case 'alerts':
         this.toggleAdminSidebar();
         break;
@@ -258,6 +266,13 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaBoxes(): void {
     this.router.navigate(['/admin/boxes']);
+    if (this.menuAberto && !this.menuFixo) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaAdvertisements(): void {
+    this.router.navigate(['/admin/advertisements']);
     if (this.menuAberto && !this.menuFixo) {
       this.toggleMenu();
     }
@@ -336,6 +351,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return 'View system monitors';
       case 'boxes':
         return 'Manage system boxes';
+      case 'advertisements':
+        return 'Manage advertisements';
       case 'alerts':
         return 'View system alerts';
       case 'settings':
