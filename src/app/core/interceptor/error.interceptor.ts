@@ -43,7 +43,6 @@ export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
         refDialog = dialogService.open(DialogoComponent, configDialogo);
       }
 
-      // Extrair mensagem de erro de forma mais segura
       let errorMessage = 'An error occurred';
       
       if (error?.mensagem) {

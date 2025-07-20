@@ -51,6 +51,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     { id: 'monitors', label: 'Monitors', icon: 'tv-display' },
     { id: 'boxes', label: 'Boxes', icon: 'box'},
     { id: 'advertisements', label: 'Advertisements', icon: 'etiqueta' },
+    { id: 'clients', label: 'Clients', icon: 'user' },
     { id: 'logout', label: 'Logout', icon: 'sair' },
   ];
 
@@ -226,6 +227,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case 'advertisements':
         this.navegarParaAdvertisements();
         break;
+      case 'clients':
+        this.navegarParaClients();
+        break;
       case 'alerts':
         this.toggleAdminSidebar();
         break;
@@ -273,6 +277,13 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaAdvertisements(): void {
     this.router.navigate(['/admin/advertisements']);
+    if (this.menuAberto && !this.menuFixo) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaClients(): void {
+    this.router.navigate(['/admin/clients']);
     if (this.menuAberto && !this.menuFixo) {
       this.toggleMenu();
     }
@@ -353,6 +364,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return 'Manage system boxes';
       case 'advertisements':
         return 'Manage advertisements';
+      case 'clients':
+        return 'Manage system clients';
       case 'alerts':
         return 'View system alerts';
       case 'settings':

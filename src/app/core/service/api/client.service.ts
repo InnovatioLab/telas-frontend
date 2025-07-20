@@ -64,7 +64,7 @@ export class ClientService extends BaseHttpService<Client> {
     const params = new HttpParams().set('code', code);
     return this.http.patch(`${this.baseUrl}/validate-code/${login}`, null, { params });
   }
-
+  
   aceitarTermosDeCondicao() {
     return this.http.patch(`${this.baseUrl}/accept-terms-conditions`, null, this.headers);
   }

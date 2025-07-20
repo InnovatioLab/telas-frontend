@@ -108,7 +108,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public reloadMapApi(): void {
-    this.mapsService.initGoogleMapsApi(true);
+    this.mapsService.initGoogleMapsApi();
   }
   
   public forceReinitialize(): void {
@@ -171,7 +171,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     
-    this.mapsService.initGoogleMapsApi(true);
+    this.mapsService.initGoogleMapsApi();
 
     const subscription = this.mapsService.apiLoaded$.subscribe((loaded: boolean) => {
       if (loaded) {
@@ -462,7 +462,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     let icon: google.maps.Symbol;
     
     if (point.category === 'MONITOR' || point.type === 'MONITOR') {
-      icon = this.mapsService.createMonitorIcon(point.hasAvailableSlots);
+      icon = this.mapsService.createMonitorIcon();
       console.log(`[MapsComponent] Ícone criado com cor:`, icon.fillColor);
     } else {
       icon = this.mapsService.createRedMarkerIcon();

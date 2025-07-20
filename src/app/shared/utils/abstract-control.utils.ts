@@ -164,7 +164,7 @@ export class AbstractControlUtils {
 
   static aceitarApenasTexto(form: FormGroup, campo: string): void {
     form.get(campo)?.valueChanges.subscribe(nome => {
-      const lettersRegex = /^[\p{L}\s.,-]*$/u; // Permite apenas letras, espaços, pontos, vírgulas e hífens
+      const lettersRegex = /^[\p{L}\s.,-]*$/u;
       if (!lettersRegex.test(nome)) {
         form.get(campo).setValue(nome.slice(0, -1));
       }

@@ -11,6 +11,7 @@
                 pInputText 
                 placeholder="Search boxes..." 
                 [(ngModel)]="searchTerm"
+                [ngModelOptions]="{standalone: true}"
                 (keyup.enter)="onSearch()" />
             </span>
             <p-button 
@@ -97,6 +98,7 @@
           id="boxAddress"
           [options]="availableBoxAddresses" 
           [(ngModel)]="selectedBoxAddress"
+          [ngModelOptions]="{standalone: true}"
           optionLabel="ip"
           placeholder="Select an IP address"
           class="w-full"
@@ -114,6 +116,7 @@
           id="monitors"
           [options]="availableMonitors" 
           [(ngModel)]="newBox.monitorIds"
+          [ngModelOptions]="{standalone: true}"
           optionLabel="id"
           optionValue="id"
           placeholder="Select monitors"
@@ -152,6 +155,7 @@
           id="editBoxAddress"
           [options]="availableBoxAddresses" 
           [(ngModel)]="selectedBoxAddress"
+          [ngModelOptions]="{standalone: true}"
           optionLabel="ip"
           placeholder="Select an IP address"
           class="w-full"
@@ -169,6 +173,7 @@
           id="editMonitors"
           [options]="availableMonitors" 
           [(ngModel)]="selectedBoxForEdit.monitorIds"
+          [ngModelOptions]="{standalone: true}"
           optionLabel="id"
           optionValue="id"
           placeholder="Select monitors"

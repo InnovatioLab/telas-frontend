@@ -6,6 +6,7 @@ import { ManagementMonitorsComponent } from './components/management-monitors/ma
 import { AdminManagementProfileComponent } from './components/admin-managemnt-profile/admin-managemnt-profile.component';
 import { ManagementBoxesComponent } from './components/management-boxes/management-boxes.component';
 import { ManagementAdvertisementsComponent } from './components/management-advertisements/management-advertisements.component';
+import { ManagementClientsComponent } from './components/management-clients/management-clients.component';
 
 export const ROUTES: Route[] = [
   {
@@ -32,6 +33,10 @@ export const ROUTES: Route[] = [
       {
         path: 'advertisements',
         component: ManagementAdvertisementsComponent
+      },
+      {
+        path: 'clients',
+        component: ManagementClientsComponent
       }
     ]
   }

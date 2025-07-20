@@ -25,6 +25,7 @@
             type="text"
             pInputText
             [(ngModel)]="searchTerm"
+            [ngModelOptions]="{standalone: true}"
             (ngModelChange)="applyFilters()"
             placeholder="Search alerts..."
             maxlength="50"
@@ -47,6 +48,7 @@
       <p-selectButton 
         [options]="filterOptions" 
         [(ngModel)]="statusFilter" 
+        [ngModelOptions]="{standalone: true}"
         (onChange)="applyFilters()" 
         styleClass="full-width-select">
       </p-selectButton>

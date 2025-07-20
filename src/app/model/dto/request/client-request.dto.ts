@@ -33,7 +33,6 @@ export interface AddressRequestDTO {
   state: string;
   country: string;
   complement?: string;
-  partnerAddress?: boolean;
   latitude?: number;
   longitude?: number;
 }

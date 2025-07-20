@@ -5,7 +5,7 @@ export class MenuView {
   menuItems: MenuItem[];
 
   constructor(dados: IMenuView) {
-    this.fotoPerfil = 'https://api.dicebear.com/9.x/initials/svg?seed=' + dados.nomeUsuario; // Caminho padrão para a foto de perfil
+    this.fotoPerfil = 'https://api.dicebear.com/9.x/initials/svg?seed=' + dados.nomeUsuario;
     this.nomeUsuario = dados.nomeUsuario;
     this.cargoUsuario = dados.cargoUsuario;
     this.menuItems = [

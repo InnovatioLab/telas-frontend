@@ -40,7 +40,6 @@ export class UserLocationService {
 
       this.checkAndGeocodeAddress();
     } catch (error) {
-      // Silently handle storage errors
     }
   }
 
@@ -62,7 +61,6 @@ export class UserLocationService {
         localStorage.removeItem(this.ADDRESS_TO_GEOCODE_KEY);
       }
     } catch (error) {
-      // Handle geocoding errors silently
     }
   }
 
@@ -95,7 +93,6 @@ export class UserLocationService {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(location));
     } catch (error) {
-      // Silently handle storage errors
     }
   }
 

@@ -29,20 +29,20 @@ export interface TermCondition {
 }
 
 export interface VerificationCode {
-  id?: string; // UUID
+  id?: string;
   code?: string;
   expirationDate?: string;
 }
 
 export interface Contact {
-  id?: string; // UUID
+  id?: string;
   email?: string;
   phone?: string;
   contactPreference?: ContactPreference;
 }
 
 export interface Owner {
-  id?: string; // UUID
+  id?: string;
   identificationNumber?: string;
   firstName?: string; 
   lastName?: string;
@@ -52,7 +52,7 @@ export interface Owner {
 }
 
 export interface SocialMedia {
-  id?: string; // UUID
+  id?: string;
   instagramUrl?: string;
   facebookUrl?: string;
   linkedinUrl?: string;
@@ -61,7 +61,7 @@ export interface SocialMedia {
 }
 
 export interface Address {
-  id?: string; // UUID
+  id?: string;
   street?: string;
   number?: string;
   complement?: string;
@@ -76,23 +76,23 @@ export interface Address {
 }
 
 export interface Attachment {
-  id?: string; // UUID
+  id?: string;
   fileName?: string;
   fileType?: string;
   url?: string;
 }
 
 export interface Ad {
-  id?: string; // UUID
+  id?: string;
   title?: string;
   description?: string;
   validation?: AdValidationType;
 }
 
 export interface Notification {
-  id?: string; // UUID
+  id?: string;
   message?: string;
-  createdAt?: string; // ISO timestamp
+  createdAt?: string;
 }
 
 export interface CartResponse {

@@ -11,6 +11,7 @@
                 pInputText 
                 placeholder="Search monitors..." 
                 [(ngModel)]="searchTerm"
+                [ngModelOptions]="{standalone: true}"
                 (keyup.enter)="onSearch()" />
             </span>
             <p-button 
@@ -193,6 +194,7 @@
             <input type="text" 
                    pInputText 
                    [(ngModel)]="newAdLink" 
+                   [ngModelOptions]="{standalone: true}"
                    placeholder="Enter ad link URL"
                    class="ad-input" />
             <button pButton pRipple 

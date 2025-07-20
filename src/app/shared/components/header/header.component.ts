@@ -249,7 +249,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   
   private initializeUserServices() {
     if (this.isInAllowedRoutes()) {
-      this.googleMapsService.initGoogleMapsApi(true);
+      this.googleMapsService.initGoogleMapsApi();
       this.googleMapsService.initSavedPoints();
     }
     

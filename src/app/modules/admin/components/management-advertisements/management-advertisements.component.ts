@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdService } from '@app/core/service/api/ad.service';
-import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
+import { Advertisement, AdvertisementStatus } from '@app/model/advertisement';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { MessageService } from 'primeng/api';
+import { IconSearchComponent } from '@app/shared/icons/search.icon';
 
 @Component({
   selector: 'app-management-advertisements',
@@ -13,13 +14,14 @@ import { MessageService } from 'primeng/api';
   imports: [
     CommonModule,
     PrimengModule,
-    FormsModule
+    FormsModule,
+    IconSearchComponent
   ],
   templateUrl: './management-advertisements.component.html',
   styleUrls: ['./management-advertisements.component.scss']
 })
 export class ManagementAdvertisementsComponent implements OnInit {
-  advertisements: AdResponseDto[] = [];
+  advertisements: Advertisement[] = [];
   loading = false;
   searchTerm = '';
   totalRecords = 0;
@@ -41,7 +43,21 @@ export class ManagementAdvertisementsComponent implements OnInit {
     
     this.adService.getAllAds(this.currentPage - 1, this.pageSize).subscribe({
       next: (response) => {
-        this.advertisements = response.content || [];
+        this.advertisements = (response.content || []).map(adDto => ({
+          id: adDto.id,
+          title: `Advertisement ${adDto.id}`,
+          description: `Advertisement submitted on ${adDto.submissionDate}`,
+          status: this.convertValidationTypeToStatus(adDto.validation),
+          clientId: '',
+          clientName: '',
+          createdAt: adDto.submissionDate,
+          updatedAt: adDto.submissionDate,
+          link: adDto.link,
+          imageUrl: '',
+          startDate: '',
+          endDate: '',
+          priority: 0
+        }));
         this.totalRecords = response.totalElements || 0;
         this.loading = false;
       },
@@ -51,6 +67,19 @@ export class ManagementAdvertisementsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  private convertValidationTypeToStatus(validationType: string): AdvertisementStatus {
+    switch (validationType?.toUpperCase()) {
+      case 'APPROVED':
+        return AdvertisementStatus.APPROVED;
+      case 'REJECTED':
+        return AdvertisementStatus.REJECTED;
+      case 'PENDING':
+        return AdvertisementStatus.PENDING;
+      default:
+        return AdvertisementStatus.PENDING;
+    }
   }
 
   onSearch(): void {
@@ -64,23 +93,21 @@ export class ManagementAdvertisementsComponent implements OnInit {
     this.loadAdvertisements();
   }
 
-  approveAdvertisement(ad: AdResponseDto): void {
-    // Implementar lógica de aprovação
-    this.toastService.sucesso('Advertisement approved successfully');
-    this.loadAdvertisements();
+  createAdvertisement(): void {
+    this.toastService.sucesso('Create advertisement functionality will be implemented');
   }
 
-  rejectAdvertisement(ad: AdResponseDto): void {
-    // Implementar lógica de rejeição
-    this.toastService.sucesso('Advertisement rejected successfully');
-    this.loadAdvertisements();
+  approveAdvertisement(advertisement: Advertisement): void {
+    this.toastService.sucesso('Approve advertisement functionality will be implemented');
   }
 
-  deleteAdvertisement(ad: AdResponseDto): void {
-    if (confirm('Are you sure you want to delete this advertisement?')) {
-      // Implementar lógica de exclusão
-      this.toastService.sucesso('Advertisement deleted successfully');
-      this.loadAdvertisements();
+  rejectAdvertisement(advertisement: Advertisement): void {
+    this.toastService.sucesso('Reject advertisement functionality will be implemented');
+  }
+
+  deleteAdvertisement(advertisement: Advertisement): void {
+    if (confirm(`Are you sure you want to delete advertisement ${advertisement.title}?`)) {
+      this.toastService.sucesso('Delete advertisement functionality will be implemented');
     }
   }
 

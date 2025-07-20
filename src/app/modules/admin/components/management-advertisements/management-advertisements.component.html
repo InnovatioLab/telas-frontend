@@ -1,68 +1,69 @@
-<div class="management-advertisements-container">
-  <div class="section-header">
-    <h1 class="titulo">Advertisements Management</h1>
-    <p class="subtitulo">Manage and review all advertisements in the system</p>
-  </div>
-
-  <div class="filters">
-    <div class="p-input-icon-left">
-      <i class="pi pi-search"></i>
-      <input 
-        pInputText 
-        type="text" 
-        [(ngModel)]="searchTerm"
-        (keyup.enter)="onSearch()"
-        placeholder="Search advertisements..." />
-    </div>
-    <button pButton pRipple 
-            label="Search" 
-            icon="pi pi-search" 
-            (click)="onSearch()"
-            [loading]="loading">
-    </button>
-  </div>
-
+<div class="container">
   <div class="content">
+    <p-card styleClass="card-header">
+      <div class="card-header-content">
+          <i class="pi pi-search"></i>
+          <div class="p-card-content">
+            <span class="p-input-icon-left">
+              <app-icon-search></app-icon-search>
+              <input 
+                type="text" 
+                pInputText 
+                placeholder="Search advertisements..." 
+                [(ngModel)]="searchTerm"
+                [ngModelOptions]="{standalone: true}"
+                (keyup.enter)="onSearch()" />
+            </span>
+            <p-button 
+              label="Create Advertisement" 
+              icon="pi pi-plus" 
+              (click)="createAdvertisement()"
+              onKeyDown="createAdvertisement()"></p-button>
+          </div>
+      </div>
+    </p-card>
+
     <p-table 
       [value]="advertisements" 
-      [loading]="loading"
-      [paginator]="true"
-      [rows]="pageSize"
+      [loading]="loading" 
+      styleClass="p-datatable-sm" 
+      [paginator]="true" 
+      [rows]="pageSize" 
       [totalRecords]="totalRecords"
-      [showCurrentPageReport]="true"
+      [rowsPerPageOptions]="[5,10,25,50]" 
+      [showCurrentPageReport]="true" 
+      responsiveLayout="scroll"
+      [lazy]="true"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} advertisements"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      (onLazyLoad)="onPageChange($event)"
-      styleClass="p-datatable-sm">
-      
+      (onPage)="onPageChange($event)">
       <ng-template pTemplate="header">
         <tr>
-          <th>ID</th>
-          <th>Link</th>
-          <th>Status</th>
-          <th>Submission Date</th>
-          <th>Waiting Days</th>
-          <th>Actions</th>
+          <th scope="col">ID</th>
+          <th scope="col">Link</th>
+          <th scope="col">Status</th>
+          <th scope="col">Submission Date</th>
+          <th scope="col">Waiting Days</th>
+          <th scope="col">Actions</th>
         </tr>
       </ng-template>
       
       <ng-template pTemplate="body" let-ad>
         <tr>
-          <td>{{ad.id?.substring(0, 8) || 'N/A'}}</td>
-          <td>
+          <td class="text-center">{{ad.id?.substring(0, 8) || 'N/A'}}</td>
+          <td class="text-center">
             <a [href]="ad.link" target="_blank" class="ad-link">
               {{ad.link || 'No link'}}
             </a>
           </td>
-          <td>
+          <td class="text-center">
             <p-badge 
               [value]="getStatusLabel(ad.validation)" 
               [severity]="getStatusSeverity(ad.validation)">
             </p-badge>
           </td>
-          <td>{{ad.submissionDate | date:'short'}}</td>
-          <td>{{ad.waitingDays || 0}} days</td>
-          <td>
+          <td class="text-center">{{ad.submissionDate | date:'short'}}</td>
+          <td class="text-center">{{ad.waitingDays || 0}} days</td>
+          <td class="text-center">
             <div class="action-buttons">
               <button pButton pRipple 
                       icon="pi pi-check" 

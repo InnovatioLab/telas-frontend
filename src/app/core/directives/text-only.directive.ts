@@ -27,14 +27,6 @@ export class TextOnlyDirective {
       event.stopPropagation();
     }
   }
-  //   onInput(event: Event) {
-  //     const input = event.target as HTMLInputElement;
-  //     const inputValue = input.value;
-
-  //     if (!lettersRegex.test(inputValue)) {
-  //       input.value = inputValue.replace(/[^\p{L}\s.,-]+/gu, '');
-  //     }
-  //   }
 
   @HostListener("keydown", ["$event"])
   onKeyDown(event: KeyboardEvent) {

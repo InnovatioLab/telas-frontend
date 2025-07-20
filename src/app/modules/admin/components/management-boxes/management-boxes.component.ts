@@ -9,7 +9,6 @@ import { BoxAddress } from "@app/model/box-address";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { MonitorBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
-import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { MessageService } from "primeng/api";

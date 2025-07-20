@@ -1,11 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
-import { Monitor } from '@app/model/monitors';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment.interface';
-import { LoadingService } from '../state/loading.service';
 import { MapPoint } from '../state/map-point.interface';
-import { MonitorService } from './monitor.service';
+import { LoadingService } from '../state/loading.service';
 
 export interface AddressSearchResult {
   location: MapPoint;
@@ -46,8 +44,7 @@ export class GoogleMapsService {
   
   constructor(
     @Inject(ENVIRONMENT) private readonly env: Environment,
-    private readonly loadingService: LoadingService,
-    private readonly monitorService: MonitorService
+    private readonly loadingService: LoadingService
   ) {
     window.addEventListener('address-to-geocode', ((e: Event) => {
       const customEvent = e as CustomEvent;
@@ -57,16 +54,12 @@ export class GoogleMapsService {
     }) as EventListener);
   }
 
-  public initGoogleMapsApi(forceLoad: boolean = false): void {
+  public initGoogleMapsApi(): void {
     if (typeof google !== 'undefined' && google.maps?.Map) {
       this.apiLoadedSubject.next(true);
       this.apiErrorSubject.next(null);
       this.apiInitializationAttempts = 0;
       this.apiLoadingInProgress = false;
-      return;
-    }
-    
-    if (!forceLoad && !this.shouldLoadGoogleMaps()) {
       return;
     }
     
@@ -85,7 +78,7 @@ export class GoogleMapsService {
       if (!this.apiLoadedSubject.getValue() && this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
         this.removeExistingScripts();
         this.apiLoadingInProgress = false;
-        this.initGoogleMapsApi(forceLoad);
+        this.initGoogleMapsApi();
       } else if (this.apiInitializationAttempts >= this.MAX_INITIALIZATION_ATTEMPTS) {
         this.apiErrorSubject.next('Não foi possível carregar o Google Maps. Tente novamente mais tarde.');
         this.apiLoadingInProgress = false;
@@ -119,7 +112,7 @@ export class GoogleMapsService {
       this.apiErrorSubject.next('Erro ao carregar o Google Maps. Tentando novamente...');
       this.apiLoadingInProgress = false;
       if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
-        setTimeout(() => this.initGoogleMapsApi(forceLoad), 2000);
+        setTimeout(() => this.initGoogleMapsApi(), 2000);
       }
     };
     
@@ -215,36 +208,10 @@ export class GoogleMapsService {
     };
   }
   
-  public createMonitorIcon(hasAvailableSlots?: boolean): google.maps.Symbol {
-    let fillColor: string;
-    
-    console.log(`[GoogleMapsService] Criando ícone monitor com hasAvailableSlots: ${hasAvailableSlots}`);
-    
-    if (hasAvailableSlots === true) {
-      fillColor = '#28a745'; // --cor-sucesso (verde)
-      console.log('[GoogleMapsService] Usando cor VERDE (disponível)');
-    } else if (hasAvailableSlots === false) {
-      fillColor = '#6c757d'; // --cor-cinza
-      console.log('[GoogleMapsService] Usando cor CINZA (indisponível)');
-    } else {
-      fillColor = '#232F3E'; // --cor-primaria (padrão)
-      console.log('[GoogleMapsService] Usando cor PADRÃO (indefinido)');
-    }
-    
+  public createMonitorIcon(): google.maps.Symbol {
     return {
       path: 'M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z',
-      fillColor: fillColor,
-      fillOpacity: 1,
-      strokeWeight: 2,
-      strokeColor: '#FFFFFF',
-      scale: 1.8
-    };
-  }
-  
-  public createMonitorIconWithColor(color: string): google.maps.Symbol {
-    return {
-      path: 'M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z',
-      fillColor: color,
+      fillColor: '#232F3E',
       fillOpacity: 1,
       strokeWeight: 2,
       strokeColor: '#FFFFFF',
@@ -512,54 +479,43 @@ export class GoogleMapsService {
     this.searchingSubject.next(true);
     
     return new Promise((resolve, reject) => {
-      // Usar o MonitorService para buscar monitores reais
-      this.monitorService.getMonitors().subscribe({
-        next: (monitors: Monitor[]) => {
-          try {
-            console.log('[GoogleMapsService] Monitors recebidos do service:', monitors);
+      setTimeout(() => {
+        try {
+          const points: MapPoint[] = [];
+          
+          const numPoints = 1;
+          for (let i = 0; i < numPoints; i++) {
+            const adjustedCoords = this.adjustCoordinates(latitude, longitude, i);
             
-            const mapPoints: MapPoint[] = monitors
-              .filter((monitor: Monitor) => monitor.latitude && monitor.longitude) // Filtrar apenas monitores com coordenadas
-              .map((monitor: Monitor) => {
-                console.log(`[GoogleMapsService] Processando monitor ${monitor.id}:`, {
-                  hasAvailableSlots: monitor.hasAvailableSlots,
-                  latitude: monitor.latitude,
-                  longitude: monitor.longitude
-                });
-                
-                const lat = typeof monitor.latitude === 'string' ? parseFloat(monitor.latitude) : monitor.latitude;
-                const lng = typeof monitor.longitude === 'string' ? parseFloat(monitor.longitude) : monitor.longitude;
-                
-                return {
-                  id: monitor.id,
-                  latitude: lat,
-                  longitude: lng,
-                  position: { lat, lng },
-                  title: monitor.name ?? `Monitor ${monitor.id}`,
-                  description: monitor.locationDescription ?? monitor.address?.coordinatesParams ?? 'Monitor location',
-                  type: 'MONITOR',
-                  category: 'MONITOR',
-                  hasAvailableSlots: monitor.hasAvailableSlots,
-                  data: monitor
-                };
-              });
-            
-            console.log('[GoogleMapsService] MapPoints criados:', mapPoints);
-            this.updateNearestMonitors(mapPoints);
-            this.searchingSubject.next(false);
-            resolve(mapPoints);
-          } catch (error) {
-            this.searchingSubject.next(false);
-            this.searchErrorSubject.next('Error processing nearby points');
-            reject(new Error('Error processing nearby points'));
+            points.push({
+              id: `monitor-${i}`,
+              latitude: adjustedCoords.latitude,
+              longitude: adjustedCoords.longitude,
+              title: `Monitor ${i + 1}`,
+              description: `Monitor located at the specified address`,
+              type: 'MONITOR',
+              category: 'MONITOR',
+              data: {
+                id: `id-${i}`,
+                active: true,
+                type: i === 0 ? 'BASIC' : 'PREMIUM',
+                size: i === 0 ? 40 : 55,
+                distanceInKm: 0,
+                latitude: adjustedCoords.latitude,
+                longitude: adjustedCoords.longitude
+              }
+            });
           }
-        },
-        error: (error: any) => {
+          
+          this.updateNearestMonitors(points);
           this.searchingSubject.next(false);
-          this.searchErrorSubject.next('Error loading monitors from API');
-          reject(new Error('Error loading monitors from API'));
+          resolve(points);
+        } catch (error) {
+          this.searchingSubject.next(false);
+          this.searchErrorSubject.next('Error processing nearby points');
+          reject(error);
         }
-      });
+      }, 1000);
     });
   }
   
@@ -588,7 +544,7 @@ export class GoogleMapsService {
 
   public checkAndReinitializeApi(): void {
     if (!this.apiLoadedSubject.value) {
-      this.initGoogleMapsApi(true);
+      this.initGoogleMapsApi();
     }
   }
 
@@ -641,7 +597,7 @@ export class GoogleMapsService {
         this.apiLoadingPromise = null;
         this.apiErrorSubject.next('Erro ao carregar o Google Maps. Tentando novamente...');
         if (this.apiInitializationAttempts < this.MAX_INITIALIZATION_ATTEMPTS) {
-          setTimeout(() => this.initGoogleMapsApi(true), 2000);
+          setTimeout(() => this.initGoogleMapsApi(), 2000);
         }
         reject(error);
       };
@@ -688,19 +644,9 @@ export class GoogleMapsService {
 
   checkApiStatus(): boolean {
     if (!this.apiLoadedSubject.value) {
-      this.initGoogleMapsApi(true);
+      this.initGoogleMapsApi();
       return false;
     }
     return true;
-  }
-
-  private shouldLoadGoogleMaps(): boolean {
-    const currentUrl = window.location.pathname;
-    const allowedRoutes = ['/client', '/admin'];
-    
-    return allowedRoutes.some(route => {
-      const exactRoutePattern = new RegExp(`^${route}(\\/)?$`);
-      return exactRoutePattern.test(currentUrl);
-    });
   }
 }

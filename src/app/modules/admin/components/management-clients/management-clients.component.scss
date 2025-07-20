@@ -151,16 +151,6 @@
       }
     }
 
-    .ad-link {
-      color: var(--cor-primaria);
-      text-decoration: none;
-      word-break: break-all;
-      
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
     .action-buttons {
       display: flex;
       gap: var(--espacamento-pequeno);
@@ -181,11 +171,11 @@
             }
           }
           
-          &.p-button-warning {
-            color: var(--cor-alerta);
+          &.p-button-info {
+            color: var(--cor-primaria);
             
             &:hover {
-              background-color: rgba(245, 156, 0, 0.1);
+              background-color: rgba(35, 47, 62, 0.1);
             }
           }
           

@@ -47,7 +47,7 @@
         <div class="search-container" *ngIf="isLogado() && isInAllowedRoutes()">
           <div class="address-search-container">
             <div class="address-search-input">
-              <input type="text" pInputText [(ngModel)]="searchText" placeholder="Search for an address" maxlength="50"
+              <input type="text" pInputText [(ngModel)]="searchText" [ngModelOptions]="{standalone: true}" placeholder="Search for an address" maxlength="50"
                 id="inp-pesquisar" (keydown.enter)="searchAddress()" (ngModelChange)="onInputChange()" />
               <button type="button" class="botao-pesquisa" [disabled]="isSearching || !searchText"
                 (click)="searchAddress()" aria-label="Search" pTooltip="Search address" tooltipPosition="left"
@@ -141,7 +141,7 @@
         <div class="search-container" *ngIf="isLogado() && isInAllowedRoutes()">
           <div class="address-search-container">
             <div class="address-search-input">
-              <input type="text" pInputText [(ngModel)]="searchText" placeholder="Search for an address" maxlength="50"
+              <input type="text" pInputText [(ngModel)]="searchText" [ngModelOptions]="{standalone: true}" placeholder="Search for an address" maxlength="50"
                 id="inp-pesquisar-admin" (keydown.enter)="searchAddress()" (ngModelChange)="onInputChange()" />
               <button type="button" class="botao-pesquisa" [disabled]="isSearching || !searchText"
                 (click)="searchAddress()" aria-label="Pesquisar" id="btn-pesquisar-admin">
@@ -174,7 +174,7 @@
         <section class="search-container-desktop" *ngIf="isLogado() && isInAllowedRoutes()">
           <div class="address-search-container">
             <div class="address-search-input">
-              <input type="text" pInputText [(ngModel)]="searchText" placeholder="Search for an address" maxlength="50"
+              <input type="text" pInputText [(ngModel)]="searchText" [ngModelOptions]="{standalone: true}" placeholder="Search for an address" maxlength="50"
                 id="inp-pesquisar-desktop" (keydown.enter)="searchAddress()" (ngModelChange)="onInputChange()" />
               <button type="button" class="botao-pesquisa" [disabled]="isSearching || !searchText"
                 (click)="searchAddress()" aria-label="Pesquisar" id="btn-pesquisar-desktop">

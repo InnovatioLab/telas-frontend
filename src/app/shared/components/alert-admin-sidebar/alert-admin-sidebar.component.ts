@@ -330,7 +330,7 @@ export class AlertAdminSidebarComponent implements OnInit {
         if (index !== -1) {
           this.alerts[index] = updatedAlert;
           this.applyFilters();
-          this.updateAlertCount(); // Atualizar contagem ao confirmar
+          this.updateAlertCount();
           this.toastService.sucesso(`Alerta confirmado: ${reason}`);
         }
         this.loadingService.setLoading(false, `acknowledge-alert-${alert.id}`);
