@@ -14,11 +14,6 @@
                 [ngModelOptions]="{standalone: true}"
                 (keyup.enter)="onSearch()" />
             </span>
-            <p-button 
-              label="Create Client" 
-              icon="pi pi-plus" 
-              (click)="createClient()"
-              onKeyDown="createClient()"></p-button>
           </div>
       </div>
     </p-card>
@@ -28,7 +23,7 @@
       [loading]="loading" 
       styleClass="p-datatable-sm" 
       [paginator]="true" 
-      [rows]="currentFilters.size" 
+      [rows]="currentFilters.size || 10" 
       [totalRecords]="totalRecords"
       [rowsPerPageOptions]="[5,10,25,50]" 
       [showCurrentPageReport]="true" 
@@ -37,7 +32,7 @@
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} clients"
       (onPage)="onPageChange($event)"
       (onSort)="onSort($event)"
-      [sortField]="currentFilters.sortBy"
+      [sortField]="currentFilters.sortBy || 'name'"
       [sortOrder]="currentFilters.sortDir === 'asc' ? 1 : -1">
       <ng-template pTemplate="header">
         <tr>
@@ -76,12 +71,6 @@
                       class="p-button-rounded p-button-info p-button-text" 
                       (click)="editClient(client)"
                       pTooltip="Edit Client">
-              </button>
-              <button pButton pRipple 
-                      icon="pi pi-trash" 
-                      class="p-button-rounded p-button-danger p-button-text" 
-                      (click)="deleteClient(client)"
-                      pTooltip="Delete Client">
               </button>
             </div>
           </td>

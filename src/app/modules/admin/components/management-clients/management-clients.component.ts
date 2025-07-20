@@ -54,11 +54,30 @@ export class ManagementClientsComponent implements OnInit {
   loadClients(): void {
     this.loading = true;
     
-    this.clientManagementService.getClientsWithPagination(this.currentFilters).subscribe({
+    // Garantir que os filtros tenham valores padrão
+    const filters: FilterClientRequestDto = {
+      page: this.currentFilters.page || 1,
+      size: this.currentFilters.size || 10,
+      sortBy: this.currentFilters.sortBy || 'name',
+      sortDir: this.currentFilters.sortDir || 'asc'
+    };
+    
+    if (this.currentFilters.genericFilter) {
+      filters.genericFilter = this.currentFilters.genericFilter;
+    }
+    
+    this.clientManagementService.getClientsWithPagination(filters).subscribe({
       next: (result) => {
         this.clients = result.list || [];
         this.totalRecords = result.totalElements || 0;
         this.loading = false;
+        
+        console.log('Clients loaded:', {
+          clients: this.clients.length,
+          totalRecords: this.totalRecords,
+          currentPage: result.currentPage,
+          totalPages: result.totalPages
+        });
       },
       error: (error) => {
         console.error('Error loading clients:', error);

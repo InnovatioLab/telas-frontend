@@ -59,12 +59,14 @@ export class ClientManagementService {
             businessName: clientDto.businessName,
             owner: clientDto.owner,
             contact: clientDto.contact,
-            role: clientDto.role as any
+            role: clientDto.role as any,
+            createdAt: clientDto.createdAt,
+            updatedAt: clientDto.updatedAt
           }));
           
           return {
             list: clients,
-            totalElements: response.data.totalElements || 0,
+            totalElements: (response.data.totalElements && response.data.totalElements > 0) ? response.data.totalElements : clients.length,
             totalPages: response.data.totalPages || 0,
             currentPage: response.data.currentPage || 0,
             size: response.data.size || 0,
