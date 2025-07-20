@@ -7,6 +7,13 @@ import { ToastService } from '@app/core/service/state/toast.service';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { MessageService } from 'primeng/api';
 import { IconSearchComponent } from '@app/shared/icons/search.icon';
+import { HttpClient } from '@angular/common/http';
+import { IconUploadComponent } from '@app/shared/icons/upload.icon';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
+import { ClientManagementService } from '@app/core/service/api/client-management.service';
+import { Client } from '@app/model/client';
+import { ClientService } from '@app/core/service/api/client.service';
+import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
 
 @Component({
   selector: 'app-management-advertisements',
@@ -15,7 +22,8 @@ import { IconSearchComponent } from '@app/shared/icons/search.icon';
     CommonModule,
     PrimengModule,
     FormsModule,
-    IconSearchComponent
+    IconSearchComponent,
+    IconUploadComponent
   ],
   templateUrl: './management-advertisements.component.html',
   styleUrls: ['./management-advertisements.component.scss']
@@ -27,21 +35,35 @@ export class ManagementAdvertisementsComponent implements OnInit {
   totalRecords = 0;
   currentPage = 1;
   pageSize = 10;
+  showCreateAdModal = false;
+  newAd: any = { name: '', type: '', bytes: '', adRequestId: '' };
+  loadingCreateAd = false;
+  selectedFile: File | null = null;
+  clients: Client[] = [];
+  selectedClientId: string = '';
 
   constructor(
     private readonly adService: AdService,
     private readonly toastService: ToastService,
-    private readonly messageService: MessageService
+    private readonly messageService: MessageService,
+    private readonly http: HttpClient,
+    private readonly autenticacaoService: AutenticacaoService,
+    private readonly clientManagementService: ClientManagementService,
+    private readonly clientService: ClientService
   ) {}
 
   ngOnInit(): void {
+    const user = this.autenticacaoService.user;
+    if (user) {
+      this.clientService.setClientAtual(user);
+    }
     this.loadAdvertisements();
   }
 
   loadAdvertisements(): void {
     this.loading = true;
     
-    this.adService.getAllAds(this.currentPage - 1, this.pageSize).subscribe({
+    this.clientService.getAllAds(this.currentPage, this.pageSize).subscribe({
       next: (response) => {
         this.advertisements = (response.content || []).map(adDto => ({
           id: adDto.id,
@@ -93,8 +115,58 @@ export class ManagementAdvertisementsComponent implements OnInit {
     this.loadAdvertisements();
   }
 
-  createAdvertisement(): void {
-    this.toastService.sucesso('Create advertisement functionality will be implemented');
+  openCreateAdModal() {
+    this.newAd = { name: '', type: '', bytes: '' };
+    this.selectedFile = null;
+    this.showCreateAdModal = true;
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      this.newAd.name = file.name;
+      this.newAd.type = file.type;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        this.newAd.bytes = base64;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  createAdvertisement() {
+    if (!this.selectedFile || !this.newAd.bytes) return;
+    this.loadingCreateAd = true;
+    const client = this.autenticacaoService.user;
+    console.log('Creating advertisement for client:', client);
+    if (!client?.id) {
+      this.toastService.erro('Client ID not found');
+      this.loadingCreateAd = false;
+      return;
+    }
+    const payload: CreateClientAdDto = {
+      name: this.selectedFile.name,
+      type: this.selectedFile.type,
+      bytes: this.newAd.bytes
+    };
+    this.adService.createClientAd(client.id, payload).subscribe({
+      next: () => {
+        this.loadingCreateAd = false;
+        this.showCreateAdModal = false;
+        this.loadAdvertisements();
+        this.toastService.sucesso('Advertisement created successfully');
+      },
+      error: () => {
+        this.loadingCreateAd = false;
+        this.toastService.erro('Failed to create advertisement');
+      }
+    });
+  }
+
+  getCurrentClientId(): string {
+    return '';
   }
 
   approveAdvertisement(advertisement: Advertisement): void {

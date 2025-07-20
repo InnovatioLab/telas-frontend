@@ -62,7 +62,6 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   ngOnDestroy(): void {
-    // Cleanup se necessário
   }
   
   private ensureMapInitialized(): void {
@@ -134,7 +133,6 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   handleMarkerClick(point: MapPoint): void {
-    // Abrir o sidebar de detalhes do monitor
     this.mapsService.selectPoint(point);
   }
   

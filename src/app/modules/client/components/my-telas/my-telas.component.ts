@@ -46,49 +46,13 @@ export class MyTelasComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadAds();
   }
 
   onTabChange(event: any): void {
     this.activeTabIndex = event.index;
     this.resetPagination();
-    this.loadAds();
   }
 
-  loadAds(): void {
-    this.loading = true;
-    
-    const currentTab = this.tabs[this.activeTabIndex].key;
-    
-    let request$;
-    switch (currentTab) {
-      case 'pending':
-        request$ = this.adService.getPendingAds(this.pageNumber, this.pageSize);
-        break;
-      case 'approved':
-        request$ = this.adService.getApprovedAds(this.pageNumber, this.pageSize);
-        break;
-      case 'rejected':
-        request$ = this.adService.getRejectedAds(this.pageNumber, this.pageSize);
-        break;
-      default:
-        request$ = this.adService.getAllAds(this.pageNumber, this.pageSize);
-        break;
-    }
-    
-    request$.subscribe({
-      next: (response) => {
-        this.ads = this.formatAdsForDisplay(response.content);
-        this.totalRecords = response.totalElements;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error fetching ads:', error);
-        this.toastService.erro('Failed to load advertisements');
-        this.loading = false;
-      }
-    });
-  }
 
   formatAdsForDisplay(ads: AdResponseDto[]): any[] {
     return ads.map(ad => ({
@@ -116,7 +80,6 @@ export class MyTelasComponent implements OnInit {
     this.pageSize = event.rows;
     this.pageNumber = event.page;
     
-    this.loadAds();
   }
 
   resetPagination(): void {
@@ -125,11 +88,9 @@ export class MyTelasComponent implements OnInit {
   }
 
   viewAd(id: string): void {
-    // Implementar visualização do anúncio
   }
 
   editAd(id: string): void {
-    // Implementar edição do anúncio
   }
 
   getStatusClass(status: string): string {

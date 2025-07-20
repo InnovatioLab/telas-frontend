@@ -8,7 +8,6 @@ import { Client } from '@app/model/client';
 import { DecodedToken } from '@app/model/dto/response/decoded-token';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { ClientService } from './client.service';
-import { AutenticacaoStorage } from '../auth/autenticacao-storage';
 import { AuthenticationStorage } from '../auth/authentication-storage';
 import { SenhaUpdate } from '@app/model/dto/request/senha-update.request';
 
@@ -20,26 +19,26 @@ export class AutenticacaoService {
     const helper = this._helperJwt
       ? this._helperJwt
       : new JwtHelperService({
-          tokenGetter: AutenticacaoStorage.getToken()
+          tokenGetter: AuthenticationStorage.getToken()
         });
 
     this._helperJwt = helper;
     return this._helperJwt;
   }
 
-  nomeToken = AutenticacaoStorage.storageName;
+  nomeToken = AuthenticationStorage.storageName;
   userId: string;
 
   headers = {
     headers: {
-      Authorization: `Bearer ${AutenticacaoStorage.getToken()}`
+      Authorization: `Bearer ${AuthenticationStorage.getToken()}`
     }
   };
   httpBackend: HttpClient;
 
   private readonly url = environment.apiUrl + 'auth/';
 
-  storege = AutenticacaoStorage
+  storege = AuthenticationStorage
 
   constructor(
     private readonly httpClient: HttpClient,
@@ -59,6 +58,7 @@ export class AutenticacaoService {
   }
 
   public get user(): Client | null {
+    console.log('Retrieving user from signal:', this._userSignal());
     return this._userSignal();
   }
 
@@ -73,11 +73,13 @@ export class AutenticacaoService {
             const token = response.data;
             const decodedToken: DecodedToken = jwt_decode.jwtDecode(token);
             AuthenticationStorage.setToken(token);
-            AuthenticationStorage.setDataUser(JSON.stringify({
+            const userData = {
               id: decodedToken.id,
               identificationNumber: decodedToken.identificationNumber,
               businessName: decodedToken.businessName
-            }));
+            };
+            AuthenticationStorage.setDataUser(JSON.stringify(userData));
+            this._userSignal.set(userData);
 
             return response;
           } catch (error) {
@@ -90,6 +92,7 @@ export class AutenticacaoService {
 
   logout(): void {
     AuthenticationStorage.clearToken();
+    this._userSignal.set(null);
   }
 
   recuperarSenha(login: string) {

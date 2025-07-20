@@ -7,6 +7,8 @@ import { ResponseDTO } from '@app/model/dto/response.dto';
 import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
 import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import { BaseHttpService } from './base-htttp.service';
+import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
+import { Page } from '@app/model/dto/page.dto';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService extends BaseHttpService<Client> {
@@ -39,9 +41,11 @@ export class ClientService extends BaseHttpService<Client> {
     const deveIgnorarLoading = ignorarLoading ? { 'Ignorar-Loading-Interceptor': 'true' } : {};
     return this.http.post(`${this.baseUrl}`,
       perfil,
-      { headers: {
-        ...deveIgnorarLoading,
-    }});
+      {
+        headers: {
+          ...deveIgnorarLoading,
+        }
+      });
   }
 
   editar(id: string, perfil: ClientRequestDTO) {
@@ -64,7 +68,7 @@ export class ClientService extends BaseHttpService<Client> {
     const params = new HttpParams().set('code', code);
     return this.http.patch(`${this.baseUrl}/validate-code/${login}`, null, { params });
   }
-  
+
   aceitarTermosDeCondicao() {
     return this.http.patch(`${this.baseUrl}/accept-terms-conditions`, null, this.headers);
   }
@@ -116,5 +120,16 @@ export class ClientService extends BaseHttpService<Client> {
 
   getClientAtual(): Client | null {
     return this.clientAtual$.getValue();
+  }
+
+  getAllAds(page: number = 1, size: number = 10): Observable<Page<AdResponseDto>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<ResponseDTO<Page<AdResponseDto>>>(`${this.baseUrl}/ads-requests`, { params })
+      .pipe(
+        map(response => response.data)
+      );
   }
 }

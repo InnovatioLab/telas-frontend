@@ -95,22 +95,17 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
         next: (monitors) => {
           console.log('[AlertView] Monitors recebidos:', monitors);
           this.mapPoints = monitors.map(monitor => {
-            // Usar coordenadas reais do monitor ou do endereço
             let lat: number;
             let lng: number;
             
             if (monitor.latitude && monitor.longitude) {
-              // Coordenadas diretas do monitor
               lat = typeof monitor.latitude === 'string' ? parseFloat(monitor.latitude) : monitor.latitude;
               lng = typeof monitor.longitude === 'string' ? parseFloat(monitor.longitude) : monitor.longitude;
             } else if (monitor.address?.latitude && monitor.address?.longitude) {
-              // Coordenadas do endereço do monitor
               lat = typeof monitor.address.latitude === 'string' ? parseFloat(monitor.address.latitude) : monitor.address.latitude;
               lng = typeof monitor.address.longitude === 'string' ? parseFloat(monitor.address.longitude) : monitor.address.longitude;
             } else {
-              // Fallback para coordenadas padrão se não houver coordenadas
               console.warn(`Monitor ${monitor.name || monitor.id} não possui coordenadas válidas`);
-              lat = -3.7327; // Coordenada padrão (Fortaleza)
               lng = -38.5270;
             }
             

@@ -14,7 +14,6 @@ import { MapPoint } from '@app/core/service/state/map-point.interface';
   providedIn: 'root'
 })
 export class ZipCodeService {
-  private readonly baseUrl = 'https://app.zipcodebase.com/api/v1';
   private readonly env = inject(ENVIRONMENT);
   private readonly apiKeyBackup = '9bdde870-2bf6-11f0-92e4-ab00f677d113';
   private readonly localApiUrl = this.env.apiUrl || '';
@@ -219,7 +218,8 @@ export class ZipCodeService {
 
   findLocationInExternalApi(zipCode: string): Observable<AddressData | null> {
     const apiKey = this.env.zipCodeApiKey || this.apiKeyBackup;
-    
+    const url = `${this.localApiUrl}addresses/${zipCode}`;
+
     const useMockData = true;
     const useProxy = false;
     
@@ -242,7 +242,6 @@ export class ZipCodeService {
     }
     
     if (useProxy) {
-      const url = `https://api.zippopotam.us/us/${zipCode}`;
       
       return this.http.get<any>(url).pipe(
         map(response => {

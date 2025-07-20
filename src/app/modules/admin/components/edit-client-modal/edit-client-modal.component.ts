@@ -728,7 +728,6 @@ export class EditClientModalComponent implements OnInit {
       
       const formValue = this.editForm.value;
       
-      // Converter endereços para AddressRequestDTO
       const addressesDTO: AddressRequestDTO[] = this.addresses
         .filter(addr => addr.street && addr.city)
         .map(addr => ({

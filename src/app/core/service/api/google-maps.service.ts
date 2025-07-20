@@ -102,7 +102,6 @@ export class GoogleMapsService {
       return;
     }
     
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${this.callbackName}&v=weekly`;
     script.async = true;
     script.defer = true;
     script.id = 'google-maps-script';
@@ -235,7 +234,6 @@ export class GoogleMapsService {
         }
       }
     } catch (error) {
-      // Handle storage errors silently
     }
   }
   
@@ -284,7 +282,6 @@ export class GoogleMapsService {
         window.dispatchEvent(event);
       }
     } catch (error) {
-      // Handle geocoding errors silently
     }
   }
   
@@ -345,7 +342,6 @@ export class GoogleMapsService {
         this.searchHistorySubject.next(history);
       }
     } catch (error) {
-      // Handle storage errors silently
     }
   }
   
@@ -371,7 +367,6 @@ export class GoogleMapsService {
         const points = JSON.parse(savedItems);
         this._savedPoints.next(points);
       } catch (e) {
-        // Handle storage errors silently
       }
     }
   }
@@ -587,7 +582,6 @@ export class GoogleMapsService {
         return;
       }
       
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${this.callbackName}&v=weekly`;
       script.async = true;
       script.defer = true;
       script.id = 'google-maps-script';

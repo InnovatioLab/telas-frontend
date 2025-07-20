@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { ResponseDTO } from '@app/model/dto/response.dto';
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
 import { Page } from '@app/model/dto/page.dto';
+import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -57,5 +58,9 @@ export class AdService {
       .pipe(
         map(response => response.data)
       );
+  }
+
+  createClientAd(clientId: string, dto: CreateClientAdDto): Observable<any> {
+    return this.http.post(`${environment.apiUrl}clients/ads/${clientId}`, dto);
   }
 }

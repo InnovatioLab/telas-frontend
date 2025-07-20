@@ -54,7 +54,6 @@ export class ManagementClientsComponent implements OnInit {
   loadClients(): void {
     this.loading = true;
     
-    // Garantir que os filtros tenham valores padrão
     const filters: FilterClientRequestDto = {
       page: this.currentFilters.page || 1,
       size: this.currentFilters.size || 10,

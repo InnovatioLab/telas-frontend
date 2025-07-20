@@ -14,14 +14,30 @@
                 [ngModelOptions]="{standalone: true}"
                 (keyup.enter)="onSearch()" />
             </span>
-            <p-button 
-              label="Create Advertisement" 
-              icon="pi pi-plus" 
-              (click)="createAdvertisement()"
-              onKeyDown="createAdvertisement()"></p-button>
+            <button pButton label="Create Advertisement" icon="pi pi-plus" (click)="openCreateAdModal()"></button>
           </div>
       </div>
     </p-card>
+
+    <p-dialog header="Create Advertisement" [(visible)]="showCreateAdModal" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{width: '400px'}">
+      <form (ngSubmit)="createAdvertisement()" #adForm="ngForm">
+        <div class="p-fluid" style="gap: 1.5rem; display: flex; flex-direction: column;">
+          <div class="p-field" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+            <label for="adFile" style="margin-bottom: 0;">File</label>
+            <button type="button" pButton class="p-button-outlined" (click)="fileInput.click()">
+              <app-icon-upload></app-icon-upload>
+              <span style="margin-left: 0.5rem;">Select file</span>
+            </button>
+            <input #fileInput id="adFile" type="file" (change)="onFileSelected($event)" accept="image/*,video/*" style="display: none;" required />
+            <span *ngIf="selectedFile" style="font-size: 0.95em; color: #555; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ selectedFile.name }}</span>
+          </div>
+        </div>
+        <div class="p-dialog-footer" style="margin-top: 2rem;">
+          <button pButton type="submit" label="Create" [disabled]="loadingCreateAd || !adForm.form.valid"></button>
+          <button pButton type="button" label="Cancel" class="p-button-secondary" (click)="showCreateAdModal=false"></button>
+        </div>
+      </form>
+    </p-dialog>
 
     <p-table 
       [value]="advertisements" 
@@ -46,7 +62,6 @@
           <th scope="col">Actions</th>
         </tr>
       </ng-template>
-      
       <ng-template pTemplate="body" let-ad>
         <tr>
           <td class="text-center">{{ad.id?.substring(0, 8) || 'N/A'}}</td>
@@ -89,7 +104,6 @@
           </td>
         </tr>
       </ng-template>
-      
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="6" class="text-center">No advertisements found.</td>
