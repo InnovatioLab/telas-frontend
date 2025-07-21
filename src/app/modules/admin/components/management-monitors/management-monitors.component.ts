@@ -12,6 +12,8 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { MessageService } from 'primeng/api';
 import { CreateMonitorModalComponent } from '../create-monitor-modal/create-monitor-modal.component';
 import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-modal.component';
+import { GalleriaModule } from 'primeng/galleria';
+import { OrderListModule } from 'primeng/orderlist';
 
 @Component({
   selector: 'app-management-monitors',
@@ -23,7 +25,9 @@ import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-mo
     IconsModule,
     CreateMonitorModalComponent,
     EditMonitorModalComponent,
-    IconTvDisplayComponent
+    IconTvDisplayComponent,
+    GalleriaModule,
+    OrderListModule
   ],
   templateUrl: './management-monitors.component.html',
   styleUrls: ['./management-monitors.component.scss']
@@ -43,6 +47,7 @@ export class ManagementMonitorsComponent implements OnInit {
   searchTerm = '';
   totalRecords = 0;
   newAdLink = '';
+  orderedAdLinks: string[] = [];
   private isSorting = false;
   currentFilters: FilterMonitorRequestDto = {
     page: 1,
@@ -283,6 +288,7 @@ export class ManagementMonitorsComponent implements OnInit {
 
   openAdsModal(monitor: Monitor): void {
     this.selectedMonitorForAds = { ...monitor };
+    this.orderedAdLinks = [...(monitor.adLinks || [])];
     this.adsModalVisible = true;
     this.newAdLink = '';
     
@@ -306,71 +312,75 @@ export class ManagementMonitorsComponent implements OnInit {
     this.adsModalVisible = false;
     this.selectedMonitorForAds = null;
     this.newAdLink = '';
+    this.orderedAdLinks = [];
   }
 
   addAdLink(): void {
-    if (!this.selectedMonitorForAds || !this.newAdLink || this.newAdLink.trim().length === 0) {
-      return;
-    }
-
-    if (!this.selectedMonitorForAds.adLinks) {
-      this.selectedMonitorForAds.adLinks = [];
-    }
-
-    if (!this.selectedMonitorForAds.adLinks.includes(this.newAdLink.trim())) {
-      this.selectedMonitorForAds.adLinks.push(this.newAdLink.trim());
-      
-      const index = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
-      if (index !== -1 && this.selectedMonitorForAds) {
-        this.monitors[index] = { ...this.selectedMonitorForAds };
+    if (this.newAdLink && this.newAdLink.trim().length > 0) {
+      if (!this.selectedMonitorForAds?.adLinks) {
+        this.selectedMonitorForAds.adLinks = [];
       }
-      
-      this.newAdLink = '';
-      this.toastService.sucesso('Ad link added successfully');
-    } else {
-      this.toastService.erro('This ad link already exists');
+
+      if (!this.selectedMonitorForAds.adLinks.includes(this.newAdLink.trim())) {
+        this.selectedMonitorForAds.adLinks.push(this.newAdLink.trim());
+        
+        const index = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
+        if (index !== -1 && this.selectedMonitorForAds) {
+          this.monitors[index] = { ...this.selectedMonitorForAds };
+        }
+        
+        this.orderedAdLinks.push(this.newAdLink.trim());
+        this.toastService.sucesso('Ad link added temporarily. Save to apply changes.');
+        this.newAdLink = '';
+      } else {
+        this.toastService.erro('This ad link already exists');
+      }
     }
   }
 
   addValidAd(ad: any): void {
-    if (!this.selectedMonitorForAds) {
-      return;
-    }
-
-    if (!this.selectedMonitorForAds.adLinks) {
-      this.selectedMonitorForAds.adLinks = [];
-    }
-
-    const adUrl = ad.url || ad.link || ad.id;
-    if (adUrl && !this.selectedMonitorForAds.adLinks.includes(adUrl)) {
-      this.selectedMonitorForAds.adLinks.push(adUrl);
-      
-      const index = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
-      if (index !== -1 && this.selectedMonitorForAds) {
-        this.monitors[index] = { ...this.selectedMonitorForAds };
+    if (this.selectedMonitorForAds && ad.link) {
+      if (!this.selectedMonitorForAds.adLinks) {
+        this.selectedMonitorForAds.adLinks = [];
       }
-      
-      this.toastService.sucesso('Ad link added successfully');
-    } else {
-      this.toastService.erro('This ad link already exists or is invalid');
+
+      const adUrl = ad.link;
+      if (adUrl && !this.selectedMonitorForAds.adLinks.includes(adUrl)) {
+        this.selectedMonitorForAds.adLinks.push(adUrl);
+        
+        const index = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
+        if (index !== -1 && this.selectedMonitorForAds) {
+          this.monitors[index] = { ...this.selectedMonitorForAds };
+        }
+        
+        this.orderedAdLinks.push(adUrl);
+        this.toastService.sucesso('Ad added from valid ads. Save to apply changes.');
+      } else {
+        this.toastService.erro('This ad link already exists or is invalid');
+      }
     }
   }
 
   removeAdLink(index: number): void {
-    if (!this.selectedMonitorForAds?.adLinks) {
-      return;
+    if (this.selectedMonitorForAds) {
+      this.orderedAdLinks.splice(index, 1);
+      this.toastService.sucesso('Ad link removed temporarily. Save to apply changes.');
     }
+  }
 
-    if (confirm('Are you sure you want to remove this ad link?')) {
-      this.selectedMonitorForAds.adLinks.splice(index, 1);
-      
-      const monitorIndex = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
-      if (monitorIndex !== -1 && this.selectedMonitorForAds) {
-        this.monitors[monitorIndex] = { ...this.selectedMonitorForAds };
-      }
-      
-      this.toastService.sucesso('Ad link removed successfully');
+  saveAdOrder(): void {
+    if (this.selectedMonitorForAds) {
+      console.log('Saving new ad order:', this.orderedAdLinks);
+      // Aqui você adicionaria a lógica para chamar o serviço e salvar a nova ordem
+      this.toastService.sucesso('Ad order saved to console!');
+      this.closeAdsModal();
     }
+  }
+
+  // Adicionado para OrderList do PrimeNG
+  onOrderListReorder(event: any): void {
+    // O próprio [(value)] já atualiza orderedAdLinks, mas pode-se logar se quiser
+    // console.log('Nova ordem:', this.orderedAdLinks);
   }
 
   getMonitorAddress(monitor: Monitor): string {
