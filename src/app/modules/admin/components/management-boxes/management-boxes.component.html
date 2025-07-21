@@ -35,6 +35,7 @@
       responsiveLayout="scroll"
       [lazy]="true"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} boxes"
+      paginatorDropdownAppendTo="body"
       (onPage)="onPageChange($event)"
       (onSort)="onSort($event)"
       [sortField]="currentFilters?.sortBy || 'active'"

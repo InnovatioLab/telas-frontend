@@ -1705,17 +1705,21 @@ textarea {
   }
 
   .p-paginator-rpp-dropdown {
-    margin-left: var(--espacamento-medio);
-    width: 5rem;
+    padding: var(--espacamento-pequeno) !important;
+    max-width: fit-content !important;
+
     .p-select-label {
-      padding: var(--espacamento-pequeno);
-      font-size: var(--fonte-tamanho-pequeno);
+      padding: 0px !important;
     }
   }
 
   .p-paginator-page.p-paginator-page-selected {
     color: var(--cor-primaria) !important;
   }
+}
+
+.p-select-dropdown {
+  max-width: 2rem !important;
 }
 
 @media (max-width: 500px) {
@@ -2069,9 +2073,3 @@ textarea {
     }
   }
 }
-
-// .p-multiselect-option {
-//   font-size: var(--fonte-tamanho-padrao);
-//   font-weight: var(--fonte-peso-regular);
-//   color: var(--cor-cinza-escuro) !important;
-// }
