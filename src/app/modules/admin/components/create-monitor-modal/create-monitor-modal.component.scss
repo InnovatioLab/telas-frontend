@@ -79,16 +79,6 @@
       }
 
       .form-field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-
-        label {
-          font-weight: 600;
-          color: var(--cor-cinza-escuro);
-          font-size: 0.875rem;
-        }
-
         input,
         p-inputnumber,
         p-dropdown {

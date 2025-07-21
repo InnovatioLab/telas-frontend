@@ -11,7 +11,7 @@
       
       <div class="form-row">
         <div class="form-field">
-          <label for="size">Size (inches)*</label>
+          <label for="size" class="required">Size (inches)</label>
           <p-inputNumber 
             id="size" 
             formControlName="size" 
@@ -44,7 +44,7 @@
       <div formGroupName="address" class="address-group p-0">
         <div class="form-row">
           <div class="form-field">
-            <label for="zipCode">Zip Code*</label>
+            <label for="zipCode" class="required">Zip Code</label>
             <div class="zipcode-input-container">
               <input 
                 pInputText 
@@ -59,7 +59,7 @@
           </div>
 
           <div class="form-field">
-            <label for="street">Street*</label>
+            <label for="street" class="required">Street</label>
             <input 
               pInputText 
               id="street" 
@@ -71,7 +71,7 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label for="city">City*</label>
+            <label for="city" class="required">City</label>
             <input 
               pInputText 
               id="city" 
@@ -81,7 +81,7 @@
           </div>
 
           <div class="form-field">
-            <label for="state">State*</label>
+            <label for="state" class="required">State</label>
             <input 
               pInputText 
               id="state" 

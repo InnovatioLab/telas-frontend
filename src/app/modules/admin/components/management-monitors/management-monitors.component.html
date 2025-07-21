@@ -93,7 +93,8 @@
   <p-dialog 
     [(visible)]="createMonitorModalVisible" 
     [modal]="true" 
-    [style]="{width: '90vw', maxWidth: '800px'}" 
+    [style]="{width: '50vw', maxWidth: '800px'}" 
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
     [draggable]="false"
     [resizable]="false"
     [closeOnEscape]="true"
@@ -112,13 +113,14 @@
   <p-dialog 
     [(visible)]="editMonitorModalVisible" 
     [modal]="true" 
-    [style]="{width: '90vw', maxWidth: '800px', height: '90vh' }" 
+    [style]="{width: '50vw', maxWidth: '800px'}" 
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
     [draggable]="false"
     [resizable]="false"
     [closeOnEscape]="true"
     [dismissableMask]="true"
     [showHeader]="false"
-    [contentStyle]="{'padding': '0', 'border-radius': '8px', 'overflow': 'hidden'}">
+    [contentStyle]="{'padding': '0', 'border-radius': '8px'}">
     
     <app-edit-monitor-modal
       #editMonitorModal
@@ -132,7 +134,8 @@
   <p-dialog 
     header="Manage Monitor Ads" 
     [(visible)]="adsModalVisible" 
-    [style]="{width: '70vw', maxWidth: '800px'}" 
+    [style]="{width: '50vw', maxWidth: '800px'}" 
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
     [modal]="true"
     [draggable]="false"
     [resizable]="false"

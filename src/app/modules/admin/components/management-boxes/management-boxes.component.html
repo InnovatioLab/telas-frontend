@@ -93,7 +93,7 @@
     
     <div class="box-form">
       <div class="form-group">
-        <label for="boxAddress">IP Address *</label>
+        <label for="boxAddress" class="required">IP Address</label>
         <p-select 
           id="boxAddress"
           [options]="availableBoxAddresses" 
@@ -120,6 +120,7 @@
           optionLabel="id"
           optionValue="id"
           placeholder="Select monitors"
+          [overlayOptions]="{ appendTo: 'body' }"
           class="w-full"
           [showHeader]="false"
           [loading]="loadingMonitors"
@@ -150,7 +151,7 @@
     
     <div class="box-form" *ngIf="selectedBoxForEdit">
       <div class="form-group">
-        <label for="editBoxAddress">IP Address *</label>
+        <label for="editBoxAddress" class="required">IP Address</label>
         <p-select 
           id="editBoxAddress"
           [options]="availableBoxAddresses" 
@@ -180,6 +181,7 @@
           class="w-full"
           [showHeader]="false"
           [loading]="loadingMonitors"
+          [overlayOptions]="{ appendTo: 'body' }"
           [disabled]="loadingMonitors">
         </p-multiSelect>
         <small class="help-text" *ngIf="loadingMonitors">Loading monitors...</small>

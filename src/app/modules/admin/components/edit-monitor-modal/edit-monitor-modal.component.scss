@@ -1,35 +1,10 @@
 :host {
   color: var(--cor-branca);
+
   .edit-monitor-modal {
-    width: 100%;
-    max-width: 800px;
-    height: 100%;
     background: white;
-    border-radius: 8px;
-    overflow: hidden;
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: var(--cor-primaria);
-      color: white;
-
-      h2 {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 600;
-      }
-
-      .close-btn {
-        color: white !important;
-      }
-    }
 
     .modal-content {
-      padding: 2rem;
-      overflow-y: auto;
 
       .form-section {
         margin-bottom: 2rem;
@@ -56,16 +31,6 @@
         }
 
         .form-field {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-
-          label {
-            font-weight: 600;
-            color: var(--cor-cinza-escuro);
-            font-size: 0.9rem;
-          }
-
           .zipcode-input-container {
             position: relative;
 
@@ -107,47 +72,33 @@
         display: flex;
         justify-content: flex-end;
         gap: 1rem;
-        margin-top: 2rem;
-        padding-top: 1.5rem;
+        padding-top: 1rem;
         border-top: 1px solid var(--cor-cinza-medio);
-
-        button {
-          min-width: 120px;
-          height: 40px;
-        }
-
-        @media (max-width: 576px) {
-          flex-direction: column;
-
-          button {
-            width: 100%;
-          }
-        }
       }
     }
   }
 
-  .modal-content {
-    scrollbar-width: thin;
-    scrollbar-color: var(--cor-cinza-medio) transparent;
+  // .modal-content {
+  //   scrollbar-width: thin;
+  //   scrollbar-color: var(--cor-cinza-medio) transparent;
 
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
+  //   &::-webkit-scrollbar {
+  //     width: 6px;
+  //   }
 
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
+  //   &::-webkit-scrollbar-track {
+  //     background: transparent;
+  //   }
 
-    &::-webkit-scrollbar-thumb {
-      background: var(--cor-cinza-medio);
-      border-radius: 3px;
-    }
+  //   &::-webkit-scrollbar-thumb {
+  //     background: var(--cor-cinza-medio);
+  //     border-radius: 3px;
+  //   }
 
-    &::-webkit-scrollbar-thumb:hover {
-      background: var(--cor-cinza);
-    }
-  }
+  //   &::-webkit-scrollbar-thumb:hover {
+  //     background: var(--cor-cinza);
+  //   }
+  // }
 }
 
 .form-field textarea,
@@ -158,7 +109,9 @@
   font-size: 1rem;
   color: var(--cor-cinza-escuro);
   background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   resize: vertical;
   box-shadow: none;
 }

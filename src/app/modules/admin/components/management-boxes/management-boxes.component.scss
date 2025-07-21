@@ -225,19 +225,6 @@
     .form-group {
       margin-bottom: 1.5rem;
 
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: var(--fonte-peso-medio);
-        color: var(--cor-cinza-escuro);
-      }
-
-      input,
-      ::ng-deep p-multiselect,
-      ::ng-deep p-dropdown {
-        width: 100%;
-      }
-
       ::ng-deep p-checkbox {
         display: flex;
         align-items: center;
