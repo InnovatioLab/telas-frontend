@@ -62,14 +62,14 @@
             <div class="action-buttons">
               <button pButton pRipple 
                       icon="pi pi-user-plus" 
-                      class="p-button-rounded p-button-success p-button-text" 
+                      class="p-button-rounded p-button-info p-button-text" 
                       (click)="makePartner(client)"
                       pTooltip="Make Partner"
                       [disabled]="client.role === 'PARTNER'">
               </button>
               <button pButton pRipple 
                       icon="pi pi-pencil" 
-                      class="p-button-rounded p-button-info p-button-text" 
+                      class="p-button-rounded p-button-success p-button-text" 
                       (click)="editClient(client)"
                       pTooltip="Edit Client">
               </button>
