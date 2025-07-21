@@ -1900,3 +1900,116 @@ label.required::after {
 .p-toggleswitch-slider {
   color: var(--cor-branca);
 }
+
+/* Ad Management Modal Styles */
+.orderlist-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.ad-filename {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.ad-filename.selected {
+  color: var(--cor-primaria);
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ads-content {
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0 1rem;
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.ads-content > div {
+  flex: 1 1 0;
+  min-width: 220px;
+  max-width: 480px;
+  box-sizing: border-box;
+}
+
+.ads-content img {
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .ads-content {
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 0.5rem;
+  }
+  .ads-content > div {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .ads-content img {
+    max-height: 180px;
+  }
+}
+
+.p-orderlist {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.p-listbox-list-container,
+.p-listbox-list {
+  background: var(--cor-branca) !important;
+  color: var(--cor-cinza-escuro) !important;
+  font-size: var(--fonte-tamanho-padrao);
+  border-radius: 8px;
+  box-shadow: none !important;
+  border: 1px solid var(--cor-cinza-medio);
+  max-height: 240px !important;
+  min-height: 80px;
+  padding: 0;
+}
+
+.p-listbox-option {
+  padding: 0.5rem 1rem;
+  font-size: var(--fonte-tamanho-padrao);
+  background: transparent !important;
+  color: var(--cor-cinza-escuro) !important;
+  border: none !important;
+  border-radius: 0;
+  transition: background 0.2s;
+}
+
+.p-listbox-option.p-focus,
+.p-listbox-option.p-listbox-option-selected {
+  background: var(--cor-cinza-medio) !important;
+  color: var(--cor-primaria) !important;
+}
+
+.p-listbox-option:hover:not(.p-listbox-option-selected) {
+  background: var(--cor-cinza-fundo) !important;
+  color: var(--cor-primaria) !important;
+}
+
+.p-listbox-list-container::-webkit-scrollbar,
+.p-listbox-list::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+.p-listbox-list-container::-webkit-scrollbar-thumb,
+.p-listbox-list::-webkit-scrollbar-thumb {
+  background: var(--cor-cinza-medio);
+  border-radius: 4px;
+}

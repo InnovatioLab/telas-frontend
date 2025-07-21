@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonitorService } from '@app/core/service/api/monitor.service';
 import { ToastService } from '@app/core/service/state/toast.service';
@@ -14,6 +14,19 @@ import { CreateMonitorModalComponent } from '../create-monitor-modal/create-moni
 import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-modal.component';
 import { GalleriaModule } from 'primeng/galleria';
 import { OrderListModule } from 'primeng/orderlist';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
+import { AdService } from '@app/core/service/api/ad.service';
+import { Advertisement, AdvertisementStatus } from '@app/model/advertisement';
+import { ClientService } from '@app/core/service/api/client.service';
+
+interface Ad {
+  id: string;
+  link: string;
+  fileName: string;
+  isAttachedToMonitor: boolean;
+}
 
 @Component({
   selector: 'app-management-monitors',
@@ -27,7 +40,8 @@ import { OrderListModule } from 'primeng/orderlist';
     EditMonitorModalComponent,
     IconTvDisplayComponent,
     GalleriaModule,
-    OrderListModule
+    OrderListModule,
+    ProgressSpinnerModule
   ],
   templateUrl: './management-monitors.component.html',
   styleUrls: ['./management-monitors.component.scss']
@@ -40,6 +54,8 @@ export class ManagementMonitorsComponent implements OnInit {
   selectedMonitorForEdit: Monitor | null = null;
   selectedMonitorForDelete: Monitor | null = null;
   loading = false;
+  isSorting = false;
+  advertisements: Advertisement[] = [];
   createMonitorModalVisible = false;
   editMonitorModalVisible = false;
   adsModalVisible = false;
@@ -47,19 +63,34 @@ export class ManagementMonitorsComponent implements OnInit {
   searchTerm = '';
   totalRecords = 0;
   newAdLink = '';
-  orderedAdLinks: string[] = [];
-  private isSorting = false;
+  currentPage = 1;
+  pageSize = 10;
+  orderedAdLinks: Ad[] = [];
+  galleryImages: any[] = [];
+  isAdsLoading = false;
+  showCreateAdModal = false;
+  loadingCreateAd = false;
+  selectedFile: File | null = null;
+  newAd: any = { name: '', type: '', bytes: '' };
+  uploadAdPreview: string | null = null;
+  selectedMonitorForUpload: Monitor | null = null;
   currentFilters: FilterMonitorRequestDto = {
     page: 1,
     size: 10,
     sortBy: 'active',
     sortDir: 'desc'
   };
+  selectedAdIndex: number = 0;
 
   constructor(
     private readonly monitorService: MonitorService,
     private readonly toastService: ToastService,
-    private readonly messageService: MessageService
+    private readonly messageService: MessageService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly autenticacaoService: AutenticacaoService,
+    private readonly adService: AdService,
+    private readonly clientService: ClientService
+    
   ) {}
 
   ngOnInit(): void {
@@ -287,12 +318,15 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   openAdsModal(monitor: Monitor): void {
+    console.log('Abrindo modal de gerenciamento de ads para monitor:', monitor);
     this.selectedMonitorForAds = { ...monitor };
-    this.orderedAdLinks = [...(monitor.adLinks || [])];
+    this.orderedAdLinks = [];
+    this.galleryImages = [];
+    this.selectedAdIndex = 0;
     this.adsModalVisible = true;
-    this.newAdLink = '';
-    
+    this.isAdsLoading = true;
     this.loadValidAds(monitor.id);
+    console.log('adsModalVisible após abrir:', this.adsModalVisible);
   }
 
   loadValidAds(monitorId: string): void {
@@ -300,87 +334,99 @@ export class ManagementMonitorsComponent implements OnInit {
       next: (validAds) => {
         if (this.selectedMonitorForAds) {
           this.selectedMonitorForAds.validAds = validAds;
+          this.orderedAdLinks = (validAds || []).map((ad: any) => ({
+            id: ad.id || '',
+            link: ad.link || '',
+            fileName: ad.fileName || 'Unknown File',
+            isAttachedToMonitor: ad.isAttachedToMonitor || false
+          }));
+          this.galleryImages = this.orderedAdLinks.map(ad => ({ link: ad.link, fileName: ad.fileName }));
         }
+        this.selectedAdIndex = 0;
+        this.isAdsLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.toastService.erro('Error loading valid ads');
+        this.isAdsLoading = false;
       }
     });
   }
 
   closeAdsModal(): void {
+    console.log('Fechando modal de gerenciamento de ads');
     this.adsModalVisible = false;
     this.selectedMonitorForAds = null;
-    this.newAdLink = '';
     this.orderedAdLinks = [];
+    this.galleryImages = [];
+    this.selectedAdIndex = 0;
+    this.cdr.detectChanges();
+    console.log('adsModalVisible após fechar:', this.adsModalVisible);
   }
 
-  addAdLink(): void {
-    if (this.newAdLink && this.newAdLink.trim().length > 0) {
-      if (!this.selectedMonitorForAds?.adLinks) {
-        this.selectedMonitorForAds.adLinks = [];
-      }
+  selectAd(index: number): void {
+    this.selectedAdIndex = index;
+  }
 
-      if (!this.selectedMonitorForAds.adLinks.includes(this.newAdLink.trim())) {
-        this.selectedMonitorForAds.adLinks.push(this.newAdLink.trim());
-        
-        const index = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
-        if (index !== -1 && this.selectedMonitorForAds) {
-          this.monitors[index] = { ...this.selectedMonitorForAds };
-        }
-        
-        this.orderedAdLinks.push(this.newAdLink.trim());
-        this.toastService.sucesso('Ad link added temporarily. Save to apply changes.');
-        this.newAdLink = '';
-      } else {
-        this.toastService.erro('This ad link already exists');
-      }
+  addAdLink(): void {}
+
+  addValidAd(ad: Ad): void {
+    if (!this.orderedAdLinks.some(a => a.id === ad.id)) {
+      this.orderedAdLinks.push(ad);
+      this.toastService.sucesso('Ad added. Save to apply changes.');
     }
   }
 
-  addValidAd(ad: any): void {
-    if (this.selectedMonitorForAds && ad.link) {
-      if (!this.selectedMonitorForAds.adLinks) {
-        this.selectedMonitorForAds.adLinks = [];
-      }
-
-      const adUrl = ad.link;
-      if (adUrl && !this.selectedMonitorForAds.adLinks.includes(adUrl)) {
-        this.selectedMonitorForAds.adLinks.push(adUrl);
-        
-        const index = this.monitors.findIndex(m => m.id === this.selectedMonitorForAds?.id);
-        if (index !== -1 && this.selectedMonitorForAds) {
-          this.monitors[index] = { ...this.selectedMonitorForAds };
-        }
-        
-        this.orderedAdLinks.push(adUrl);
-        this.toastService.sucesso('Ad added from valid ads. Save to apply changes.');
-      } else {
-        this.toastService.erro('This ad link already exists or is invalid');
-      }
-    }
-  }
-
-  removeAdLink(index: number): void {
-    if (this.selectedMonitorForAds) {
-      this.orderedAdLinks.splice(index, 1);
-      this.toastService.sucesso('Ad link removed temporarily. Save to apply changes.');
-    }
+  removeAdLink(adToRemove: Ad): void {
+    this.orderedAdLinks = this.orderedAdLinks.filter(ad => ad.id !== adToRemove.id);
+    this.toastService.sucesso('Ad removed temporarily. Save to apply changes.');
   }
 
   saveAdOrder(): void {
     if (this.selectedMonitorForAds) {
-      console.log('Saving new ad order:', this.orderedAdLinks);
-      // Aqui você adicionaria a lógica para chamar o serviço e salvar a nova ordem
-      this.toastService.sucesso('Ad order saved to console!');
-      this.closeAdsModal();
+      const monitorId = this.selectedMonitorForAds.id;
+      const ads = this.orderedAdLinks.map((ad, idx) => ({
+        id: ad.id,
+        orderIndex: idx + 1
+      }));
+
+      const address = this.selectedMonitorForAds.address || {};
+      const payload = {
+        size: this.selectedMonitorForAds.size,
+        addressId: address.id,
+        address: {
+          id: address.id,
+          street: address.street || '',
+          zipCode: address.zipCode || '',
+          city: address.city || '',
+          state: address.state || '',
+          country: address.country || '',
+          complement: address.complement || '',
+          latitude: typeof address.latitude === 'string' ? parseFloat(address.latitude) : (address.latitude ?? 0),
+          longitude: typeof address.longitude === 'string' ? parseFloat(address.longitude) : (address.longitude ?? 0)
+        },
+        locationDescription: this.selectedMonitorForAds.locationDescription,
+        type: this.selectedMonitorForAds.type,
+        active: this.selectedMonitorForAds.active,
+        ads
+      };
+
+      this.monitorService.updateMonitor(monitorId, payload).subscribe({
+        next: () => {
+          console.log('Requisição de save order foi sucesso, fechando modal...');
+          this.toastService.sucesso('Ad order saved!');
+          this.closeAdsModal();
+          this.loadMonitors();
+        },
+        error: () => {
+          this.toastService.erro('Failed to save ad order.');
+        }
+      });
     }
   }
 
-  // Adicionado para OrderList do PrimeNG
   onOrderListReorder(event: any): void {
-    // O próprio [(value)] já atualiza orderedAdLinks, mas pode-se logar se quiser
-    // console.log('Nova ordem:', this.orderedAdLinks);
+    this.selectedAdIndex = 0;
   }
 
   getMonitorAddress(monitor: Monitor): string {
@@ -459,4 +505,100 @@ export class ManagementMonitorsComponent implements OnInit {
       detail: `Monitor: ${monitor.name || 'Monitor ' + monitor.id.substring(0, 8)} | Address: ${this.getMonitorAddress(monitor)} | Details: ${this.getMonitorDetails(monitor)}`
     });
   }
+
+  loadAdvertisements(): void {
+    this.loading = true;
+    
+    this.clientService.getAllAds(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.advertisements = (response.content || []).map(adDto => ({
+          id: adDto.id,
+          title: `Advertisement ${adDto.id}`,
+          description: `Advertisement submitted on ${adDto.submissionDate}`,
+          status: this.convertValidationTypeToStatus(adDto.validation),
+          clientId: '',
+          clientName: '',
+          createdAt: adDto.submissionDate,
+          updatedAt: adDto.submissionDate,
+          link: adDto.link,
+          imageUrl: '',
+          startDate: '',
+          endDate: '',
+          priority: 0
+        }));
+        this.totalRecords = response.totalElements || 0;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading advertisements:', error);
+        this.toastService.erro('Failed to load advertisements');
+        this.loading = false;
+      }
+    });
+  }
+
+  openUploadAdsModal(monitor: Monitor): void {
+    this.selectedMonitorForUpload = monitor;
+    this.selectedFile = null;
+    this.newAd = { name: '', type: '', bytes: '' };
+    this.uploadAdPreview = null;
+    this.showCreateAdModal = true;
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      this.newAd.name = file.name;
+      this.newAd.type = file.type;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        this.newAd.bytes = base64;
+        this.uploadAdPreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  createAdvertisement(): void {
+    if (!this.selectedFile || !this.newAd.bytes) return;
+    this.loadingCreateAd = true;
+    const client = this.autenticacaoService.user;
+    if (!client?.id) {
+      this.toastService.erro('Client ID not found');
+      this.loadingCreateAd = false;
+      return;
+    }
+    const payload = {
+      name: this.selectedFile.name,
+      type: this.selectedFile.type,
+      bytes: this.newAd.bytes
+    };
+    this.adService.createClientAd(client.id, payload).subscribe({
+      next: () => {
+        this.loadingCreateAd = false;
+        this.showCreateAdModal = false;
+        this.toastService.sucesso('Advertisement created successfully');
+        this.closeAdsModal();
+      },
+      error: () => {
+        this.loadingCreateAd = false;
+        this.toastService.erro('Failed to create advertisement');
+      }
+    });
+  }
+
+    private convertValidationTypeToStatus(validationType: string): AdvertisementStatus {
+        switch (validationType?.toUpperCase()) {
+          case 'APPROVED':
+            return AdvertisementStatus.APPROVED;
+          case 'REJECTED':
+            return AdvertisementStatus.REJECTED;
+          case 'PENDING':
+            return AdvertisementStatus.PENDING;
+          default:
+            return AdvertisementStatus.PENDING;
+        }
+      }
 }
