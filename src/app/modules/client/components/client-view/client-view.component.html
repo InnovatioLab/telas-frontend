@@ -12,7 +12,10 @@
     height="100vh" 
     width="100%" 
     (pointClick)="handlePointClick($event)"
-    (markerClicked)="handleMarkerClick($event)">
+    (markerClicked)="handleMarkerClick($event)"
+    (mapInitialized)="onMapInitialized()"
+    (mapReady)="onMapReady()"
+    (mapError)="onMapError($event)">
   </app-maps>
 </div>
 

@@ -7,13 +7,14 @@ import { Client } from '@app/model/client';
 import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
 import { ErrorComponent } from '@app/shared/components/error/error.component';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { IconPlusComponent } from '@app/shared/icons/plus.icon';
 
 @Component({
   selector: 'app-view-edit-profile',
   templateUrl: './view-edit-profile.component.html',
   styleUrls: ['./view-edit-profile.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PrimengModule, ErrorComponent]
+  imports: [CommonModule, ReactiveFormsModule, PrimengModule, ErrorComponent, IconPlusComponent]
 })
 export class ViewEditProfileComponent implements OnInit {
   profileForm: FormGroup;

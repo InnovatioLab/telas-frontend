@@ -39,6 +39,7 @@ import { IconWifiComponent } from './wifi.icon';
 import { IconBoxComponent } from './box.icon';
 import { IconUploadComponent } from './upload.icon';
 import { IconEtiquetaComponent } from './etiqueta.icon';
+import { IconPlusComponent } from './plus.icon';
 
 @NgModule({
   imports: [
@@ -81,7 +82,8 @@ import { IconEtiquetaComponent } from './etiqueta.icon';
     IconWifiComponent,
     IconBoxComponent,
     IconUploadComponent,
-    IconEtiquetaComponent
+    IconEtiquetaComponent,
+    IconPlusComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -122,7 +124,8 @@ import { IconEtiquetaComponent } from './etiqueta.icon';
     IconWifiComponent,
     IconBoxComponent,
     IconUploadComponent,
-    IconEtiquetaComponent
+    IconEtiquetaComponent,
+    IconPlusComponent
   ],
   declarations: []
 })

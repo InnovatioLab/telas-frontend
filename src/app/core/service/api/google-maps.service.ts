@@ -102,6 +102,7 @@ export class GoogleMapsService {
       return;
     }
     
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${this.callbackName}`;
     script.async = true;
     script.defer = true;
     script.id = 'google-maps-script';

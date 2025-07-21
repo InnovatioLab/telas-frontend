@@ -58,6 +58,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() pointClick = new EventEmitter<{point: MapPoint, event: MouseEvent}>();
   @Output() mapInitialized = new EventEmitter<google.maps.Map>();
   @Output() markerClicked = new EventEmitter<MapPoint>();
+  @Output() mapReady = new EventEmitter<boolean>();
+  @Output() mapError = new EventEmitter<string>();
   
   private _map: google.maps.Map | null = null;
   private markers: google.maps.Marker[] = [];
@@ -133,9 +135,16 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => {
         if (this._map) {
           google.maps.event.trigger(this._map, 'resize');
-          this._mapReady = true;
+          this.ngZone.run(() => {
+            this._mapReady = true;
+            this.mapReady.emit(true);
+          });
         }
       }, 200);
+    } else if (this._mapReady) {
+      this.ngZone.run(() => {
+        this.mapReady.emit(true);
+      });
     }
   }
 
@@ -184,7 +193,16 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.subscriptions.push(subscription);
+    const errorSubscription = this.mapsService.apiError$.subscribe(error => {
+      if (error) {
+        this.ngZone.run(() => {
+          this.mapError.emit(error);
+        });
+        this.loadingService.setLoading(false, 'load-google-maps');
+      }
+    });
+
+    this.subscriptions.push(subscription, errorSubscription);
   }
   
   private setupEventListeners(): void {
@@ -349,7 +367,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         fullscreenControl: false
       });
 
-      this.mapInitialized.emit(this._map);
+      this.ngZone.run(() => {
+        this.mapInitialized.emit(this._map);
+      });
       
       this._map.addListener('zoom_changed', () => {
         if (this._map && this.points && this.points.length > 0) {
@@ -364,10 +384,16 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => {
         if (this._map) {
           google.maps.event.trigger(this._map, 'resize');
-          this._mapReady = true;
+          this.ngZone.run(() => {
+            this._mapReady = true;
+            this.mapReady.emit(true);
+          });
         }
       }, 200);
     } catch (error) {
+      this.ngZone.run(() => {
+        this.mapError.emit('Falha ao inicializar o mapa. Por favor, tente novamente.');
+      });
       this._apiLoaded = false;
       this._mapReady = false;
     }
@@ -457,13 +483,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private createMarker(point: MapPoint, lat: number, lng: number): void {
-    console.log(`[MapsComponent] Criando marker para ponto: ${point.id}, hasAvailableSlots: ${point.hasAvailableSlots}`);
-    
     let icon: google.maps.Symbol;
     
     if (point.category === 'MONITOR' || point.type === 'MONITOR') {
       icon = this.mapsService.createMonitorIcon();
-      console.log(`[MapsComponent] Ícone criado com cor:`, icon.fillColor);
     } else {
       icon = this.mapsService.createRedMarkerIcon();
     }

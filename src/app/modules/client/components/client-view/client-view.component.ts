@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
@@ -36,10 +36,14 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   
   constructor(
     public readonly mapsService: GoogleMapsService,
-    private readonly toastService: ToastService
-  ) {}
+    private readonly toastService: ToastService,
+    private readonly cdr: ChangeDetectorRef
+  ) {
+    console.log('[ClientViewComponent] Constructor: Component instantiated.');
+  }
   
   ngOnInit(): void {
+    console.log('[ClientViewComponent] ngOnInit: Initializing component.');
     this.isLoading = true;
     
     window.addEventListener('monitors-found', ((e: Event) => {
@@ -49,34 +53,36 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.mapsComponent.setMapPoints(monitors);
       }
     }) as EventListener);
-    
-    setTimeout(() => {
-      this.ensureMapInitialized();
-    }, 500);
   }
   
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.ensureMapInitialized();
-    }, 1000);
+    if (this.mapsComponent) {
+      this.mapsComponent.ensureMapInitialized();
+    }
   }
   
   ngOnDestroy(): void {
   }
+
+  onMapInitialized(): void {
+    this.isLoading = false;
+    this.cdr.detectChanges();
+  }
+
+  onMapReady(): void {
+    this.isLoading = false;
+    this.cdr.detectChanges();
+  }
   
+  onMapError(errorMessage: string): void {
+    this.isLoading = false;
+    this.toastService.erro(errorMessage);
+    this.cdr.detectChanges();
+  }
+
   private ensureMapInitialized(): void {
     if (this.mapsComponent) {
       this.mapsComponent.ensureMapInitialized();
-      
-      setTimeout(() => {
-        if (!this.mapsComponent.isMapReady()) {
-          this.mapsComponent.forceReinitialize();
-        } else {
-          this.isLoading = false;
-        }
-      }, 2000);
-    } else {
-      this.isLoading = false;
     }
   }
   
