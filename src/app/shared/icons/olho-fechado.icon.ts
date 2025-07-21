@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-icon-olho-fechado',
   standalone: true,
   template: `
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M11.83 9L15 12.16C15 12.11 15 12.05 15 12C15 11.2044 14.6839 10.4413 14.1213 9.87868C13.5587 9.31607 12.7956 9 12 9C11.94 9 11.89 9 11.83 9ZM7.53 9.8L9.08 11.35C9.03 11.56 9 11.77 9 12C9 12.7956 9.31607 13.5587 9.87868 14.1213C10.4413 14.6839 11.2044 15 12 15C12.22 15 12.44 14.97 12.65 14.92L14.2 16.47C13.53 16.8 12.79 17 12 17C10.6739 17 9.40215 16.4732 8.46447 15.5355C7.52678 14.5979 7 13.3261 7 12C7 11.21 7.2 10.47 7.53 9.8ZM2 4.27L4.28 6.55L4.73 7C3.08 8.3 1.78 10 1 12C2.73 16.39 7 20 12 20C13.55 20 15.03 19.7 16.38 19.16L16.81 19.59L19.73 22.5L21 21.22L3.27 3.5L2 4.27ZM12 7C13.3261 7 14.5979 7.52678 15.5355 8.46447C16.4732 9.40215 17 10.6739 17 12C17 12.64 16.87 13.26 16.64 13.82L19.57 16.75C21.07 15.5 22.27 13.86 23 12C21.27 7.61 17 4 12 4C10.6 4 9.26 4.25 8 4.72L10.17 6.89C10.74 6.66 11.35 6.53 12 6.53V7Z" fill="currentColor"/>
+  <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="size" [attr.height]="size" viewBox="0 0 24 24" fill="none">
+    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12zm11-5a5 5 0 100 10 5 5 0 000-10zm0 8a3 3 0 110-6 3 3 0 010 6z" fill="currentColor"/>
   </svg>
   `,
   styles: [`
@@ -21,4 +21,5 @@ import { Component } from '@angular/core';
   `]
 })
 export class IconOlhoFechadoComponent {
+  @Input() size: number | string = 24;
 }

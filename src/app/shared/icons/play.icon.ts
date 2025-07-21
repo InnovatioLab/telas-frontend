@@ -4,13 +4,11 @@ import { Component, Input } from '@angular/core';
   selector: 'app-icon-play',
   standalone: true,
   template: `
-    <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="width" [attr.height]="height" viewBox="0 0 24 24" [attr.fill]="fill">
-      <polygon points="5,3 19,12 5,21" [attr.fill]="fill"/>
-    </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="size" [attr.height]="size" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M8 5v14l11-7z"/>
+  </svg>
   `
 })
 export class IconPlayComponent {
-  @Input() width: string = '18';
-  @Input() height: string = '18';
-  @Input() fill: string = 'currentColor';
+  @Input() size: number | string = 24;
 }

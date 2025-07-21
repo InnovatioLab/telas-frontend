@@ -1,4 +1,4 @@
-  import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: "app-icon-sun",
@@ -6,8 +6,8 @@
   template: `
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
+      [attr.width]="size"
+      [attr.height]="size"
       viewBox="0 0 24 24"
       fill="none"
     >
@@ -25,4 +25,6 @@
     </svg>
   `,
 })
-export class IconSunComponent {}
+export class IconSunComponent {
+  @Input() size: number | string = 24;
+}
