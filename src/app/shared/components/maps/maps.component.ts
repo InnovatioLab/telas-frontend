@@ -136,7 +136,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this._map) {
           google.maps.event.trigger(this._map, 'resize');
           this.ngZone.run(() => {
-            this._mapReady = true;
+          this._mapReady = true;
             this.mapReady.emit(true);
           });
         }
@@ -368,7 +368,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
       this.ngZone.run(() => {
-        this.mapInitialized.emit(this._map);
+      this.mapInitialized.emit(this._map);
       });
       
       this._map.addListener('zoom_changed', () => {
@@ -385,7 +385,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this._map) {
           google.maps.event.trigger(this._map, 'resize');
           this.ngZone.run(() => {
-            this._mapReady = true;
+          this._mapReady = true;
             this.mapReady.emit(true);
           });
         }

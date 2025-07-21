@@ -567,4 +567,3 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 }
-

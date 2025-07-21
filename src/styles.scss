@@ -55,8 +55,7 @@
   --borda-raio-circular: 50%;
   --borda-largura: 0.0625rem;
   --borda-estilo: solid;
-  --borda-padrao: var(--borda-largura) var(--borda-estilo)
-    var(--cor-cinza-medio);
+  --borda-padrao: var(--borda-largura) var(--borda-estilo) var(--cor-cinza-medio);
 
   /* Spacing */
   --espacamento-pequeno: 0.5rem;
@@ -158,7 +157,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .border-danger,
-.border-danger > input {
+.border-danger>input {
   border-color: var(--cor-erro) !important;
 }
 
@@ -498,9 +497,7 @@ select:disabled,
 input:disabled::placeholder,
 textarea:disabled::placeholder,
 select:disabled::placeholder,
-.p-multiselect-panel
-  .p-multiselect-items
-  .p-multiselect-item.p-highlight.p-disabled,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight.p-disabled,
 .p-dropdown.p-component.p-disabled .p-inputtext,
 .p-dropdown.p-component.p-disabled,
 .p-multiselect.p-disabled .p-multiselect-label.p-placeholder {
@@ -844,6 +841,7 @@ textarea {
     border-bottom: var(--borda-padrao);
 
     .p-datepicker-title {
+
       .p-datepicker-month,
       .p-datepicker-year,
       .p-datepicker-select-month,
@@ -892,7 +890,7 @@ textarea {
     td {
       padding: var(--espacamento-pequeno);
 
-      > span {
+      >span {
         width: var(--altura-botao-pequeno);
         height: var(--altura-botao-pequeno);
         border-radius: var(--borda-raio-circular);
@@ -909,7 +907,7 @@ textarea {
         }
       }
 
-      &.p-datepicker-today > span {
+      &.p-datepicker-today>span {
         background-color: var(--cor-primaria-escura) !important;
         color: var(--cor-branca) !important;
       }
@@ -1116,6 +1114,7 @@ textarea {
     border-bottom: var(--borda-padrao);
 
     .p-datepicker-title {
+
       .p-datepicker-month,
       .p-datepicker-year,
       .p-datepicker-select-month,
@@ -1164,7 +1163,7 @@ textarea {
     td {
       padding: var(--espacamento-pequeno);
 
-      > span {
+      >span {
         width: var(--altura-botao-pequeno);
         height: var(--altura-botao-pequeno);
         border-radius: var(--borda-raio-circular);
@@ -1181,7 +1180,7 @@ textarea {
         }
       }
 
-      &.p-datepicker-today > span {
+      &.p-datepicker-today>span {
         background-color: var(--cor-primaria-escura) !important;
         color: var(--cor-branca) !important;
       }
@@ -1570,7 +1569,7 @@ textarea {
   }
 
   .p-datatable-tbody {
-    > tr.ng-star-inserted {
+    >tr.ng-star-inserted {
       border-bottom: var(--borda-padrao);
       background-color: var(--cor-branca);
       transition: var(--transicao-rapida);
@@ -1583,7 +1582,7 @@ textarea {
         background-color: var(--cor-cinza-medio);
       }
 
-      > td {
+      >td {
         padding: var(--espacamento-padrao);
         border-bottom: var(--borda-padrao);
         font-size: var(--fonte-tamanho-padrao);
@@ -1723,6 +1722,7 @@ textarea {
 }
 
 @media (max-width: 500px) {
+
   .p-paginator .p-paginator-prev,
   .p-paginator .p-paginator-next {
     display: none !important;
@@ -1844,9 +1844,9 @@ textarea {
 }
 
 .p-datatable-thead th,
-.p-datatable-thead > tr > th,
+.p-datatable-thead>tr>th,
 .p-datatable .p-datatable-thead th,
-.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-thead>tr>th,
 th.p-datatable-sortable-column,
 th.p-datatable-column-sorted {
   background-color: var(--cor-primaria) !important;
@@ -1884,71 +1884,71 @@ label.required::after {
     background-color 5000s ease-in-out 0s !important;
 }
 
-.ng-dirty.ng-invalid > .p-autocomplete > .p-inputtext,
-.ng-dirty.ng-invalid > .p-calendar > .p-inputtext,
-.ng-dirty.ng-invalid > .p-cascadeselect,
-.ng-dirty.ng-invalid > .p-checkbox > .p-checkbox-box,
-.ng-dirty.ng-invalid > .p-chips > .p-inputtext,
-.ng-dirty.ng-invalid > .p-dropdown,
-.ng-touched.ng-invalid > .p-dropdown,
-.ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext,
-.ng-touched.ng-invalid > .p-inputnumber > .p-inputtext,
-.ng-dirty.ng-invalid > .p-inputswitch,
+.ng-dirty.ng-invalid>.p-autocomplete>.p-inputtext,
+.ng-dirty.ng-invalid>.p-calendar>.p-inputtext,
+.ng-dirty.ng-invalid>.p-cascadeselect,
+.ng-dirty.ng-invalid>.p-checkbox>.p-checkbox-box,
+.ng-dirty.ng-invalid>.p-chips>.p-inputtext,
+.ng-dirty.ng-invalid>.p-dropdown,
+.ng-touched.ng-invalid>.p-dropdown,
+.ng-dirty.ng-invalid>.p-inputnumber>.p-inputtext,
+.ng-touched.ng-invalid>.p-inputnumber>.p-inputtext,
+.ng-dirty.ng-invalid>.p-inputswitch,
 .p-inputtext.ng-dirty.ng-invalid,
 .p-inputtext.ng-touched.ng-invalid,
-.ng-dirty.ng-invalid > .p-listbox,
-.p-multiselect.ng-touched.ng-invalid > .p-multiselect:not(.p-disabled).p-focus,
-.p-multiselect.ng-dirty.ng-invalid > .p-multiselect:not(.p-disabled).p-focus,
-.ng-dirty.ng-invalid > .p-multiselect,
-.ng-touched.ng-invalid > .p-multiselect,
-.ng-invalid.ng-dirty > .p-password > .p-inputtext,
-.ng-dirty.ng-invalid > .p-radiobutton > .p-radiobutton-box,
-.ng-dirty.ng-invalid > .p-selectbutton > .p-button,
-.ng-dirty.ng-invalid > .p-togglebutton.p-button,
-.ng-invalid.ng-dirty > .p-treeselect,
-.p-inputwrapper.invalid > .p-inputnumber > .p-inputtext,
-.ng-dirty.ng-invalid > .p-autocomplete > .p-inputtext:focus,
-.ng-dirty.ng-invalid > .p-calendar > .p-inputtext:focus,
-.ng-dirty.ng-invalid > .p-cascadeselect:focus,
-.ng-dirty.ng-invalid > .p-checkbox > .p-checkbox-box:focus,
-.ng-dirty.ng-invalid > .p-chips > .p-inputtext:focus,
-.ng-dirty.ng-invalid > .p-dropdown:focus,
-.ng-touched.ng-invalid > .p-dropdown:focus,
-.ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext:focus,
-.ng-touched.ng-invalid > .p-inputnumber > .p-inputtext:focus,
-.ng-dirty.ng-invalid > .p-inputswitch:focus,
+.ng-dirty.ng-invalid>.p-listbox,
+.p-multiselect.ng-touched.ng-invalid>.p-multiselect:not(.p-disabled).p-focus,
+.p-multiselect.ng-dirty.ng-invalid>.p-multiselect:not(.p-disabled).p-focus,
+.ng-dirty.ng-invalid>.p-multiselect,
+.ng-touched.ng-invalid>.p-multiselect,
+.ng-invalid.ng-dirty>.p-password>.p-inputtext,
+.ng-dirty.ng-invalid>.p-radiobutton>.p-radiobutton-box,
+.ng-dirty.ng-invalid>.p-selectbutton>.p-button,
+.ng-dirty.ng-invalid>.p-togglebutton.p-button,
+.ng-invalid.ng-dirty>.p-treeselect,
+.p-inputwrapper.invalid>.p-inputnumber>.p-inputtext,
+.ng-dirty.ng-invalid>.p-autocomplete>.p-inputtext:focus,
+.ng-dirty.ng-invalid>.p-calendar>.p-inputtext:focus,
+.ng-dirty.ng-invalid>.p-cascadeselect:focus,
+.ng-dirty.ng-invalid>.p-checkbox>.p-checkbox-box:focus,
+.ng-dirty.ng-invalid>.p-chips>.p-inputtext:focus,
+.ng-dirty.ng-invalid>.p-dropdown:focus,
+.ng-touched.ng-invalid>.p-dropdown:focus,
+.ng-dirty.ng-invalid>.p-inputnumber>.p-inputtext:focus,
+.ng-touched.ng-invalid>.p-inputnumber>.p-inputtext:focus,
+.ng-dirty.ng-invalid>.p-inputswitch:focus,
 .p-inputtext.ng-touched.ng-invalid:enabled:focus,
 .p-inputtext.ng-dirty.ng-invalid:focus,
 .p-inputtext.ng-touched.ng-invalid:focus,
-.ng-dirty.ng-invalid > .p-listbox:focus,
-.ng-dirty.ng-invalid > .p-multiselect:focus,
-.ng-touched.ng-invalid > .p-multiselect:focus,
-.ng-dirty.ng-invalid > .p-radiobutton > .p-radiobutton-box:focus,
-.ng-dirty.ng-invalid > .p-selectbutton > .p-button:focus,
-.ng-dirty.ng-invalid > .p-togglebutton.p-button:focus,
-.ng-invalid.ng-dirty > .p-treeselect:focus,
-.p-inputwrapper.invalid > .p-inputnumber > .p-inputtext:focus,
-.ng-dirty.ng-invalid > .p-autocomplete > .p-inputtext:hover,
-.ng-dirty.ng-invalid > .p-calendar > .p-inputtext:hover,
-.ng-dirty.ng-invalid > .p-cascadeselect:hover,
-.ng-dirty.ng-invalid > .p-checkbox > .p-checkbox-box:hover,
-.ng-dirty.ng-invalid > .p-chips > .p-inputtext:hover,
-.ng-dirty.ng-invalid > .p-dropdown:hover,
-.ng-touched.ng-invalid > .p-dropdown:hover,
-.ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext:hover,
-.ng-touched.ng-invalid > .p-inputnumber > .p-inputtext:hover,
-.ng-dirty.ng-invalid > .p-inputswitch:hover,
+.ng-dirty.ng-invalid>.p-listbox:focus,
+.ng-dirty.ng-invalid>.p-multiselect:focus,
+.ng-touched.ng-invalid>.p-multiselect:focus,
+.ng-dirty.ng-invalid>.p-radiobutton>.p-radiobutton-box:focus,
+.ng-dirty.ng-invalid>.p-selectbutton>.p-button:focus,
+.ng-dirty.ng-invalid>.p-togglebutton.p-button:focus,
+.ng-invalid.ng-dirty>.p-treeselect:focus,
+.p-inputwrapper.invalid>.p-inputnumber>.p-inputtext:focus,
+.ng-dirty.ng-invalid>.p-autocomplete>.p-inputtext:hover,
+.ng-dirty.ng-invalid>.p-calendar>.p-inputtext:hover,
+.ng-dirty.ng-invalid>.p-cascadeselect:hover,
+.ng-dirty.ng-invalid>.p-checkbox>.p-checkbox-box:hover,
+.ng-dirty.ng-invalid>.p-chips>.p-inputtext:hover,
+.ng-dirty.ng-invalid>.p-dropdown:hover,
+.ng-touched.ng-invalid>.p-dropdown:hover,
+.ng-dirty.ng-invalid>.p-inputnumber>.p-inputtext:hover,
+.ng-touched.ng-invalid>.p-inputnumber>.p-inputtext:hover,
+.ng-dirty.ng-invalid>.p-inputswitch:hover,
 .p-inputtext.ng-touched.ng-invalid:enabled:hover,
 .p-inputtext.ng-dirty.ng-invalid:hover,
 .p-inputtext.ng-touched.ng-invalid:hover,
-.ng-dirty.ng-invalid > .p-listbox:hover,
-.ng-dirty.ng-invalid > .p-multiselect:hover,
-.ng-touched.ng-invalid > .p-multiselect:hover,
-.ng-dirty.ng-invalid > .p-radiobutton > .p-radiobutton-box:hover,
-.ng-dirty.ng-invalid > .p-selectbutton > .p-button:hover,
-.ng-dirty.ng-invalid > .p-togglebutton.p-button:hover,
-.ng-invalid.ng-dirty > .p-treeselect:hover,
-.p-inputwrapper.invalid > .p-inputnumber > .p-inputtext:hover {
+.ng-dirty.ng-invalid>.p-listbox:hover,
+.ng-dirty.ng-invalid>.p-multiselect:hover,
+.ng-touched.ng-invalid>.p-multiselect:hover,
+.ng-dirty.ng-invalid>.p-radiobutton>.p-radiobutton-box:hover,
+.ng-dirty.ng-invalid>.p-selectbutton>.p-button:hover,
+.ng-dirty.ng-invalid>.p-togglebutton.p-button:hover,
+.ng-invalid.ng-dirty>.p-treeselect:hover,
+.p-inputwrapper.invalid>.p-inputnumber>.p-inputtext:hover {
   border-color: var(--cor-erro) !important;
 }
 
@@ -2003,6 +2003,7 @@ textarea {
 }
 
 @media screen and (max-width: 576px) {
+
   h1,
   h2,
   h3,
@@ -2071,5 +2072,121 @@ textarea {
     button:not(.p-button-icon-only) {
       flex: 1 !important;
     }
+  }
+
+  /* Ad Management Modal Styles */
+  .orderlist-item-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .ad-filename {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .ad-filename.selected {
+    color: var(--cor-primaria);
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .ads-content {
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 1rem;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .ads-content>div {
+    flex: 1 1 0;
+    min-width: 220px;
+    max-width: 480px;
+    box-sizing: border-box;
+  }
+
+  .ads-content img {
+    max-width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 900px) {
+    .ads-content {
+      flex-direction: column;
+      gap: 16px;
+      padding: 0 0.5rem;
+    }
+
+    .ads-content>div {
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .ads-content img {
+      max-height: 180px;
+    }
+  }
+
+  .p-orderlist {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .p-listbox-list-container,
+  .p-listbox-list {
+    background: var(--cor-branca) !important;
+    color: var(--cor-cinza-escuro) !important;
+    font-size: var(--fonte-tamanho-padrao);
+    border-radius: 8px;
+    box-shadow: none !important;
+    border: 1px solid var(--cor-cinza-medio);
+    max-height: 240px !important;
+    min-height: 80px;
+    padding: 0;
+  }
+
+  .p-listbox-option {
+    padding: 0.5rem 1rem;
+    font-size: var(--fonte-tamanho-padrao);
+    background: transparent !important;
+    color: var(--cor-cinza-escuro) !important;
+    border: none !important;
+    border-radius: 0;
+    transition: background 0.2s;
+  }
+
+  .p-listbox-option.p-focus,
+  .p-listbox-option.p-listbox-option-selected {
+    background: var(--cor-cinza-medio) !important;
+    color: var(--cor-primaria) !important;
+  }
+
+  .p-listbox-option:hover:not(.p-listbox-option-selected) {
+    background: var(--cor-cinza-fundo) !important;
+    color: var(--cor-primaria) !important;
+  }
+
+  .p-listbox-list-container::-webkit-scrollbar,
+  .p-listbox-list::-webkit-scrollbar {
+    width: 6px;
+    background: transparent;
+  }
+
+  .p-listbox-list-container::-webkit-scrollbar-thumb,
+  .p-listbox-list::-webkit-scrollbar-thumb {
+    background: var(--cor-cinza-medio);
+    border-radius: 4px;
   }
 }

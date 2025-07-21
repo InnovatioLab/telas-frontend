@@ -187,128 +187,45 @@
           }}
         </h4>
       </div>
-
-      <div class="ads-content">
-        <div
-          class="valid-ads"
-          *ngIf="
-            selectedMonitorForAds.validAds &&
-            selectedMonitorForAds.validAds.length > 0
-          "
-        >
-          <h5>Available Ads ({{ selectedMonitorForAds.validAds.length }})</h5>
-          <div class="ad-list">
-            <div
-              class="ad-item"
-              *ngFor="let ad of selectedMonitorForAds.validAds; let i = index"
-            >
-              <div class="ad-info">
-                <span class="ad-index">{{ i + 1 }}.</span>
-                <span class="ad-title">{{ ad.title || "Ad " + (i + 1) }}</span>
-                <span class="ad-description">{{
-                  ad.description || "No description available"
-                }}</span>
+      <div *ngIf="isAdsLoading" class="loading-spinner-container">
+        <p-progressSpinner></p-progressSpinner>
+      </div>
+      <div *ngIf="!isAdsLoading" class="ads-content" style="display: flex; gap: 32px; flex-wrap: wrap;">
+        <!-- Parte 1: Galleria -->
+        <div style="flex: 1; min-width: 320px;">
+          <h5>Image Preview</h5>
+          <img
+            *ngIf="orderedAdLinks[selectedAdIndex]"
+            [src]="orderedAdLinks[selectedAdIndex].link"
+            style="width: 100%; max-height: 300px; object-fit: contain;"
+            [alt]="orderedAdLinks[selectedAdIndex].fileName"
+          />
+        </div>
+        <!-- Parte 2: OrderList -->
+        <div style="flex: 1; min-width: 320px;">
+          <h5>Sort Images</h5>
+          <p-orderList [value]="orderedAdLinks" (onReorder)="onOrderListReorder($event)" [listStyle]="{ height: '300px' }" header="Drag to reorder">
+            <ng-template let-adLink let-i="index" pTemplate="item">
+              <div class="orderlist-item-content">
+                <span
+                  class="ad-filename"
+                  [pTooltip]="adLink.fileName"
+                  tooltipPosition="top"
+                  (click)="selectAd(i)"
+                  [class.selected]="selectedAdIndex === i"
+                >
+                  {{ adLink.fileName }}
+                </span>
+                <p-badge *ngIf="adLink.isAttachedToMonitor" value="Attached" severity="info"></p-badge>
               </div>
-              <button
-                pButton
-                pRipple
-                icon="pi pi-plus"
-                class="p-button-rounded p-button-success p-button-text p-button-sm"
-                (click)="addValidAd(ad)"
-                pTooltip="Add Ad Link"
-              ></button>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="no-valid-ads"
-          *ngIf="
-            !selectedMonitorForAds.validAds ||
-            selectedMonitorForAds.validAds.length === 0
-          "
-        >
-          <app-icon-help></app-icon-help>
-          <span>No valid ads available for this monitor.</span>
-        </div>
-
-        <div
-          class="current-ads"
-          *ngIf="
-            selectedMonitorForAds.adLinks &&
-            selectedMonitorForAds.adLinks.length > 0
-          "
-        >
-          <h5>Current Ad Links ({{ selectedMonitorForAds.adLinks.length }})</h5>
-          <div class="ad-list">
-            <div
-              class="ad-item"
-              *ngFor="
-                let adLink of selectedMonitorForAds.adLinks;
-                let i = index
-              "
-            >
-              <div class="ad-info">
-                <span class="ad-index">{{ i + 1 }}.</span>
-                <span class="ad-link">{{ adLink }}</span>
-              </div>
-              <button
-                pButton
-                pRipple
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-danger p-button-text p-button-sm"
-                (click)="removeAdLink(i)"
-                pTooltip="Remove Ad Link"
-              ></button>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="no-ads"
-          *ngIf="
-            !selectedMonitorForAds.adLinks ||
-            selectedMonitorForAds.adLinks.length === 0
-          "
-        >
-          <app-icon-help></app-icon-help>
-          <span>No ad links configured for this monitor.</span>
-        </div>
-
-        <div class="add-ad-section">
-          <h5>Add New Ad Link</h5>
-          <div class="add-ad-form">
-            <input
-              type="text"
-              pInputText
-              [(ngModel)]="newAdLink"
-              [ngModelOptions]="{ standalone: true }"
-              placeholder="Enter ad link URL"
-              class="ad-input"
-            />
-            <button
-              pButton
-              pRipple
-              label="Add"
-              icon="pi pi-plus"
-              (click)="addAdLink()"
-              [disabled]="!newAdLink || newAdLink.trim().length === 0"
-              class="add-button"
-            ></button>
-          </div>
+            </ng-template>
+          </p-orderList>
         </div>
       </div>
     </div>
-
     <ng-template pTemplate="footer">
-      <button
-        pButton
-        pRipple
-        label="Close"
-        icon="pi pi-times"
-        class="p-button-text"
-        (click)="closeAdsModal()"
-      ></button>
+      <button pButton pRipple label="Close" icon="pi pi-times" class="p-button-text" (click)="closeAdsModal()"></button>
+      <button pButton pRipple label="Save Order" icon="pi pi-check" class="p-button-success" (click)="saveAdOrder()"></button>
     </ng-template>
   </p-dialog>
 
