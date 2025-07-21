@@ -132,7 +132,7 @@
   <p-dialog 
     header="Manage Monitor Ads" 
     [(visible)]="adsModalVisible" 
-    [style]="{width: '70vw', maxWidth: '900px'}" 
+    [style]="{width: '90vw', maxWidth: '1200px'}" 
     [modal]="true"
     [draggable]="false"
     [resizable]="false"
@@ -143,24 +143,36 @@
       <div class="ads-header">
         <h4>Monitor: {{selectedMonitorForAds.name || 'Monitor ' + selectedMonitorForAds.id.substring(0, 8)}}</h4>
       </div>
-      <div class="ads-content" style="display: flex; gap: 32px; flex-wrap: wrap;">
+      <div *ngIf="isAdsLoading" class="loading-spinner-container">
+        <p-progressSpinner></p-progressSpinner>
+      </div>
+      <div *ngIf="!isAdsLoading" class="ads-content" style="display: flex; gap: 32px; flex-wrap: wrap;">
         <!-- Parte 1: Galleria -->
         <div style="flex: 1; min-width: 320px;">
           <h5>Image Preview</h5>
-          <p-galleria [value]="orderedAdLinks" [numVisible]="3" [showThumbnails]="true" [showIndicators]="true" [circular]="true" [containerStyle]="{ 'max-width': '400px' }">
-            <ng-template pTemplate="item" let-item>
-              <img [src]="item" style="width: 100%; max-height: 300px; object-fit: contain;" alt="Ad Image"/>
-            </ng-template>
-          </p-galleria>
+          <img
+            *ngIf="orderedAdLinks[selectedAdIndex]"
+            [src]="orderedAdLinks[selectedAdIndex].link"
+            style="width: 100%; max-height: 300px; object-fit: contain;"
+            [alt]="orderedAdLinks[selectedAdIndex].fileName"
+          />
         </div>
         <!-- Parte 2: OrderList -->
         <div style="flex: 1; min-width: 320px;">
           <h5>Sort Images</h5>
           <p-orderList [value]="orderedAdLinks" (onReorder)="onOrderListReorder($event)" [listStyle]="{ height: '300px' }" header="Drag to reorder">
-            <ng-template let-adLink pTemplate="item">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <img [src]="adLink" width="48" height="48" style="object-fit: cover; border-radius: 4px;" alt="Ad"/>
-                <span style="font-size: 12px; word-break: break-all;">{{ adLink }}</span>
+            <ng-template let-adLink let-i="index" pTemplate="item">
+              <div class="orderlist-item-content">
+                <span
+                  class="ad-filename"
+                  [pTooltip]="adLink.fileName"
+                  tooltipPosition="top"
+                  (click)="selectAd(i)"
+                  [class.selected]="selectedAdIndex === i"
+                >
+                  {{ adLink.fileName }}
+                </span>
+                <p-badge *ngIf="adLink.isAttachedToMonitor" value="Attached" severity="info"></p-badge>
               </div>
             </ng-template>
           </p-orderList>
