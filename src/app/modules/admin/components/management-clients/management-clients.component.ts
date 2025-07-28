@@ -2,15 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClientManagementService, FilterClientRequestDto } from '@app/core/service/api/client-management.service';
-import { Client, Role } from '@app/model/client';
+import { ClientService } from '@app/core/service/api/client.service';
 import { ToastService } from '@app/core/service/state/toast.service';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { MessageService } from 'primeng/api';
+import { Client, Role } from '@app/model/client';
 import { IconSearchComponent } from '@app/shared/icons/search.icon';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { ConfirmationDialogService } from '@app/shared/services/confirmation-dialog.service';
+import { MessageService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { EditClientModalComponent } from '../edit-client-modal/edit-client-modal.component';
-import { ClientService } from '@app/core/service/api/client.service';
 
 @Component({
   selector: 'app-management-clients',

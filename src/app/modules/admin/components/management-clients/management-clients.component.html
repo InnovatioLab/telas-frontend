@@ -2,81 +2,101 @@
   <div class="content">
     <p-card styleClass="card-header">
       <div class="card-header-content">
-          <i class="pi pi-search"></i>
-          <div class="p-card-content">
-            <span class="p-input-icon-left">
-              <app-icon-search></app-icon-search>
-              <input 
-                type="text" 
-                pInputText 
-                placeholder="Search clients..." 
-                [(ngModel)]="searchTerm"
-                [ngModelOptions]="{standalone: true}"
-                (keyup.enter)="onSearch()" />
-            </span>
-          </div>
+        <i class="pi pi-search"></i>
+        <div class="p-card-content">
+          <span class="p-input-icon-left">
+            <app-icon-search style="color: #496382"></app-icon-search>
+            <input
+              type="text"
+              style="width: 250px;"
+              pInputText
+              placeholder="Search clients..."
+              [(ngModel)]="searchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              (keyup.enter)="onSearch()"
+            />
+          </span>
+        </div>
       </div>
     </p-card>
 
-    <p-table 
-      [value]="clients" 
-      [loading]="loading" 
-      styleClass="p-datatable-sm" 
-      [paginator]="true" 
-      [rows]="currentFilters.size || 10" 
+    <p-table
+      [value]="clients"
+      [loading]="loading"
+      styleClass="p-datatable-sm"
+      [paginator]="true"
+      [rows]="currentFilters.size || 10"
       [totalRecords]="totalRecords"
-      [rowsPerPageOptions]="[5,10,25,50]" 
-      [showCurrentPageReport]="true" 
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [showCurrentPageReport]="true"
       responsiveLayout="scroll"
       [lazy]="true"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} clients"
       (onPage)="onPageChange($event)"
       (onSort)="onSort($event)"
       [sortField]="currentFilters.sortBy || 'name'"
-      [sortOrder]="currentFilters.sortDir === 'asc' ? 1 : -1">
+      [sortOrder]="currentFilters.sortDir === 'asc' ? 1 : -1"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th scope="col" pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-          <th scope="col" pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-          <th scope="col" pSortableColumn="role">Role <p-sortIcon field="role"></p-sortIcon></th>
+          <th scope="col" pSortableColumn="name">
+            Name <p-sortIcon field="name"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="email">
+            Email <p-sortIcon field="email"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="role">
+            Role <p-sortIcon field="role"></p-sortIcon>
+          </th>
           <th scope="col">Partner Status</th>
-          <th scope="col" pSortableColumn="createdAt">Created At <p-sortIcon field="createdAt"></p-sortIcon></th>
+          <th scope="col" pSortableColumn="createdAt">
+            Created At <p-sortIcon field="createdAt"></p-sortIcon>
+          </th>
           <th scope="col">Actions</th>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="body" let-client>
         <tr>
-          <td class="text-center">{{client.businessName || client.owner?.name || 'N/A'}}</td>
-          <td class="text-center">{{client.owner?.email || client.contact?.email || 'N/A'}}</td>
-          <td class="text-center">{{getRoleLabel(client.role || '')}}</td>
           <td class="text-center">
-            <p-badge 
-              [value]="getPartnerStatusLabel(client.role || '')" 
-              [severity]="getPartnerStatusSeverity(client.role || '')">
+            {{ client.businessName || client.owner?.name || "N/A" }}
+          </td>
+          <td class="text-center">
+            {{ client.owner?.email || client.contact?.email || "N/A" }}
+          </td>
+          <td class="text-center">{{ getRoleLabel(client.role || "") }}</td>
+          <td class="text-center">
+            <p-badge
+              [value]="getPartnerStatusLabel(client.role || '')"
+              [severity]="getPartnerStatusSeverity(client.role || '')"
+            >
             </p-badge>
           </td>
-          <td class="text-center">{{client.createdAt | date:'short'}}</td>
+          <td class="text-center">{{ client.createdAt | date: "short" }}</td>
           <td class="text-center">
             <div class="action-buttons">
-              <button pButton pRipple 
-                      icon="pi pi-user-plus" 
-                      class="p-button-rounded p-button-success p-button-text" 
-                      (click)="makePartner(client)"
-                      pTooltip="Make Partner"
-                      [disabled]="client.role === 'PARTNER'">
-              </button>
-              <button pButton pRipple 
-                      icon="pi pi-pencil" 
-                      class="p-button-rounded p-button-info p-button-text" 
-                      (click)="editClient(client)"
-                      pTooltip="Edit Client">
-              </button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-user-plus"
+                class="p-button-rounded p-button-success p-button-text"
+                (click)="makePartner(client)"
+                pTooltip="Make Partner"
+                [disabled]="client.role === 'PARTNER'"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-info p-button-text"
+                (click)="editClient(client)"
+                pTooltip="Edit Client"
+              ></button>
             </div>
           </td>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="6" class="text-center">No clients found.</td>
@@ -84,4 +104,4 @@
       </ng-template>
     </p-table>
   </div>
-</div> 
+</div>

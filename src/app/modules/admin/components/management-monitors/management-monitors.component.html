@@ -5,56 +5,109 @@
         <i class="pi pi-search"></i>
         <div class="p-card-content">
           <span class="p-input-icon-left">
-            <app-icon-search></app-icon-search>
-            <input type="text" pInputText placeholder="Search monitors..." [(ngModel)]="searchTerm"
-              [ngModelOptions]="{ standalone: true }" (keyup.enter)="onSearch()" />
+             <app-icon-search style="color: #496382"></app-icon-search>
+            <input
+              type="text"
+              style="width: 250px;"
+              pInputText
+              placeholder="Search monitors..."
+              [(ngModel)]="searchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              (keyup.enter)="onSearch()"
+            />
           </span>
-          <button pButton label="Create Monitor" icon="pi pi-plus" (click)="openCreateMonitorModal()"
-            onKeyDown="openCreateMonitorModal()"></button>
+          <button
+            pButton
+            label="Create Monitor"
+            icon="pi pi-plus"
+            (click)="openCreateMonitorModal()"
+            onKeyDown="openCreateMonitorModal()"
+          ></button>
         </div>
       </div>
     </p-card>
 
-    <p-table [value]="monitors" [loading]="loading" styleClass="p-datatable-sm" [paginator]="true"
-      [rows]="currentFilters?.size || 10" [totalRecords]="ensureValidNumber(totalRecords)"
-      [rowsPerPageOptions]="[5, 10, 25, 50]" [showCurrentPageReport]="true" responsiveLayout="scroll" [lazy]="true"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} monitors" paginatorDropdownAppendTo="body"
-      (onPage)="onPageChange($event)" (onSort)="onSort($event)" [sortField]="currentFilters.sortBy"
-      [sortOrder]="currentFilters.sortDir === 'asc' ? 1 : -1">
+    <p-table
+      [value]="monitors"
+      [loading]="loading"
+      styleClass="p-datatable-sm"
+      [paginator]="true"
+      [rows]="currentFilters?.size || 10"
+      [totalRecords]="ensureValidNumber(totalRecords)"
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [showCurrentPageReport]="true"
+      responsiveLayout="scroll"
+      [lazy]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} monitors"
+      paginatorDropdownAppendTo="body"
+      (onPage)="onPageChange($event)"
+      (onSort)="onSort($event)"
+      [sortField]="currentFilters.sortBy"
+      [sortOrder]="currentFilters.sortDir === 'asc' ? 1 : -1"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th scope="col">Name</th>
-          <th scope="col" pSortableColumn="active">Status <p-sortIcon field="active"></p-sortIcon></th>
+          <th scope="col" pSortableColumn="active">
+            Status <p-sortIcon field="active"></p-sortIcon>
+          </th>
           <th scope="col">Address</th>
           <th scope="col">Actions</th>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="body" let-monitor>
         <tr>
-          <td>{{monitor.name || 'Monitor ' + monitor.id.substring(0, 8)}}</td>
+          <td>{{ monitor.name || "Monitor " + monitor.id.substring(0, 8) }}</td>
           <td>
-            <p-badge [value]="monitor.active ? 'Active' : 'Inactive'"
-              [severity]="monitor.active ? 'success' : 'danger'"></p-badge>
+            <p-badge
+              [value]="monitor.active ? 'Active' : 'Inactive'"
+              [severity]="monitor.active ? 'success' : 'danger'"
+            ></p-badge>
           </td>
-          <td>{{getMonitorAddress(monitor)}}</td>
+          <td>{{ getMonitorAddress(monitor) }}</td>
           <td>
             <div class="action-buttons">
-              <button pButton pRipple class="p-button-rounded p-button-info p-button-text custom-ads-button"
-                (click)="openAdsModal(monitor)" pTooltip="Manage Ads">
+              <button
+                pButton
+                pRipple
+                class="p-button-rounded p-button-info p-button-text custom-ads-button"
+                (click)="openAdsModal(monitor)"
+                pTooltip="Manage Ads"
+              >
                 <app-icon-tv-display class="custom-icon"></app-icon-tv-display>
-                <span class="ads-badge" *ngIf="monitor.adLinks && monitor.adLinks.length > 0">{{ monitor.adLinks.length
-                  }}</span>
+                <span
+                  class="ads-badge"
+                  *ngIf="monitor.adLinks && monitor.adLinks.length > 0"
+                  >{{ monitor.adLinks.length }}</span
+                >
               </button>
-              <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-text"
-                (click)="onSelectMonitor(monitor)" pTooltip="Edit Monitor"></button>
-              <button pButton pRipple class="p-button-rounded p-button-secondary p-button-text"
-                (click)="openUploadAdsModal(monitor)" pTooltip="Upload ads">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-success p-button-text"
+                (click)="onSelectMonitor(monitor)"
+                pTooltip="Edit Monitor"
+              ></button>
+              <button
+                pButton
+                pRipple
+                class="p-button-rounded p-button-secondary p-button-text"
+                (click)="openUploadAdsModal(monitor)"
+                pTooltip="Upload ads"
+              >
                 <app-icon-upload class="custom-icon"></app-icon-upload>
               </button>
-              <button pButton pRipple icon="pi pi-trash" [class]="getDeleteButtonClass(monitor)"
-                (click)="deleteMonitor(monitor)" [disabled]="!canDeleteMonitor(monitor)"
-                [pTooltip]="getDeleteTooltip(monitor)"></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                [class]="getDeleteButtonClass(monitor)"
+                (click)="deleteMonitor(monitor)"
+                [disabled]="!canDeleteMonitor(monitor)"
+                [pTooltip]="getDeleteTooltip(monitor)"
+              ></button>
             </div>
           </td>
         </tr>
@@ -68,64 +121,117 @@
   </div>
 
   <!-- Modal de criação de monitor -->
-  <p-dialog [(visible)]="createMonitorModalVisible" [modal]="true" [style]="{ width: '50vw', maxWidth: '800px' }"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false" [closeOnEscape]="true"
-    [dismissableMask]="true" [showHeader]="false" [contentStyle]="{
+  <p-dialog
+    [(visible)]="createMonitorModalVisible"
+    [modal]="true"
+    [style]="{ width: '50vw', maxWidth: '800px' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    [closeOnEscape]="true"
+    [dismissableMask]="true"
+    [showHeader]="false"
+    [contentStyle]="{
       padding: '0',
       'border-radius': '8px',
       overflow: 'hidden',
-    }">
-    <app-create-monitor-modal #createMonitorModal (close)="onCreateMonitorModalClose()"
-      (monitorCreated)="onMonitorCreated($event)">
+    }"
+  >
+    <app-create-monitor-modal
+      #createMonitorModal
+      (close)="onCreateMonitorModalClose()"
+      (monitorCreated)="onMonitorCreated($event)"
+    >
     </app-create-monitor-modal>
   </p-dialog>
 
   <!-- Modal de edição de monitor -->
-  <p-dialog [(visible)]="editMonitorModalVisible" [modal]="true" [style]="{ width: '50vw', maxWidth: '800px' }"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false" [closeOnEscape]="true"
-    [dismissableMask]="true" [showHeader]="false" [contentStyle]="{ padding: '0', 'border-radius': '8px' }">
-    <app-edit-monitor-modal #editMonitorModal [monitor]="selectedMonitorForEdit" (close)="onEditMonitorModalClose()"
-      (monitorUpdated)="onMonitorUpdated($event)">
+  <p-dialog
+    [(visible)]="editMonitorModalVisible"
+    [modal]="true"
+    [style]="{ width: '50vw', maxWidth: '800px' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    [closeOnEscape]="true"
+    [dismissableMask]="true"
+    [showHeader]="false"
+    [contentStyle]="{ padding: '0', 'border-radius': '8px' }"
+  >
+    <app-edit-monitor-modal
+      #editMonitorModal
+      [monitor]="selectedMonitorForEdit"
+      (close)="onEditMonitorModalClose()"
+      (monitorUpdated)="onMonitorUpdated($event)"
+    >
     </app-edit-monitor-modal>
   </p-dialog>
 
   <!-- Modal de gerenciamento de Ads -->
-  <p-dialog header="Manage Monitor Ads" [(visible)]="adsModalVisible" [style]="{ width: '50vw', maxWidth: '800px' }"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [modal]="true" [draggable]="false" [resizable]="false"
-    [closeOnEscape]="true" [dismissableMask]="true">
+  <p-dialog
+    header="Manage Monitor Ads"
+    [(visible)]="adsModalVisible"
+    [style]="{ width: '50vw', maxWidth: '800px' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [closeOnEscape]="true"
+    [dismissableMask]="true"
+  >
     <div class="ads-management" *ngIf="selectedMonitorForAds">
       <div class="ads-header">
         <h4>
           Monitor:
           {{
-          selectedMonitorForAds.name ||
-          "Monitor " + selectedMonitorForAds.id.substring(0, 8)
+            selectedMonitorForAds.name ||
+              "Monitor " + selectedMonitorForAds.id.substring(0, 8)
           }}
         </h4>
       </div>
       <div *ngIf="isAdsLoading" class="loading-spinner-container">
         <p-progressSpinner></p-progressSpinner>
       </div>
-      <div *ngIf="!isAdsLoading" class="ads-content" style="display: flex; gap: 32px; flex-wrap: wrap;">
+      <div
+        *ngIf="!isAdsLoading"
+        class="ads-content"
+        style="display: flex; gap: 32px; flex-wrap: wrap"
+      >
         <!-- Parte 1: Galleria -->
-        <div style="flex: 1; min-width: 320px;">
+        <div style="flex: 1; min-width: 320px">
           <h5>Image Preview</h5>
-          <img *ngIf="orderedAdLinks[selectedAdIndex]" [src]="orderedAdLinks[selectedAdIndex].link"
-            style="width: 100%; max-height: 300px; object-fit: contain;"
-            [alt]="orderedAdLinks[selectedAdIndex].fileName" />
+          <img
+            *ngIf="orderedAdLinks[selectedAdIndex]"
+            [src]="orderedAdLinks[selectedAdIndex].link"
+            style="width: 100%; max-height: 300px; object-fit: contain"
+            [alt]="orderedAdLinks[selectedAdIndex].fileName"
+          />
         </div>
         <!-- Parte 2: OrderList -->
-        <div style="flex: 1; min-width: 320px;">
+        <div style="flex: 1; min-width: 320px">
           <h5>Sort Images</h5>
-          <p-orderList [value]="orderedAdLinks" (onReorder)="onOrderListReorder($event)"
-            [listStyle]="{ height: '300px' }" header="Drag to reorder">
+          <p-orderList
+            [value]="orderedAdLinks"
+            (onReorder)="onOrderListReorder($event)"
+            [listStyle]="{ height: '300px' }"
+            header="Drag to reorder"
+          >
             <ng-template let-adLink let-i="index" pTemplate="item">
               <div class="orderlist-item-content">
-                <span class="ad-filename" [pTooltip]="adLink.fileName" tooltipPosition="top" (click)="selectAd(i)"
-                  [class.selected]="selectedAdIndex === i">
+                <span
+                  class="ad-filename"
+                  [pTooltip]="adLink.fileName"
+                  tooltipPosition="top"
+                  (click)="selectAd(i)"
+                  [class.selected]="selectedAdIndex === i"
+                >
                   {{ adLink.fileName }}
                 </span>
-                <p-badge *ngIf="adLink.isAttachedToMonitor" value="Attached" severity="info"></p-badge>
+                <p-badge
+                  *ngIf="adLink.isAttachedToMonitor"
+                  value="Attached"
+                  severity="info"
+                ></p-badge>
               </div>
             </ng-template>
           </p-orderList>
@@ -133,24 +239,47 @@
       </div>
     </div>
     <ng-template pTemplate="footer">
-      <button pButton pRipple label="Close" icon="pi pi-times" class="p-button-text" (click)="closeAdsModal()"></button>
-      <button pButton pRipple label="Save Order" icon="pi pi-check" class="p-button-success"
-        (click)="saveAdOrder()"></button>
+      <button
+        pButton
+        pRipple
+        label="Close"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="closeAdsModal()"
+      ></button>
+      <button
+        pButton
+        pRipple
+        label="Save Order"
+        icon="pi pi-check"
+        class="p-button-success"
+        (click)="saveAdOrder()"
+      ></button>
     </ng-template>
   </p-dialog>
 
   <!-- Modal de confirmação de delete -->
-  <p-dialog header="Confirm Deletion" [(visible)]="deleteConfirmModalVisible" [style]="{ width: '400px' }"
-    [modal]="true" [closeOnEscape]="true" [dismissableMask]="true" [draggable]="false">
+  <p-dialog
+    header="Confirm Deletion"
+    [(visible)]="deleteConfirmModalVisible"
+    [style]="{ width: '400px' }"
+    [modal]="true"
+    [closeOnEscape]="true"
+    [dismissableMask]="true"
+    [draggable]="false"
+  >
     <div class="delete-confirmation" *ngIf="selectedMonitorForDelete">
       <div class="confirmation-content">
-        <i class="pi pi-exclamation-triangle" style="color: #f44336; font-size: 2rem; margin-bottom: 1rem"></i>
+        <i
+          class="pi pi-exclamation-triangle"
+          style="color: #f44336; font-size: 2rem; margin-bottom: 1rem"
+        ></i>
         <h4>Are you sure you want to delete this monitor?</h4>
         <p>
           <strong>Monitor:</strong>
           {{
-          selectedMonitorForDelete.name ||
-          "Monitor " + selectedMonitorForDelete.id.substring(0, 8)
+            selectedMonitorForDelete.name ||
+              "Monitor " + selectedMonitorForDelete.id.substring(0, 8)
           }}
         </p>
         <p>
@@ -164,43 +293,126 @@
         <p class="warning-text">This action cannot be undone.</p>
       </div>
     </div>
-    
+
     <ng-template pTemplate="footer">
-      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
-        (click)="closeDeleteConfirmModal()" [disabled]="loading"></button>
-      <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="confirmDelete()"
-        [loading]="loading" [disabled]="loading"></button>
+      <button
+        pButton
+        pRipple
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="closeDeleteConfirmModal()"
+        [disabled]="loading"
+      ></button>
+      <button
+        pButton
+        pRipple
+        label="Delete"
+        icon="pi pi-trash"
+        class="p-button-danger"
+        (click)="confirmDelete()"
+        [loading]="loading"
+        [disabled]="loading"
+      ></button>
     </ng-template>
   </p-dialog>
 
   <!-- Modal de upload de ads -->
-  <p-dialog header="Create Advertisement" [(visible)]="showCreateAdModal" [modal]="true" [closable]="true"
-    [dismissableMask]="true" [style]="{width: '400px'}">
+  <p-dialog
+    header="Create Advertisement"
+    [(visible)]="showCreateAdModal"
+    [modal]="true"
+    [closable]="true"
+    [dismissableMask]="true"
+    [style]="{ width: '400px' }"
+  >
     <form (ngSubmit)="createAdvertisement()" #adForm="ngForm">
-      <div class="p-fluid" style="gap: 1.5rem; display: flex; flex-direction: column;">
-        <div class="p-field" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
-          <label for="adFile" style="margin-bottom: 0;">File</label>
-          <button type="button" pButton class="p-button-outlined" (click)="fileInput.click()">
+      <div
+        class="p-fluid"
+        style="gap: 1.5rem; display: flex; flex-direction: column"
+      >
+        <div
+          class="p-field"
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+          "
+        >
+          <label for="adFile" style="margin-bottom: 0">File</label>
+          <button
+            type="button"
+            pButton
+            class="p-button-outlined"
+            (click)="fileInput.click()"
+          >
             <app-icon-upload></app-icon-upload>
-            <span style="margin-left: 0.5rem;">Select file</span>
+            <span style="margin-left: 0.5rem">Select file</span>
           </button>
-          <input #fileInput id="adFile" type="file" (change)="onFileSelected($event)" accept="image/*,video/*"
-            style="display: none;" required />
-          <span *ngIf="selectedFile"
-            style="font-size: 0.95em; color: #555; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{
-            selectedFile.name }}</span>
-          <div *ngIf="uploadAdPreview" style="margin-top: 1rem; width: 100%; text-align: center;">
-            <img *ngIf="selectedFile?.type.startsWith('image/')" [src]="uploadAdPreview"
-              style="max-width: 100%; max-height: 180px; border-radius: 4px; border: 1px solid #eee;" />
-            <video *ngIf="selectedFile?.type.startsWith('video/')" [src]="uploadAdPreview" controls
-              style="max-width: 100%; max-height: 180px; border-radius: 4px; border: 1px solid #eee;"></video>
+          <input
+            #fileInput
+            id="adFile"
+            type="file"
+            (change)="onFileSelected($event)"
+            accept="image/*,video/*"
+            style="display: none"
+            required
+          />
+          <span
+            *ngIf="selectedFile"
+            style="
+              font-size: 0.95em;
+              color: #555;
+              max-width: 220px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            "
+            >{{ selectedFile.name }}</span
+          >
+          <div
+            *ngIf="uploadAdPreview"
+            style="margin-top: 1rem; width: 100%; text-align: center"
+          >
+            <img
+              *ngIf="selectedFile?.type.startsWith('image/')"
+              [src]="uploadAdPreview"
+              style="
+                max-width: 100%;
+                max-height: 180px;
+                border-radius: 4px;
+                border: 1px solid #eee;
+              "
+            />
+            <video
+              *ngIf="selectedFile?.type.startsWith('video/')"
+              [src]="uploadAdPreview"
+              controls
+              style="
+                max-width: 100%;
+                max-height: 180px;
+                border-radius: 4px;
+                border: 1px solid #eee;
+              "
+            ></video>
           </div>
         </div>
       </div>
-      <div class="p-dialog-footer" style="margin-top: 2rem;">
-        <button pButton type="submit" label="Create" [disabled]="loadingCreateAd || !adForm.form.valid"></button>
-        <button pButton type="button" label="Cancel" class="p-button-secondary"
-          (click)="showCreateAdModal=false"></button>
+      <div class="p-dialog-footer" style="margin-top: 2rem">
+        <button
+          pButton
+          type="submit"
+          label="Create"
+          [disabled]="loadingCreateAd || !adForm.form.valid"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Cancel"
+          class="p-button-secondary"
+          (click)="showCreateAdModal = false"
+        ></button>
       </div>
     </form>
   </p-dialog>

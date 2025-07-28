@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdService } from '@app/core/service/api/ad.service';
-import { Advertisement, AdvertisementStatus } from '@app/model/advertisement';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { MessageService } from 'primeng/api';
-import { IconSearchComponent } from '@app/shared/icons/search.icon';
-import { HttpClient } from '@angular/common/http';
-import { IconUploadComponent } from '@app/shared/icons/upload.icon';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { ClientManagementService } from '@app/core/service/api/client-management.service';
-import { Client } from '@app/model/client';
 import { ClientService } from '@app/core/service/api/client.service';
+import { ToastService } from '@app/core/service/state/toast.service';
+import { Advertisement, AdvertisementStatus } from '@app/model/advertisement';
+import { Client } from '@app/model/client';
 import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
+import { IconSearchComponent } from '@app/shared/icons/search.icon';
+import { IconUploadComponent } from '@app/shared/icons/upload.icon';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-management-advertisements',
