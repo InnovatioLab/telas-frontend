@@ -8,7 +8,7 @@
             <app-icon-search style="color: #496382"></app-icon-search>
             <input
               type="text"
-              style="width: 250px;"
+              style="width: 250px"
               pInputText
               placeholder="Search boxes..."
               [(ngModel)]="searchTerm"
@@ -131,6 +131,9 @@
           (onChange)="onBoxAddressChange($event.value)"
         >
         </p-select>
+        <ng-template pTemplate="empty">
+          <span>No IP address found.</span>
+        </ng-template>
         <small class="help-text" *ngIf="loadingBoxAddresses"
           >Loading IP addresses...</small
         >
@@ -155,8 +158,13 @@
           [showHeader]="false"
           [loading]="loadingMonitors"
           [disabled]="loadingMonitors"
+          [overlayOptions]="{ appendTo: 'body' }"
+          appendTo="body"
         >
         </p-multiSelect>
+        <ng-template pTemplate="empty">
+          <span>No monitors found.</span>
+        </ng-template>
         <small class="help-text" *ngIf="loadingMonitors"
           >Loading monitors...</small
         >
@@ -217,6 +225,9 @@
           (onChange)="onEditBoxAddressChange($event.value)"
         >
         </p-select>
+        <ng-template pTemplate="empty">
+          <span>No IP address found.</span>
+        </ng-template>
         <small class="help-text" *ngIf="loadingBoxAddresses"
           >Loading IP addresses...</small
         >
@@ -241,8 +252,13 @@
           [showHeader]="false"
           [loading]="loadingMonitors"
           [disabled]="loadingMonitors"
+          [overlayOptions]="{ appendTo: 'body' }"
+          appendTo="body"
         >
         </p-multiSelect>
+        <ng-template pTemplate="empty">
+          <span>No monitors found.</span>
+        </ng-template>
         <small class="help-text" *ngIf="loadingMonitors"
           >Loading monitors...</small
         >

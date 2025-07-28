@@ -2097,7 +2097,8 @@ label.required::after {
   input[type="tel"],
   input[type="date"],
   select,
-  textarea {
+  textarea,
+  .p-multiselect-option {
     font-size: var(--fonte-tamanho-padrao) !important;
   }
 }
@@ -2123,4 +2124,12 @@ label.required::after {
 .p-select-label,
 .p-multiselect-label {
   padding: 0px !important;
+}
+
+.p-multiselect-option {
+  color: var(--cor-primaria) !important;
+
+  @include responsive("mobile") {
+    font-size: 12px;
+  }
 }
