@@ -28,11 +28,12 @@
     }
 
     .modal-content {
-      padding: 2rem;
+      padding: 0.5rem 1rem 2rem 0.5rem;
       overflow-y: auto;
 
       .form-section {
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
 
         h3 {
           margin: 0 0 1.5rem 0;
@@ -158,7 +159,9 @@
   font-size: 1rem;
   color: var(--cor-cinza-escuro);
   background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   resize: vertical;
   box-shadow: none;
 }
@@ -168,4 +171,32 @@
   border-color: var(--cor-primaria);
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(56, 142, 60, 0.15);
+}
+
+@media (max-width: 768px) {
+  .edit-monitor-modal {
+    .modal-header {
+      padding: 1rem;
+    }
+
+    .modal-content {
+      padding: 1rem;
+      gap: 1rem;
+
+      .form-section {
+        .form-row {
+          gap: 0.75rem;
+        }
+      }
+    }
+
+    .modal-footer {
+      padding: 1rem;
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
 }

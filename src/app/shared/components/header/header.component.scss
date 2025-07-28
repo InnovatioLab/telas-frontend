@@ -32,31 +32,31 @@
   .desktop-only {
     display: none !important;
   }
-  
+
   .mobile-only {
     display: block !important;
   }
-  
+
   .desktop-header {
     display: none !important;
   }
-  
+
   .mobile-menu {
     display: block !important;
   }
-  
+
   .desktop-box-actions {
     display: none !important;
   }
-  
+
   .mobile-box-actions {
     display: none !important;
   }
-  
+
   .main-actions {
-      display: none !important;
-    }
-    
+    display: none !important;
+  }
+
   .badge {
     background-color: var(--cor-primaria) !important;
     color: var(--cor-branca);
@@ -73,29 +73,29 @@
 
 @media screen and (min-width: 769px) {
   .mobile-only {
-      display: none !important;
-    }
-  
+    display: none !important;
+  }
+
   .desktop-only {
     display: block !important;
-}
+  }
 
   .mobile-menu {
     display: none !important;
   }
-  
+
   .desktop-header {
     display: block !important;
-    
+
     .desktop-box-actions {
       display: flex !important;
     }
   }
-  
+
   .mobile-box-actions {
     display: none !important;
   }
-  
+
   .main-actions {
     display: flex !important;
   }
@@ -192,7 +192,7 @@
 
         &:focus {
           border-color: var(--cor-primaria);
-          box-shadow: 0 0 0 0.2rem rgba(35,47,62,0.25);
+          box-shadow: 0 0 0 0.2rem rgba(35, 47, 62, 0.25);
         }
 
         &::placeholder {
@@ -355,20 +355,19 @@
 }
 
 @media screen and (max-width: 768px) {
- 
   :host.is-admin {
     .mobile-header-user {
       display: none !important;
     }
-    
+
     .mobile-header-admin {
       display: block !important;
     }
   }
-  
+
   .mobile-header-admin {
     display: none !important;
-    
+
     .logo-text {
       color: var(--cor-primaria) !important;
       font-weight: 600 !important;
@@ -484,10 +483,10 @@
           font-weight: 600;
         }
       }
-      
+
       .carrinho {
         position: relative;
-        
+
         .badge {
           position: absolute;
           top: -5px;
@@ -510,7 +509,6 @@
   .espaco-header {
     height: 70px;
   }
-
 
   .badge {
     background-color: var(--cor-primaria) !important;
@@ -618,7 +616,7 @@
 
           &:focus {
             border-color: var(--cor-primaria);
-            box-shadow: 0 0 0 0.2rem rgba(35,47,62,0.25);
+            box-shadow: 0 0 0 0.2rem rgba(35, 47, 62, 0.25);
           }
 
           &::placeholder {
@@ -697,7 +695,7 @@
 
 .icon-button {
   position: relative;
-  
+
   .badge {
     position: absolute;
     top: -5px;
@@ -712,7 +710,6 @@
   }
 }
 
-
 @media screen and (max-width: 768px) {
   .icon-button {
     .badge {
@@ -724,8 +721,7 @@
       background-color: var(--cor-primaria);
     }
   }
-  
- 
+
   #test-btn-notification-admin {
     .badge {
       position: absolute !important;
@@ -747,7 +743,6 @@
   }
 }
 
-
 input::placeholder,
 textarea::placeholder,
 .p-dropdown .p-dropdown-label.p-placeholder,
@@ -756,11 +751,18 @@ textarea::placeholder,
 }
 
 /* Browser-specific selectors */
-::-webkit-input-placeholder { text-align: left !important; } 
-::-moz-placeholder { text-align: left !important; } 
-:-ms-input-placeholder { text-align: left !important; } 
-:-moz-placeholder { text-align: left !important; } 
-
+::-webkit-input-placeholder {
+  text-align: left !important;
+}
+::-moz-placeholder {
+  text-align: left !important;
+}
+:-ms-input-placeholder {
+  text-align: left !important;
+}
+:-moz-placeholder {
+  text-align: left !important;
+}
 
 header {
   width: 100%;
@@ -785,7 +787,7 @@ header {
     padding: 0;
     overflow-x: hidden;
     max-width: 100%;
-    
+
     .header-content {
       display: flex;
       flex-direction: row;
@@ -895,10 +897,10 @@ header {
           font-weight: 600;
         }
       }
-      
+
       .carrinho {
         position: relative;
-        
+
         .badge {
           position: absolute;
           top: -5px;
@@ -1007,7 +1009,7 @@ header {
 
         &:focus {
           border-color: var(--cor-primaria);
-          box-shadow: 0 0 0 0.2rem rgba(35,47,62,0.25);
+          box-shadow: 0 0 0 0.2rem rgba(35, 47, 62, 0.25);
         }
 
         &::placeholder {
@@ -1084,10 +1086,12 @@ header {
 
 @media screen and (max-width: 768px) {
   .mobile-header .header-content .right-container {
-    .icon-button, .carrinho {
+    .icon-button,
+    .carrinho {
       position: relative;
-      
-      .badge, span.badge {
+
+      .badge,
+      span.badge {
         position: absolute;
         top: -5px;
         right: -5px;
@@ -1104,11 +1108,12 @@ header {
         padding: 0;
       }
     }
-    
-    #test-btn-notification, 
-    #test-btn-notification-admin, 
+
+    #test-btn-notification,
+    #test-btn-notification-admin,
     .carrinho {
-      .badge, span.badge {
+      .badge,
+      span.badge {
         top: -5px !important;
         right: -5px !important;
       }
@@ -1116,7 +1121,8 @@ header {
   }
 }
 
-.menu-trigger, .menu-trigger-desktop {
+.menu-trigger,
+.menu-trigger-desktop {
   position: relative;
   width: 42px;
   height: 42px;
@@ -1133,13 +1139,14 @@ header {
     transition: all 0.3s ease;
   }
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: rgba(255, 255, 255, 0.15);
   }
-  
+
   &.active {
     background-color: rgba(255, 255, 255, 0.2);
-    
+
     i {
       transform: rotate(90deg);
     }
@@ -1175,23 +1182,37 @@ header {
     align-items: center;
 
     input {
-      width: 100%;
-      height: 30px;
-      padding: 8px 40px 8px 16px;
-      border: 1px solid var(--cor-primaria);
-      border-radius: 15px;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.3s ease-in-out;
+      max-height: 35px;
+      color: var(--cor-branca) !important;
+      border-color: var(--cor-branca) !important;
 
       &:focus {
-        border-color: var(--cor-primaria);
-        box-shadow: 0 0 0 0.2rem rgba(35,47,62,0.25);
+        border-color: var(--cor-branca) !important;
       }
 
       &::placeholder {
-        color: #757575;
+        color: var(--cor-branca) !important;
         text-align: left !important;
+      }
+
+      @media (max-width: 500px) {
+        height: 30px;
+        padding: 8px 40px 8px 16px;
+        width: 100%;
+        border-color: var(--cor-primaria) !important;
+        border-radius: 15px;
+        outline: none;
+        transition: var(--transicao-padrao);
+        color: var(--cor-primaria) !important;
+
+        &:focus {
+          border-color: var(--cor-primaria) !important;
+          box-shadow: 0 0 0 0.2rem rgba(35, 47, 62, 0.25);
+        }
+
+        &::placeholder {
+          color: var(--cor-legenda) !important;
+        }
       }
     }
 
@@ -1210,12 +1231,16 @@ header {
 
       .search-icon {
         font-size: 1rem;
-        color: var(--cor-primaria);
+        color: var(--cor-primaria) !important;
       }
-      
+
       &:disabled {
         cursor: not-allowed;
         opacity: 0.6;
+      }
+
+      @media (max-width: 500px) {
+        color: var(--cor-primaria) !important;
       }
     }
   }
@@ -1228,13 +1253,13 @@ header {
   padding: 8px;
   border-radius: 4px;
   font-size: 14px;
-  
+
   &.alert-danger {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
   }
-  
+
   &.alert-success {
     background-color: #d4edda;
     color: #155724;
@@ -1320,30 +1345,37 @@ app-icon-search {
 
 /* Efeito piscante para os alertas */
 @keyframes blinking {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .alert-blinking {
   animation: blinking 1.5s infinite;
-  
+
   &:hover {
     animation: none;
     opacity: 1;
   }
-  
+
   &:focus {
     animation: none;
     opacity: 1;
   }
-  
+
   app-icon-warning {
     color: var(--cor-erro) !important;
   }
 }
 
 /* Estilos específicos para o botão de alerta */
-#admin-alerts-button, #admin-alerts-button-mobile {
+#admin-alerts-button,
+#admin-alerts-button-mobile {
   position: relative;
 }

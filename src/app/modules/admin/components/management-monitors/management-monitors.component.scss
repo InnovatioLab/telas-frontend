@@ -9,31 +9,12 @@
       justify-content: space-between;
     }
 
-    p-button {
-      flex-shrink: 0;
-
-      @media (max-width: 576px) {
-        .p-button {
-          font-size: var(--fonte-tamanho-pequeno);
-          padding: var(--espacamento-pequeno);
-        }
-      }
-    }
-
     @media (max-width: 480px) {
       flex-direction: column;
 
       .p-input-icon-left {
         width: 100%;
         margin-bottom: var(--espacamento-pequeno);
-      }
-
-      p-button {
-        width: 100%;
-
-        .p-button {
-          width: 100%;
-        }
       }
     }
   }
@@ -105,14 +86,14 @@
           &.p-button-disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            
+
             &:hover {
               background: var(--cor-cinza-medio) !important;
               color: var(--cor-cinza) !important;
             }
           }
         }
-        
+
         .custom-ads-button {
           height: 40px !important;
           padding: var(--espacamento-pequeno) 0px !important;
@@ -123,7 +104,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            
+
             ::ng-deep svg {
               fill: currentColor;
             }
@@ -138,7 +119,7 @@
             width: 18px;
             height: 18px;
             line-height: 1;
-            
+
             ::ng-deep svg {
               width: 18px;
               height: 18px;
@@ -184,17 +165,6 @@
       }
     }
 
-    p-button {
-      flex-shrink: 0;
-
-      @media (max-width: 576px) {
-        .p-button {
-          font-size: var(--fonte-tamanho-pequeno);
-          padding: var(--espacamento-pequeno);
-        }
-      }
-    }
-
     @media (max-width: 480px) {
       flex-direction: column;
 
@@ -203,13 +173,6 @@
         margin-bottom: var(--espacamento-pequeno);
       }
 
-      p-button {
-        width: 100%;
-
-        .p-button {
-          width: 100%;
-        }
-      }
     }
   }
 
@@ -295,7 +258,7 @@
         app-icon-help {
           width: 20px;
           height: 20px;
-          
+
           ::ng-deep svg {
             width: 100%;
             height: 100%;
@@ -363,7 +326,7 @@
         app-icon-help {
           width: 20px;
           height: 20px;
-          
+
           ::ng-deep svg {
             width: 100%;
             height: 100%;
