@@ -8,13 +8,13 @@ export enum MonitorType {
 
 export interface Monitor {
   id: string;
-  active: boolean;
-  type: MonitorType;
+  active?: boolean;
+  type?: MonitorType;
   locationDescription?: string;
-  size: number;
+  size?: number;
   productId?: string;
   maxBlocks?: number;
-  address: Address;
+  address?: Address;
   status?: DefaultStatus;
   lastUpdate?: Date;
   createdAt?: Date;
