@@ -1304,9 +1304,10 @@ h1 {
 
 h4,
 h5,
-h6 {
-  font-size: var(--fonte-tamanho-grande);
-  font-weight: var(--fonte-peso-medio);
+h6,
+.p-dialog-title {
+  font-size: var(--fonte-tamanho-grande) !important;
+  font-weight: var(--fonte-peso-medio) !important;
 }
 
 h5 {
@@ -2057,7 +2058,8 @@ label.required::after {
 }
 
 .p-button.close-btn,
-.p-button.p-button-icon-only {
+.p-button.p-button-icon-only,
+.p-button.p-dialog-close-button {
   width: auto;
   height: auto;
 }
@@ -2078,7 +2080,8 @@ label.required::after {
 
   h4,
   h5,
-  h6 {
+  h6,
+  .p-dialog-title {
     font-size: var(--fonte-tamanho-medio);
   }
 

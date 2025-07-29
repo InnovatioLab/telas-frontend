@@ -1,20 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy, Inject, signal, ChangeDetectorRef } from '@angular/core';
-import { PrimengModule } from '../../primeng/primeng.module';
-import { CkeckoutModalComponent } from '../ckeckout-modal/ckeckout-modal.component';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Inject, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { Authentication } from '@app/core/service/auth/autenthication';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { IconsModule } from '@app/shared/icons/icons.module';
+import { FormatarPreco } from '@app/shared/pipes/preco.pipe';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { ImagemCarrinhoVazioComponent } from '@app/utility/src/lib/svg/carrinho-vazio';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Subscription } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment.interface';
-import { Authentication } from '@app/core/service/auth/autenthication';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { PrimengModule } from '../../primeng/primeng.module';
+import { CkeckoutModalComponent } from '../ckeckout-modal/ckeckout-modal.component';
 import { DialogoComponent } from '../dialogo/dialogo.component';
-import { FormatarPreco } from '@app/shared/pipes/preco.pipe';
-import { ImagemCarrinhoVazioComponent } from '@app/utility/src/lib/svg/carrinho-vazio';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { IconsModule } from '@app/shared/icons/icons.module';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-checkout-list-side-bar',

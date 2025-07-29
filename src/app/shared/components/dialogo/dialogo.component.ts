@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, AfterViewInit, OnDestroy, EventEmitter, Output } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommonModule } from '@angular/common';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { LoadingService } from '@app/core/service/state/loading.service';
 import { IConfigDialogo } from '@app/shared/interfaces/dialog-config.interface';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { IconAtencaoComponent } from "../../icons/atencao.icon";
-import { LoadingService } from '@app/core/service/state/loading.service';
 
 @Component({
   standalone: true,

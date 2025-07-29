@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Client, DefaultStatus, Role } from "@app/model/client";
+import { ResponseDTO } from '@app/model/dto/response.dto';
+import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { ResponseDTO } from '@app/model/dto/response.dto';
-import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
-import { Client } from '@app/model/client';
 
 export interface FilterClientRequestDto {
   page?: number;
@@ -18,6 +18,9 @@ export interface FilterClientRequestDto {
 export interface ClientResponseDto {
   id: string;
   businessName?: string;
+  identificationNumber?: string;
+  industry?: string;
+  status?: DefaultStatus;
   owner?: {
     name?: string;
     email?: string;
@@ -25,7 +28,7 @@ export interface ClientResponseDto {
   contact?: {
     email?: string;
   };
-  role?: string;
+  role?: Role;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -57,6 +60,9 @@ export class ClientManagementService {
           const clients: Client[] = (response.data.list || []).map(clientDto => ({
             id: clientDto.id,
             businessName: clientDto.businessName,
+            identificationNumber: clientDto.identificationNumber,
+            industry: clientDto.industry,
+            status: clientDto.status,
             owner: clientDto.owner,
             contact: clientDto.contact,
             role: clientDto.role as any,
@@ -87,21 +93,7 @@ export class ClientManagementService {
     );
   }
 
-  makePartner(clientId: string): Observable<Client> {
-    return this.http.patch<ResponseDTO<ClientResponseDto>>(`${this.apiUrl}/partner/${clientId}`, {}).pipe(
-      map((response: ResponseDTO<ClientResponseDto>) => {
-        if (response.data) {
-          const client: Client = {
-            id: response.data.id,
-            businessName: response.data.businessName,
-            owner: response.data.owner,
-            contact: response.data.contact,
-            role: response.data.role as any
-          };
-          return client;
-        }
-        throw new Error('Failed to make client partner');
-      })
-    );
+  makePartner(clientId: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/partner/${clientId}`, {});
   }
 } 

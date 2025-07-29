@@ -45,8 +45,14 @@
           <th scope="col" pSortableColumn="email">
             Email <p-sortIcon field="email"></p-sortIcon>
           </th>
-          <th scope="col" pSortableColumn="role">
-            Role <p-sortIcon field="role"></p-sortIcon>
+          <th scope="col" pSortableColumn="identificationNumber">
+            Identification Number <p-sortIcon field="identificationNumber"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="industry">
+            Industry <p-sortIcon field="industry"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="status">
+            Status <p-sortIcon field="status"></p-sortIcon>
           </th>
           <th scope="col">Partner Status</th>
           <th scope="col" pSortableColumn="createdAt">
@@ -62,9 +68,11 @@
             {{ client.businessName || client.owner?.name || "N/A" }}
           </td>
           <td class="text-center">
-            {{ client.owner?.email || client.contact?.email || "N/A" }}
+            {{ client.contact?.email || client.owner?.email }}
           </td>
-          <td class="text-center">{{ getRoleLabel(client.role || "") }}</td>
+          <td class="text-center">{{ client.identificationNumber }}</td>
+          <td class="text-center">{{ client.industry }}</td>
+          <td class="text-center">{{ client.status ? (client.status.charAt(0).toUpperCase() + client.status.slice(1).toLowerCase()) : '' }}</td>
           <td class="text-center">
             <p-badge
               [value]="getPartnerStatusLabel(client.role || '')"
@@ -76,13 +84,13 @@
           <td class="text-center">
             <div class="action-buttons">
               <button
+                *ngIf="client.role !== 'PARTNER'"
                 pButton
                 pRipple
                 icon="pi pi-user-plus"
                 class="p-button-rounded p-button-success p-button-text"
                 (click)="makePartner(client)"
                 pTooltip="Make Partner"
-                [disabled]="client.role === 'PARTNER'"
               ></button>
               <button
                 pButton
