@@ -5,16 +5,17 @@
           <i class="pi pi-search"></i>
           <div class="p-card-content">
             <span class="p-input-icon-left">
-              <app-icon-search></app-icon-search>
+              <app-icon-search style="color: #496382"></app-icon-search>
               <input 
                 type="text" 
+                style="width: 250px;"
                 pInputText 
                 placeholder="Search advertisements..." 
                 [(ngModel)]="searchTerm"
                 [ngModelOptions]="{standalone: true}"
                 (keyup.enter)="onSearch()" />
             </span>
-            <button pButton label="Create Advertisement" icon="pi pi-plus" (click)="openCreateAdModal()"></button>
+            <button pButton label="Create Ad" icon="pi pi-plus" (click)="openCreateAdModal()"></button>
           </div>
       </div>
     </p-card>
@@ -54,7 +55,7 @@
       (onPage)="onPageChange($event)">
       <ng-template pTemplate="header">
         <tr>
-          <th scope="col">ID</th>
+          <th scope="col">Id</th>
           <th scope="col">Link</th>
           <th scope="col">Status</th>
           <th scope="col">Submission Date</th>

@@ -151,7 +151,6 @@
           }
 
           .action-buttons {
-            flex-direction: column;
             gap: 0.25rem;
           }
         }
@@ -193,8 +192,6 @@
     }
 
     p-button {
-      flex-shrink: 0;
-
       @media (max-width: 576px) {
         .p-button {
           font-size: var(--fonte-tamanho-pequeno);
@@ -205,19 +202,15 @@
 
     @media (max-width: 480px) {
       flex-direction: column;
+      justify-content: center;
+      align-content: center;
+      align-items: center;
 
       .p-input-icon-left {
         width: 100%;
         margin-bottom: var(--espacamento-pequeno);
       }
 
-      p-button {
-        width: 100%;
-
-        .p-button {
-          width: 100%;
-        }
-      }
     }
   }
 

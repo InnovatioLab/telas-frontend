@@ -2,72 +2,96 @@
   <div class="content">
     <p-card styleClass="card-header">
       <div class="card-header-content">
-          <i class="pi pi-search"></i>
-          <div class="p-card-content">
-            <span class="p-input-icon-left">
-              <app-icon-search></app-icon-search>
-              <input 
-                type="text" 
-                pInputText 
-                placeholder="Search boxes..." 
-                [(ngModel)]="searchTerm"
-                [ngModelOptions]="{standalone: true}"
-                (keyup.enter)="onSearch()" />
-            </span>
-            <p-button 
-              label="Create Box" 
-              icon="pi pi-plus" 
-              (click)="openCreateBoxModal()"
-              onKeyDown="openCreateBoxModal()"></p-button>
-          </div>
+        <i class="pi pi-search"></i>
+        <div class="p-card-content">
+          <span class="p-input-icon-left">
+            <app-icon-search style="color: #496382"></app-icon-search>
+            <input
+              type="text"
+              style="width: 250px"
+              pInputText
+              placeholder="Search boxes..."
+              [(ngModel)]="searchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              (keyup.enter)="onSearch()"
+            />
+          </span>
+          <button
+            pButton
+            label="Create Box"
+            icon="pi pi-plus"
+            (click)="openCreateBoxModal()"
+            onKeyDown="openCreateBoxModal()"
+          ></button>
+        </div>
       </div>
     </p-card>
 
-    <p-table 
-      [value]="boxes" 
-      [loading]="loading" 
-      styleClass="p-datatable-sm" 
-      [paginator]="true" 
-      [rows]="currentFilters?.size || 10" 
+    <p-table
+      [value]="boxes"
+      [loading]="loading"
+      styleClass="p-datatable-sm"
+      [paginator]="true"
+      [rows]="currentFilters?.size || 10"
       [totalRecords]="totalRecords"
-      [rowsPerPageOptions]="[5,10,25,50]" 
-      [showCurrentPageReport]="true" 
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [showCurrentPageReport]="true"
       responsiveLayout="scroll"
       [lazy]="true"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} boxes"
       (onPage)="onPageChange($event)"
       (onSort)="onSort($event)"
       [sortField]="currentFilters?.sortBy || 'active'"
-      [sortOrder]="currentFilters?.sortDir === 'asc' ? 1 : -1">
+      [sortOrder]="currentFilters?.sortDir === 'asc' ? 1 : -1"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th scope="col" pSortableColumn="ip">IP Address <p-sortIcon field="ip"></p-sortIcon></th>
+          <th scope="col" pSortableColumn="ip">
+            IP Address <p-sortIcon field="ip"></p-sortIcon>
+          </th>
           <th scope="col">MAC Address</th>
-          <th scope="col" pSortableColumn="active">Status <p-sortIcon field="active"></p-sortIcon></th>
+          <th scope="col" pSortableColumn="active">
+            Status <p-sortIcon field="active"></p-sortIcon>
+          </th>
           <th scope="col">Monitors</th>
           <th scope="col">Actions</th>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="body" let-box>
         <tr>
-          <td class="text-center">{{box.ip}}</td>
-          <td class="text-center">{{box.macAddress || 'N/A'}}</td>
+          <td class="text-center">{{ box.ip }}</td>
+          <td class="text-center">{{ box.macAddress || "N/A" }}</td>
           <td class="text-center">
-            <p-badge [value]="box.active ? 'Active' : 'Inactive'" [severity]="box.active ? 'success' : 'danger'"></p-badge>
+            <p-badge
+              [value]="box.active ? 'Active' : 'Inactive'"
+              [severity]="box.active ? 'success' : 'danger'"
+            ></p-badge>
           </td>
           <td class="text-center">
             <app-icon-tv-display class="monitor-icon"></app-icon-tv-display>
-            <span class="monitor-count">{{box.monitorCount || 0}} monitor(s)</span>
+            <span class="monitor-count"
+              >{{ box.monitorCount || 0 }} monitor(s)</span
+            >
           </td>
           <td class="text-center">
             <div class="action-buttons">
-              <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-text" 
-                      (click)="onSelectBox(box)"
-                      pTooltip="Edit Box"></button>
-              <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
-                      (click)="deleteBox(box.id)"
-                      pTooltip="Delete Box"></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-success p-button-text"
+                (click)="onSelectBox(box)"
+                pTooltip="Edit Box"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-danger p-button-text"
+                (click)="deleteBox(box.id)"
+                pTooltip="Delete Box"
+              ></button>
             </div>
           </td>
         </tr>
@@ -81,116 +105,190 @@
   </div>
 
   <!-- Modal de criação de box -->
-  <p-dialog 
+  <p-dialog
     header="Create New Box"
-    [(visible)]="createBoxModalVisible" 
-    [modal]="true" 
-    [style]="{width: '70vw', maxWidth: '600px'}" 
+    [(visible)]="createBoxModalVisible"
+    [modal]="true"
+    [style]="{ width: '70vw', maxWidth: '600px' }"
     [draggable]="false"
     [resizable]="false"
     [closeOnEscape]="true"
-    [dismissableMask]="true">
-    
+    [dismissableMask]="true"
+  >
     <div class="box-form">
       <div class="form-group">
         <label for="boxAddress">IP Address *</label>
-        <p-select 
+        <p-select
           id="boxAddress"
-          [options]="availableBoxAddresses" 
+          [options]="availableBoxAddresses"
           [(ngModel)]="selectedBoxAddress"
-          [ngModelOptions]="{standalone: true}"
+          [ngModelOptions]="{ standalone: true }"
           optionLabel="ip"
           placeholder="Select an IP address"
           class="w-full"
           [loading]="loadingBoxAddresses"
           [disabled]="loadingBoxAddresses"
-          (onChange)="onBoxAddressChange($event.value)">
+          (onChange)="onBoxAddressChange($event.value)"
+        >
         </p-select>
-        <small class="help-text" *ngIf="loadingBoxAddresses">Loading IP addresses...</small>
-        <small class="help-text error-text" *ngIf="!loadingBoxAddresses && availableBoxAddresses.length === 0">No IP addresses available. Please create box addresses first.</small>
+        <ng-template pTemplate="empty">
+          <span>No IP address found.</span>
+        </ng-template>
+        <small class="help-text" *ngIf="loadingBoxAddresses"
+          >Loading IP addresses...</small
+        >
+        <small
+          class="help-text error-text"
+          *ngIf="!loadingBoxAddresses && availableBoxAddresses.length === 0"
+          >No IP addresses available. Please create box addresses first.</small
+        >
       </div>
-      
+
       <div class="form-group">
         <label for="monitors">Select Monitors</label>
-        <p-multiSelect 
+        <p-multiSelect
           id="monitors"
-          [options]="availableMonitors" 
+          [options]="availableMonitors"
           [(ngModel)]="newBox.monitorIds"
-          [ngModelOptions]="{standalone: true}"
+          [ngModelOptions]="{ standalone: true }"
           optionLabel="id"
           optionValue="id"
           placeholder="Select monitors"
           class="w-full"
           [showHeader]="false"
           [loading]="loadingMonitors"
-          [disabled]="loadingMonitors">
+          [disabled]="loadingMonitors"
+          [overlayOptions]="{ appendTo: 'body' }"
+          appendTo="body"
+        >
         </p-multiSelect>
-        <small class="help-text" *ngIf="loadingMonitors">Loading monitors...</small>
-        <small class="help-text error-text" *ngIf="!loadingMonitors && availableMonitors.length === 0">No monitors available. Please create monitors first.</small>
+        <ng-template pTemplate="empty">
+          <span>No monitors found.</span>
+        </ng-template>
+        <small class="help-text" *ngIf="loadingMonitors"
+          >Loading monitors...</small
+        >
+        <small
+          class="help-text error-text"
+          *ngIf="!loadingMonitors && availableMonitors.length === 0"
+          >No monitors available. Please create monitors first.</small
+        >
       </div>
-      
     </div>
-    
+
     <ng-template pTemplate="footer">
-      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="onCreateBoxModalClose()"></button>
-      <button pButton pRipple label="Create" icon="pi pi-check" (click)="onCreateBox()"></button>
+      <div class="container-buttons">
+        <button
+          pButton
+          pRipple
+          id="btnSecundario"
+          label="Cancel"
+          icon="pi pi-times"
+          class="p-button-text"
+          (click)="onCreateBoxModalClose()"
+        ></button>
+        <button
+          pButton
+          pRipple
+          label="Create"
+          icon="pi pi-check"
+          (click)="onCreateBox()"
+        ></button>
+      </div>
     </ng-template>
   </p-dialog>
 
   <!-- Modal de edição de box -->
-  <p-dialog 
+  <p-dialog
     header="Edit Box"
-    [(visible)]="editBoxModalVisible" 
-    [modal]="true" 
-    [style]="{width: '70vw', maxWidth: '600px'}" 
+    [(visible)]="editBoxModalVisible"
+    [modal]="true"
+    [style]="{ width: '70vw', maxWidth: '600px' }"
     [draggable]="false"
     [resizable]="false"
     [closeOnEscape]="true"
-    [dismissableMask]="true">
-    
+    [dismissableMask]="true"
+  >
     <div class="box-form" *ngIf="selectedBoxForEdit">
       <div class="form-group">
         <label for="editBoxAddress">IP Address *</label>
-        <p-select 
+        <p-select
           id="editBoxAddress"
-          [options]="availableBoxAddresses" 
+          [options]="availableBoxAddresses"
           [(ngModel)]="selectedBoxAddress"
-          [ngModelOptions]="{standalone: true}"
+          [ngModelOptions]="{ standalone: true }"
           optionLabel="ip"
           placeholder="Select an IP address"
           class="w-full"
           [loading]="loadingBoxAddresses"
           [disabled]="loadingBoxAddresses"
-          (onChange)="onEditBoxAddressChange($event.value)">
+          (onChange)="onEditBoxAddressChange($event.value)"
+        >
         </p-select>
-        <small class="help-text" *ngIf="loadingBoxAddresses">Loading IP addresses...</small>
-        <small class="help-text error-text" *ngIf="!loadingBoxAddresses && availableBoxAddresses.length === 0">No IP addresses available. Please create box addresses first.</small>
+        <ng-template pTemplate="empty">
+          <span>No IP address found.</span>
+        </ng-template>
+        <small class="help-text" *ngIf="loadingBoxAddresses"
+          >Loading IP addresses...</small
+        >
+        <small
+          class="help-text error-text"
+          *ngIf="!loadingBoxAddresses && availableBoxAddresses.length === 0"
+          >No IP addresses available. Please create box addresses first.</small
+        >
       </div>
-      
+
       <div class="form-group">
         <label for="editMonitors">Select Monitors</label>
-        <p-multiSelect 
+        <p-multiSelect
           id="editMonitors"
-          [options]="availableMonitors" 
+          [options]="availableMonitors"
           [(ngModel)]="selectedBoxForEdit.monitorIds"
-          [ngModelOptions]="{standalone: true}"
+          [ngModelOptions]="{ standalone: true }"
           optionLabel="id"
           optionValue="id"
           placeholder="Select monitors"
           class="w-full"
           [showHeader]="false"
           [loading]="loadingMonitors"
-          [disabled]="loadingMonitors">
+          [disabled]="loadingMonitors"
+          [overlayOptions]="{ appendTo: 'body' }"
+          appendTo="body"
+        >
         </p-multiSelect>
-        <small class="help-text" *ngIf="loadingMonitors">Loading monitors...</small>
-        <small class="help-text error-text" *ngIf="!loadingMonitors && availableMonitors.length === 0">No monitors available. Please create monitors first.</small>
+        <ng-template pTemplate="empty">
+          <span>No monitors found.</span>
+        </ng-template>
+        <small class="help-text" *ngIf="loadingMonitors"
+          >Loading monitors...</small
+        >
+        <small
+          class="help-text error-text"
+          *ngIf="!loadingMonitors && availableMonitors.length === 0"
+          >No monitors available. Please create monitors first.</small
+        >
       </div>
-      
     </div>
-    
+
     <ng-template pTemplate="footer">
-      <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="onEditBoxModalClose()"></button>
-      <button pButton pRipple label="Update" icon="pi pi-check" (click)="onEditBox()"></button>
+      <div class="container-buttons">
+        <button
+          pButton
+          pRipple
+          label="Cancel"
+          id="btnSecundario"
+          icon="pi pi-times"
+          class="p-button-text"
+          (click)="onEditBoxModalClose()"
+        ></button>
+        <button
+          pButton
+          pRipple
+          label="Update"
+          icon="pi pi-check"
+          (click)="onEditBox()"
+        ></button>
+      </div>
     </ng-template>
   </p-dialog>
 </div>

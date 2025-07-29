@@ -1,23 +1,23 @@
-import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { filter, Subject, Subscription, takeUntil, timer } from 'rxjs';
-import { Authentication } from '@app/core/service/auth/autenthication';
+import { ShowInRoutesDirective } from '@app/core/directives/show-in-routes.directive';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { SearchMonitorsService } from '@app/core/service/api/search-monitors.service';
-import { SidebarService } from '@app/core/service/state/sidebar.service';
-import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { NotificacaoState } from '@app/modules/notificacao/models';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { CheckoutListSideBarComponent } from '../checkout-list-side-bar/checkout-list-side-bar.component';
-import { LoadingService } from '@app/core/service/state/loading.service';
 import { ZipCodeService } from '@app/core/service/api/zipcode.service';
-import { AlertCounterComponent } from '../alert-counter/alert-counter.component';
+import { Authentication } from '@app/core/service/auth/autenthication';
+import { LoadingService } from '@app/core/service/state/loading.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { SidebarService } from '@app/core/service/state/sidebar.service';
+import { ToastService } from '@app/core/service/state/toast.service';
+import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
+import { NotificacaoState } from '@app/modules/notificacao/models';
 import { IconsModule } from '@app/shared/icons/icons.module';
-import { ShowInRoutesDirective } from '@app/core/directives/show-in-routes.directive';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { filter, Subject, Subscription, takeUntil, timer } from 'rxjs';
+import { AlertCounterComponent } from '../alert-counter/alert-counter.component';
+import { CheckoutListSideBarComponent } from '../checkout-list-side-bar/checkout-list-side-bar.component';
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;

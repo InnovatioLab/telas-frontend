@@ -10,11 +10,6 @@ label,
   color: var(--placeholder-color);
 }
 
-.text-error {
-  // font-size: 12px;
-  // font-weight: 400;
-}
-
 :host ::ng-deep {
   .input-form {
     height: 48px;

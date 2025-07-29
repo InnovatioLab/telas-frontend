@@ -1,5 +1,5 @@
 export interface Client {
-  id?: string; 
+  id?: string;
   businessName?: string;
   identificationNumber?: string;
   password?: string;
@@ -19,7 +19,8 @@ export interface Client {
   notifications?: Notification[];
   currentSubscriptionFlowStep?: number;
   cart?: CartResponse;
-
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface TermCondition {

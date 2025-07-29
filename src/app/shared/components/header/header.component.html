@@ -33,14 +33,14 @@
             </div>
 
             <div class="icons-container" *ngIf="isLogado()">
-              <button (click)="abrirCheckout()" class="icon-button" id="test-btn-checkout"
+              <button pButton (click)="abrirCheckout()" class="icon-button" id="test-btn-checkout"
                 pTooltip="View your saved places" tooltipPosition="bottom">
                 <app-icon-shopping-basket></app-icon-shopping-basket>
                 <span *ngIf="itensSalvos() > 0" class="badge flex justify-content-center align-items-center absolute">
                   {{ itensSalvos() }}</span>
               </button>
 
-              <button (click)="abrirNotificacoes()" class="icon-button" id="test-btn-notification"
+              <button pButton (click)="abrirNotificacoes()" class="icon-button" id="test-btn-notification"
                 pTooltip="View notifications" tooltipPosition="bottom">
                 <app-icon-notifications></app-icon-notifications>
                 <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
@@ -68,19 +68,19 @@
 
         <section class="box-actions main-actions mobile-only">
           <ng-container *ngIf="isLogado(); else deslogado">
-            <button id="link-administracao" *ngIf="isAdministrador()" pButton [rounded]="true" [text]="true"
+            <button class="icon-button" id="link-administracao" *ngIf="isAdministrador()" pButton [rounded]="true" [text]="true"
               (click)="redirecionarAdministracao()">
               <app-icon-settings></app-icon-settings>
             </button>
 
-            <button id="test-btn-checkout-mobile" (click)="abrirCheckout()" *ngIf="!isAdministrador()" pButton
+            <button class="icon-button" id="test-btn-checkout-mobile" (click)="abrirCheckout()" *ngIf="!isAdministrador()" pButton
               [rounded]="true" [text]="true">
               <app-icon-shopping-basket></app-icon-shopping-basket>
               <span *ngIf="itensSalvos() > 0" class="badge flex justify-content-center align-items-center absolute">
                 {{ itensSalvos() }}</span>
             </button>
 
-            <button id="test-btn-notification" (click)="abrirNotificacoes()" *ngIf="isAdministrador()" pButton
+            <button class="icon-button" id="test-btn-notification" (click)="abrirNotificacoes()" *ngIf="isAdministrador()" pButton
               [rounded]="true" [text]="true">
               <app-icon-notifications></app-icon-notifications>
               <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
@@ -88,7 +88,7 @@
             </button>
 
             <ng-container *ngIf="!isAdministrador()">
-              <button id="test-btn-notification" (click)="abrirNotificacoes()" pButton [rounded]="true" [text]="true">
+              <button class="icon-button" id="test-btn-notification" (click)="abrirNotificacoes()" pButton [rounded]="true" [text]="true">
                 <app-icon-notifications></app-icon-notifications>
                 <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
                   {{ itensNotificacao() }}</span>
@@ -125,13 +125,13 @@
 
           <div class="right-container">
             <div class="icons-container">
-              <button (click)="abrirNotificacoes()" class="icon-button" id="test-btn-notification-admin">
+              <button pButton (click)="abrirNotificacoes()" class="icon-button" id="test-btn-notification-admin">
                 <app-icon-notifications></app-icon-notifications>
                 <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
                   {{ itensNotificacao() }}</span>
               </button>
 
-              <button class="icon-button" (click)="redirecionarAdministracao()" id="link-administracao-mobile">
+              <button pButton class="icon-button" (click)="redirecionarAdministracao()" id="link-administracao-mobile">
                 <app-icon-settings></app-icon-settings>
               </button>
 
@@ -201,7 +201,7 @@
         <section class="box-actions main-actions desktop-only">
           <ng-container *ngIf="isLogado(); else deslogado">
             <button id="test-btn-checkout-desktop" (click)="abrirCheckout()" *ngIf="!isAdministrador()" pButton
-              [rounded]="true" [text]="true" pTooltip="View your saved places" tooltipPosition="bottom">
+              [rounded]="true" [text]="true" pTooltip="View your saved places" tooltipPosition="bottom" class="icon-button">
               <app-icon-shopping-basket class="icon cursor-pointer"></app-icon-shopping-basket>
               <span *ngIf="itensSalvos() > 0" class="badge flex justify-content-center align-items-center absolute">
                 {{ itensSalvos() }}</span>
@@ -214,14 +214,14 @@
               [toggleSidebar]="toggleAdminSidebar.bind(this)">
             </app-alert-counter>
 
-            <button id="link-administracao" *ngIf="isAdministrador()" pButton [rounded]="true" [text]="true"
+            <button class="icon-button" id="link-administracao" *ngIf="isAdministrador()" pButton [rounded]="true" [text]="true"
               (click)="redirecionarAdministracao()" pTooltip="Admin settings" tooltipPosition="bottom">
               <app-icon-settings class="icon cursor-pointer icon-fill"></app-icon-settings>
             </button>
 
             <ng-container *ngIf="!isAdministrador()">
               <button id="test-btn-notification" (click)="abrirNotificacoes()" pButton [rounded]="true" [text]="true"
-                pTooltip="View notifications" tooltipPosition="bottom">
+                pTooltip="View notifications" tooltipPosition="bottom" class="icon-button">
                 <app-icon-notifications class="icon cursor-pointer"></app-icon-notifications>
                 <span *ngIf="itensNotificacao()" class="badge flex justify-content-center align-items-center absolute">
                   {{ itensNotificacao() }}</span>

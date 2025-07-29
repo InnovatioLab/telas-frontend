@@ -14,16 +14,11 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { MessageService } from "primeng/api";
 
 @Component({
-  selector: 'app-management-boxes',
+  selector: "app-management-boxes",
   standalone: true,
-  imports: [
-    CommonModule,
-    PrimengModule,
-    FormsModule,
-    IconsModule,
-  ],
-  templateUrl: './management-boxes.component.html',
-  styleUrls: ['./management-boxes.component.scss']
+  imports: [CommonModule, PrimengModule, FormsModule, IconsModule],
+  templateUrl: "./management-boxes.component.html",
+  styleUrls: ["./management-boxes.component.scss"],
 })
 export class ManagementBoxesComponent implements OnInit {
   boxes: Box[] = [];
@@ -33,25 +28,25 @@ export class ManagementBoxesComponent implements OnInit {
   loading = false;
   createBoxModalVisible = false;
   editBoxModalVisible = false;
-  searchTerm = '';
+  searchTerm = "";
   totalRecords = 0;
   private isSorting = false;
-  
+
   newBox: BoxRequestDto = {
-    boxAddressId: '',
+    boxAddressId: "",
     monitorIds: [],
-    active: true
+    active: true,
   };
-  
+
   availableMonitors: MonitorBoxMinResponseDto[] = [];
   loadingMonitors = false;
   loadingBoxAddresses = false;
-  
+
   currentFilters: FilterBoxRequestDto = {
     page: 1,
     size: 10,
-    sortBy: 'active',
-    sortDir: 'desc'
+    sortBy: "active",
+    sortDir: "desc",
   };
 
   constructor(
@@ -67,12 +62,12 @@ export class ManagementBoxesComponent implements OnInit {
 
   loadInitialData(): void {
     this.loading = true;
-    
+
     const filters: FilterBoxRequestDto = { ...this.currentFilters };
     if (this.searchTerm.trim()) {
       filters.genericFilter = this.searchTerm.trim();
     }
-    
+
     this.boxService.getBoxesWithPagination(filters).subscribe({
       next: (result) => {
         this.boxes = result.list;
@@ -80,9 +75,9 @@ export class ManagementBoxesComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        this.toastService.erro('Error loading boxes');
+        this.toastService.erro("Error loading boxes");
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -94,9 +89,9 @@ export class ManagementBoxesComponent implements OnInit {
         this.loadingBoxAddresses = false;
       },
       error: (error) => {
-        this.toastService.erro('Error loading box addresses');
+        this.toastService.erro("Error loading box addresses");
         this.loadingBoxAddresses = false;
-      }
+      },
     });
   }
 
@@ -108,9 +103,9 @@ export class ManagementBoxesComponent implements OnInit {
         this.loadingMonitors = false;
       },
       error: (error) => {
-        this.toastService.erro('Error loading monitors');
+        this.toastService.erro("Error loading monitors");
         this.loadingMonitors = false;
-      }
+      },
     });
   }
 
@@ -128,12 +123,12 @@ export class ManagementBoxesComponent implements OnInit {
 
   loadBoxes(): void {
     this.loading = true;
-    
+
     const filters: FilterBoxRequestDto = { ...this.currentFilters };
     if (this.searchTerm.trim()) {
       filters.genericFilter = this.searchTerm.trim();
     }
-    
+
     this.boxService.getBoxesWithPagination(filters).subscribe({
       next: (result) => {
         this.boxes = result.list;
@@ -142,10 +137,10 @@ export class ManagementBoxesComponent implements OnInit {
         this.isSorting = false;
       },
       error: (error) => {
-        this.toastService.erro('Error loading boxes');
+        this.toastService.erro("Error loading boxes");
         this.loading = false;
         this.isSorting = false;
-      }
+      },
     });
   }
 
@@ -164,25 +159,28 @@ export class ManagementBoxesComponent implements OnInit {
     if (this.isSorting || this.loading) {
       return;
     }
-    
+
     const newSortBy = event.field;
-    const newSortDir = event.order === 1 ? 'asc' : 'desc';
-    
-    if (this.currentFilters.sortBy === newSortBy && this.currentFilters.sortDir === newSortDir) {
+    const newSortDir = event.order === 1 ? "asc" : "desc";
+
+    if (
+      this.currentFilters.sortBy === newSortBy &&
+      this.currentFilters.sortDir === newSortDir
+    ) {
       return;
     }
-    
+
     this.isSorting = true;
     this.currentFilters.sortBy = event.field;
-    this.currentFilters.sortDir = event.order === 1 ? 'asc' : 'desc';
+    this.currentFilters.sortDir = event.order === 1 ? "asc" : "desc";
     this.loadBoxes();
   }
 
   openCreateBoxModal(): void {
     this.newBox = {
-      boxAddressId: '',
+      boxAddressId: "",
       monitorIds: [],
-      active: true
+      active: true,
     };
     this.selectedBoxAddress = null;
     this.loadAvailableBoxAddresses();
@@ -191,38 +189,36 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   onCreateBox(): void {
-    
     if (!this.newBox.boxAddressId) {
       this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Box Address is required'
+        severity: "error",
+        summary: "Error",
+        detail: "Box Address is required",
       });
       return;
     }
-    
+
     this.createBox(this.newBox);
   }
 
   createBox(boxRequest: BoxRequestDto): void {
-    
     this.boxService.createBox(boxRequest).subscribe({
       next: (newBox) => {
         this.closeModal();
         this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Box created successfully!'
+          severity: "success",
+          summary: "Success",
+          detail: "Box created successfully!",
         });
         this.loadBoxes();
       },
       error: (error) => {
         this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error creating box. Please check the data and try again.'
+          severity: "error",
+          summary: "Error",
+          detail: "Error creating box. Please check the data and try again.",
         });
-      }
+      },
     });
   }
 
@@ -240,36 +236,38 @@ export class ManagementBoxesComponent implements OnInit {
 
   onEditBox(): void {
     if (!this.selectedBoxForEdit) return;
-    
+
     if (!this.selectedBoxForEdit.boxAddressId) {
       this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Box Address is required'
+        severity: "error",
+        summary: "Error",
+        detail: "Box Address is required",
       });
       return;
     }
-    
+
     this.updateBox({
       id: this.selectedBoxForEdit.id,
       data: {
         boxAddressId: this.selectedBoxForEdit.boxAddressId,
         monitorIds: this.selectedBoxForEdit.monitorIds,
-        active: this.selectedBoxForEdit.active
-      }
+        active: this.selectedBoxForEdit.active,
+      },
     });
   }
 
   onSelectBox(box: Box): void {
     this.selectedBoxForEdit = { ...box };
     this.selectedBoxAddress = null;
-    
-    const boxAddress = this.availableBoxAddresses.find(addr => addr.ip === box.ip);
+
+    const boxAddress = this.availableBoxAddresses.find(
+      (addr) => addr.ip === box.ip
+    );
     if (boxAddress) {
       this.selectedBoxAddress = boxAddress;
       this.selectedBoxForEdit.boxAddressId = boxAddress.id;
     }
-    
+
     this.loadAvailableBoxAddresses();
     this.loadAvailableMonitors();
     this.editBoxModalVisible = true;
@@ -281,19 +279,19 @@ export class ManagementBoxesComponent implements OnInit {
         this.editBoxModalVisible = false;
         this.selectedBoxForEdit = null;
         this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Box updated successfully!'
+          severity: "success",
+          summary: "Success",
+          detail: "Box updated successfully!",
         });
         this.loadBoxes();
       },
       error: (error) => {
         this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error updating box. Please check the data and try again.'
+          severity: "error",
+          summary: "Error",
+          detail: "Error updating box. Please check the data and try again.",
         });
-      }
+      },
     });
   }
 
@@ -311,26 +309,26 @@ export class ManagementBoxesComponent implements OnInit {
       next: (success) => {
         if (success) {
           this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Box deleted successfully!'
+            severity: "success",
+            summary: "Success",
+            detail: "Box deleted successfully!",
           });
           this.loadBoxes();
         } else {
           this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error deleting box.'
+            severity: "error",
+            summary: "Error",
+            detail: "Error deleting box.",
           });
         }
       },
       error: (error) => {
         this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error deleting box.'
+          severity: "error",
+          summary: "Error",
+          detail: "Error deleting box.",
         });
-      }
+      },
     });
   }
 

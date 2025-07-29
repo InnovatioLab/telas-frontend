@@ -27,21 +27,6 @@ label {
 
     .resend-button {
       background-color: var(--cor-primaria) !important;
-      border-radius: 8px;
-      font-weight: 600;
     }
-  }
-}
-
-.custom-button {
-  height: 48px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-
-  &:disabled {
-    background-color: var(--color-disabled-fundo-botao);
-    color: var(--color-disabled-text-botao);
-    border: 1px solid var(--color-disabled-borda-botao);
   }
 }

@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IconWarningComponent } from '../../icons/warning.icon';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { IconWarningComponent } from '../../icons/warning.icon';
 
 interface AlertCountEvent {
   count: number;

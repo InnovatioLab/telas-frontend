@@ -55,7 +55,7 @@
   }
 
   .dialogo-descricao {
-    font-size: var(--fonte-tamanho-grande);
+    font-size: 1rem !important;
     font-weight: var(--fonte-peso-medio);
     line-height: 35.2px;
     text-align: center;
@@ -72,40 +72,6 @@
 
     &.space-between {
       justify-content: space-between;
-    }
-  }
-
-  #btnPrimario,
-  #btnSecundario {
-    font-family: var(--fonte-familia);
-    font-size: var(--fonte-tamanho-medio);
-    font-weight: var(--fonte-peso-medio);
-    min-width: var(--largura-botao-padrao);
-    height: var(--altura-botao);
-    gap: 10px;
-    padding: 10px;
-    border-radius: var(--borda-raio-padrao);
-    transition: var(--transicao-padrao);
-  }
-
-  #btnPrimario {
-    background-color: var(--cor-primaria-escura);
-    color: var(--cor-branca);
-
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-
-  #btnSecundario {
-    border: 1px solid var(--cor-primaria-escura);
-    background: var(--cor-branca);
-    color: var(--cor-primaria-escura);
-
-    &:hover {
-      color: var(--cor-branca);
-      background-color: var(--cor-primaria-clara);
-      border-color: var(--cor-primaria-clara);
     }
   }
 

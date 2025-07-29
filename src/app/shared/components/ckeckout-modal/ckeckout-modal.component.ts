@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PrimengModule } from '../../primeng/primeng.module';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { FormatarPreco } from '@app/shared/pipes/preco.pipe';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
 import { LoadingService } from '@app/core/service/state/loading.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { FormatarPreco } from '@app/shared/pipes/preco.pipe';
+import { PrimengModule } from '../../primeng/primeng.module';
 
 enum StepEnum {
   REVIEW = 1,

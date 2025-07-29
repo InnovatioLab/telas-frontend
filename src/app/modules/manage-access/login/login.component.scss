@@ -26,9 +26,6 @@
   }
 
   .descricao {
-    font-size: 40px;
-    font-weight: 400;
-    color: var(--cor-cinza-claro);
     text-align: center;
     display: flex;
     align-items: center;
@@ -83,15 +80,6 @@
   }
 
   @media screen and (max-width: 700px) {
-    .titulo {
-      font-size: 18px;
-    }
-
-    .descricao {
-      font-size: 12px;
-      font-weight: 400;
-    }
-
     .botao-entrar,
     .btn-outline {
       height: 48px;

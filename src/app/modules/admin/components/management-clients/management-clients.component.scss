@@ -98,10 +98,10 @@
 }
 
 .container {
-  margin-top: 70px;
+  margin-top: 60px !important;
   padding: var(--espacamento-medio);
-  max-width: var(--largura-max-card-grande);
-  margin: 0 auto;
+  // max-width: var(--largura-max-card-grande);
+  // margin: 0 auto;
 
   .content {
     .card-header {

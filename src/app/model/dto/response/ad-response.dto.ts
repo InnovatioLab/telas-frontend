@@ -1,4 +1,4 @@
-import { AdValidationType } from '@app/model/client';
+import { AdValidationType } from "@app/model/client";
 
 export interface AdResponseDto {
   id: string;
