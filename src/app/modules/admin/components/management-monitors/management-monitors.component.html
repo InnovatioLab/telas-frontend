@@ -5,12 +5,12 @@
         <i class="pi pi-search"></i>
         <div class="p-card-content">
           <span class="p-input-icon-left">
-             <app-icon-search style="color: #496382"></app-icon-search>
+            <app-icon-search style="color: #496382"></app-icon-search>
             <input
               type="text"
-              style="width: 250px;"
+              style="width: 320px"
               pInputText
-              placeholder="Search monitors..."
+              placeholder="Search by address, status, type or size"
               [(ngModel)]="searchTerm"
               [ngModelOptions]="{ standalone: true }"
               (keyup.enter)="onSearch()"
@@ -47,9 +47,15 @@
     >
       <ng-template pTemplate="header">
         <tr>
-          <th scope="col">Name</th>
+          <th scope="col">Id</th>
           <th scope="col" pSortableColumn="active">
             Status <p-sortIcon field="active"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="size">
+            Size <p-sortIcon field="size"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="type">
+            Type <p-sortIcon field="type"></p-sortIcon>
           </th>
           <th scope="col">Address</th>
           <th scope="col">Actions</th>
@@ -58,14 +64,24 @@
 
       <ng-template pTemplate="body" let-monitor>
         <tr>
-          <td>{{ monitor.name || "Monitor " + monitor.id.substring(0, 8) }}</td>
+          <td>{{ monitor.id }}</td>
           <td>
             <p-badge
               [value]="monitor.active ? 'Active' : 'Inactive'"
               [severity]="monitor.active ? 'success' : 'danger'"
             ></p-badge>
           </td>
+          <td>{{ monitor.size + " in." }}</td>
+          <td>
+            {{
+              monitor.type && monitor.type.length
+                ? monitor.type.charAt(0).toUpperCase() +
+                  monitor.type.slice(1).toLowerCase()
+                : ""
+            }}
+          </td>
           <td>{{ getMonitorAddress(monitor) }}</td>
+
           <td>
             <div class="action-buttons">
               <button

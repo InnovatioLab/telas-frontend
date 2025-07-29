@@ -3,7 +3,6 @@ import { Address, DefaultStatus } from "./client";
 export enum MonitorType {
   BASIC = 'BASIC',
   PREMIUM = 'PREMIUM',
-  ADVANCED = 'ADVANCED'
 }
 
 export interface Monitor {
