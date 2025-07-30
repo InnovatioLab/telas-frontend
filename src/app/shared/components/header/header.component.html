@@ -50,6 +50,22 @@
           </div>
         </div>
 
+        <div class="search-container" *ngIf="isLogado() && isInAllowedRoutes()">
+          <div class="address-search-container">
+            <div class="address-search-input">
+              <input type="text" pInputText [(ngModel)]="searchText" [ngModelOptions]="{standalone: true}" placeholder="Search for an address" maxlength="50"
+                id="inp-pesquisar" (keydown.enter)="searchAddress()" (ngModelChange)="onInputChange()" />
+              <button type="button" class="botao-pesquisa" [disabled]="isSearching || !searchText"
+                (click)="searchAddress()" aria-label="Search" pTooltip="Search address" tooltipPosition="left"
+                id="btn-pesquisar">
+                <span *ngIf="isSearching" class="spinner-border spinner-border-sm" role="status"
+                  aria-hidden="true"></span>
+                <app-icon-search *ngIf="!isSearching"></app-icon-search>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <section class="box-actions main-actions mobile-only">
           <ng-container *ngIf="isLogado(); else deslogado">
             <button class="icon-button" id="link-administracao" *ngIf="isAdministrador()" pButton [rounded]="true" [text]="true"
