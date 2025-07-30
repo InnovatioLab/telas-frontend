@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { CardModule } from 'primeng/card';
-import { Client, DefaultStatus, Address } from '@app/model/client';
+import { Client, Role, DefaultStatus, Address } from '@app/model/client';
 import { ClientRequestDTO, AddressRequestDTO } from '@app/model/dto/request/client-request.dto';
 import { ClientService } from '@app/core/service/api/client.service';
 import { ToastService } from '@app/core/service/state/toast.service';
@@ -176,8 +176,12 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
                 </small>
               </div>
             </div>
-            <div class="form-row">
-              <div class="form-field">
+          </div>
+
+          <div class="form-section">
+            <h4>Status</h4>
+            <div class="form-row status-row">
+              <div class="form-field full-width">
                 <label for="status">Status</label>
                 <p-dropdown 
                   id="status"
@@ -188,7 +192,6 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
                   optionValue="value">
                 </p-dropdown>
               </div>
-              <div class="form-field"></div>
             </div>
           </div>
 
@@ -207,7 +210,7 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
                   </button>
                 </div>
                 <div class="form-row">
-                  <div class="form-field full-width">
+                  <div class="form-field">
                     <label>Street</label>
                     <input 
                       type="text" 
@@ -268,7 +271,6 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
                       placeholder="Enter ZIP code" 
                       (ngModelChange)="onZipCodeChange(address, $event)" />
                   </div>
-                  <div class="form-field"></div>
                 </div>
               </div>
               <div class="add-address-btn">
@@ -342,9 +344,12 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .form-row.status-row {
+      grid-template-columns: 1fr;
     }
     
     .form-field.full-width {
@@ -359,16 +364,12 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      min-height: 80px;
     }
     
     .form-field label {
       font-weight: var(--fonte-peso-medio);
       color: var(--cor-cinza-escuro);
       font-size: var(--fonte-tamanho-padrao);
-      margin-bottom: 0.5rem;
-      display: block;
-      line-height: 1.4;
     }
     
     .form-field label.required::after {
@@ -379,23 +380,6 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
     .form-field input,
     .form-field p-dropdown {
       width: 100%;
-      height: 40px;
-      box-sizing: border-box;
-    }
-    
-    .form-field input {
-      padding: 0.75rem;
-      border: 1px solid var(--cor-cinza-medio);
-      border-radius: var(--borda-raio-pequeno);
-      font-size: var(--fonte-tamanho-padrao);
-      line-height: 1.4;
-      transition: var(--transicao-rapida);
-    }
-    
-    .form-field input:focus {
-      outline: none;
-      border-color: var(--cor-primaria);
-      box-shadow: 0 0 0 2px rgba(var(--cor-primaria-rgb), 0.1);
     }
     
     .form-field input.ng-invalid {
@@ -467,13 +451,13 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
     .addresses-container {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1rem;
     }
     
     .address-item {
       border: 1px solid var(--cor-cinza-medio);
       border-radius: var(--borda-raio-pequeno);
-      padding: 1.5rem;
+      padding: 1rem;
       background-color: var(--cor-cinza-fundo);
     }
     
@@ -481,8 +465,8 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--cor-cinza-medio);
     }
     
@@ -546,7 +530,6 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
       
       .form-row {
         grid-template-columns: 1fr;
-        gap: 1rem;
       }
       
       .form-section {
@@ -554,40 +537,7 @@ import { IconUploadComponent } from '@app/shared/icons/upload.icon';
       }
       
       .address-item {
-        padding: 1rem;
-      }
-      
-      .form-field {
-        min-height: 70px;
-      }
-      
-      .form-actions {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      
-      .form-actions button {
-        width: 100%;
-        min-width: unset;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .edit-client-modal {
         padding: 0.75rem;
-      }
-      
-      .form-section {
-        padding: 0.75rem;
-      }
-      
-      .address-item {
-        padding: 0.75rem;
-      }
-      
-      .form-field input {
-        padding: 0.5rem;
-        font-size: 14px;
       }
     }
   `]
@@ -604,13 +554,13 @@ export class EditClientModalComponent implements OnInit {
   ];
 
   constructor(
-    private readonly fb: FormBuilder,
-    private readonly clientService: ClientService,
-    private readonly toastService: ToastService,
-    private readonly zipCodeService: ZipCodeService,
+    private fb: FormBuilder,
+    private clientService: ClientService,
+    private toastService: ToastService,
+    private zipCodeService: ZipCodeService,
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
-    private readonly cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {
     this.client = config.data.client;
   }
@@ -660,7 +610,7 @@ export class EditClientModalComponent implements OnInit {
   }
 
   private populateAddresses(): void {
-    if (this.client?.addresses?.length) {
+    if (this.client && this.client.addresses && this.client.addresses.length > 0) {
       this.addresses = this.client.addresses.map((addr, index) => {
         const mappedAddr = {
           id: addr.id,
@@ -732,9 +682,9 @@ export class EditClientModalComponent implements OnInit {
         .filter(addr => addr.street && addr.city)
         .map(addr => ({
           id: addr.id,
-          street: addr.street,
+          street: addr.street!,
           zipCode: addr.zipCode || '',
-          city: addr.city,
+          city: addr.city!,
           state: addr.state || '',
           country: addr.country || '',
           complement: addr.complement,
@@ -762,7 +712,7 @@ export class EditClientModalComponent implements OnInit {
         addresses: addressesDTO
       };
 
-      this.clientService.editar(this.client.id || '', clientRequest).subscribe({
+      this.clientService.editar(this.client.id!, clientRequest).subscribe({
         next: (response) => {
           this.toastService.sucesso('Client updated successfully');
           this.ref.close({ success: true, client: { ...this.client, ...formValue } });

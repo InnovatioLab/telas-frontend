@@ -3,7 +3,7 @@ import { Component, OnInit } from "@angular/core";
 import { AdService } from "@app/core/service/api/ad.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { AdValidationType } from "@app/model/client";
-import { AdResponseDto } from "@app/model/dto/response/ad-request-response.dto";
+import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { TableComponent } from "@app/shared/components/table/table.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { IColumn } from "@app/shared/utils/table.utils";

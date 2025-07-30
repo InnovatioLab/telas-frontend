@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Page } from "@app/model/dto/page.dto";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
 import { ResponseDTO } from "@app/model/dto/response.dto";
-import { AdResponseDto } from "@app/model/dto/response/ad-request-response.dto";
+import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
