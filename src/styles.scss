@@ -354,6 +354,22 @@ td {
   }
 }
 
+.p-tablist-tab-list {
+  .p-ripple {
+    color: var(--cor-cinza-escuro) !important;
+
+    &:hover:not(.p-tab-active) {
+      background: var(--cor-cinza-fundo) !important;
+      color: var(--cor-cinza-escuro) !important;
+    }
+  }
+
+  .p-tab-active {
+    background-color: var(--cor-primaria-clara) !important;
+    color: var(--cor-branca) !important;
+  }
+}
+
 .p-dropdown-label {
   display: block;
   white-space: nowrap;
@@ -924,8 +940,6 @@ textarea {
 }
 
 .p-select {
-  display: flex;
-  align-items: center;
   width: 100%;
   min-height: var(--altura-input);
   border: 1px solid var(--cor-cinza-medio) !important;
@@ -934,7 +948,7 @@ textarea {
   font-weight: var(--fonte-peso-regular);
   color: var(--cor-cinza-escuro) !important;
   background-color: transparent !important;
-  // padding: var(--espacamento-pequeno) var(--espacamento-padrao);
+  padding: var(--espacamento-pequeno) var(--espacamento-padrao);
   transition: border-color 0.2s;
 
   .p-select-label {
@@ -951,6 +965,7 @@ textarea {
     border: 0 none;
     outline: 0 none;
     cursor: pointer;
+    padding: 0px !important;
 
     &.p-placeholder {
       color: var(--cor-legenda) !important;
@@ -969,9 +984,11 @@ textarea {
     font-size: 1.25rem;
   }
 
-  &.p-focus {
+  &.p-focus,
+  &:focus {
     border-color: var(--cor-primaria) !important;
     box-shadow: none !important;
+    outline: none;
   }
 
   &.p-disabled {
@@ -1024,26 +1041,26 @@ textarea {
 }
 
 .p-select-label.p-placeholder {
-  color: var(--cor-legenda) !important;
+  color: var(--cor-legenda);
 }
 
 .p-select.p-disabled .p-select-label {
-  color: var(--cor-branca) !important;
+  color: var(--cor-branca);
 }
 
 .p-select:not(.p-disabled).p-focus {
-  border-color: var(--cor-primaria) !important;
-  box-shadow: none !important;
+  border-color: var(--cor-primaria);
+  box-shadow: none;
 }
 
 .p-select-item.p-highlight {
-  background-color: var(--cor-primaria) !important;
-  color: var(--cor-branca) !important;
+  background-color: var(--cor-primaria);
+  color: var(--cor-branca);
 }
 
 .p-select-item.p-focus {
-  background-color: var(--cor-primaria-clara) !important;
-  color: var(--cor-branca) !important;
+  background-color: var(--cor-primaria-clara);
+  color: var(--cor-branca);
 }
 
 textarea {
@@ -1201,7 +1218,7 @@ textarea {
     color: var(--cor-legenda);
     font-weight: var(--fonte-peso-regular) !important;
     font-size: var(--fonte-tamanho-padrao) !important;
-    padding: 0 0 0 var(--espacamento-padrao) !important;
+    // padding: 0 0 0 var(--espacamento-padrao) !important;
     display: flex;
     align-items: center;
   }
@@ -1232,7 +1249,7 @@ textarea {
     .p-select-item {
       color: var(--cor-cinza-escuro) !important;
       border: none;
-      // padding: var(--espacamento-pequeno) var(--espacamento-padrao);
+      padding: var(--espacamento-pequeno) var(--espacamento-padrao);
       font-size: var(--fonte-tamanho-pequeno);
 
       &:hover {
@@ -1317,7 +1334,7 @@ h5 {
 p {
   margin-top: 0;
   margin-bottom: 1rem;
-  font-size: var(--fonte-tamanho-medio);
+  font-size: 1rem !important;
   font-weight: var(--fonte-peso-regular);
   line-height: 1.5;
 }
@@ -1839,6 +1856,12 @@ label.required::after {
 .ng-dirty.ng-invalid > .p-chips > .p-inputtext,
 .ng-dirty.ng-invalid > .p-dropdown,
 .ng-touched.ng-invalid > .p-dropdown,
+.ng-dirty.ng-invalid > .p-select,
+.ng-touched.ng-invalid > .p-select,
+.ng-dirty.ng-invalid > .p-select.p-focus,
+.ng-touched.ng-invalid > .p-select.p-focus,
+.ng-dirty.ng-invalid > .p-select.p-hover,
+.ng-touched.ng-invalid > .p-select.p-hover,
 .ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext,
 .ng-touched.ng-invalid > .p-inputnumber > .p-inputtext,
 .ng-dirty.ng-invalid > .p-inputswitch,
@@ -1862,6 +1885,20 @@ label.required::after {
 .ng-dirty.ng-invalid > .p-chips > .p-inputtext:focus,
 .ng-dirty.ng-invalid > .p-dropdown:focus,
 .ng-touched.ng-invalid > .p-dropdown:focus,
+.ng-dirty.ng-invalid > .p-select.p-focus,
+.ng-touched.ng-invalid > .p-select.p-focus,
+.ng-dirty.ng-invalid > .p-select.p-hover,
+.ng-touched.ng-invalid > .p-select.p-hover,
+.ng-dirty.ng-invalid > .p-dropdown.p-focus,
+.ng-touched.ng-invalid > .p-dropdown.p-focus,
+.ng-dirty.ng-invalid > .p-select.p-focus.p-inputwrapper-focus,
+.ng-touched.ng-invalid > .p-select.p-focus.p-inputwrapper-focus,
+.ng-dirty.ng-invalid > .p-dropdown.p-focus.p-inputwrapper-focus,
+.ng-touched.ng-invalid > .p-dropdown.p-focus.p-inputwrapper-focus,
+.ng-dirty.ng-invalid > .p-select:focus,
+.ng-touched.ng-invalid > .p-select:focus,
+.ng-dirty.ng-invalid > .p-select:focus-within,
+.ng-touched.ng-invalid > .p-select:focus-within,
 .ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext:focus,
 .ng-touched.ng-invalid > .p-inputnumber > .p-inputtext:focus,
 .ng-dirty.ng-invalid > .p-inputswitch:focus,
@@ -1883,6 +1920,10 @@ label.required::after {
 .ng-dirty.ng-invalid > .p-chips > .p-inputtext:hover,
 .ng-dirty.ng-invalid > .p-dropdown:hover,
 .ng-touched.ng-invalid > .p-dropdown:hover,
+.ng-dirty.ng-invalid > .p-select:hover,
+.ng-touched.ng-invalid > .p-select:hover,
+.ng-dirty.ng-invalid > .p-select.p-hover,
+.ng-touched.ng-invalid > .p-select.p-hover,
 .ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext:hover,
 .ng-touched.ng-invalid > .p-inputnumber > .p-inputtext:hover,
 .ng-dirty.ng-invalid > .p-inputswitch:hover,
@@ -1896,7 +1937,35 @@ label.required::after {
 .ng-dirty.ng-invalid > .p-selectbutton > .p-button:hover,
 .ng-dirty.ng-invalid > .p-togglebutton.p-button:hover,
 .ng-invalid.ng-dirty > .p-treeselect:hover,
-.p-inputwrapper.invalid > .p-inputnumber > .p-inputtext:hover {
+.p-inputwrapper.invalid > .p-inputnumber > .p-inputtext:hover,
+.p-dropdown.ng-invalid:not(form).ng-dirty.ng-invalid,
+.p-select.ng-invalid:not(form).ng-dirty.ng-invalid,
+.p-dropdown.ng-invalid:not(form).ng-touched.ng-invalid,
+.p-select.ng-invalid:not(form).ng-touched.ng-invalid,
+.p-dropdown.ng-invalid.ng-touched.ui-inputwrapper-focus:not(
+    form
+  ).ng-dirty.ng-invalid,
+.p-select.ng-invalid.ng-touched.ui-inputwrapper-focus:not(
+    form
+  ).ng-dirty.ng-invalid,
+.p-dropdown.ng-invalid.ng-touched.ui-inputwrapper-focus:not(
+    form
+  ).ng-touched.ng-invalid,
+.p-select.ng-invalid.ng-touched.ui-inputwrapper-focus:not(
+    form
+  ).ng-touched.ng-invalid,
+.p-dropdown.ng-invalid.ng-untouched.ui-inputwrapper-focus:not(
+    form
+  ).ng-dirty.ng-invalid,
+.p-select.ng-invalid.ng-untouched.ui-inputwrapper-focus:not(
+    form
+  ).ng-dirty.ng-invalid,
+.p-dropdown.ng-invalid.ng-untouched.ui-inputwrapper-focus:not(
+    form
+  ).ng-touched.ng-invalid,
+.p-select.ng-invalid.ng-untouched.ui-inputwrapper-focus:not(
+    form
+  ).ng-touched.ng-invalid {
   border-color: var(--cor-erro) !important;
 }
 
@@ -1931,7 +2000,6 @@ label.required::after {
 .ads-content {
   max-width: 100%;
   box-sizing: border-box;
-  padding: 0 1rem;
   display: flex;
   gap: 32px;
   flex-wrap: wrap;
@@ -2135,4 +2203,21 @@ label.required::after {
   @include responsive("mobile") {
     font-size: 12px;
   }
+}
+
+.p-tabs,
+.p-tabpanels,
+.p-tablist-tab-list,
+.p-fileupload-advanced {
+  background: transparent !important;
+  color: var(--cor-primaria) !important;
+}
+
+.p-fileupload-advanced {
+  border: none !important;
+}
+
+.p-fileupload-header {
+  padding-left: 0px;
+  padding-right: 0px;
 }

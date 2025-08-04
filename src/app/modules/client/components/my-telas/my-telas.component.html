@@ -1,29 +1,511 @@
-<div class="my-telas-container">
-  <div class="header">
-    <h1>My Telas</h1>
-    <p class="subtitle">Manage your ad campaigns and track their performance</p>
-  </div>
-
+<div class="container">
   <div class="content">
     <p-tabView (onChange)="onTabChange($event)" [activeIndex]="activeTabIndex">
-      <p-tabPanel *ngFor="let tab of tabs" [header]="tab.label">
-        <div class="tab-content">
-          <app-table 
-            [value]="ads"
-            [colunas]="tableColumns"
-            [buscaPaginada]="true"
-            [totalRegistros]="totalRecords"
-            [rows]="pageSize"
-            [first]="first"
-            [header]="'Your ' + tab.label + ' Advertisements'"
-            [subheader]="'Showing all your ' + tab.label.toLowerCase() + ' advertisements'"
-            [mensagemEmpty]="'No ' + tab.label.toLowerCase() + ' advertisements found'"
-            (pageChange)="onPageChange($event)"
-            (visualizar)="viewAd($event)"
-            (editar)="editAd($event)">
-          </app-table>
+      <!-- Tab 1: Attachments -->
+      <p-tabPanel header="Attachments">
+        <div class="attachments-content">
+          <div class="upload-section">
+            <h3>Upload de Arquivos</h3>
+            <p>
+              Upload up to 3 files at once in the following formats: JPG, PNG,
+              GIF, SVG, BMP, TIFF (maximum 10MB each). You can select multiple
+              files in one upload.
+            </p>
+
+            <p-fileUpload
+              [multiple]="true"
+              [accept]="acceptedFileTypes"
+              [maxFileSize]="maxFileSize"
+              [customUpload]="true"
+              (uploadHandler)="onFileUpload($event)"
+              [disabled]="clientAttachments.length >= maxAttachments || loading"
+              chooseLabel="Select files"
+              uploadLabel="Upload"
+              cancelLabel="Cancel"
+              [auto]="false"
+              [fileLimit]="maxFilesPerUpload"
+            >
+            </p-fileUpload>
+
+            <!-- Preview dos arquivos selecionados -->
+            <div *ngIf="uploadPreviews.length > 0" class="files-preview">
+              <h5>Preview dos arquivos:</h5>
+              <div class="preview-grid">
+                <div
+                  *ngFor="let preview of uploadPreviews; let i = index"
+                  class="preview-item"
+                >
+                  <div class="preview-container">
+                    <img
+                      *ngIf="selectedFiles[i]?.type.startsWith('image/')"
+                      [src]="preview"
+                      [alt]="'Preview do arquivo ' + selectedFiles[i]?.name"
+                      class="preview-image"
+                    />
+                    <video
+                      *ngIf="selectedFiles[i]?.type.startsWith('video/')"
+                      [src]="preview"
+                      controls
+                      class="preview-video"
+                    ></video>
+                    <div
+                      *ngIf="
+                        !selectedFiles[i]?.type.startsWith('image/') &&
+                        !selectedFiles[i]?.type.startsWith('video/')
+                      "
+                      class="preview-file-info"
+                    >
+                      <span
+                        class="pi pi-file"
+                        style="color: var(--cor-primaria)"
+                      ></span>
+                      <span>{{ selectedFiles[i]?.name }}</span>
+                    </div>
+                  </div>
+                  <div class="file-name">{{ selectedFiles[i]?.name }}</div>
+                </div>
+              </div>
+
+              <!-- Botões de confirmação/cancelamento do upload -->
+              <div class="upload-actions">
+                <button
+                  pButton
+                  label="Confirm Upload"
+                  icon="pi pi-upload"
+                  (click)="confirmUpload()"
+                  [disabled]="loading"
+                  severity="success"
+                ></button>
+                <button
+                  pButton
+                  label="Cancel"
+                  id="btnSecundario"
+                  icon="pi pi-times"
+                  (click)="cancelUpload()"
+                  [disabled]="loading"
+                  severity="secondary"
+                ></button>
+              </div>
+            </div>
+
+            <div class="upload-info">
+              <small
+                >Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF - Maximum size:
+                10MB - Maximum: 3 files per upload.</small
+              >
+            </div>
+          </div>
+
+          <div class="attachments-list" *ngIf="clientAttachments.length > 0">
+            <h4>
+              Your Attachments ({{ clientAttachments.length }}/{{
+                maxAttachments
+              }})
+            </h4>
+            <div class="attachments-grid">
+              <div
+                class="attachment-card"
+                *ngFor="let attachment of clientAttachments"
+                [class.selected]="
+                  isClientAttachmentSelected(attachment.attachmentId)
+                "
+              >
+                <div class="attachment-selection">
+                  <p-checkbox
+                    [binary]="true"
+                    [(ngModel)]="
+                      attachmentCheckboxStates[attachment.attachmentId]
+                    "
+                    (onChange)="
+                      onAttachmentCheckboxChange(
+                        attachment.attachmentId,
+                        $event
+                      )
+                    "
+                  >
+                  </p-checkbox>
+                </div>
+                <div class="attachment-preview">
+                  <img
+                    [src]="attachment.attachmentLink"
+                    [alt]="'Attachment ' + attachment.attachmentId"
+                    class="attachment-image"
+                    (error)="onImageError($event)"
+                  />
+                  <div
+                    class="attachment-fallback"
+                    *ngIf="!attachment.attachmentLink"
+                  >
+                    <span
+                      class="pi pi-file-image"
+                      style="color: var(--cor-primaria)"
+                    ></span>
+                  </div>
+                </div>
+                <div class="attachment-actions">
+                  <p-button
+                    icon="pi pi-eye"
+                    (onClick)="viewAttachment(attachment.attachmentLink)"
+                    [disabled]="loading"
+                    severity="info"
+                    [text]="true"
+                    pTooltip="Visualizar"
+                  >
+                  </p-button>
+                  <p-button
+                    icon="pi pi-download"
+                    (onClick)="downloadAttachment(attachment.attachmentLink)"
+                    [disabled]="loading"
+                    severity="success"
+                    [text]="true"
+                    pTooltip="Download"
+                  >
+                  </p-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="no-attachments"
+            *ngIf="authenticatedClient && clientAttachments.length === 0"
+          >
+            <p>
+              <span
+                class="pi pi-info-circle"
+                style="color: var(--cor-primaria)"
+              ></span>
+              You don't have any attachments yet. Upload some files to get
+              started.
+            </p>
+          </div>
+
+          <div class="request-ad-section" *ngIf="canRequestAd()">
+            <div
+              class="selection-info"
+              *ngIf="selectedClientAttachments.length > 0"
+            >
+              <p>
+                <span
+                  class="pi pi-check-circle"
+                  style="color: var(--cor-primaria)"
+                ></span>
+                {{ selectedClientAttachments.length }} attachment(s) selected
+              </p>
+            </div>
+            <div
+              class="selection-info"
+              *ngIf="selectedClientAttachments.length === 0"
+            >
+              <p>
+                <span
+                  class="pi pi-info-circle"
+                  style="color: var(--cor-primaria)"
+                ></span>
+                Select at least 1 attachment to request an ad
+              </p>
+            </div>
+            <button
+              pButton
+              label="Request Ad"
+              icon="pi pi-send"
+              (click)="openRequestAdDialog()"
+              [disabled]="loading || selectedClientAttachments.length === 0"
+            ></button>
+          </div>
+
+          <!-- Mensagem quando já tem adRequest ativo -->
+          <div
+            class="ad-request-active-section"
+            *ngIf="hasActiveAdRequest && clientAttachments.length > 0"
+          >
+            <div class="active-request-info flex gap-3">
+              <span class="pi pi-check-circle"></span>
+              <div class="message-content">
+                <h4>Ad Request Already Submitted</h4>
+                <p>
+                  You have already created an ad request. Please wait for the
+                  admin to create your ad so you can validate it.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <!-- Tab 2: Ads -->
+      <p-tabPanel header="Ads">
+        <div class="ads-info" *ngIf="shouldDisplayMaxValidationsTry()">
+          <p class="validation-info">
+            <span
+              class="pi pi-info-circle"
+              style="color: var(--cor-primaria)"
+            ></span>
+            You can validate each ad a maximum of 3 times. Rejected ads can be
+            edited by the admin and will return to pending status.
+          </p>
+        </div>
+        <div class="ads-content w-full">
+          <div class="ads-list w-full" *ngIf="ads.length > 0">
+            <div class="ad-item w-full" *ngFor="let ad of ads">
+              <div class="ad-header">
+                <div class="ad-info">
+                  <h5>Ad - {{ ad.name ?? "" }}</h5>
+                  <p class="ad-date">
+                    Submission date:
+                    {{ ad.submissionDate | date: "dd/MM/yyyy" }}
+                  </p>
+                </div>
+                <div
+                  class="ad-status flex flex-column justify-content-center align-items-center gap-2"
+                >
+                  <span
+                    class="badge w-full"
+                    [ngClass]="getValidationBadgeClass(ad.validation)"
+                  >
+                    {{ getValidationLabel(ad.validation) }}
+                  </span>
+                  <small
+                    class="validation-count"
+                    *ngIf="ad.validation === 'PENDING'"
+                  >
+                    Available for validation
+                  </small>
+                  <small
+                    class="validation-count"
+                    *ngIf="ad.validation === 'REJECTED'"
+                  >
+                    Waiting for admin edit
+                  </small>
+                </div>
+              </div>
+
+              <!-- Área de conteúdo do ad -->
+              <div class="ad-content w-full">
+                <div class="ad-preview w-full" *ngIf="ad.link">
+                  <img
+                    [src]="ad.link"
+                    [alt]="'Ad ' + (ad.name || ad.id)"
+                    class="ad-image w-full"
+                    (error)="onImageError($event)"
+                  />
+                </div>
+                <div class="ad-fallback w-full" *ngIf="!ad.link">
+                  <span
+                    class="pi pi-image"
+                    style="font-size: 48px; color: #ccc"
+                  ></span>
+                  <p>Ad content not available</p>
+                </div>
+              </div>
+
+              <div class="ad-actions" *ngIf="ad.validation === 'PENDING'">
+                <button
+                  pButton
+                  *ngIf="canValidateAd(ad)"
+                  label="Validate Ad"
+                  icon="pi pi-check"
+                  (click)="openValidateAdDialog(ad)"
+                ></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="no-ads-message" *ngIf="ads.length === 0">
+            <div class="empty-state">
+              <span
+                class="pi pi-image"
+                style="font-size: 48px; color: #ccc"
+              ></span>
+              <h4>No Ads Found</h4>
+              <p>
+                You don't have any ads to validate yet. Ads will appear here
+                when they are available for validation.
+              </p>
+            </div>
+          </div>
         </div>
       </p-tabPanel>
     </p-tabView>
   </div>
 </div>
+
+<!-- Dialog para Request Ad -->
+<p-dialog
+  header="Request Ad"
+  [(visible)]="showRequestAdDialog"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="dialog-content">
+    <div class="selected-attachments-info">
+      <h4>Selected Attachments:</h4>
+      <p>
+        {{ selectedClientAttachments.length }} attachment(s) will be used for
+        the ad request.
+      </p>
+    </div>
+
+    <form [formGroup]="requestAdForm" class="request-form">
+      <div class="form-field">
+        <label for="message" class="required">Message</label>
+        <input
+          id="message"
+          type="text"
+          pInputText
+          formControlName="message"
+          placeholder="Type your message..."
+        />
+        <app-error
+          id="error-msg-message"
+          [control]="requestAdForm.get('message')"
+          *ngIf="mostrarErro(requestAdForm, 'message')"
+        ></app-error>
+      </div>
+
+      <div class="form-field">
+        <label id="ld-numero" for="phone">Phone</label>
+        <p-inputMask
+          mask="+1 999 999 9999"
+          formControlName="phone"
+          placeholder="+1 508 215 8681"
+          class="w-full"
+          id="inp-numero"
+        />
+        <app-error
+          id="error-msg-phone"
+          [control]="requestAdForm.get('phone')"
+          *ngIf="mostrarErro(requestAdForm, 'phone')"
+        ></app-error>
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          pInputText
+          formControlName="email"
+          placeholder="emailexample@mail.com"
+        />
+        <app-error
+          id="error-msg-email"
+          [control]="requestAdForm.get('email')"
+          *ngIf="mostrarErro(requestAdForm, 'email')"
+        ></app-error>
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancel"
+      id="#btnSecundario"
+      (click)="closeRequestAdDialog()"
+      class="p-button-secondary"
+    ></button>
+    <button
+      pButton
+      label="Request Ad"
+      (click)="submitAdRequest()"
+      [disabled]="
+        requestAdForm.invalid ||
+        selectedClientAttachments.length === 0 ||
+        loading
+      "
+      [loading]="loading"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Dialog para Validar Ad -->
+<p-dialog
+  header="Validate Ad"
+  [(visible)]="showValidateAdDialog"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="dialog-content">
+    <form [formGroup]="validateAdForm" class="validate-form">
+      <div class="form-field">
+        <label for="validation" class="required">Validation</label>
+        <p-select
+          id="validation"
+          class="w-full"
+          [options]="validationOptions"
+          formControlName="validation"
+          placeholder="Select an validation"
+          (onChange)="onValidationChange($event)"
+          [overlayOptions]="{ appendTo: 'body' }"
+          appendTo="body"
+        >
+        </p-select>
+        <app-error
+          id="error-msg-validation"
+          [control]="validateAdForm.get('validation')"
+          *ngIf="mostrarErro(validateAdForm, 'validation')"
+        ></app-error>
+      </div>
+
+      <div
+        class="form-field"
+        *ngIf="validateAdForm.get('validation')?.value === 'REJECTED'"
+      >
+        <label for="justification" class="required">Justification</label>
+        <input
+          id="justification"
+          type="text"
+          pInputText
+          formControlName="justification"
+          placeholder="Type your justification"
+        />
+        <app-error
+          id="error-msg-justification"
+          [control]="validateAdForm.get('justification')"
+          *ngIf="mostrarErro(validateAdForm, 'justification')"
+        ></app-error>
+      </div>
+
+      <div
+        class="form-field"
+        *ngIf="validateAdForm.get('validation')?.value === 'REJECTED'"
+      >
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          pInputTextarea
+          formControlName="description"
+          placeholder="Digite a descrição"
+          rows="3"
+        >
+        </textarea>
+        <app-error
+          id="error-msg-description"
+          [control]="validateAdForm.get('description')"
+          *ngIf="mostrarErro(validateAdForm, 'description')"
+        ></app-error>
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancel"
+      id="btnSecundario"
+      (click)="closeValidateAdDialog()"
+    ></button>
+    <p-button
+      label="Validate Ad"
+      (onClick)="submitAdValidation()"
+      [disabled]="validateAdForm.invalid || loading"
+      [loading]="loading"
+    >
+    </p-button>
+  </ng-template>
+</p-dialog>
