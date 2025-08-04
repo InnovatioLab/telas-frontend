@@ -106,6 +106,7 @@ export class SubscriptionService {
           return response.data;
         }),
         catchError((error) => {
+          console.error("Error while getting checkoutUrl:", error);
           throw error;
         })
       );

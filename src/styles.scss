@@ -104,7 +104,7 @@ body {
   margin: 0;
   height: 100%;
   background-color: var(--cor-cinza-fundo);
-  color: var(--p-text-color);
+  color: var(--cor-primaria) !important;
 
   scrollbar-width: thin;
   scrollbar-color: var(--cor-primaria-escura) transparent;
@@ -1504,7 +1504,8 @@ textarea {
 
 [ng-reflect-ng-class="p-card p-component"],
 .p-card.p-component {
-  background-color: var(--cor-branca);
+  background-color: transparent;
+  color: var(--cor-primaria);
   border-radius: var(--borda-raio-padrao);
   box-shadow: var(--sombra-padrao);
   margin-bottom: var(--espacamento-padrao);

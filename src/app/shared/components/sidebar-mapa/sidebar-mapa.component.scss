@@ -1,6 +1,5 @@
 ::ng-deep {
 .sidebar-mapa {
-  
     .p-sidebar {
       width: 50vw;
       max-width: 1200px;
@@ -76,17 +75,17 @@
   
   .ponto-detalhes {
     padding: 2rem;
-    max-height: calc(100vh - 140px);
+    max-height: calc(100vh - 20px);
     overflow-y: auto;
     overflow-x: hidden;
     
     /* Oculta a barra de scroll mas mantém a funcionalidade */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    // scrollbar-width: none; /* Firefox */
+    // -ms-overflow-style: none; /* Internet Explorer 10+ */
     
-    &::-webkit-scrollbar {
-      display: none; /* WebKit browsers */
-    }
+    // &::-webkit-scrollbar {
+    //   display: none; /* WebKit browsers */
+    // }
     
     .ponto-titulo {
       font-size: 1.75rem;

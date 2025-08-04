@@ -1,26 +1,37 @@
-import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { LoadingService } from '@app/core/service/state/loading.service';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { FormatarPreco } from '@app/shared/pipes/preco.pipe';
-import { PrimengModule } from '../../primeng/primeng.module';
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
+import { SubscriptionService } from "@app/core/service/api/subscription.service";
+import { LoadingService } from "@app/core/service/state/loading.service";
+import { MapPoint } from "@app/core/service/state/map-point.interface";
+import { FormatarPreco } from "@app/shared/pipes/preco.pipe";
+import { PrimengModule } from "../../primeng/primeng.module";
 
 enum StepEnum {
   REVIEW = 1,
   PAYMENT = 2,
-  AD_CONTENT = 3,
-  CONFIRMATION = 4
 }
 
 @Component({
-  selector: 'ui-ckeckout-modal',
+  selector: "ui-ckeckout-modal",
   standalone: true,
   imports: [CommonModule, PrimengModule, ReactiveFormsModule, FormatarPreco],
-  templateUrl: './ckeckout-modal.component.html',
-  styleUrls: ['./ckeckout-modal.component.scss'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  templateUrl: "./ckeckout-modal.component.html",
+  styleUrls: ["./ckeckout-modal.component.scss"],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CkeckoutModalComponent implements OnInit {
   @Input() exibirModal = false;
@@ -30,38 +41,39 @@ export class CkeckoutModalComponent implements OnInit {
   currentStep = StepEnum.REVIEW;
   totalSteps = 3;
   steps = StepEnum;
-  
+
   paymentProcessing = false;
   confirming = false;
   locations: MapPoint[] = [];
   totalAmount = 0;
-  paymentToken = '';
-  paymentError = '';
+  paymentToken = "";
+  paymentError = "";
   paymentCompleted = false;
-  
+
   adDetailsForm: FormGroup;
   adImagePreview: string | null = null;
   logoPreview: string | null = null;
-  
+
   clienteLogado = {
-    name: 'Test User',
-    email: 'user@test.com'
+    name: "Test User",
+    email: "user@test.com",
   };
-  
+
   itensCarrinho: MapPoint[] = [];
   valorTotalPedido = 0;
-  
+
   Math = Math;
 
   constructor(
     private readonly mapsService: GoogleMapsService,
     private readonly fb: FormBuilder,
+    private readonly subscriptionService: SubscriptionService,
     private loadingService: LoadingService
   ) {
     this.adDetailsForm = this.fb.group({
-      slogan: ['', [Validators.required]],
+      slogan: ["", [Validators.required]],
       adImage: [null, [Validators.required]],
-      logo: [null, [Validators.required]]
+      logo: [null, [Validators.required]],
     });
   }
 
@@ -71,7 +83,7 @@ export class CkeckoutModalComponent implements OnInit {
   }
 
   private carregarLocalizacoes(): void {
-    this.mapsService.savedPoints$.subscribe(points => {
+    this.mapsService.savedPoints$.subscribe((points) => {
       this.locations = points;
       this.itensCarrinho = points;
       this.calcularTotal();
@@ -86,36 +98,19 @@ export class CkeckoutModalComponent implements OnInit {
   nextStep(): void {
     if (this.currentStep === StepEnum.REVIEW) {
       this.currentStep = StepEnum.PAYMENT;
-    } else if (this.currentStep === StepEnum.PAYMENT && this.paymentCompleted) {
-      this.currentStep = StepEnum.AD_CONTENT;
-    } else if (this.currentStep === StepEnum.AD_CONTENT) {
-      if (this.adDetailsForm.valid) {
-        this.finalizarProcessoCheckout();
-      } else {
-        Object.keys(this.adDetailsForm.controls).forEach(key => {
-          this.adDetailsForm.get(key)?.markAsTouched();
-        });
-      }
     }
   }
 
   previousStep(): void {
     if (this.currentStep === StepEnum.PAYMENT) {
       this.currentStep = StepEnum.REVIEW;
-    } else if (this.currentStep === StepEnum.AD_CONTENT) {
-      this.currentStep = StepEnum.PAYMENT;
     } else if (this.currentStep === StepEnum.REVIEW) {
       this.fecharModal();
     }
   }
-  
+
   finalizarProcessoCheckout(): void {
     this.confirming = true;
-    
-    setTimeout(() => {
-      this.confirming = false;
-      this.currentStep = StepEnum.CONFIRMATION;
-    }, 2000);
   }
 
   onAdImageChange(event: Event): void {
@@ -123,9 +118,9 @@ export class CkeckoutModalComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       this.adDetailsForm.patchValue({
-        adImage: file
+        adImage: file,
       });
-      
+
       const reader = new FileReader();
       reader.onload = () => {
         this.adImagePreview = reader.result as string;
@@ -139,9 +134,9 @@ export class CkeckoutModalComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       this.adDetailsForm.patchValue({
-        logo: file
+        logo: file,
       });
-      
+
       const reader = new FileReader();
       reader.onload = () => {
         this.logoPreview = reader.result as string;
@@ -153,28 +148,23 @@ export class CkeckoutModalComponent implements OnInit {
   getStepTitle(): string {
     switch (this.currentStep) {
       case StepEnum.REVIEW:
-        return 'Review Order';
+        return "Review Order";
       case StepEnum.PAYMENT:
-        return 'Payment';
-      case StepEnum.AD_CONTENT:
-        return 'Advertisement Details';
-      case StepEnum.CONFIRMATION:
-        return 'Order Confirmed';
+        return "Payment";
       default:
-        return 'Checkout';
+        return "Checkout";
     }
   }
 
   getButtonLabel(): string {
     switch (this.currentStep) {
       case StepEnum.REVIEW:
-        return 'Next: Payment';
+        return "Next: Payment";
       case StepEnum.PAYMENT:
-        return this.paymentCompleted ? 'Next: Ad Details' : 'Process Payment';
-      case StepEnum.AD_CONTENT:
-        return 'Finalize Order';
+        return this.paymentCompleted ? "Next: Ad Details" : "Process Payment";
+
       default:
-        return 'Continue';
+        return "Continue";
     }
   }
 
@@ -194,21 +184,31 @@ export class CkeckoutModalComponent implements OnInit {
 
   processarPagamento(): void {
     this.paymentProcessing = true;
+
+    this.subscriptionService.checkout().subscribe({
+      next: (checkoutUrl) => {
+        window.location.href = checkoutUrl;
+        this.paymentProcessing = false;
+      }
+    });
   }
 
   handlePaymentSuccess(tokenId: any): void {
-    this.paymentToken = typeof tokenId === 'string' 
-      ? tokenId 
-      : (tokenId?.id ?? tokenId?.token ?? 'unknown-token');
+    this.paymentToken =
+      typeof tokenId === "string"
+        ? tokenId
+        : (tokenId?.id ?? tokenId?.token ?? "unknown-token");
     this.paymentCompleted = true;
     this.paymentProcessing = false;
   }
 
   handlePaymentError(errorMessage: any): void {
-    this.paymentError = typeof errorMessage === 'string' 
-      ? errorMessage 
-      : (errorMessage?.message ?? 'An error occurred during payment processing');
-    
+    this.paymentError =
+      typeof errorMessage === "string"
+        ? errorMessage
+        : (errorMessage?.message ??
+          "An error occurred during payment processing");
+
     this.paymentProcessing = false;
   }
 

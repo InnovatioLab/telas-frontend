@@ -10,51 +10,92 @@
   >
     <ng-template pTemplate="header">
       <div class="flex align-items-center gap-2 w-full">
-        <button (click)="voltar()" class="botao-voltar flex-none cursor-pointer" pTooltip="Back" tooltipPosition="right">
-          <app-icon-back width="24" height="24" fill="var(--cor-primaria)"></app-icon-back>
+        <button
+          (click)="voltar()"
+          class="botao-voltar flex-none cursor-pointer"
+          pTooltip="Back"
+          tooltipPosition="right"
+        >
+          <app-icon-back
+            width="24"
+            height="24"
+            fill="var(--cor-primaria)"
+          ></app-icon-back>
         </button>
-        <div class="flex line-height-1 gap-2 justify-content-center align-items-center w-full">
-          <app-icon-tv-display width="24" height="24" fill="var(--cor-primaria)"></app-icon-tv-display>
-          <span class="font-bold">{{ pontoSelecionado?.title || 'TV Display' }}</span>
+        <div
+          class="flex line-height-1 gap-2 justify-content-center align-items-center w-full"
+        >
+          <app-icon-tv-display
+            width="24"
+            height="24"
+            fill="var(--cor-primaria)"
+          ></app-icon-tv-display>
+          <span class="font-bold">{{
+            pontoSelecionado?.title || "TV Display"
+          }}</span>
         </div>
-        <button (click)="fecharSidebar()" class="botao-fechar flex-none cursor-pointer" pTooltip="Close" tooltipPosition="left">
-          <span class="material-symbols-outlined" style="color: var(--cor-primaria); font-size: 24px;">close</span>
+        <button
+          (click)="fecharSidebar()"
+          class="botao-fechar flex-none cursor-pointer"
+          pTooltip="Close"
+          tooltipPosition="left"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="color: var(--cor-primaria); font-size: 24px"
+            >close</span
+          >
         </button>
       </div>
     </ng-template>
-    
+
     <div class="ponto-detalhes" *ngIf="pontoSelecionado">
-      <h3 class="ponto-titulo">{{ pontoSelecionado.title || 'Selected Location' }}</h3>
-      
+      <h3 class="ponto-titulo">
+        {{ pontoSelecionado.title || "Selected Location" }}
+      </h3>
+
       <div class="street-view-container">
         <div *ngIf="carregandoImagem" class="street-view-loading">
           <i class="pi pi-spin pi-spinner"></i>
           <span>Loading street view...</span>
         </div>
-        
+
         <div *ngIf="erroImagem" class="street-view-error">
           <app-icon-close width="48" height="48" fill="#666"></app-icon-close>
           <p>Street view not available for this location</p>
         </div>
-        
-        <img *ngIf="!carregandoImagem && !erroImagem && streetViewUrl" 
-            [src]="streetViewUrl" 
-            alt="Street View" 
-            class="street-view-image" 
-            (error)="tratarErroImagem()">
+
+        <img
+          *ngIf="!carregandoImagem && !erroImagem && streetViewUrl"
+          [src]="streetViewUrl"
+          alt="Street View"
+          class="street-view-image"
+          (error)="tratarErroImagem()"
+        />
       </div>
-      
+
       <div class="ponto-info">
         <div class="info-grupo">
-          <app-icon-place width="18" height="18" fill="var(--cor-primaria)"></app-icon-place>
+          <app-icon-place
+            width="18"
+            height="18"
+            fill="var(--cor-primaria)"
+          ></app-icon-place>
           <div class="info-detalhe">
             <span class="info-label">Location</span>
-            <span class="info-valor">{{ pontoSelecionado.latitude.toFixed(6) }}, {{ pontoSelecionado.longitude.toFixed(6) }}</span>
+            <span class="info-valor"
+              >{{ pontoSelecionado.latitude.toFixed(6) }},
+              {{ pontoSelecionado.longitude.toFixed(6) }}</span
+            >
           </div>
         </div>
 
         <div *ngIf="pontoSelecionado.description" class="info-grupo">
-          <app-icon-arquivo width="18" height="18" fill="var(--cor-primaria)"></app-icon-arquivo>
+          <app-icon-arquivo
+            width="18"
+            height="18"
+            fill="var(--cor-primaria)"
+          ></app-icon-arquivo>
           <div class="info-detalhe">
             <span class="info-label">Description</span>
             <span class="info-valor">{{ pontoSelecionado.description }}</span>
@@ -62,85 +103,176 @@
         </div>
 
         <div *ngIf="pontoSelecionado.type" class="info-grupo">
-          <app-icon-tv-display width="18" height="18" fill="var(--cor-primaria)"></app-icon-tv-display>
+          <app-icon-tv-display
+            width="18"
+            height="18"
+            fill="var(--cor-primaria)"
+          ></app-icon-tv-display>
           <div class="info-detalhe">
             <span class="info-label">Display Type</span>
-            <span class="info-valor">{{ pontoSelecionado.type || 'Standard' }}</span>
+            <span class="info-valor">{{
+              pontoSelecionado.type || "Standard"
+            }}</span>
           </div>
         </div>
 
         <!-- Campos específicos do monitor -->
         <div *ngIf="getMonitorData()" class="monitor-details">
           <div class="info-grupo">
-            <app-icon-key width="18" height="18" fill="var(--cor-primaria)"></app-icon-key>
+            <app-icon-key
+              width="18"
+              height="18"
+              fill="var(--cor-primaria)"
+            ></app-icon-key>
             <div class="info-detalhe">
               <span class="info-label">Monitor ID</span>
-              <span class="info-valor">{{ getMonitorData()?.id || 'N/A' }}</span>
+              <span class="info-valor">{{
+                getMonitorData()?.id || "N/A"
+              }}</span>
             </div>
           </div>
 
           <div class="info-grupo">
-            <app-icon-building width="18" height="18" fill="var(--cor-primaria)"></app-icon-building>
+            <app-icon-building
+              width="18"
+              height="18"
+              fill="var(--cor-primaria)"
+            ></app-icon-building>
             <div class="info-detalhe">
               <span class="info-label">Size</span>
-              <span class="info-valor">{{ getMonitorData()?.size || 'N/A' }}"</span>
+              <span class="info-valor"
+                >{{ getMonitorData()?.size || "N/A" }}"</span
+              >
             </div>
           </div>
 
           <div class="info-grupo">
-            <app-icon-map-marker width="18" height="18" fill="var(--cor-primaria)"></app-icon-map-marker>
+            <app-icon-map-marker
+              width="18"
+              height="18"
+              fill="var(--cor-primaria)"
+            ></app-icon-map-marker>
             <div class="info-detalhe">
               <span class="info-label">Distance</span>
-              <span class="info-valor">{{ getMonitorData()?.distanceInKm || 'N/A' }} km</span>
+              <span class="info-valor"
+                >{{ getMonitorData()?.distanceInKm || "N/A" }} km</span
+              >
             </div>
           </div>
 
           <div class="info-grupo">
-            <app-icon-bolt *ngIf="getMonitorData()?.active" width="18" height="18" fill="var(--cor-sucesso)"></app-icon-bolt>
-            <app-icon-close *ngIf="!getMonitorData()?.active" width="18" height="18" fill="var(--cor-erro)"></app-icon-close>
+            <app-icon-bolt
+              *ngIf="getMonitorData()?.active"
+              width="18"
+              height="18"
+              fill="var(--cor-sucesso)"
+            ></app-icon-bolt>
+            <app-icon-close
+              *ngIf="!getMonitorData()?.active"
+              width="18"
+              height="18"
+              fill="var(--cor-erro)"
+            ></app-icon-close>
             <div class="info-detalhe">
               <span class="info-label">Status</span>
-              <span class="info-valor" [class.text-success]="getMonitorData()?.active" [class.text-danger]="!getMonitorData()?.active">
-                {{ getMonitorData()?.active ? 'Active' : 'Inactive' }}
+              <span
+                class="info-valor"
+                [class.text-success]="getMonitorData()?.active"
+                [class.text-danger]="!getMonitorData()?.active"
+              >
+                {{ getMonitorData()?.active ? "Active" : "Inactive" }}
               </span>
             </div>
           </div>
 
-          <div *ngIf="getMonitorData()?.hasAvailableSlots !== undefined" class="info-grupo">
-            <app-icon-check *ngIf="getMonitorData()?.hasAvailableSlots" width="18" height="18" fill="var(--cor-sucesso)"></app-icon-check>
-            <app-icon-warning *ngIf="!getMonitorData()?.hasAvailableSlots" width="18" height="18" fill="#ffc107"></app-icon-warning>
+          <div
+            *ngIf="getMonitorData()?.hasAvailableSlots !== undefined"
+            class="info-grupo"
+          >
+            <app-icon-check
+              *ngIf="getMonitorData()?.hasAvailableSlots"
+              width="18"
+              height="18"
+              fill="var(--cor-sucesso)"
+            ></app-icon-check>
+            <app-icon-warning
+              *ngIf="!getMonitorData()?.hasAvailableSlots"
+              width="18"
+              height="18"
+              fill="#ffc107"
+            ></app-icon-warning>
             <div class="info-detalhe">
               <span class="info-label">Available Slots</span>
-              <span class="info-valor" [class.text-success]="getMonitorData()?.hasAvailableSlots" [class.text-warning]="!getMonitorData()?.hasAvailableSlots">
-                {{ getMonitorData()?.hasAvailableSlots ? 'Yes' : 'No' }}
+              <span
+                class="info-valor"
+                [class.text-success]="getMonitorData()?.hasAvailableSlots"
+                [class.text-warning]="!getMonitorData()?.hasAvailableSlots"
+              >
+                {{ getMonitorData()?.hasAvailableSlots ? "Yes" : "No" }}
               </span>
             </div>
           </div>
 
-          <div *ngIf="getMonitorData()?.estimatedSlotReleaseDate" class="info-grupo">
-            <app-icon-clock width="18" height="18" fill="var(--cor-primaria)"></app-icon-clock>
+          <div
+            *ngIf="
+              getMonitorData()?.adsDailyDisplayTimeInMinutes !== undefined &&
+              getMonitorData()?.adsDailyDisplayTimeInMinutes > 0
+            "
+            class="info-grupo"
+          >
+            <app-icon-bolt
+              width="18"
+              height="18"
+              fill="var(--cor-sucesso)"
+            ></app-icon-bolt>
+            <div class="info-detalhe">
+              <span class="info-label">Daily ads displayed</span>
+              <span class="info-valor"
+                >{{
+                  getMonitorData()?.adsDailyDisplayTimeInMinutes
+                }}
+                minutes</span
+              >
+            </div>
+          </div>
+
+          <div
+            *ngIf="getMonitorData()?.estimatedSlotReleaseDate"
+            class="info-grupo"
+          >
+            <app-icon-clock
+              width="18"
+              height="18"
+              fill="var(--cor-primaria)"
+            ></app-icon-clock>
             <div class="info-detalhe">
               <span class="info-label">Next Available</span>
-              <span class="info-valor">{{ getMonitorData()?.estimatedSlotReleaseDate | date:'short' }}</span>
+              <span class="info-valor">{{
+                getMonitorData()?.estimatedSlotReleaseDate | date: "short"
+              }}</span>
             </div>
           </div>
         </div>
       </div>
 
       <div class="acoes-container">
-        <button pButton 
-                label="View in Google Maps" 
-                icon="pi pi-map" 
-                class="p-button p-button-secondary" 
-                (click)="abrirGoogleMaps()"></button>
-        <button pButton 
-                label="Add to List" 
-                icon="pi pi-plus" 
-                class="p-button"
-                (click)="adicionarALista()"></button>
+        <button
+          pButton
+          label="View in Google Maps"
+          icon="pi pi-map"
+          class="p-button p-button-secondary"
+          (click)="abrirGoogleMaps()"
+        ></button>
+        <button
+          pButton
+          label="Add to List"
+          icon="pi pi-plus"
+          class="p-button"
+          (click)="adicionarALista()"
+        ></button>
       </div>
     </div>
-    
+
     <div class="sem-ponto" *ngIf="!pontoSelecionado">
       <p>No point selected.</p>
     </div>

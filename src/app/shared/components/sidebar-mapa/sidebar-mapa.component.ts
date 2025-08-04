@@ -1,24 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
-import { PrimengModule } from '../../primeng/primeng.module';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, Inject, OnDestroy, OnInit } from '@angular/core';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { IconArquivoComponent } from '@app/shared/icons/arquivo.icon';
+import { IconBackComponent } from '@app/shared/icons/back.icon';
+import { IconBoltComponent } from '@app/shared/icons/bolt.icon';
+import { IconBuildingComponent } from '@app/shared/icons/building.icon';
+import { IconCheckComponent } from '@app/shared/icons/check.icon';
+import { IconClockComponent } from '@app/shared/icons/clock.icon';
+import { IconCloseComponent } from '@app/shared/icons/close.icon';
+import { IconsModule } from '@app/shared/icons/icons.module';
+import { IconKeyComponent } from '@app/shared/icons/key.icon';
+import { IconMapMarkerComponent } from '@app/shared/icons/map-marker.icon';
+import { IconPlaceComponent } from '@app/shared/icons/place.icon';
+import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
+import { IconWarningComponent } from '@app/shared/icons/warning.icon';
 import { Subscription } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment.interface';
-import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { IconsModule } from '@app/shared/icons/icons.module';
-import { IconBackComponent } from '@app/shared/icons/back.icon';
-import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
-import { IconPlaceComponent } from '@app/shared/icons/place.icon';
-import { IconArquivoComponent } from '@app/shared/icons/arquivo.icon';
-import { IconBuildingComponent } from '@app/shared/icons/building.icon';
-import { IconMapMarkerComponent } from '@app/shared/icons/map-marker.icon';
-import { IconKeyComponent } from '@app/shared/icons/key.icon';
-import { IconBoltComponent } from '@app/shared/icons/bolt.icon';
-import { IconCheckComponent } from '@app/shared/icons/check.icon';
-import { IconCloseComponent } from '@app/shared/icons/close.icon';
-import { IconWarningComponent } from '@app/shared/icons/warning.icon';
-import { IconClockComponent } from '@app/shared/icons/clock.icon';
+import { PrimengModule } from '../../primeng/primeng.module';
 
 @Component({
   selector: 'app-sidebar-mapa',
