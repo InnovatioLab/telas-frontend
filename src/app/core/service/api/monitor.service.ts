@@ -153,6 +153,7 @@ export class MonitorService {
       active: monitorResponse.active,
       type: monitorResponse.type,
       locationDescription: monitorResponse.locationDescription,
+      fullAddress: monitorResponse.fullAddress,
       address: monitorResponse.address || {
         id: '',
         street: '',

@@ -1,5 +1,5 @@
-import { MonitorType } from '@app/model/monitors';
 import { DefaultStatus } from '@app/model/client';
+import { MonitorType } from '@app/model/monitors';
 
 export interface MonitorResponseDto {
   id: string;
@@ -13,6 +13,7 @@ export interface MonitorResponseDto {
   size?: number;
   productId?: string;
   maxBlocks?: number;
+  fullAddress?: string;
   address?: {
     id: string;
     street: string;

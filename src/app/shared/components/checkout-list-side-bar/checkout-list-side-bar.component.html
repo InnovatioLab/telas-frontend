@@ -3,109 +3,174 @@
     [showCloseIcon]="false"
     [(visible)]="visibilidadeSidebar"
     position="right"
-    [dismissible]="true"
+    [dismissible]="!dropdownOpen"
     (onHide)="fecharSidebar()"
     [blockScroll]="true"
-    [closeOnEscape]="true"
+    [closeOnEscape]="!dropdownOpen"
+    [style]="{ width: '50%', maxWidth: '300px' }"
   >
     <ng-template pTemplate="header">
       <div class="flex align-items-center gap-2 w-full">
-        <button (click)="voltar()" class="botao-voltar flex-none cursor-pointer">
+        <button
+          (click)="voltar()"
+          class="botao-voltar flex-none cursor-pointer"
+        >
           <span class="material-symbols-outlined botao-icon">arrow_back</span>
         </button>
-        <div class="flex line-height-1 gap-2 justify-content-center align-items-center w-full">
-          <span class="material-symbols-outlined text-primary icone-sidebar">shopping_basket</span>
-          <div class="font-negrito text-center">My List</div>
+        <div
+          class="flex line-height-1 gap-2 justify-content-center align-items-center w-full"
+        >
+          <span class="material-symbols-outlined text-primary icone-sidebar"
+            >shopping_basket</span
+          >
+          <div class="font-negrito text-center">Review Order</div>
         </div>
       </div>
     </ng-template>
-    
-    <div class="lista-items" *ngIf="listaItems && listaItems.length > 0">
+
+    <div
+      class="recurrence-selector p-3"
+      *ngIf="cart && cart.items.length > 0"
+      (click)="onDropdownClick($event)"
+    >
+      <label for="recurrence" class="block text-sm font-medium mb-2"
+        >Recurrence:</label
+      >
+      <p-dropdown
+        id="recurrence"
+        [(ngModel)]="selectedRecurrence"
+        [options]="recurrenceOptions"
+        optionLabel="label"
+        optionValue="value"
+        (onChange)="onRecurrenceChange()"
+        (onShow)="onDropdownShow()"
+        (onHide)="onDropdownHide()"
+        (click)="onDropdownClick($event)"
+        placeholder="Select recurrence"
+        class="w-full"
+        appendTo="body"
+      >
+      </p-dropdown>
+    </div>
+
+    <div class="lista-items" *ngIf="cart && cart.items.length > 0">
       <div class="font-medium label-quantidade p-2">
-        <span class="font-semibold quantidade-items">{{ listaItems.length }}</span>
-        {{ listaItems.length > 1 ? 'Ad Locations Added' : 'Ad Location Added' }}
+        <span class="font-semibold quantidade-items">{{
+          cart.items.length
+        }}</span>
+        {{ cart.items.length > 1 ? "Monitors Added" : "Monitor Added" }}
       </div>
-      
+
       <div class="flex gap-2 flex-column">
-        <p-card *ngFor="let item of listaItems; trackBy: trackByFn" class="card-item">
+        <p-card
+          *ngFor="let item of cart.items; trackBy: trackByFn"
+          class="card-item"
+        >
           <div class="item flex">
             <div class="item-info flex-grow-1">
-              <h4 class="item-title">{{ item.title || 'Map Point' }}</h4>
-              <div class="item-coords">
-                <small>{{ item.latitude.toFixed(6) }}, {{ item.longitude.toFixed(6) }}</small>
+              <h4 class="item-title">Monitor</h4>
+              <div class="item-address">
+                <small>Address: {{ item.monitorAddress }}</small>
               </div>
             </div>
-            
+
             <div class="item-actions">
-              <button pButton pRipple icon="pi pi-eye" 
+              <button
+                pButton
+                pRipple
+                icon="pi pi-eye"
                 class="p-button-rounded p-button-secondary p-button-text"
-                (click)="verDetalhes(item)" 
+                (click)="verDetalhes(item)"
                 pTooltip="View details"
-                tooltipPosition="top">
-              </button>
-              <button pButton pRipple icon="pi pi-trash" 
+                tooltipPosition="top"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
                 class="p-button-rounded p-button-danger p-button-text"
                 (click)="removerItem(item)"
                 pTooltip="Remove"
-                tooltipPosition="top">
-              </button>
+                tooltipPosition="top"
+              ></button>
             </div>
           </div>
         </p-card>
       </div>
     </div>
 
-    <div *ngIf="!listaItems || listaItems.length === 0" class="lista-vazia">
-      <div class="flex flex-column justify-content-center align-items-center container-imagem-vazio">
+    <div *ngIf="!cart || cart.items.length === 0" class="lista-vazia">
+      <div
+        class="flex flex-column justify-content-center align-items-center container-imagem-vazio"
+      >
         <ui-imagem-carrinho-vazio></ui-imagem-carrinho-vazio>
         <div class="text-center texto-lista-vazia font-medium">
-          You haven't added any locations for your ads yet.
+          You haven't added any monitors to your cart yet.
           <br />
-          Add points on the map to display your ads on screens.
+          Add monitors on the map to display your ads on screens.
         </div>
       </div>
     </div>
-    
+
     <ng-template pTemplate="footer">
-      <div *ngIf="listaItems && listaItems.length > 0" class="container-footer flex justify-content-between align-items-center">
+      <div
+        *ngIf="cart && cart.items.length > 0"
+        class="container-footer flex justify-content-between align-items-center"
+      >
         <div class="flex-none container-total">
           <span class="label-total">Total:</span>
           <span class="valor-total">
-            {{ calcularPrecoTotal() | formatarPreco }} /month
+            {{ cart.items.length * 100 | formatarPreco }} /{{
+              selectedRecurrence.toLowerCase()
+            }}
           </span>
         </div>
         <div class="botoes-footer">
-          <button pButton icon="pi pi-trash" 
-            label="Clear List" 
-            class="p-button-outlined p-button-danger"
-            (click)="limparLista()">
-          </button>
-          <button pButton icon="pi pi-check" 
-            label="Checkout" 
+          <button
+            pButton
+            icon="pi pi-check"
+            label="Checkout"
             [loading]="checkoutEmProgresso"
-            class="p-button-success"
-            (click)="iniciarCheckout()">
-          </button>
+            (click)="iniciarCheckout()"
+          ></button>
         </div>
       </div>
     </ng-template>
   </p-sidebar>
-  
-  <p-dialog 
-    [(visible)]="exibirModalCheckout" 
-    [modal]="true" 
-    [style]="{width: '90%', maxWidth: '800px'}" 
-    [draggable]="false" 
-    [resizable]="false" 
-    [header]="'Checkout'" 
+
+  <!-- Modal para detalhes do monitor -->
+  <p-dialog
+    [(visible)]="monitorDetailsVisible"
+    [modal]="true"
+    [style]="{ width: '90%', maxWidth: '600px' }"
+    [draggable]="false"
+    [resizable]="false"
+    [header]="'Monitor Details'"
     [closeOnEscape]="true"
     [dismissableMask]="true"
     [blockScroll]="true"
-    styleClass="checkout-modal">
-      <ui-ckeckout-modal 
-        [exibirModal]="exibirModalCheckout"
-        (fecharModalEvent)="fecharModalCheckout()"
-        (pedidoConcluidoEvent)="finalizarPedido()">
-      </ui-ckeckout-modal>
+    styleClass="monitor-details-modal"
+  >
+    <div *ngIf="selectedMonitor" class="monitor-details">
+      <div class="monitor-info">
+        <p><strong>Address:</strong> {{ selectedMonitor.fullAddress }}</p>
+        <p *ngIf="selectedMonitor.locationDescription != null">
+          <strong>Location Description:</strong>
+          {{ selectedMonitor.locationDescription }}
+        </p>
+        <p>
+          <strong>Type:</strong>
+          {{
+            selectedMonitor.type.charAt(0).toUpperCase() +
+              selectedMonitor.type.slice(1).toLowerCase()
+          }}
+        </p>
+        <p><strong>Size:</strong> {{ selectedMonitor.size }} inches</p>
+        <p>
+          <strong>Status:</strong>
+          {{ selectedMonitor.active ? "Active" : "Inactive" }}
+        </p>
+      </div>
+    </div>
   </p-dialog>
 </div>

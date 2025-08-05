@@ -3,7 +3,7 @@
     .p-card {
       color: var(--cor-primaria) !important;
     }
-    
+
     .p-sidebar {
       width: 50vw;
       max-width: 650px;
@@ -11,14 +11,14 @@
       padding: 32px 37px;
       color: var(--cor-primaria);
       background: transparent !important;
-      
+
       .p-sidebar-header {
         padding: 0px;
         font-size: 20px;
         font-weight: 600;
         padding-left: 15px;
       }
-      
+
       .p-sidebar-content {
         padding: 0px;
         padding-top: 32px;
@@ -28,96 +28,110 @@
         max-height: calc(100vh - 200px);
         overflow-y: auto;
       }
-      
+
       .p-sidebar-footer {
         padding: 0px;
         padding-top: 20px;
       }
     }
+
+    // Estilos para o dropdown de recorrência
+    .p-dropdown {
+      .p-dropdown-panel {
+        z-index: 99999 !important;
+      }
+    }
+
+    // Previne que cliques no dropdown fechem a sidebar
+    .recurrence-selector {
+      .p-dropdown {
+        position: relative;
+        z-index: 1000;
+      }
+    }
   }
-  
+
   .label-quantidade {
     color: var(--cor-primaria);
     margin-bottom: 10px;
-    
+
     .quantidade-items {
       color: var(--cor-primaria);
       margin-right: 5px;
     }
   }
-  
+
   .card-item {
     ::ng-deep {
       .p-card {
         box-shadow: none;
         border-radius: 15px;
         border: 1px solid #f3f3f3;
-        
+
         .p-card-body {
           padding: 1rem;
         }
-        
+
         .p-card-content {
           padding: 0;
         }
       }
     }
-    
+
     .item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       .item-info {
         .item-title {
           font-weight: 600;
           margin: 0 0 5px 0;
           font-size: 1.1rem;
         }
-        
+
         .item-coords {
           color: var(--cor-primaria);
           margin-bottom: 10px;
         }
-        
+
         .item-price {
           font-weight: 600;
           color: var(--cor-primaria);
           font-size: 1.2rem;
         }
       }
-      
+
       .item-actions {
         display: flex;
         gap: 5px;
       }
     }
   }
-  
+
   .container-imagem-vazio {
     padding: 88px 33px 105px 56px;
-    
+
     .texto-lista-vazia {
       font-size: 18px;
       margin-top: 20px;
     }
   }
-  
-  .botao-voltar {
 
+  .botao-voltar {
     .botao-icon {
       color: var(--cor-primaria);
     }
   }
-  
+
   .icone-sidebar {
     font-size: 1.5rem;
   }
-  
+
   .container-footer {
     gap: 16px;
     flex-direction: column;
-    
+
     .container-total {
       padding: 13.5px 16px;
       border: 1px solid var(--color-background);
@@ -128,26 +142,26 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
-      
+
       .label-total {
         font-weight: 500;
         font-size: 16px;
         color: var(--cor-primaria);
       }
-      
+
       .valor-total {
         font-weight: 600;
         font-size: 18px;
         color: var(--cor-primaria);
       }
     }
-    
+
     .botoes-footer {
       display: flex;
       justify-content: space-between;
       width: 100%;
       gap: 10px;
-      
+
       button {
         flex: 1;
       }
@@ -163,11 +177,11 @@
         max-width: none;
       }
     }
-    
+
     .container-footer {
       .botoes-footer {
         flex-direction: column;
-        
+
         button {
           width: 100%;
           margin-bottom: 10px;
