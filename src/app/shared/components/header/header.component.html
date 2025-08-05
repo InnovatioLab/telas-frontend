@@ -65,8 +65,9 @@
                 (click)="abrirCheckout()"
                 class="icon-button"
                 id="test-btn-checkout"
-                pTooltip="View your saved places"
+                [pTooltip]="cartTooltip"
                 tooltipPosition="bottom"
+                [disabled]="!hasActiveCart"
               >
                 <app-icon-shopping-basket></app-icon-shopping-basket>
                 <span
@@ -105,10 +106,12 @@
                 pInputText
                 [(ngModel)]="searchText"
                 [ngModelOptions]="{ standalone: true }"
-                placeholder="Search for an address"
+                placeholder="12345,67890,54321"
                 maxlength="50"
                 id="inp-pesquisar"
                 (keydown.enter)="searchAddress()"
+                (keydown)="onKeyPress($event)"
+                (paste)="onPaste($event)"
                 (ngModelChange)="onInputChange()"
               />
               <button
@@ -155,6 +158,9 @@
               pButton
               [rounded]="true"
               [text]="true"
+              [disabled]="!hasActiveCart"
+              [pTooltip]="cartTooltip"
+              tooltipPosition="bottom"
             >
               <app-icon-shopping-basket></app-icon-shopping-basket>
               <span
@@ -299,10 +305,12 @@
                 pInputText
                 [(ngModel)]="searchText"
                 [ngModelOptions]="{ standalone: true }"
-                placeholder="Search for an address"
+                placeholder="12345,67890,54321"
                 maxlength="50"
                 id="inp-pesquisar-admin"
                 (keydown.enter)="searchAddress()"
+                (keydown)="onKeyPress($event)"
+                (paste)="onPaste($event)"
                 (ngModelChange)="onInputChange()"
               />
               <button
@@ -370,10 +378,12 @@
                 pInputText
                 [(ngModel)]="searchText"
                 [ngModelOptions]="{ standalone: true }"
-                placeholder="Search for an address"
+                placeholder="12345,67890,54321"
                 maxlength="50"
                 id="inp-pesquisar-desktop"
                 (keydown.enter)="searchAddress()"
+                (keydown)="onKeyPress($event)"
+                (paste)="onPaste($event)"
                 (ngModelChange)="onInputChange()"
               />
               <button
@@ -405,9 +415,10 @@
               pButton
               [rounded]="true"
               [text]="true"
-              pTooltip="View your saved places"
+              [pTooltip]="cartTooltip"
               tooltipPosition="bottom"
               class="icon-button"
+              [disabled]="!hasActiveCart"
             >
               <app-icon-shopping-basket
                 class="icon cursor-pointer"

@@ -83,6 +83,18 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
   headerAllowedRoutes = ["/client", "/admin"];
 
+  // Getter para verificar se o carrinho tem itens
+  get hasActiveCart(): boolean {
+    return this.itensCarrinho() > 0;
+  }
+
+  // Getter para o tooltip do carrinho
+  get cartTooltip(): string {
+    return this.hasActiveCart
+      ? `View your cart (${this.itensCarrinho()} items)`
+      : "Your cart is empty";
+  }
+
   private resizeListener: () => void;
   private authSubscription: Subscription;
   private authStateSubscription: Subscription;
@@ -199,6 +211,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   searchAddress(): void {
     const searchTextCopy = this.searchText.trim();
     if (!searchTextCopy) return;
+
+    // Detectar múltiplos zip codes separados por vírgula
+    if (searchTextCopy.includes(",")) {
+      this.searchMultipleZipCodes(searchTextCopy);
+      return;
+    }
 
     const zipRegex = /^\d{5}(-\d{4})?$/;
     this.loadingService.setLoading(true, "address-search");
@@ -367,6 +385,104 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     window.dispatchEvent(event);
   }
 
+  private searchMultipleZipCodes(searchTextCopy: string): void {
+    // Filtrar apenas números e vírgulas antes de processar
+    const cleanedText = searchTextCopy.replace(/[^0-9,]/g, "");
+
+    // Separar por vírgula e limpar espaços
+    const zipCodes = cleanedText
+      .split(",")
+      .map((zip) => zip.trim())
+      .filter((zip) => zip.length > 0);
+
+    // Validar que todos os zip codes têm exatamente 5 dígitos
+    const zipRegex = /^\d{5}$/;
+    const invalidZipCodes: string[] = [];
+    const validZipCodes: string[] = [];
+
+    zipCodes.forEach((zipCode) => {
+      if (zipRegex.test(zipCode)) {
+        validZipCodes.push(zipCode);
+      } else if (zipCode.length > 0) {
+        invalidZipCodes.push(zipCode);
+      }
+    });
+
+    // Mostrar erro se há zip codes inválidos
+    if (invalidZipCodes.length > 0) {
+      this.toastService.erro(
+        `Invalid ZIP codes (must be exactly 5 digits): ${invalidZipCodes.join(", ")}`
+      );
+      return;
+    }
+
+    if (validZipCodes.length === 0) {
+      this.toastService.aviso(
+        "Please enter at least one valid ZIP code (5 digits each)"
+      );
+      return;
+    }
+
+    // Buscar monitores para todos os zip codes válidos
+    this.loadingService.setLoading(true, "address-search");
+
+    // Array para armazenar todas as promises de busca
+    const searchPromises = validZipCodes.map((zipCode) =>
+      this.searchMonitorsService
+        .findByZipCode(zipCode)
+        .then((monitors) => ({ zipCode, monitors }))
+        .catch((error) => {
+          console.error(`Error searching monitors for ZIP ${zipCode}:`, error);
+          return { zipCode, monitors: [] as MapPoint[] };
+        })
+    );
+
+    // Aguardar todas as buscas terminarem
+    Promise.all(searchPromises)
+      .then((results) => {
+        this.loadingService.setLoading(false, "address-search");
+
+        // Combinar todos os monitores encontrados
+        const allMonitors: MapPoint[] = [];
+        const successfulZipCodes: string[] = [];
+        const failedZipCodes: string[] = [];
+
+        results.forEach((result) => {
+          if (result.monitors && result.monitors.length > 0) {
+            allMonitors.push(...result.monitors);
+            successfulZipCodes.push(result.zipCode);
+          } else {
+            failedZipCodes.push(result.zipCode);
+          }
+        });
+
+        // Mostrar resultados
+        if (allMonitors.length > 0) {
+          this.emitMonitorsFoundEvent(allMonitors);
+
+          let message = `Found ${allMonitors.length} monitors near ${successfulZipCodes.length} ZIP code(s): ${successfulZipCodes.join(", ")}`;
+
+          if (failedZipCodes.length > 0) {
+            message += `. No monitors found for: ${failedZipCodes.join(", ")}`;
+          }
+
+          this.toastService.sucesso(message);
+          this.searchText = "";
+        } else {
+          this.toastService.aviso(
+            `No monitors found for any of the ZIP codes: ${validZipCodes.join(", ")}`
+          );
+        }
+      })
+      .catch((error) => {
+        this.loadingService.setLoading(false, "address-search");
+        this.toastService.erro(
+          `Error searching monitors for multiple ZIP codes`
+        );
+        console.error("Error in multiple ZIP codes search:", error);
+      });
+  }
+
   ngOnDestroy() {
     if (this.resizeListener) {
       window.removeEventListener("resize", this.resizeListener);
@@ -440,6 +556,14 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   abrirCheckout() {
+    // Verificar se há itens no carrinho antes de abrir
+    if (!this.hasActiveCart) {
+      this.toastService.info(
+        "Your cart is empty. Add monitors to start shopping."
+      );
+      return;
+    }
+
     if (this.checkoutSidebar) {
       this.checkoutSidebar.abrirSidebar();
     }
@@ -458,8 +582,58 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onInputChange() {
+    // Filtrar caracteres inválidos (manter apenas números e vírgulas)
+    if (this.searchText) {
+      const filteredText = this.searchText.replace(/[^0-9,]/g, "");
+      if (filteredText !== this.searchText) {
+        this.searchText = filteredText;
+      }
+    }
+
     if (!this.searchText?.trim() && this.isInAllowedRoutes()) {
       this.googleMapsService.clearCurrentSearch();
+    }
+  }
+
+  onKeyPress(event: KeyboardEvent): void {
+    // Permitir apenas números (0-9) e vírgula
+    const allowedKeys = /[0-9,]/;
+    const key = event.key;
+
+    // Permitir teclas de controle (backspace, delete, arrow keys, etc.)
+    if (
+      event.ctrlKey ||
+      event.metaKey ||
+      key === "Backspace" ||
+      key === "Delete" ||
+      key === "Tab" ||
+      key === "Enter" ||
+      key === "ArrowLeft" ||
+      key === "ArrowRight" ||
+      key === "Home" ||
+      key === "End"
+    ) {
+      return;
+    }
+
+    // Bloquear teclas que não são números ou vírgula
+    if (!allowedKeys.test(key)) {
+      event.preventDefault();
+    }
+  }
+
+  onPaste(event: ClipboardEvent): void {
+    // Interceptar evento de colar
+    event.preventDefault();
+
+    const clipboardData = event.clipboardData?.getData("text") || "";
+
+    // Filtrar apenas números e vírgulas
+    const filteredText = clipboardData.replace(/[^0-9,]/g, "");
+
+    // Atualizar o searchText com o texto filtrado
+    if (filteredText) {
+      this.searchText = (this.searchText || "") + filteredText;
     }
   }
 
@@ -655,6 +829,11 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private subscribeToCartChanges(): void {
     if (this.isLogado()) {
+      // Limpar subscription anterior se existir
+      if (this.cartSubscription) {
+        this.cartSubscription.unsubscribe();
+      }
+
       this.cartSubscription = this.cartService.cartUpdatedStream$.subscribe({
         next: (cart) => {
           if (cart && cart.items) {

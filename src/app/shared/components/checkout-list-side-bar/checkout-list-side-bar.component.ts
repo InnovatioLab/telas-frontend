@@ -74,8 +74,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadActiveCart();
-    console.log("selectedRecurrence: ", this.selectedRecurrence);
-    console.log("recurrenceOptions: ", this.recurrenceOptions);
   }
 
   ngOnDestroy(): void {
@@ -99,11 +97,9 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   private loadActiveCart(): void {
     this.cartService.getLoggedUserActiveCart().subscribe({
       next: (cart) => {
-        console.log("Cart loaded:", cart);
         this.cart = cart;
         if (cart) {
           this.selectedRecurrence = cart.recurrence;
-          console.log("Selected recurrence set to:", this.selectedRecurrence);
         }
       },
       error: (error) => {
@@ -159,6 +155,8 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         if (monitor) {
           this.selectedMonitor = monitor;
           this.monitorDetailsVisible = true;
+          // Fechar a sidebar quando abrir o dialog de detalhes
+          this.visibilidadeSidebar = false;
         }
       },
       error: (error) => {
@@ -168,7 +166,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   }
 
   onRecurrenceChange(): void {
-    console.log("Recurrence changed to:", this.selectedRecurrence);
     if (!this.cart) return;
 
     const cartRequest: CartRequestDto = {
@@ -182,7 +179,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     console.log("Updating cart with request:", cartRequest);
     this.cartService.update(cartRequest, this.cart.id).subscribe({
       next: () => {
-        console.log("Cart updated successfully");
         this.loadActiveCart();
       },
       error: (error) => {
@@ -192,12 +188,10 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   }
 
   onDropdownShow(): void {
-    console.log("Dropdown opened");
     this.dropdownOpen = true;
   }
 
   onDropdownHide(): void {
-    console.log("Dropdown closed");
     this.dropdownOpen = false;
   }
 
@@ -252,5 +246,16 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   unselectMonitor(): void {
     this.selectedMonitor = null;
     this.monitorDetailsVisible = false;
+  }
+
+  onMonitorDialogHide(): void {
+    // Quando o dialog de detalhes do monitor for fechado, reabrir a sidebar
+    this.selectedMonitor = null;
+    this.monitorDetailsVisible = false;
+
+    // Reabrir a sidebar checkout
+    setTimeout(() => {
+      this.visibilidadeSidebar = true;
+    }, 100); // Pequeno delay para garantir que o dialog seja completamente fechado
   }
 }

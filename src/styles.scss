@@ -469,6 +469,7 @@ td {
 .p-inputnumber .p-inputtext,
 .p-autocomplete .p-autocomplete-input,
 .p-inputtext,
+.p-inputmask,
 input[type="text"],
 input[type="password"],
 input[type="email"],
@@ -492,9 +493,8 @@ textarea {
     color: var(--cor-desabilitado);
   }
 
-  &:enabled:focus,
   &:focus,
-  .p-focus {
+  &.p-focus {
     outline: none;
     border-color: var(--cor-primaria) !important;
     box-shadow: none !important;
@@ -511,6 +511,13 @@ textarea {
     background-color: var(--cor-desabilitado);
     cursor: default;
   }
+}
+
+.p-inputmask.ng-dirty.ng-invalid,
+.p-inputmask.ng-touched.ng-invalid,
+.p-inputtext.ng-dirty.ng-invalid,
+.p-inputtext.ng-touched.ng-invalid {
+  border-color: var(--cor-erro) !important;
 }
 
 input:disabled,
@@ -1855,6 +1862,8 @@ label.required::after {
 .ng-dirty.ng-invalid > .p-cascadeselect,
 .ng-dirty.ng-invalid > .p-checkbox > .p-checkbox-box,
 .ng-dirty.ng-invalid > .p-chips > .p-inputtext,
+.ng-dirty.ng-invalid > .p-inputmask > .p-inputtext,
+.ng-touched.ng-invalid > .p-inputmask > .p-inputtext,
 .ng-dirty.ng-invalid > .p-dropdown,
 .ng-touched.ng-invalid > .p-dropdown,
 .ng-dirty.ng-invalid > .p-select,
@@ -1883,7 +1892,20 @@ label.required::after {
 .ng-dirty.ng-invalid > .p-calendar > .p-inputtext:focus,
 .ng-dirty.ng-invalid > .p-cascadeselect:focus,
 .ng-dirty.ng-invalid > .p-checkbox > .p-checkbox-box:focus,
+.ng-dirty.ng-invalid > .p-chips > .p-inputtext:hover,
+.ng-dirty.ng-invalid > .p-inputmask > .p-inputtext:hover,
+.ng-dirty.ng-invalid > .p-chips > .p-inputtext.p-hover,
+.ng-dirty.ng-invalid > .p-inputmask > .p-inputtext.p-hover,
 .ng-dirty.ng-invalid > .p-chips > .p-inputtext:focus,
+.ng-dirty.ng-invalid > .p-inputmask > .p-inputtext:focus,
+.ng-touched.ng-invalid > .p-inputmask > .p-inputtext:focus,
+.ng-dirty.ng-invalid > .p-inputmask > .p-inputtext.p-focus,
+.ng-touched.ng-invalid > .p-inputmask > .p-inputtext.p-focus,
+.ng-dirty.ng-invalid > .p-inputmask:focus,
+.ng-dirty.ng-invalid > .p-inputmask.p-focus,
+.ng-dirty.ng-invalid > .p-inputmask:hover,
+.ng-dirty.ng-invalid > .p-inputmask > .p-inputtext.p-focus,
+.ng-touched.ng-invalid > .p-inputmask > .p-inputtext.p-focus,
 .ng-dirty.ng-invalid > .p-dropdown:focus,
 .ng-touched.ng-invalid > .p-dropdown:focus,
 .ng-dirty.ng-invalid > .p-select.p-focus,
@@ -1966,7 +1988,11 @@ label.required::after {
   ).ng-touched.ng-invalid,
 .p-select.ng-invalid.ng-untouched.ui-inputwrapper-focus:not(
     form
-  ).ng-touched.ng-invalid {
+  ).ng-touched.ng-invalid,
+.ng-touched.ng-invalid > .p-inputmask,
+.ng-dirty.ng-invalid > .p-inputmask:hover,
+.ng-dirty.ng-invalid > .p-inputmask.p-inputtext:focus,
+.ng-dirty.ng-invalid > .p-inputmask.p-inputtext.p-focus {
   border-color: var(--cor-erro) !important;
 }
 

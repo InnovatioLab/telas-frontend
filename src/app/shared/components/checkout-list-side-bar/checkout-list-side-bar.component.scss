@@ -4,6 +4,14 @@
       color: var(--cor-primaria) !important;
     }
 
+    .p-card-body {
+      padding: 0px !important;
+    }
+
+    .p-card-content {
+      padding: 0px !important;
+    }
+
     .p-sidebar {
       width: 50vw;
       max-width: 650px;
@@ -51,30 +59,12 @@
     }
   }
 
-  .label-quantidade {
-    color: var(--cor-primaria);
-    margin-bottom: 10px;
-
-    .quantidade-items {
-      color: var(--cor-primaria);
-      margin-right: 5px;
-    }
-  }
-
   .card-item {
     ::ng-deep {
       .p-card {
         box-shadow: none;
         border-radius: 15px;
         border: 1px solid #f3f3f3;
-
-        .p-card-body {
-          padding: 1rem;
-        }
-
-        .p-card-content {
-          padding: 0;
-        }
       }
     }
 
@@ -100,11 +90,6 @@
           color: var(--cor-primaria);
           font-size: 1.2rem;
         }
-      }
-
-      .item-actions {
-        display: flex;
-        gap: 5px;
       }
     }
   }
@@ -188,5 +173,15 @@
         }
       }
     }
+  }
+}
+
+.label-quantidade {
+  color: var(--cor-primaria) !important;
+  margin-bottom: 10px;
+
+  .quantidade-items {
+    color: var(--cor-primaria) !important;
+    margin-right: 5px;
   }
 }
