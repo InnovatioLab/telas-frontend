@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   template: `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" [attr.width]="size" [attr.height]="size" fill="currentColor">
-    <path d="M12 16l-4-4h3V4h2v8h3l-4 4zM4 20h16v-2H4v2z" fill="currentColor" transform="translate(0,2)"/>
+    <path d="M12 16l-4-4h3V4h2v8h3l-4 4zM4 20h16v-2H4v2z" fill="var(--cor-cinza-fundo)" transform="translate(0,2)"/>
   </svg>
   `
 })

@@ -115,7 +115,9 @@
   }
   
   .menu-side-container {
-    width: 250px;
+    width: 70px;
+    min-width: 70px;
+    max-width: 70px;
     
     &.fixed {
       transform: translateX(-100%) !important;
@@ -123,9 +125,22 @@
   }
   
   .menu-header {
+    height: 60px;
     .menu-actions {
       justify-content: flex-end;
     }
+  }
+
+  .menu-label {
+    display: none;
+  }
+
+  .menu-title {
+    display: none;
+  }
+
+  .menu-footer {
+    display: none !important;
   }
 }
 

@@ -27,7 +27,7 @@
             <label for="adFile" style="margin-bottom: 0;">File</label>
             <button type="button" pButton class="p-button-outlined" (click)="fileInput.click()">
               <app-icon-upload></app-icon-upload>
-              <span style="margin-left: 0.5rem;">Select file</span>
+              <span class="file-label">Select file</span>
             </button>
             <input #fileInput id="adFile" type="file" (change)="onFileSelected($event)" accept="image/*,video/*" style="display: none;" required />
             <span *ngIf="selectedFile" style="font-size: 0.95em; color: #555; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ selectedFile.name }}</span>

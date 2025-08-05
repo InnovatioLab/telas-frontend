@@ -38,7 +38,17 @@
   }
 
   .desktop-header {
-    display: none !important;
+    display: block !important;
+  }
+
+  .search-container-desktop {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 16px;
   }
 
   .mobile-menu {
@@ -1174,17 +1184,17 @@ header {
 .address-search-container {
   width: 100%;
   margin: 0;
-
+  
   .address-search-input {
     position: relative;
     width: 80%;
     display: flex;
     align-items: center;
-
+    color: var(--cor-primaria-escura) !important;
+    
     input {
+      border: 1px solid var(--cor-primaria);
       max-height: 35px;
-      color: var(--cor-branca) !important;
-      border-color: var(--cor-branca) !important;
 
       &:focus {
         border-color: var(--cor-branca) !important;
@@ -1228,6 +1238,7 @@ header {
       display: flex;
       align-items: center;
       justify-content: center;
+      color: var(--cor-primaria) !important;
 
       .search-icon {
         font-size: 1rem;
@@ -1283,43 +1294,45 @@ header {
   }
 }
 
-@media (max-width: 768px) {
-  .mobile-header-user .header-content:not(:has(.menu-trigger)),
-  .mobile-header-admin .header-content:not(:has(.menu-trigger)) {
-    .logo-container {
-      margin-left: 10px;
-    }
+@media screen and (max-width: 768px) {
+  .desktop-header {
+    display: block !important;
   }
-}
 
-@media (min-width: 769px) {
-  .header-container:not(:has(.menu-trigger-desktop)) {
-    section {
-      .imagem-logo {
-        margin-left: 10px;
-      }
-    }
+  .search-container-desktop {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 16px;
   }
-}
 
-.icon-button app-icon-shopping-basket,
-.icon-button app-icon-notifications,
-.icon-button app-icon-settings {
-  display: inline-flex;
-  width: 24px;
-  height: 24px;
-}
+  .desktop-box-actions {
+    display: none !important;
+  }
 
-app-icon-bars {
-  display: flex;
-  width: 24px;
-  height: 24px;
-}
+  .mobile-box-actions {
+    display: none !important;
+  }
 
-app-icon-search {
-  display: flex;
-  width: 24px;
-  height: 24px;
+  .main-actions {
+    display: none !important;
+  }
+
+  .badge {
+    background-color: var(--cor-primaria) !important;
+    color: var(--cor-branca);
+    font-size: 12px !important;
+    width: 20px !important;
+    height: 20px !important;
+    line-height: 12px;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+  }
 }
 
 /* Estilos para o contador de alertas */

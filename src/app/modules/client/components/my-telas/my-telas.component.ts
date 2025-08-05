@@ -11,12 +11,7 @@ import { ActivatedRoute } from "@angular/router";
 import { ClientService } from "@app/core/service/api/client.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { AdValidationType } from "@app/model/client";
-import { ClientAdRequestDto } from "@app/model/dto/request/client-ad-request.dto";
-import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
-import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
-import { AttachmentResponseDto } from "@app/model/dto/response/attachment-response.dto";
-import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
-import { ErrorComponent } from "@app/shared/components";
+import { AdResponseDto } from "@app/model/dto/response/ad-request-response.dto";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { Subscription } from "rxjs";
 
