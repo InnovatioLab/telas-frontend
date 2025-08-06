@@ -57,6 +57,6 @@ export interface AuthenticatedClientResponseDto {
   }>;
   termAccepted: boolean;
   currentSubscriptionFlowStep: number;
-  hasActiveSubscription: boolean;
+  hasSubscription: boolean;
   shouldDisplayAttachments: boolean;
 }

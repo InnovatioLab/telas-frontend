@@ -15,6 +15,7 @@ import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { IconPlaceComponent } from "@app/shared/icons/place.icon";
+import { SubscriptionsIconComponent } from "@app/shared/icons/subscriptions.icon";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogModule } from "primeng/dialog";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
@@ -51,6 +52,7 @@ interface MenuItem {
     IconLogoutComponent,
     IconCloseComponent,
     IconPlaceComponent,
+    SubscriptionsIconComponent,
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: "./client-menu-side.component.html",
@@ -67,6 +69,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     { id: "home", label: "Home", icon: "pi-home" },
     { id: "wishList", label: "Wish list", icon: "pi-heart" },
     { id: "myTelas", label: "My telas", icon: "pi-map-marker" },
+    { id: "subscriptions", label: "Subscriptions", icon: "pi-desktop" },
     { id: "settings", label: "Settings", icon: "pi-cog" },
     { id: "help", label: "Help", icon: "pi-question-circle" },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
@@ -79,6 +82,10 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
     if (this.authenticatedClient.shouldDisplayAttachments === false) {
       return this.allMenuItems.filter((item) => item.id !== "myTelas");
+    }
+
+    if (this.authenticatedClient.hasSubscription === false) {
+      return this.allMenuItems.filter((item) => item.id !== "subscriptions");
     }
 
     return this.allMenuItems;
@@ -198,6 +205,9 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       case "myTelas":
         this.navegarParaMyTelas();
         break;
+      case "subscriptions":
+        this.navegarParaSubscriptions();
+        break;
       default:
         break;
     }
@@ -217,6 +227,17 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   navegarParaMyTelas(): void {
     if (this.isLogado()) {
       this.router.navigate(["/client/my-telas"]);
+      if (this.menuAberto) {
+        this.toggleMenu();
+      }
+    } else {
+      this.router.navigate(["/login"]);
+    }
+  }
+
+  navegarParaSubscriptions(): void {
+    if (this.isLogado()) {
+      this.router.navigate(["/client/subscriptions"]);
       if (this.menuAberto) {
         this.toggleMenu();
       }

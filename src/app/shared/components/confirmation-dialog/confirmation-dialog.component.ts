@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, HostListener, OnInit } from "@angular/core";
+import { LayoutUtils } from "@app/shared/utils/layout.utils";
 import { ButtonModule } from "primeng/button";
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 import { IconCheckComponent } from "../../icons/check.icon";
@@ -21,13 +22,27 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
         <div class="icon-container">
           <app-icon-warning
             *ngIf="data.severity === 'warn' || data.severity === 'error'"
+            class="error"
+            [size]="35"
           ></app-icon-warning>
-          <app-icon-check *ngIf="data.severity === 'success'"></app-icon-check>
+          <app-icon-check
+            *ngIf="data.severity === 'success'"
+            class="success"
+            [size]="35"
+          ></app-icon-check>
           <app-icon-warning
             *ngIf="!data.severity || data.severity === 'info'"
+            class="info"
+            [size]="35"
           ></app-icon-warning>
         </div>
-        <span class="message-text">{{ data.message }}</span>
+        <!-- <span class="message-text">{{ data.message}}</span> -->
+
+        <div
+          id="test-descricao-dialog"
+          class="message-text message-text-container"
+          [innerHTML]="data?.message"
+        ></div>
       </div>
 
       <div class="actions">
@@ -46,6 +61,8 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
           pButton
           icon="pi pi-check"
           [severity]="getButtonSeverity()"
+          [ngClass]="{ btnDanger: data.severity === 'error' }"
+          id="btnPrimario"
           (click)="onConfirm()"
         >
           {{ data.confirmLabel || "Confirm" }}
@@ -57,7 +74,7 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
     `
       ::ng-deep {
         .p-dialog-content {
-          padding: 2rem 1rem !important;
+          padding: 1rem 1rem 2rem 1rem !important;
         }
 
         .p-button.p-button-info {
@@ -70,8 +87,15 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
         flex-direction: column;
         align-items: center;
         gap: 1rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
         text-align: center;
+      }
+
+      .message-text-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
       }
 
       .icon-container {
@@ -87,29 +111,25 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
       .message-text {
         font-size: 1rem;
         line-height: 1.5;
-      }
-
-      .message.info {
         color: var(--cor-primaria);
-      }
-
-      .message.success {
-        color: var(--cor-sucesso);
-      }
-
-      .message.warn {
-        color: var(--cor-alerta);
-      }
-
-      .message.error {
-        color: var(--cor-erro);
       }
 
       .actions {
         display: flex;
-        justify-content: flex-end;
+        justify-content: center;
         align-items: center;
-        gap: 0.5rem;
+        gap: 2rem;
+      }
+
+      .btnDanger {
+        background-color: var(--cor-erro);
+        color: var(--cor-branca);
+
+        &:hover {
+          background-color: var(--cor-erro) !important;
+          color: var(--cor-branca);
+          opacity: 0.8;
+        }
       }
     `,
   ],
@@ -124,7 +144,14 @@ export class ConfirmationDialogComponent implements OnInit {
     this.data = config.data;
   }
 
-  ngOnInit(): void {}
+  @HostListener("window:resize", ["$event"])
+  onResize() {
+    this.config.width = LayoutUtils.getWidth();
+  }
+
+  ngOnInit(): void {
+    this.onResize();
+  }
 
   getButtonSeverity(): "info" | "success" | "warn" | "danger" {
     switch (this.data.severity) {

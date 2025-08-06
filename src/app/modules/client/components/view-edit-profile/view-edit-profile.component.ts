@@ -6,8 +6,8 @@ import { ToastService } from '@app/core/service/state/toast.service';
 import { Client } from '@app/model/client';
 import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
 import { ErrorComponent } from '@app/shared/components/error/error.component';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { IconPlusComponent } from '@app/shared/icons/plus.icon';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
 
 @Component({
   selector: 'app-view-edit-profile',

@@ -5,6 +5,7 @@ import { PaginationResponseDto } from "@app/model/dto/response/pagination-respon
 import { PaymentResponseDto } from "@app/model/dto/response/payment-response.dto";
 import { ResponseDto } from "@app/model/dto/response/response.dto";
 import {
+  SubscriptionMinResponseDto,
   SubscriptionMonitorResponseDto,
   SubscriptionResponseDto,
 } from "@app/model/dto/response/subscription-response.dto";
@@ -41,7 +42,7 @@ export class SubscriptionService {
 
   getClientSubscriptionsFilters(
     filters?: FilterSubscriptionRequestDto
-  ): Observable<PaginationResponseDto<Subscription>> {
+  ): Observable<PaginationResponseDto<SubscriptionMinResponseDto>> {
     let params = new HttpParams();
 
     if (filters) {
@@ -55,21 +56,18 @@ export class SubscriptionService {
 
     return this.http
       .get<
-        ResponseDTO<PaginationResponseDto<SubscriptionResponseDto>>
+        ResponseDTO<PaginationResponseDto<SubscriptionMinResponseDto>>
       >(`${this.apiUrl}/filters`, { params, ...this.headers })
       .pipe(
         map(
           (
             response: ResponseDTO<
-              PaginationResponseDto<SubscriptionResponseDto>
+              PaginationResponseDto<SubscriptionMinResponseDto>
             >
           ) => {
             if (response.data) {
-              const subscriptions: Subscription[] = (
-                response.data.list || []
-              ).map((subscriptionDto) =>
-                this.mapSubscriptionResponseToSubscription(subscriptionDto)
-              );
+              const subscriptions: SubscriptionMinResponseDto[] =
+                response.data.list || [];
 
               return {
                 list: subscriptions,

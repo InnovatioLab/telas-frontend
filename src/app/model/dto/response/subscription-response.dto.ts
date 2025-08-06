@@ -1,7 +1,7 @@
 import { Recurrence } from "@app/model/enums/recurrence.enum";
 import { SubscriptionStatus } from "@app/model/enums/subscription-status.enum";
-import { PaymentResponseDto } from "./payment-response.dto";
 import { MonitorType } from "@app/model/monitors";
+import { PaymentResponseDto } from "./payment-response.dto";
 
 export interface SubscriptionResponseDto {
   id: string;

@@ -235,6 +235,26 @@ td {
   width: 100%;
 }
 
+.info {
+  color: var(--cor-primaria);
+}
+
+.success {
+  color: var(--cor-sucesso);
+}
+
+.warn {
+  color: var(--cor-alerta);
+}
+
+.error {
+  color: var(--cor-erro);
+}
+
+.p-badge-danger {
+  color: var(--cor-branca) !important;
+}
+
 .campos-filtros {
   display: flex;
   align-items: center;
@@ -1599,7 +1619,7 @@ textarea {
       &.p-button-success {
         color: var(--cor-sucesso);
 
-        &:hover {
+        &:active:hover {
           background-color: rgba(40, 167, 69, 0.1);
         }
       }
@@ -1607,8 +1627,16 @@ textarea {
       &.p-button-danger {
         color: var(--cor-erro);
 
-        &:hover {
+        &:active:hover {
           background-color: rgba(220, 53, 69, 0.1);
+        }
+      }
+
+      &.upgrade-button {
+        color: #ffc107;
+
+        &:hover {
+          background-color: rgba(255, 193, 7, 0.377);
         }
       }
     }
@@ -2247,4 +2275,10 @@ label.required::after {
 .p-fileupload-header {
   padding-left: 0px;
   padding-right: 0px;
+}
+
+.search-icon {
+  &:hover {
+    cursor: pointer;
+  }
 }
