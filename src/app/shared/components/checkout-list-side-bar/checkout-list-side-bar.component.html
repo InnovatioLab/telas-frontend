@@ -69,9 +69,22 @@
           *ngFor="let item of cart.items; trackBy: trackByFn"
           class="card-item p-0"
         >
-          <div class="item flex">
+          <div class="item flex cart-item">
             <div class="item-info flex-grow-1">
-              <h4 class="item-title">Screen</h4>
+              <h4 class="item-title">
+                {{
+                  isLoadingLocationInfo(item.id)
+                    ? "Loading..."
+                    : getLocationInfo(item.id).name
+                }}
+              </h4>
+              <div class="location-description">
+                <small>{{
+                  isLoadingLocationInfo(item.id)
+                    ? "Loading location info..."
+                    : getLocationInfo(item.id).description
+                }}</small>
+              </div>
               <div class="item-address">
                 <small>Address: {{ item.monitorAddress }}</small>
               </div>
@@ -168,7 +181,7 @@
     [style]="{ width: '90%', maxWidth: '600px' }"
     [draggable]="false"
     [resizable]="false"
-    [header]="'Monitor Details'"
+    [header]="'Screen Details'"
     [closeOnEscape]="true"
     [dismissableMask]="true"
     [blockScroll]="true"
@@ -176,7 +189,52 @@
     (onHide)="onMonitorDialogHide()"
   >
     <div *ngIf="selectedMonitor" class="monitor-details">
+      <!-- Location Photo -->
+      <div
+        *ngIf="
+          !loadingSelectedMonitorLocationInfo &&
+          selectedMonitorLocationInfo?.photoUrl
+        "
+        class="location-photo-container mb-3"
+      >
+        <img
+          [src]="selectedMonitorLocationInfo.photoUrl"
+          alt="Location photo"
+          class="location-photo"
+          style="
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+          "
+          (error)="onImageError($event)"
+        />
+      </div>
+
+      <!-- Loading state for location info -->
+      <div *ngIf="loadingSelectedMonitorLocationInfo" class="text-center mb-3">
+        <p-progressSpinner
+          [style]="{ width: '40px', height: '40px' }"
+        ></p-progressSpinner>
+        <p class="text-sm text-muted">Loading location information...</p>
+      </div>
+
+      <!-- Monitor Information -->
       <div class="monitor-info">
+        <div
+          *ngIf="
+            !loadingSelectedMonitorLocationInfo && selectedMonitorLocationInfo
+          "
+          class="location-info"
+        >
+          <p>
+            <strong>Location:</strong> {{ selectedMonitorLocationInfo.name }}
+          </p>
+          <p>
+            <strong>Description:</strong>
+            {{ selectedMonitorLocationInfo.description }}
+          </p>
+        </div>
         <p><strong>Address:</strong> {{ selectedMonitor.fullAddress }}</p>
         <p *ngIf="selectedMonitor.locationDescription != null">
           <strong>Location Description:</strong>

@@ -8,6 +8,10 @@ import {
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { CartService } from "@app/core/service/api/cart.service";
+import {
+  GoogleMapsService,
+  PlaceDetails,
+} from "@app/core/service/api/google-maps.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { SubscriptionService } from "@app/core/service/api/subscription.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
@@ -48,6 +52,12 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   visibilidadeSidebar = false;
   cart: CartResponseDto | null = null;
   selectedMonitor: Monitor | null = null;
+  selectedMonitorLocationInfo: {
+    name: string;
+    description: string;
+    photoUrl?: string;
+  } | null = null;
+  loadingSelectedMonitorLocationInfo: boolean = false;
   checkoutEmProgresso = false;
   dialogoRef: DynamicDialogRef | undefined;
   recurrenceOptions = [
@@ -60,6 +70,10 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   monitorDetailsVisible: boolean = false;
   dropdownOpen: boolean = false;
 
+  // Location information for each cart item
+  locationInfo: Map<string, { name: string; description: string }> = new Map();
+  loadingLocationInfo: Map<string, boolean> = new Map();
+
   private readonly subscriptions = new Subscription();
 
   constructor(
@@ -69,7 +83,8 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     private readonly authentication: Authentication,
     private readonly cartService: CartService,
     private readonly monitorService: MonitorService,
-    private readonly subscriptionService: SubscriptionService
+    private readonly subscriptionService: SubscriptionService,
+    private readonly mapsService: GoogleMapsService
   ) {}
 
   ngOnInit(): void {
@@ -100,13 +115,91 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         this.cart = cart;
         if (cart) {
           this.selectedRecurrence = cart.recurrence;
+          // Load location info for each cart item
+          this.loadLocationInfoForCartItems(cart.items);
         }
       },
       error: (error) => {
-        console.error("Erro ao carregar carrinho:", error);
+        console.error("Error loading cart:", error);
         this.cart = null;
       },
     });
+  }
+
+  private loadLocationInfoForCartItems(items: CartItemResponseDto[]): void {
+    items.forEach((item) => {
+      this.loadLocationInfoForItem(item);
+    });
+  }
+
+  private loadLocationInfoForItem(item: CartItemResponseDto): void {
+    // Check if we already have location info for this item
+    if (this.locationInfo.has(item.id)) {
+      return;
+    }
+
+    // Mark as loading
+    this.loadingLocationInfo.set(item.id, true);
+
+    // Get monitor details first to obtain coordinates
+    this.monitorService.getMonitorById(item.monitorId).subscribe({
+      next: (monitor) => {
+        // Use Google Maps Service to get location name and description
+        this.mapsService
+          .getPlaceDetailsByCoordinates(item.latitude, item.longitude)
+          .then((placeDetails: PlaceDetails | null) => {
+            if (placeDetails) {
+              this.locationInfo.set(item.id, {
+                name: placeDetails.name || "Unknown Location",
+                description:
+                  placeDetails.description || "No description available",
+                  
+              });
+            } else {
+              this.locationInfo.set(item.id, {
+                name: "Location unavailable",
+                description: "Place details not found",
+              });
+            }
+            this.loadingLocationInfo.set(item.id, false);
+          })
+          .catch((error) => {
+            console.warn(
+              `Error getting location info for item ${item.id}:`,
+              error
+            );
+            this.locationInfo.set(item.id, {
+              name: "Location unavailable",
+              description: "Unable to retrieve location information",
+            });
+            this.loadingLocationInfo.set(item.id, false);
+          });
+      },
+      error: (error) => {
+        console.error(
+          `Error loading monitor details for item ${item.id}:`,
+          error
+        );
+        this.locationInfo.set(item.id, {
+          name: "Error loading location",
+          description: "Unable to load monitor information",
+        });
+        this.loadingLocationInfo.set(item.id, false);
+      },
+    });
+  }
+
+  getLocationInfo(itemId: string): { name: string; description: string } {
+    return (
+      this.locationInfo.get(itemId) || {
+        name: "Loading...",
+        description: "Loading location info...",
+      }
+    );
+  }
+
+  isLoadingLocationInfo(itemId: string): boolean {
+    return this.loadingLocationInfo.get(itemId) || false;
   }
 
   removerItem(item: CartItemResponseDto): void {
@@ -155,6 +248,8 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         if (monitor) {
           this.selectedMonitor = monitor;
           this.monitorDetailsVisible = true;
+          // Load location info for the selected monitor
+          this.loadLocationInfoForSelectedMonitor(monitor);
           // Fechar a sidebar quando abrir o dialog de detalhes
           this.visibilidadeSidebar = false;
         }
@@ -163,6 +258,77 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         console.error("Erro ao carregar detalhes do monitor:", error);
       },
     });
+  }
+
+  private loadLocationInfoForSelectedMonitor(monitor: Monitor): void {
+    this.selectedMonitorLocationInfo = null;
+    this.loadingSelectedMonitorLocationInfo = true;
+
+    if (monitor.address?.latitude && monitor.address?.longitude) {
+      // Convert coordinates to numbers if they're strings
+      const lat =
+        typeof monitor.address.latitude === "string"
+          ? parseFloat(monitor.address.latitude)
+          : monitor.address.latitude;
+      const lng =
+        typeof monitor.address.longitude === "string"
+          ? parseFloat(monitor.address.longitude)
+          : monitor.address.longitude;
+
+      // Use Google Maps Service to get location details including photos
+      this.mapsService
+        .getPlaceDetailsByCoordinates(lat, lng)
+        .then((placeDetails: PlaceDetails | null) => {
+          if (placeDetails) {
+            const photoUrl = this.getFirstPhotoUrl(placeDetails);
+            this.selectedMonitorLocationInfo = {
+              name: placeDetails.name || "Unknown Location",
+              description:
+                placeDetails.description || "No description available",
+              photoUrl: photoUrl,
+            };
+          } else {
+            this.selectedMonitorLocationInfo = {
+              name: "Location unavailable",
+              description: "Place details not found",
+            };
+          }
+          this.loadingSelectedMonitorLocationInfo = false;
+        })
+        .catch((error) => {
+          console.warn(
+            `Error getting location info for selected monitor:`,
+            error
+          );
+          this.selectedMonitorLocationInfo = {
+            name: "Location unavailable",
+            description: "Unable to retrieve location information",
+          };
+          this.loadingSelectedMonitorLocationInfo = false;
+        });
+    } else {
+      // No coordinates available, use fallback
+      this.selectedMonitorLocationInfo = {
+        name: "Location unavailable",
+        description: "No coordinates available for this monitor",
+      };
+      this.loadingSelectedMonitorLocationInfo = false;
+    }
+  }
+
+  private getFirstPhotoUrl(placeDetails: PlaceDetails): string | undefined {
+    console.log("placeDetails:", placeDetails);
+    console.log("photos:", placeDetails.photos);
+    if (placeDetails.photos && placeDetails.photos.length > 0) {
+      const photo = placeDetails.photos[0];
+      return photo.getUrl({ maxWidth: 400, maxHeight: 300 });
+    }
+    return undefined;
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = "none";
   }
 
   onRecurrenceChange(): void {
@@ -252,6 +418,8 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   onMonitorDialogHide(): void {
     // Quando o dialog de detalhes do monitor for fechado, reabrir a sidebar
     this.selectedMonitor = null;
+    this.selectedMonitorLocationInfo = null;
+    this.loadingSelectedMonitorLocationInfo = false;
     this.monitorDetailsVisible = false;
 
     // Reabrir a sidebar checkout

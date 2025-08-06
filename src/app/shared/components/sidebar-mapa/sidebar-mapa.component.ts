@@ -13,7 +13,6 @@ import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
 import { CartResponseDto } from "@app/model/dto/response/cart-response.dto";
 import { Recurrence } from "@app/model/enums/recurrence.enum";
-import { IconArquivoComponent } from "@app/shared/icons/arquivo.icon";
 import { IconBackComponent } from "@app/shared/icons/back.icon";
 import { IconBoltComponent } from "@app/shared/icons/bolt.icon";
 import { IconCheckComponent } from "@app/shared/icons/check.icon";
@@ -36,7 +35,6 @@ import { PrimengModule } from "../../primeng/primeng.module";
     IconsModule,
     IconBackComponent,
     IconTvDisplayComponent,
-    IconArquivoComponent,
     IconBoltComponent,
     IconCheckComponent,
     IconCloseComponent,

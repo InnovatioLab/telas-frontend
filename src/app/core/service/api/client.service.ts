@@ -13,7 +13,16 @@ import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { ClientResponseDTO } from "@app/model/dto/response/client-response.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
-import { BehaviorSubject, map, Observable, Subject } from "rxjs";
+import { ResponseDto } from "@app/model/dto/response/response.dto";
+import { WishlistResponseDto } from "@app/model/dto/response/wishlist-response.dto";
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  of,
+  Subject,
+} from "rxjs";
 import { BaseHttpService } from "./base-htttp.service";
 import { FilterClientRequestDto } from "./client-management.service";
 
@@ -303,6 +312,27 @@ export class ClientService extends BaseHttpService<Client> {
       .get<
         ResponseDTO<AuthenticatedClientResponseDto>
       >(`${this.baseUrl}/authenticated`)
+      .pipe(map((response) => response.data));
+  }
+
+  addToWishlist(monitorId: string): Observable<boolean> {
+    return this.http
+      .post<
+        ResponseDto<any>
+      >(`${this.baseUrl}/wishlist/${monitorId}`, {}, this.headers)
+      .pipe(
+        map((response: ResponseDto<any>) => response.success || false),
+        catchError((error) => {
+          return of(false);
+        })
+      );
+  }
+
+  getWishlist(): Observable<WishlistResponseDto> {
+    return this.http
+      .get<
+        ResponseDTO<WishlistResponseDto>
+      >(`${this.baseUrl}/wishlist`, this.headers)
       .pipe(map((response) => response.data));
   }
 }

@@ -12,4 +12,6 @@ export interface CartItemResponseDto {
   monitorId: string;
   blockQuantity: number;
   monitorAddress: string;
+  latitude: number;
+  longitude: number;
 }
