@@ -1,0 +1,68 @@
+<p-card class="wishlist-item-card">
+  <div class="item-content" [class.no-photo]="!hasPhoto">
+    <!-- Foto -->
+    <div class="item-photo" *ngIf="hasPhoto">
+      <img
+        [src]="streetViewUrl"
+        [alt]="displayName"
+        (error)="onImageError()"
+        class="monitor-image"
+      />
+    </div>
+
+    <!-- Informações do monitor -->
+    <div class="item-info">
+      <div class="info-group" *ngIf="!isLoading">
+        <h3 class="item-name">{{ displayName }}</h3>
+        <p class="item-description">{{ displayDescription }}</p>
+      </div>
+
+      <div class="info-group" *ngIf="isLoading">
+        <p-skeleton width="200px" height="20px"></p-skeleton>
+        <p-skeleton width="300px" height="16px"></p-skeleton>
+      </div>
+
+      <div class="info-details">
+        <div class="detail-item">
+          <p-badge
+            [value]="item.active ? 'Active' : 'Inactive'"
+            [severity]="item.active ? 'success' : 'danger'"
+          ></p-badge>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Size:</span>
+          <span class="detail-value">{{ displaySize }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Status:</span>
+          <span
+            class="detail-value"
+            [class.unavailable]="!item.hasAvailableSlots"
+          >
+            {{ displayAvailable }}
+          </span>
+        </div>
+
+        <div class="detail-item" *ngIf="showEstimatedDate">
+          <span class="detail-label">Next Available:</span>
+          <span class="detail-value">{{
+            item.estimatedSlotReleaseDate | date: "short"
+          }}</span>
+        </div>
+      </div>
+
+      <div class="item-actions flex justify-content-end">
+        <button
+          pButton
+          label="Add Screen"
+          icon="pi pi-plus"
+          class="p-button p-button-primary"
+          [disabled]="isButtonDisabled"
+          (click)="onAddToCart()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</p-card>
