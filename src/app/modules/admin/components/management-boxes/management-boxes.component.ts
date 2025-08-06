@@ -95,6 +95,46 @@ export class ManagementBoxesComponent implements OnInit {
     });
   }
 
+  loadAvailableBoxAddressesForEdit(currentBox: Box): void {
+    this.loadingBoxAddresses = true;
+    this.boxService.getAvailableBoxAddresses().subscribe({
+      next: (boxAddresses) => {
+        this.availableBoxAddresses = boxAddresses || [];
+
+        const currentBoxAddress: BoxAddress = {
+          id: currentBox.boxAddressId || "",
+          ip: currentBox.ip,
+          mac: currentBox.macAddress || "",
+        };
+
+        const existsInList = this.availableBoxAddresses.some(
+          (addr) => addr.ip === currentBox.ip
+        );
+
+        if (!existsInList) {
+          this.availableBoxAddresses.unshift(currentBoxAddress);
+        }
+
+        const boxAddress = this.availableBoxAddresses.find(
+          (addr) => addr.ip === currentBox.ip
+        );
+
+        if (boxAddress) {
+          this.selectedBoxAddress = boxAddress;
+          if (this.selectedBoxForEdit) {
+            this.selectedBoxForEdit.boxAddressId = boxAddress.id;
+          }
+        }
+
+        this.loadingBoxAddresses = false;
+      },
+      error: (error) => {
+        this.toastService.erro("Error loading box addresses");
+        this.loadingBoxAddresses = false;
+      },
+    });
+  }
+
   loadAvailableMonitors(): void {
     this.loadingMonitors = true;
     this.boxService.getAvailableMonitors().subscribe({
@@ -260,19 +300,12 @@ export class ManagementBoxesComponent implements OnInit {
     this.selectedBoxForEdit = { ...box };
     this.selectedBoxAddress = null;
 
-    const boxAddress = this.availableBoxAddresses.find(
-      (addr) => addr.ip === box.ip
-    );
-    if (boxAddress) {
-      this.selectedBoxAddress = boxAddress;
-      this.selectedBoxForEdit.boxAddressId = boxAddress.id;
-    }
-
-    this.loadAvailableBoxAddresses();
+    // Carrega os endereços disponíveis incluindo o atual e define a seleção automaticamente
+    this.loadAvailableBoxAddressesForEdit(box);
     this.loadAvailableMonitors();
+
     this.editBoxModalVisible = true;
   }
-
   updateBox(updateData: { id: string; data: BoxRequestDto }): void {
     this.boxService.updateBox(updateData.id, updateData.data).subscribe({
       next: (updatedBox) => {

@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment.interface';
-import { MapPoint } from '../state/map-point.interface';
 import { LoadingService } from '../state/loading.service';
+import { MapPoint } from '../state/map-point.interface';
 
 export interface AddressSearchResult {
   location: MapPoint;

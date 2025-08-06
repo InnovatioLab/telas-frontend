@@ -1184,15 +1184,16 @@ header {
 .address-search-container {
   width: 100%;
   margin: 0;
-  
+
   .address-search-input {
     position: relative;
     width: 80%;
     display: flex;
     align-items: center;
     color: var(--cor-primaria-escura) !important;
-    
+
     input {
+      color: var(--cor-branca) !important;
       border: 1px solid var(--cor-primaria);
       max-height: 35px;
 
@@ -1201,7 +1202,7 @@ header {
       }
 
       &::placeholder {
-        color: var(--cor-branca) !important;
+        color: var(--cor-cinza) !important;
         text-align: left !important;
       }
 
@@ -1238,11 +1239,11 @@ header {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--cor-primaria) !important;
+      color: var(--cor-branca) !important;
 
       .search-icon {
         font-size: 1rem;
-        color: var(--cor-primaria) !important;
+        color: var(--cor-branca) !important;
       }
 
       &:disabled {
@@ -1391,4 +1392,36 @@ header {
 #admin-alerts-button,
 #admin-alerts-button-mobile {
   position: relative;
+}
+
+/* Estilos para botões de carrinho desabilitados */
+.icon-button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+
+  app-icon-shopping-basket {
+    opacity: 0.5;
+  }
+
+  .badge {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    opacity: 0.5 !important;
+    background: transparent !important;
+  }
+}
+
+#test-btn-checkout:disabled,
+#test-btn-checkout-mobile:disabled,
+#test-btn-checkout-desktop:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+
+  app-icon-shopping-basket {
+    opacity: 0.4;
+    color: #ccc !important;
+  }
 }

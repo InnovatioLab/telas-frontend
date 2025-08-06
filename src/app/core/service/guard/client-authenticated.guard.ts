@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { Authentication } from '../auth/autenthication';
 import { Role } from '@app/model/client';
+import { Authentication } from '../auth/autenthication';
 import { ToastService } from '../state/toast.service';
 
 export const ClientAuthenticatedGuard: CanActivateFn = () => {

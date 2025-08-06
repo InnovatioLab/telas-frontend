@@ -34,7 +34,7 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
   ) {
     this.monitorForm = this.fb.group({
       size: [null, [Validators.required, Validators.min(0.01), Validators.max(999.99)]],
-      type: [MonitorType.BASIC, [Validators.required]],
+      type: [null, [Validators.required]],
       active: [true, [Validators.required]],
       locationDescription: ['', [Validators.maxLength(200)]],
       address: this.fb.group({
@@ -68,20 +68,20 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
     if (!this.monitor) return;
 
     const formData = {
-      size: this.monitor.size || 0,
-      type: this.monitor.type || MonitorType.BASIC,
-      active: this.monitor.active || true,
-      locationDescription: this.monitor.locationDescription || '',
+      size: this.monitor.size ?? 0,
+      type: this.monitor.type ?? MonitorType.BASIC,
+      active: this.monitor.active ?? true,
+      locationDescription: this.monitor.locationDescription ?? '',
       address: {
-        id: this.monitor.address?.id || '',
-        street: this.monitor.address?.street || '',
-        zipCode: this.monitor.address?.zipCode || '',
-        city: this.monitor.address?.city || '',
-        state: this.monitor.address?.state || '',
-        country: this.monitor.address?.country || 'US',
-        complement: this.monitor.address?.complement || '',
-        latitude: this.monitor.address?.latitude || null,
-        longitude: this.monitor.address?.longitude || null
+        id: this.monitor.address?.id ?? '',
+        street: this.monitor.address?.street ?? '',
+        zipCode: this.monitor.address?.zipCode ?? '',
+        city: this.monitor.address?.city ?? '',
+        state: this.monitor.address?.state ?? '',
+        country: this.monitor.address?.country ?? 'US',
+        complement: this.monitor.address?.complement ?? '',
+        latitude: this.monitor.address?.latitude ?? null,
+        longitude: this.monitor.address?.longitude ?? null
       }
     };
 

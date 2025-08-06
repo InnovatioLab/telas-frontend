@@ -1,24 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
-import { PrimengModule } from '../../primeng/primeng.module';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, Inject, OnDestroy, OnInit } from '@angular/core';
+import { CartService } from '@app/core/service/api/cart.service';
+import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { IconArquivoComponent } from '@app/shared/icons/arquivo.icon';
+import { IconBackComponent } from '@app/shared/icons/back.icon';
+import { IconBoltComponent } from '@app/shared/icons/bolt.icon';
+import { IconBuildingComponent } from '@app/shared/icons/building.icon';
+import { IconCheckComponent } from '@app/shared/icons/check.icon';
+import { IconClockComponent } from '@app/shared/icons/clock.icon';
+import { IconCloseComponent } from '@app/shared/icons/close.icon';
+import { IconsModule } from '@app/shared/icons/icons.module';
+import { IconKeyComponent } from '@app/shared/icons/key.icon';
+import { IconMapMarkerComponent } from '@app/shared/icons/map-marker.icon';
+import { IconPlaceComponent } from '@app/shared/icons/place.icon';
+import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
+import { IconWarningComponent } from '@app/shared/icons/warning.icon';
+import { CartRequestDto, CartItemRequestDto } from '@app/model/dto/request/cart-request.dto';
+import { CartResponseDto } from '@app/model/dto/response/cart-response.dto';
+import { Recurrence } from '@app/model/enums/recurrence.enum';
 import { Subscription } from 'rxjs';
 import { ENVIRONMENT } from 'src/environments/environment-token';
 import { Environment } from 'src/environments/environment.interface';
-import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { IconsModule } from '@app/shared/icons/icons.module';
-import { IconBackComponent } from '@app/shared/icons/back.icon';
-import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
-import { IconPlaceComponent } from '@app/shared/icons/place.icon';
-import { IconArquivoComponent } from '@app/shared/icons/arquivo.icon';
-import { IconBuildingComponent } from '@app/shared/icons/building.icon';
-import { IconMapMarkerComponent } from '@app/shared/icons/map-marker.icon';
-import { IconKeyComponent } from '@app/shared/icons/key.icon';
-import { IconBoltComponent } from '@app/shared/icons/bolt.icon';
-import { IconCheckComponent } from '@app/shared/icons/check.icon';
-import { IconCloseComponent } from '@app/shared/icons/close.icon';
-import { IconWarningComponent } from '@app/shared/icons/warning.icon';
-import { IconClockComponent } from '@app/shared/icons/clock.icon';
+import { PrimengModule } from '../../primeng/primeng.module';
 
 @Component({
   selector: 'app-sidebar-mapa',
@@ -55,6 +59,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   
   constructor(
     private readonly mapsService: GoogleMapsService,
+    private readonly cartService: CartService,
     @Inject(ENVIRONMENT) private readonly env: Environment,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -150,8 +155,79 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
   adicionarALista(): void {
     if (this.pontoSelecionado) {
-      this.mapsService.addToSavedPoints(this.pontoSelecionado);
+      this.addToCart();
       this.fecharSidebar();
+    }
+  }
+
+  private addToCart(): void {
+    // Verificar se já existe um carrinho ativo
+    this.cartService.getLoggedUserCart().subscribe({
+      next: (activeCart) => {
+        if (activeCart) {
+          // Atualizar carrinho existente
+          this.updateExistingCart(activeCart);
+        } else {
+          // Criar novo carrinho
+          this.createNewCart();
+        }
+      },
+      error: () => {
+        // Em caso de erro, criar novo carrinho
+        this.createNewCart();
+      }
+    });
+  }
+
+  private createNewCart(): void {
+    const cartRequest: CartRequestDto = {
+      recurrence: Recurrence.MONTHLY,
+      items: [{
+        monitorId: this.pontoSelecionado!.id,
+        blockQuantity: 1
+      }]
+    };
+
+    this.cartService.addToCart(cartRequest).subscribe({
+      next: () => {
+        // Sucesso ao adicionar ao carrinho
+      },
+      error: (error) => {
+        console.error('Erro ao adicionar ao carrinho:', error);
+      }
+    });
+  }
+
+  private updateExistingCart(activeCart: CartResponseDto): void {
+    // Verificar se o monitor já está no carrinho
+    const existingItem = activeCart.items.find(item => item.monitorId === this.pontoSelecionado!.id);
+    
+    if (!existingItem) {
+      // Adicionar novo item ao carrinho existente
+      const updatedItems = [
+        ...activeCart.items.map(item => ({
+          monitorId: item.monitorId,
+          blockQuantity: item.blockQuantity
+        })),
+        {
+          monitorId: this.pontoSelecionado!.id,
+          blockQuantity: 1
+        }
+      ];
+
+      const cartRequest: CartRequestDto = {
+        recurrence: activeCart.recurrence,
+        items: updatedItems
+      };
+
+      this.cartService.update(cartRequest, activeCart.id).subscribe({
+        next: () => {
+          // Sucesso ao atualizar carrinho
+        },
+        error: (error) => {
+          console.error('Erro ao atualizar carrinho:', error);
+        }
+      });
     }
   }
 }

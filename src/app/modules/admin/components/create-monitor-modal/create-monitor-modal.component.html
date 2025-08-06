@@ -1,138 +1,186 @@
 <div class="create-monitor-modal">
   <div class="modal-header">
     <h2>Create New Monitor</h2>
-    <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-text p-button-secondary close-btn" 
-            (click)="cancel()"></button>
+    <button
+      pButton
+      pRipple
+      icon="pi pi-times"
+      class="p-button-rounded p-button-text p-button-secondary close-btn"
+      (click)="cancel()"
+    ></button>
   </div>
 
   <form [formGroup]="monitorForm" (ngSubmit)="submit()" class="modal-content">
     <div class="form-section p-0">
       <h3>Monitor Information</h3>
-      
+
       <div class="form-row">
         <div class="form-field">
-          <label for="size">Size (inches)*</label>
-          <p-inputNumber 
-            id="size" 
-            formControlName="size" 
-            [min]="0.01" 
-            [max]="999.99" 
-            [minFractionDigits]="2" 
+          <label for="size" class="required">Size (inches)</label>
+          <p-inputNumber
+            id="size"
+            formControlName="size"
+            [min]="0.01"
+            [max]="999.99"
+            [minFractionDigits]="2"
             [maxFractionDigits]="2"
-            placeholder="Enter size">
+            placeholder="Enter size"
+          >
           </p-inputNumber>
-          <small class="error-message" *ngIf="getFieldError('size')">{{ getFieldError('size') }}</small>
+          <small class="error-message" *ngIf="getFieldError('size')">{{
+            getFieldError("size")
+          }}</small>
         </div>
 
         <div class="form-field">
           <label for="locationDescription">Location Description</label>
-          <textarea 
-            pInputTextarea 
-            id="locationDescription" 
-            formControlName="locationDescription" 
+          <textarea
+            pInputTextarea
+            id="locationDescription"
+            formControlName="locationDescription"
             placeholder="Enter location description"
-            rows="3">
+            rows="3"
+          >
           </textarea>
-          <small class="error-message" *ngIf="getFieldError('locationDescription')">{{ getFieldError('locationDescription') }}</small>
+          <small
+            class="error-message"
+            *ngIf="getFieldError('locationDescription')"
+            >{{ getFieldError("locationDescription") }}</small
+          >
         </div>
       </div>
     </div>
 
     <div class="form-section p-0">
       <h3>Address Information</h3>
-      
+
       <div formGroupName="address" class="address-group p-0">
         <div class="form-row">
           <div class="form-field">
-            <label for="zipCode">Zip Code*</label>
+            <label for="zipCode" class="required">ZipCode</label>
             <div class="zipcode-input-container">
-              <input 
-                pInputText 
-                id="zipCode" 
-                formControlName="zipCode" 
+              <input
+                pInputText
+                id="zipCode"
+                formControlName="zipCode"
                 placeholder="Enter 5-digit zip code"
-                maxlength="5">
-              <i *ngIf="loadingZipCode" class="pi pi-spin pi-spinner loading-icon"></i>
+                maxlength="5"
+              />
+              <i
+                *ngIf="loadingZipCode"
+                class="pi pi-spin pi-spinner loading-icon"
+              ></i>
             </div>
-            <small class="help-text">Enter the zip code to automatically fill city and state</small>
-            <small class="error-message" *ngIf="getFieldError('address', 'zipCode')">{{ getFieldError('address', 'zipCode') }}</small>
+            <small class="help-text"
+              >Enter the zip code to automatically fill city and state</small
+            >
+            <small
+              class="error-message"
+              *ngIf="getFieldError('address', 'zipCode')"
+              >{{ getFieldError("address", "zipCode") }}</small
+            >
           </div>
 
           <div class="form-field">
-            <label for="street">Street*</label>
-            <input 
-              pInputText 
-              id="street" 
-              formControlName="street" 
-              placeholder="Enter street">
-            <small class="error-message" *ngIf="getFieldError('address', 'street')">{{ getFieldError('address', 'street') }}</small>
+            <label for="street" class="required">Street</label>
+            <input
+              pInputText
+              id="street"
+              formControlName="street"
+              placeholder="Enter street"
+            />
+            <small
+              class="error-message"
+              *ngIf="getFieldError('address', 'street')"
+              >{{ getFieldError("address", "street") }}</small
+            >
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="city">City*</label>
-            <input 
-              pInputText 
-              id="city" 
-              formControlName="city" 
-              placeholder="Enter city">
-            <small class="error-message" *ngIf="getFieldError('address', 'city')">{{ getFieldError('address', 'city') }}</small>
+            <label for="city" class="required">City</label>
+            <input
+              pInputText
+              id="city"
+              formControlName="city"
+              placeholder="Enter city"
+            />
+            <small
+              class="error-message"
+              *ngIf="getFieldError('address', 'city')"
+              >{{ getFieldError("address", "city") }}</small
+            >
           </div>
 
           <div class="form-field">
-            <label for="state">State*</label>
-            <input 
-              pInputText 
-              id="state" 
-              formControlName="state" 
+            <label for="state" class="required">State</label>
+            <input
+              pInputText
+              id="state"
+              formControlName="state"
               placeholder="Enter 2-letter state code"
-              maxlength="2">
-            <small class="error-message" *ngIf="getFieldError('address', 'state')">{{ getFieldError('address', 'state') }}</small>
+              maxlength="2"
+            />
+            <small
+              class="error-message"
+              *ngIf="getFieldError('address', 'state')"
+              >{{ getFieldError("address", "state") }}</small
+            >
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
             <label for="country">Country</label>
-            <input 
-              pInputText 
-              id="country" 
-              formControlName="country" 
-              placeholder="Enter country">
-            <small class="error-message" *ngIf="getFieldError('address', 'country')">{{ getFieldError('address', 'country') }}</small>
+            <input
+              pInputText
+              id="country"
+              formControlName="country"
+              placeholder="Enter country"
+            />
+            <small
+              class="error-message"
+              *ngIf="getFieldError('address', 'country')"
+              >{{ getFieldError("address", "country") }}</small
+            >
           </div>
 
           <div class="form-field">
             <label for="complement">Complement</label>
-            <input 
-              pInputText 
-              id="complement" 
-              formControlName="complement" 
-              placeholder="Enter complement">
-            <small class="error-message" *ngIf="getFieldError('address', 'complement')">{{ getFieldError('address', 'complement') }}</small>
+            <input
+              pInputText
+              id="complement"
+              formControlName="complement"
+              placeholder="Enter complement"
+            />
+            <small
+              class="error-message"
+              *ngIf="getFieldError('address', 'complement')"
+              >{{ getFieldError("address", "complement") }}</small
+            >
           </div>
         </div>
       </div>
     </div>
 
-     <div class="container-buttons">
-      <button 
-        pButton 
-        pRipple 
-        type="button" 
-        label="Cancel" 
+    <div class="container-buttons">
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Cancel"
         id="btnSecundario"
-        class="p-button-outlined" 
-        (click)="cancel()">
-      </button>
-      <button 
-        pButton 
-        pRipple 
-        type="submit" 
-        label="Create Monitor" 
-        [disabled]="monitorForm.invalid">
-      </button>
+        class="p-button-outlined"
+        (click)="cancel()"
+      ></button>
+      <button
+        pButton
+        pRipple
+        type="submit"
+        label="Create Monitor"
+        [disabled]="monitorForm.invalid"
+      ></button>
     </div>
   </form>
-</div> 
+</div>

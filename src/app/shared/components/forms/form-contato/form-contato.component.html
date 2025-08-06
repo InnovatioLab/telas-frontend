@@ -3,13 +3,13 @@
   <form [formGroup]="contatoForm">
     <div class="grid form-group">
       <div class="col-12 md:col-6 lg:col-3">
-        <label id="ld-numero" for="txt-numero" class="required">Phone</label>
+        <label id="ld-numero" for="numeroContato" class="required">Phone</label>
         <p-inputMask
           mask="+1 999 999 9999"
           formControlName="numeroContato"
           placeholder="+1 508 215 8681"
           class="w-full"
-          id="inp-numero"
+          inputId="numeroContato"
         />
         <app-error
           id="error-msg-numero"
@@ -19,7 +19,7 @@
       <div class="col-12 lg:col-6">
         <label id="ld-email" for="txt-email" class="required">E-mail</label>
         <input
-          type="text"
+          type="email"
           pInputText
           formControlName="email"
           placeholder="emailexample@mail.com"

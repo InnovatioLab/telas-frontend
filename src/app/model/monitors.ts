@@ -3,18 +3,17 @@ import { Address, DefaultStatus } from "./client";
 export enum MonitorType {
   BASIC = 'BASIC',
   PREMIUM = 'PREMIUM',
-  ADVANCED = 'ADVANCED'
 }
 
 export interface Monitor {
   id: string;
-  active: boolean;
-  type: MonitorType;
+  active?: boolean;
+  type?: MonitorType;
   locationDescription?: string;
-  size: number;
+  size?: number;
   productId?: string;
   maxBlocks?: number;
-  address: Address;
+  address?: Address;
   status?: DefaultStatus;
   lastUpdate?: Date;
   createdAt?: Date;

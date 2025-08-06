@@ -1,13 +1,13 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { CommonModule } from '@angular/common';
-import { ToastComponent } from './shared/components/toast/toast.component';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ToastModule } from 'primeng/toast';
 import packageJson from '../../package.json';
 import { DotsLoadingComponent } from "./shared/components/dots-loading/dots-loading.component";
+import { ToastComponent } from './shared/components/toast/toast.component';
 import { PrimengModule } from './shared/primeng/primeng.module';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-root',

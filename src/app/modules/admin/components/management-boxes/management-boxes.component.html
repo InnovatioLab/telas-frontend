@@ -84,14 +84,6 @@
                 (click)="onSelectBox(box)"
                 pTooltip="Edit Box"
               ></button>
-              <button
-                pButton
-                pRipple
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-danger p-button-text"
-                (click)="deleteBox(box.id)"
-                pTooltip="Delete Box"
-              ></button>
             </div>
           </td>
         </tr>
@@ -117,7 +109,7 @@
   >
     <div class="box-form">
       <div class="form-group">
-        <label for="boxAddress">IP Address *</label>
+        <label for="boxAddress" class="required">IP Address</label>
         <p-select
           id="boxAddress"
           [options]="availableBoxAddresses"
@@ -151,7 +143,7 @@
           [options]="availableMonitors"
           [(ngModel)]="newBox.monitorIds"
           [ngModelOptions]="{ standalone: true }"
-          optionLabel="id"
+          optionLabel="fullAddress"
           optionValue="id"
           placeholder="Select monitors"
           class="w-full"
@@ -211,7 +203,7 @@
   >
     <div class="box-form" *ngIf="selectedBoxForEdit">
       <div class="form-group">
-        <label for="editBoxAddress">IP Address *</label>
+        <label for="editBoxAddress" class="required">IP Address</label>
         <p-select
           id="editBoxAddress"
           [options]="availableBoxAddresses"
@@ -245,7 +237,7 @@
           [options]="availableMonitors"
           [(ngModel)]="selectedBoxForEdit.monitorIds"
           [ngModelOptions]="{ standalone: true }"
-          optionLabel="id"
+          optionLabel="fullAddress"
           optionValue="id"
           placeholder="Select monitors"
           class="w-full"

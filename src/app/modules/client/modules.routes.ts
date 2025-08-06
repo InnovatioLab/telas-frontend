@@ -1,66 +1,70 @@
-import { Route } from '@angular/router';
-import { ClientAuthenticatedGuard } from '@app/core/service/guard/client-authenticated.guard';
-import { AlterarSenhaComponent } from '../../shared/components/alterar-senha/alterar-senha.component';
-import { ClientViewComponent } from './components/client-view/client-view.component';
-import { MyTelasComponent } from './components/my-telas/my-telas.component';
-import { ViewEditProfileComponent } from './components/view-edit-profile/view-edit-profile.component';
-import { WishListComponent } from './components/wish-list/wish-list.component';
-import { ClientLayoutComponent } from './page/client-view-layout/client-view-layout.component';
-import { SettingsLayoutComponent } from './page/settings/settings-layout.component';
+import { Route } from "@angular/router";
+import {
+  ClientAuthenticatedGuard,
+  MyTelasGuard,
+} from "@app/core/service/guard";
+import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
+import { ClientViewComponent } from "./components/client-view/client-view.component";
+import { MyTelasComponent } from "./components/my-telas/my-telas.component";
+import { ViewEditProfileComponent } from "./components/view-edit-profile/view-edit-profile.component";
+import { WishListComponent } from "./components/wish-list/wish-list.component";
+import { ClientLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
+import { SettingsLayoutComponent } from "./page/settings/settings-layout.component";
 
 export const ROUTES: Route[] = [
   {
-    path: '',
+    path: "",
     component: ClientLayoutComponent,
     canActivate: [ClientAuthenticatedGuard],
     children: [
       {
-        path: '',
+        path: "",
         component: ClientViewComponent,
-        title: 'Home'
+        title: "Home",
       },
       {
-        path: 'wish-list',
+        path: "wish-list",
         component: WishListComponent,
-        title: 'Wish List'
+        title: "Wish List",
       },
       {
-        path: 'my-telas',
+        path: "my-telas",
         component: MyTelasComponent,
-        title: 'My Telas'
-      }
-    ]
+        canActivate: [MyTelasGuard],
+        title: "My Telas",
+      },
+    ],
   },
   {
-    path: 'settings',
+    path: "settings",
     component: SettingsLayoutComponent,
     canActivate: [ClientAuthenticatedGuard],
     children: [
       {
-        path: '',
-        redirectTo: 'profile',
-        pathMatch: 'full'
+        path: "",
+        redirectTo: "profile",
+        pathMatch: "full",
       },
       {
-        path: 'profile',
+        path: "profile",
         component: ViewEditProfileComponent,
-        title: 'Personal Data'
+        title: "Personal Data",
       },
       {
-        path: 'change-password',
+        path: "change-password",
         component: AlterarSenhaComponent,
-        title: 'Change Password'
+        title: "Change Password",
       },
       {
-        path: 'progress-ad',
+        path: "progress-ad",
         component: ViewEditProfileComponent,
-        title: 'Ad Progress'
+        title: "Ad Progress",
       },
       {
-        path: 'subscriptions',
+        path: "subscriptions",
         component: ViewEditProfileComponent,
-        title: 'Subscriptions'
-      }
-    ]
-  }
+        title: "Subscriptions",
+      },
+    ],
+  },
 ];

@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BaseModule } from '@app/shared/base/base.module';
-import { Authentication } from '@app/core/service/auth/autenthication';
-import { MapsComponent } from '@app/shared/components/maps/maps.component';
-import { SidebarMapaComponent } from '@app/shared/components/sidebar-mapa/sidebar-mapa.component';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-list/pop-up-add-list.component';
 import { MonitorService } from '@app/core/service/api/monitor.service';
+import { Authentication } from '@app/core/service/auth/autenthication';
 import { LoadingService } from '@app/core/service/state/loading.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { ToastService } from '@app/core/service/state/toast.service';
+import { BaseModule } from '@app/shared/base/base.module';
+import { MapsComponent } from '@app/shared/components/maps/maps.component';
+import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-list/pop-up-add-list.component';
+import { SidebarMapaComponent } from '@app/shared/components/sidebar-mapa/sidebar-mapa.component';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -174,9 +174,8 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mapsService.selectPoint(point);
   }
   
-  addPointToList(point: MapPoint): void {
-    this.mapsService.addToSavedPoints(point);
-  }
+  // Removido o método addPointToList pois agora o fluxo é gerenciado pelo cartService
+  // através dos componentes sidebar-mapa e pop-up-add-list
 
   private checkMapInitialization(): void {
     if (!this.mapsComponent?.isMapReady()) {

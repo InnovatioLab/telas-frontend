@@ -1,3 +1,5 @@
+import { BoxAddress } from "./box-address";
+
 export interface Box {
   id: string;
   ip: string;

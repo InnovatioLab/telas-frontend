@@ -1,8 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AdService } from '@app/core/service/api/ad.service';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
+import { ClientService } from '@app/core/service/api/client.service';
 import { MonitorService } from '@app/core/service/api/monitor.service';
 import { ToastService } from '@app/core/service/state/toast.service';
+import { Advertisement, AdvertisementStatus } from '@app/model/advertisement';
 import { CreateMonitorRequestDto, UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { Monitor } from '@app/model/monitors';
@@ -10,16 +14,11 @@ import { IconsModule } from '@app/shared/icons/icons.module';
 import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { MessageService } from 'primeng/api';
-import { CreateMonitorModalComponent } from '../create-monitor-modal/create-monitor-modal.component';
-import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-modal.component';
 import { GalleriaModule } from 'primeng/galleria';
 import { OrderListModule } from 'primeng/orderlist';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
-import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
-import { AdService } from '@app/core/service/api/ad.service';
-import { Advertisement, AdvertisementStatus } from '@app/model/advertisement';
-import { ClientService } from '@app/core/service/api/client.service';
+import { CreateMonitorModalComponent } from '../create-monitor-modal/create-monitor-modal.component';
+import { EditMonitorModalComponent } from '../edit-monitor-modal/edit-monitor-modal.component';
 
 interface Ad {
   id: string;
@@ -230,10 +229,6 @@ export class ManagementMonitorsComponent implements OnInit {
           detail: 'Monitor updated successfully!'
         });
         this.onEditMonitorModalClose();
-        
-        setTimeout(() => {
-          this.loadMonitors();
-        }, 100);
       },
       error: (error) => {
         this.messageService.add({
@@ -241,6 +236,10 @@ export class ManagementMonitorsComponent implements OnInit {
           summary: 'Error',
           detail: 'Error updating monitor. Please check the data and try again.'
         });
+        this.loading = false;
+      },
+      complete: () => {
+        this.loadMonitors();
         this.loading = false;
       }
     });

@@ -43,20 +43,17 @@
     }
   }
 
-
-  $cor-sucesso: #00763B;
-
-
+  $cor-sucesso: #00763b;
 
   .p-toast .p-toast-message {
     margin: 0 0 1rem 0;
-    box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.10);
+    box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
     border: 1px solid $cor-sucesso !important;
   }
   .p-toast .p-toast-message .p-toast-message-content {
     padding: 12px;
-    background: #F0FDF4;
+    background: #f0fdf4;
     border-radius: 15px;
   }
 
@@ -72,7 +69,10 @@
       height: 20px !important;
     }
   }
-  .p-toast .p-toast-message .p-toast-message-content .p-icon:not(.p-toast-icon-close-icon) {
+  .p-toast
+    .p-toast-message
+    .p-toast-message-content
+    .p-icon:not(.p-toast-icon-close-icon) {
     width: 24px;
     height: 24px;
   }
@@ -128,15 +128,15 @@
     background: #d4edda;
     border: solid #c3e6cb;
     border-width: 1px;
-    color: #00763B;
+    color: #00763b;
 
     .toast-icon {
-      color: #00763B !important;
+      color: #00763b !important;
     }
   }
   .p-toast .p-toast-message.p-toast-message-success .p-toast-message-icon,
   .p-toast .p-toast-message.p-toast-message-success .p-toast-icon-close {
-    color: #00763B;
+    color: #00763b;
   }
   .p-toast .p-toast-message.p-toast-message-warn {
     background: #fff3cd;
@@ -157,22 +157,28 @@
 
   .p-toast .p-toast-message.p-toast-message-error .p-toast-message-icon,
   .p-toast .p-toast-message.p-toast-message-error .p-toast-icon-close {
-    border: 1px solid #D9534F;
-    color: #D9534F !important;
+    border: 1px solid #d9534f;
+    color: #d9534f !important;
   }
 
   .p-toast .p-toast-message.p-toast-message-error .p-toast-message-content {
     background: #f8d7da;
     border: 10px solid #f8d7da !important;
-    color: #9F3A38;
+    color: #9f3a38;
   }
 
-  .p-toast .p-toast-message.p-toast-message-error .p-toast-message-content .p-toast-summary {
-    color: #D9534F;
+  .p-toast
+    .p-toast-message.p-toast-message-error
+    .p-toast-message-content
+    .p-toast-summary {
+    color: #d9534f;
   }
 
-  .p-toast .p-toast-message.p-toast-message-error .p-toast-message-content .p-toast-detail {
-    color: #5E5E5E;
+  .p-toast
+    .p-toast-message.p-toast-message-error
+    .p-toast-message-content
+    .p-toast-detail {
+    color: #5e5e5e;
   }
 
   .p-dialog-close-button {
@@ -182,43 +188,42 @@
     }
   }
 
-  .p-dialog  {
+  .p-dialog {
     background: transparent !important;
-    border: none!important;
-    box-shadow: none!important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  .p-dialog-content{
+  .p-dialog-content {
     overflow-x: hidden !important;
     border-radius: 0px;
   }
 
-
   .p-drawer {
+    background-color: var(--cor-branca) !important;
+    border: none !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    color: #212529;
+    font-size: 16px;
+    font-weight: 400;
+    width: 500px !important;
+
+    .p-sidebar-content,
+    .p-drawer-content {
       background-color: var(--cor-branca) !important;
       border: none !important;
-      height: 100vh !important;
-      overflow: hidden !important;
-      color: #212529;
-      font-size: 16px;
-      font-weight: 400;
-      width: 500px !important;
-
-      .p-sidebar-content,
-      .p-drawer-content {
-        background-color: var(--cor-branca) !important;
-        border: none !important;
-        padding: 0 !important;
-      }
+      padding: 0 !important;
     }
+  }
 
-    .p-sidebar {
-      background-color: var(--cor-branca);
+  .p-sidebar {
+    background-color: var(--cor-branca);
 
-      .p-sidebar-content {
-        padding: 0;
-      }
+    .p-sidebar-content {
+      padding: 0;
     }
+  }
 
   p-calendar.ng-invalid.ng-pristine.ng-touched .p-inputtext,
   .ng-valid.ng-dirty.ng-touched .p-dropdown:not(.p-disabled).p-focus,
@@ -227,8 +232,7 @@
   p-inputnumber.ng-touched.ng-invalid > .p-inputnumber > .p-inputtext,
   .p-inputtext.ng-pristine.ng-invalid.ng-touched,
   p-password.ng-touched.ng-invalid.ng-dirty .p-inputtext,
-  p-password.ng-touched.ng-invalid .p-inputtext
-  {
+  p-password.ng-touched.ng-invalid .p-inputtext {
     border-color: var(--cor-erro);
   }
 

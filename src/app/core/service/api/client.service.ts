@@ -1,17 +1,21 @@
-import { HttpBackend, HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Client } from '@app/model/client';
-import { Page } from '@app/model/dto/page.dto';
-import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
-import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
-import { ResponseDTO } from '@app/model/dto/response.dto';
-import { AdRequestResponseDto } from '@app/model/dto/response/ad-request-response.dto';
-import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
-import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
-import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
-import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
-import { BaseHttpService } from './base-htttp.service';
-import { FilterClientRequestDto } from './client-management.service';
+import { HttpBackend, HttpClient, HttpParams } from "@angular/common/http";
+import { inject, Injectable } from "@angular/core";
+import { Client } from "@app/model/client";
+import { Page } from "@app/model/dto/page.dto";
+import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
+import { ClientAdRequestDto } from "@app/model/dto/request/client-ad-request.dto";
+import { ClientRequestDTO } from "@app/model/dto/request/client-request.dto";
+import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
+import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
+import { ResponseDTO } from "@app/model/dto/response.dto";
+import { AdRequestResponseDto } from "@app/model/dto/response/ad-request-response.dto";
+import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
+import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
+import { ClientResponseDTO } from "@app/model/dto/response/client-response.dto";
+import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
+import { BehaviorSubject, map, Observable, Subject } from "rxjs";
+import { BaseHttpService } from "./base-htttp.service";
+import { FilterClientRequestDto } from "./client-management.service";
 
 @Injectable({ providedIn: "root" })
 export class ClientService extends BaseHttpService<Client> {
@@ -208,5 +212,97 @@ export class ClientService extends BaseHttpService<Client> {
           };
         })
       );
+  }
+
+  // Upload de attachments
+  uploadAttachment(file: File): Observable<any> {
+    // Converter arquivo para Base64
+    return new Observable((observer) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = (e.target?.result as string).split(",")[1];
+
+        const attachmentRequest: AttachmentRequestDto = {
+          name: file.name,
+          type: file.type,
+          bytes: base64,
+        };
+
+        this.http
+          .post(`${this.baseUrl}/attachments`, attachmentRequest)
+          .subscribe({
+            next: (response) => observer.next(response),
+            error: (error) => observer.error(error),
+          });
+      };
+      reader.onerror = (error) => observer.error(error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Upload de múltiplos attachments
+  uploadMultipleAttachments(files: File[]): Observable<any> {
+    return new Observable((observer) => {
+      const attachmentPromises = files.map((file) => {
+        return new Promise<AttachmentRequestDto>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64 = (e.target?.result as string).split(",")[1];
+            resolve({
+              name: file.name,
+              type: file.type,
+              bytes: base64,
+            });
+          };
+          reader.onerror = (error) => reject(error);
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(attachmentPromises)
+        .then((attachments) => {
+          this.http.post(`${this.baseUrl}/attachments`, attachments).subscribe({
+            next: (response) => observer.next(response),
+            error: (error) => observer.error(error),
+          });
+        })
+        .catch((error) => observer.error(error));
+    });
+  }
+
+  // Criar request de ad
+  createAdRequest(request: ClientAdRequestDto): Observable<any> {
+    return this.http.post(`${this.baseUrl}/request-ad`, request);
+  }
+
+  // Buscar ads pendentes
+  getPendingAds(): Observable<AdResponseDto[]> {
+    return this.http
+      .get<ResponseDTO<AdResponseDto[]>>(`${this.baseUrl}/pending-ads`)
+      .pipe(map((response) => response.data));
+  }
+
+  // Validar ad
+  validateAd(
+    adId: string,
+    validation: string,
+    refusedData?: RefusedAdRequestDto
+  ): Observable<any> {
+    let url = `${this.baseUrl}/validate-ad/${adId}?validation=${validation}`;
+
+    if (validation === "REJECTED" && refusedData) {
+      return this.http.patch(url, refusedData);
+    }
+
+    return this.http.patch(url, {});
+  }
+
+  // Buscar cliente autenticado
+  getAuthenticatedClient(): Observable<AuthenticatedClientResponseDto> {
+    return this.http
+      .get<
+        ResponseDTO<AuthenticatedClientResponseDto>
+      >(`${this.baseUrl}/authenticated`)
+      .pipe(map((response) => response.data));
   }
 }
