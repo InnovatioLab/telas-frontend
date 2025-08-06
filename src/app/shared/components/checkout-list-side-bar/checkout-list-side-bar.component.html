@@ -7,7 +7,7 @@
     (onHide)="fecharSidebar()"
     [blockScroll]="true"
     [closeOnEscape]="!dropdownOpen"
-    [style]="{ width: '50%', maxWidth: '300px' }"
+    [style]="{ width: '40%', maxWidth: '250px' }"
   >
     <ng-template pTemplate="header">
       <div class="flex align-items-center gap-2 w-full">
@@ -28,7 +28,7 @@
       </div>
     </ng-template>
 
-    <div
+    <!-- <div
       class="recurrence-selector p-3"
       *ngIf="cart && cart.items.length > 0"
       (click)="onDropdownClick($event)"
@@ -47,11 +47,12 @@
         (onHide)="onDropdownHide()"
         (click)="onDropdownClick($event)"
         placeholder="Select recurrence"
-        class="w-full"
+        class="max-w-max"
         appendTo="body"
+        [overlayOptions]="{ appendTo: 'body' }"
       >
       </p-dropdown>
-    </div>
+    </div> -->
 
     <div class="lista-items" *ngIf="cart && cart.items.length > 0">
       <div class="font-medium label-quantidade p-2 flex justify-content-center">
@@ -86,7 +87,7 @@
                 class="p-button-rounded p-button-secondary p-button-text p-2"
                 (click)="verDetalhes(item)"
                 pTooltip="View details"
-                tooltipPosition="top"
+                tooltipPosition="left"
               ></button>
               <button
                 pButton
@@ -95,7 +96,7 @@
                 class="p-button-rounded p-button-danger p-button-text p-2"
                 (click)="removerItem(item)"
                 pTooltip="Remove"
-                tooltipPosition="top"
+                tooltipPosition="left"
               ></button>
             </div>
           </div>
@@ -117,25 +118,43 @@
     </div>
 
     <ng-template pTemplate="footer">
-      <div
-        *ngIf="cart && cart.items.length > 0"
-        class="container-footer flex justify-content-between align-items-center"
-      >
-        <div class="flex-none container-total">
-          <span class="label-total">Total:</span>
-          <span class="valor-total">
-            {{ cart.items.length * 100 | formatarPreco }} /{{
-              selectedRecurrence.toLowerCase()
-            }}
-          </span>
+      <div *ngIf="cart && cart.items.length > 0" class="container-footer">
+        <!-- Label do dropdown separada para ficar mais acima -->
+        <div class="recurrence-label">
+          <label for="recurrence" class="block text-sm font-medium"
+            >Recurrence:</label
+          >
         </div>
-        <div class="botoes-footer">
+
+        <!-- Container para alinhar dropdown e botão na mesma linha -->
+        <div class="footer-actions">
+          <p-dropdown
+            id="recurrence"
+            [(ngModel)]="selectedRecurrence"
+            [options]="recurrenceOptions"
+            optionLabel="label"
+            optionValue="value"
+            (onChange)="onRecurrenceChange()"
+            (onShow)="onDropdownShow()"
+            (onHide)="onDropdownHide()"
+            (click)="onDropdownClick($event)"
+            placeholder="Select recurrence"
+            class="recurrence-dropdown"
+            [panelStyle]="{ 'margin-top': '-160px' }"
+            [overlayOptions]="{
+              showTransitionOptions: '0ms',
+              hideTransitionOptions: '0ms',
+            }"
+          >
+          </p-dropdown>
+
           <button
             pButton
             icon="pi pi-check"
             label="Checkout"
             [loading]="checkoutEmProgresso"
             (click)="iniciarCheckout()"
+            class="checkout-button"
           ></button>
         </div>
       </div>

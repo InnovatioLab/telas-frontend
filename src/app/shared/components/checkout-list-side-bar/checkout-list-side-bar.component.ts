@@ -11,6 +11,7 @@ import { CartService } from "@app/core/service/api/cart.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { SubscriptionService } from "@app/core/service/api/subscription.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
+import { ToastService } from "@app/core/service/state/toast.service";
 import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
 import {
   CartItemResponseDto,
@@ -19,7 +20,6 @@ import {
 import { Recurrence } from "@app/model/enums/recurrence.enum";
 import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
-import { FormatarPreco } from "@app/shared/pipes/preco.pipe";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { ImagemCarrinhoVazioComponent } from "@app/utility/src/lib/svg/carrinho-vazio";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
@@ -36,7 +36,6 @@ import { DialogoComponent } from "../dialogo/dialogo.component";
     CommonModule,
     PrimengModule,
     ImagemCarrinhoVazioComponent,
-    FormatarPreco,
     IconsModule,
     FormsModule,
   ],
@@ -66,6 +65,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(ENVIRONMENT) private readonly env: Environment,
     private readonly dialogService: DialogService,
+    private readonly toastService: ToastService,
     private readonly authentication: Authentication,
     private readonly cartService: CartService,
     private readonly monitorService: MonitorService,
@@ -233,8 +233,9 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         window.location.href = checkoutUrl;
       },
       error: (error) => {
-        this.checkoutEmProgresso = false;
         console.error("Erro ao iniciar checkout:", error);
+        this.toastService.erro(error);
+        this.checkoutEmProgresso = false;
       },
     });
   }

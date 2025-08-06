@@ -104,10 +104,6 @@ export class SubscriptionService {
       .pipe(
         map((response: ResponseDto<string>) => {
           return response.data;
-        }),
-        catchError((error) => {
-          console.error("Error while getting checkoutUrl:", error);
-          throw error;
         })
       );
   }
@@ -122,9 +118,6 @@ export class SubscriptionService {
           return response.data
             ? this.mapSubscriptionResponseToSubscription(response.data)
             : null;
-        }),
-        catchError((error) => {
-          throw error;
         })
       );
   }
@@ -137,9 +130,6 @@ export class SubscriptionService {
       .pipe(
         map((response: ResponseDto<string>) => {
           return response.data;
-        }),
-        catchError((error) => {
-          throw error;
         })
       );
   }
