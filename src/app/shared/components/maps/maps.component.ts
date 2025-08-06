@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnDestroy, NgZone, ElementRef, effect, EventEmitter, Output, AfterViewInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
+import { LoadingService } from '@app/core/service/state/loading.service';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { SidebarService } from '@app/core/service/state/sidebar.service';
 import { IconsModule } from '@app/shared/icons/icons.module';
 import { Subscription } from 'rxjs';
-import { LoadingService } from '@app/core/service/state/loading.service';
 
 declare global {
   interface WindowEventMap {

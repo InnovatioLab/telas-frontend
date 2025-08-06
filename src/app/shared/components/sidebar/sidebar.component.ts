@@ -1,24 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
+import { Router, RouterModule } from "@angular/router";
+import { AutenticacaoService } from "@app/core/service/autenticacao.service";
+import { AutenticacaoStorage } from "@app/core/service/guard";
+import { LoadingService } from "@app/core/service/loading.service";
+import { User } from "@app/model/dto/user";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { DIALOGOS } from "@app/shared/utils/dialogos";
+import { TEXTO_ACAO } from "@app/utility/src";
+import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { IconDashboardComponent } from "../../icons/dashboard.icon";
 import { IconDocumentoComponent } from "../../icons/documento.icon";
 import { IconSairComponent } from "../../icons/sair.icon";
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { AutenticacaoService } from '@app/core/service/autenticacao.service';
-import { User } from '@app/model/dto/user';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DialogoComponent } from '../dialogo/dialogo.component';
-import { TEXTO_ACAO } from '@app/utility/src';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { DIALOGOS } from '@app/shared/utils/dialogos';
-import { LoadingService } from '@app/core/service/loading.service';
-import { AutenticacaoStorage } from '@app/core/service/guard';
+import { DialogoComponent } from "../dialogo/dialogo.component";
 
 @Component({
-  selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss'],
+  selector: "app-sidebar",
+  templateUrl: "./sidebar.component.html",
+  styleUrls: ["./sidebar.component.scss"],
   standalone: true,
   imports: [
     CommonModule,
@@ -26,20 +26,21 @@ import { AutenticacaoStorage } from '@app/core/service/guard';
     PrimengModule,
     IconDashboardComponent,
     IconDocumentoComponent,
-    IconSairComponent
-  ]
+    IconSairComponent,
+  ],
 })
 export class SidebarComponent implements OnInit {
-
   menuItems = [
-    { label: 'Dashboard', icon: 'dashboard', navegacao: '/' },
-    { label: 'Documents', icon: 'documentos', navegacao: '/documentos' },
-    { label: 'Logout', icon: 'sair', command: () => this.verificarLogout() },
+    { label: "Dashboard", icon: "dashboard", navegacao: "/" },
+    { label: "Documents", icon: "documentos", navegacao: "/documentos" },
+    { label: "Logout", icon: "sair", command: () => this.verificarLogout() },
   ];
 
   aberta = false;
   usuario: User | null;
-  corIconeMenu = getComputedStyle(document.documentElement).getPropertyValue('--cor-branca').trim();
+  corIconeMenu = getComputedStyle(document.documentElement)
+    .getPropertyValue("--cor-branca")
+    .trim();
 
   ref: DynamicDialogRef | undefined;
 
@@ -47,7 +48,7 @@ export class SidebarComponent implements OnInit {
     private readonly autenticacao: AutenticacaoService,
     public dialogService: DialogService,
     private readonly loadingService: LoadingService,
-    private readonly router: Router,
+    private readonly router: Router
   ) {}
 
   toggleSidebar() {
@@ -60,10 +61,13 @@ export class SidebarComponent implements OnInit {
 
   tagNome(): string {
     if (!this.usuario?.nome) {
-      return '';
+      return "";
     }
 
-    const partes = this.usuario.nome.trim().split(' ').filter(p => p);
+    const partes = this.usuario.nome
+      .trim()
+      .split(" ")
+      .filter((p) => p);
 
     if (partes.length === 1) {
       return partes[0][0].toUpperCase();
@@ -75,18 +79,18 @@ export class SidebarComponent implements OnInit {
     return primeiraLetra + segundaLetra;
   }
 
-  logout(){
-    AutenticacaoStorage.clearToken()
-    this.router.navigate(['/logout']);
+  logout() {
+    AutenticacaoStorage.clearToken();
+    this.router.navigate(["/logout"]);
   }
 
   verificarLogout() {
     const descricao = DIALOGOS.sairSistema;
 
     const config = DialogoUtils.criarConfig({
-      titulo: 'Confirm Logout',
+      titulo: "Confirm Logout",
       descricao: descricao,
-      icon: 'report',
+      icon: "report",
       acaoPrimaria: TEXTO_ACAO.simSair,
       acaoPrimariaCallback: () => {
         this.ref.close();
@@ -95,9 +99,8 @@ export class SidebarComponent implements OnInit {
       acaoSecundaria: TEXTO_ACAO.naoVoltar,
       acaoSecundariaCallback: () => {
         this.ref.close();
-      }
+      },
     });
     this.ref = this.dialogService.open(DialogoComponent, config);
   }
-
 }
