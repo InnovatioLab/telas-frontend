@@ -7,9 +7,12 @@ import {
   OnDestroy,
   OnInit,
 } from "@angular/core";
+import { SliceStringPipe } from "@app/core/pipes/slice-string.pipe";
 import { CartService } from "@app/core/service/api/cart.service";
+import { ClientService } from "@app/core/service/api/client.service";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
+import { ToastService } from "@app/core/service/state/toast.service";
 import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
 import { CartResponseDto } from "@app/model/dto/response/cart-response.dto";
 import { Recurrence } from "@app/model/enums/recurrence.enum";
@@ -40,6 +43,7 @@ import { PrimengModule } from "../../primeng/primeng.module";
     IconCloseComponent,
     IconWarningComponent,
     IconClockComponent,
+    SliceStringPipe,
   ],
   templateUrl: "./sidebar-mapa.component.html",
   styleUrls: ["./sidebar-mapa.component.scss"],
@@ -66,7 +70,9 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     private readonly mapsService: GoogleMapsService,
     private readonly cartService: CartService,
     @Inject(ENVIRONMENT) private readonly env: Environment,
-    private readonly cdr: ChangeDetectorRef
+    private readonly toastService: ToastService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly clientService: ClientService
   ) {}
 
   ngOnInit(): void {
@@ -77,7 +83,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
           console.log("pontoSelecionado", this.pontoSelecionado);
           this.openSidebar();
           this.loadStreetViewImage();
-          this.loadLocationDetails();
+          // this.loadLocationDetails();
           setTimeout(() => {
             this.cdr.detectChanges();
           }, 100);
@@ -91,7 +97,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
         this.pontoSelecionado = customEvent.detail.point;
         this.openSidebar();
         this.loadStreetViewImage();
-        this.loadLocationDetails();
+        // this.loadLocationDetails();
         setTimeout(() => {
           this.cdr.detectChanges();
         }, 100);
@@ -116,124 +122,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
   voltar(): void {
     this.closeSidebar();
-  }
-
-  /**
-   * Loads detailed location information using the Places API
-   */
-  private async loadLocationDetails(): Promise<void> {
-    if (!this.pontoSelecionado) return;
-
-    this.loadingLocationInfo = true;
-
-    try {
-      const { latitude, longitude } = this.pontoSelecionado;
-
-      // First try to find nearby establishments
-      let placeDetails = await this.mapsService.getPlaceDetailsByCoordinates(
-        latitude,
-        longitude,
-        100
-      );
-
-      if (!placeDetails) {
-        // If no establishments found, try with larger radius
-        placeDetails = await this.mapsService.getPlaceDetailsByCoordinates(
-          latitude,
-          longitude,
-          500
-        );
-      }
-
-      if (placeDetails) {
-        this.localInfo = {
-          name: placeDetails.name,
-          description: placeDetails.description,
-          formattedAddress: placeDetails.formattedAddress,
-        };
-
-        // Update the selected point with obtained information
-        if (this.pontoSelecionado) {
-          if (
-            !this.pontoSelecionado.title ||
-            this.pontoSelecionado.title === "Selected Location"
-          ) {
-            this.pontoSelecionado.title = placeDetails.name;
-          }
-          if (!this.pontoSelecionado.description) {
-            this.pontoSelecionado.description = placeDetails.description;
-          }
-        }
-      } else {
-        // Fallback to reverse geocoding if no places found
-        const geocodingResult = await this.mapsService.reverseGeocode(
-          latitude,
-          longitude
-        );
-        if (geocodingResult) {
-          this.localInfo = {
-            name: this.extractLocationName(geocodingResult.formattedAddress),
-            description: `Location at ${geocodingResult.formattedAddress}`,
-            formattedAddress: geocodingResult.formattedAddress,
-          };
-        } else {
-          // Final fallback
-          this.localInfo = {
-            name: "Unidentified location",
-            description: `Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-            formattedAddress: "",
-          };
-        }
-      }
-    } catch (error) {
-      console.error("Error loading location information:", error);
-      this.localInfo = {
-        name: "Unidentified location",
-        description: "Could not retrieve location information",
-        formattedAddress: "",
-      };
-    } finally {
-      this.loadingLocationInfo = false;
-      this.cdr.detectChanges();
-    }
-  }
-
-  /**
-   * Extracts the location name from the formatted address
-   */
-  private extractLocationName(address: string): string {
-    const parts = address.split(",");
-    if (parts.length > 0) {
-      const firstPart = parts[0].trim();
-      // If it starts with a number, take the second part
-      if (/^\d+/.test(firstPart) && parts.length > 1) {
-        return parts[1].trim();
-      }
-      return firstPart;
-    }
-    return "Unidentified location";
-  }
-
-  /**
-   * Returns the location name for display
-   */
-  getLocationName(): string {
-    return (
-      this.localInfo?.name ||
-      this.pontoSelecionado?.title ||
-      "Selected Location"
-    );
-  }
-
-  /**
-   * Returns the location description for display
-   */
-  getLocationDescription(): string {
-    return (
-      this.localInfo?.formattedAddress ||
-      this.pontoSelecionado?.description ||
-      ""
-    );
   }
 
   private loadStreetViewImage(): void {
@@ -264,18 +152,18 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     this.loadingImage = false;
   }
 
-  openGoogleMaps(): void {
-    if (!this.pontoSelecionado) return;
+  // openGoogleMaps(): void {
+  //   if (!this.pontoSelecionado) return;
 
-    const { latitude, longitude } = this.pontoSelecionado;
-    const title = encodeURIComponent(
-      this.pontoSelecionado.title || "Selected Location"
-    );
+  //   const { latitude, longitude } = this.pontoSelecionado;
+  //   const title = encodeURIComponent(
+  //     this.pontoSelecionado.title || "Selected Location"
+  //   );
 
-    const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&query_place_id=${title}`;
+  //   const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&query_place_id=${title}`;
 
-    window.open(url, "_blank");
-  }
+  //   window.open(url, "_blank");
+  // }
 
   getMonitorData(): any {
     if (this.pontoSelecionado?.data) {
@@ -292,19 +180,15 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   }
 
   private addToCart(): void {
-    // Check if an active cart already exists
     this.cartService.getLoggedUserCart().subscribe({
       next: (activeCart) => {
         if (activeCart) {
-          // Update existing cart
           this.updateExistingCart(activeCart);
         } else {
-          // Create new cart
           this.createNewCart();
         }
       },
       error: () => {
-        // In case of error, create new cart
         this.createNewCart();
       },
     });
@@ -323,22 +207,21 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
     this.cartService.addToCart(cartRequest).subscribe({
       next: () => {
-        // Success adding to cart
+        this.toastService.sucesso("Monitor added to cart");
       },
       error: (error) => {
+        this.toastService.erro("Error adding to cart");
         console.error("Error adding to cart:", error);
       },
     });
   }
 
   private updateExistingCart(activeCart: CartResponseDto): void {
-    // Check if the monitor is already in the cart
     const existingItem = activeCart.items.find(
       (item) => item.monitorId === this.pontoSelecionado!.id
     );
 
     if (!existingItem) {
-      // Add new item to existing cart
       const updatedItems = [
         ...activeCart.items.map((item) => ({
           monitorId: item.monitorId,
@@ -357,10 +240,25 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
       this.cartService.update(cartRequest, activeCart.id).subscribe({
         next: () => {
-          // Success updating cart
+          this.toastService.sucesso("Cart updated successfully");
         },
         error: (error) => {
+          this.toastService.erro("Error updating cart");
           console.error("Error updating cart:", error);
+        },
+      });
+    }
+  }
+
+  addToWishlist(): void {
+    if (this.pontoSelecionado) {
+      this.clientService.addToWishlist(this.pontoSelecionado.id).subscribe({
+        next: () => {
+          this.toastService.sucesso("Monitor added to wishlist");
+        },
+        error: (error) => {
+          this.toastService.erro("Error adding to wishlist");
+          console.error("Error adding to wishlist:", error);
         },
       });
     }

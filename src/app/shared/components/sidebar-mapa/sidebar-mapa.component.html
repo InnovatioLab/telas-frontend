@@ -8,7 +8,7 @@
     [blockScroll]="true"
     [closeOnEscape]="false"
   >
-    <ng-template pTemplate="header">
+    <!-- <ng-template pTemplate="header">
       <div class="flex align-items-center gap-2 w-full">
         <button
           (click)="voltar()"
@@ -30,7 +30,9 @@
             height="24"
             fill="var(--cor-primaria)"
           ></app-icon-tv-display>
-          <span class="font-bold">{{ getLocationName() }}</span>
+          <span class="font-bold">{{
+            getMonitorData()?.addressLocationName
+          }}</span>
         </div>
         <button
           (click)="closeSidebar()"
@@ -45,48 +47,65 @@
           >
         </button>
       </div>
-    </ng-template>
+    </ng-template> -->
 
-    <div class="ponto-detalhes" *ngIf="pontoSelecionado">
-      <h3 class="ponto-titulo">
-        {{ getLocationName() }}
-      </h3>
+    <div
+      class="ponto-detalhes"
+      *ngIf="
+        (pontoSelecionado && pontoSelecionado?.addressLocationDescription) ||
+        getMonitorData()?.addressLocationDescription
+      "
+    >
+      <h4 class="ponto-titulo">
+        {{ getMonitorData()?.addressLocationName | sliceString: 50 }}
+      </h4>
 
       <div class="street-view-container">
-        <div *ngIf="loadingImage" class="street-view-loading">
-          <i class="pi pi-spin pi-spinner"></i>
-          <span>Loading street view...</span>
-        </div>
-
-        <div *ngIf="imageError" class="street-view-error">
-          <app-icon-close width="48" height="48" fill="#666"></app-icon-close>
-          <p>Street view not available for this location</p>
-        </div>
-
         <img
-          *ngIf="!loadingImage && !imageError && streetViewUrl"
-          [src]="streetViewUrl"
+          *ngIf="
+            getMonitorData()?.photoUrl ||
+            (!loadingImage && !imageError && streetViewUrl)
+          "
+          [src]="getMonitorData()?.photoUrl || streetViewUrl"
           alt="Street View"
           class="street-view-image"
           (error)="handleImageError()"
         />
+        
       </div>
 
       <div class="ponto-info">
         <div
-          *ngIf="getLocationDescription() || loadingLocationInfo"
+          *ngIf="getMonitorData()?.addressLocationDescription"
           class="info-grupo"
         >
           <div class="align-self-center">📍</div>
           <div class="info-detalhe">
             <span class="info-label">Description</span>
-            <span class="info-valor" *ngIf="!loadingLocationInfo">{{
-              getLocationDescription()
+            <span class="info-valor">
+              {{ getMonitorData().addressLocationDescription | sliceString: 100 }}</span
+            >
+          </div>
+        </div>
+
+        <div
+          *ngIf="
+            pontoSelecionado.locationDescription ||
+            getMonitorData()?.locationDescription
+          "
+          class="info-grupo"
+        >
+          <app-icon-tv-display
+            width="18"
+            height="18"
+            fill="var(--cor-primaria)"
+          ></app-icon-tv-display>
+          <div class="info-detalhe">
+            <span class="info-label">Screen location on site</span>
+            <span class="info-valor">{{
+              getMonitorData()?.locationDescription ||
+                pontoSelecionado.locationDescription
             }}</span>
-            <span class="info-valor" *ngIf="loadingLocationInfo">
-              <i class="pi pi-spin pi-spinner" style="margin-right: 0.5rem"></i>
-              Loading location information...
-            </span>
           </div>
         </div>
 
@@ -95,6 +114,7 @@
             width="18"
             height="18"
             fill="var(--cor-primaria)"
+            class="align-self-center"
           ></app-icon-tv-display>
           <div class="info-detalhe">
             <span class="info-label">Display</span>
@@ -112,12 +132,14 @@
               width="18"
               height="18"
               fill="var(--cor-sucesso)"
+              class="align-self-center"
             ></app-icon-bolt>
             <app-icon-close
               *ngIf="!getMonitorData()?.active"
               width="18"
               height="18"
               fill="var(--cor-erro)"
+              class="align-self-center"
             ></app-icon-close>
             <div class="info-detalhe">
               <span class="info-label">Status</span>
@@ -140,12 +162,14 @@
               width="18"
               height="18"
               fill="var(--cor-sucesso)"
+              class="align-self-center"
             ></app-icon-check>
             <app-icon-warning
               *ngIf="!getMonitorData()?.hasAvailableSlots"
               width="18"
               height="18"
               fill="#ffc107"
+              class="align-self-center"
             ></app-icon-warning>
             <div class="info-detalhe">
               <span class="info-label">Available</span>
@@ -170,6 +194,7 @@
               width="18"
               height="18"
               fill="var(--cor-sucesso)"
+              class="align-self-center"
             ></app-icon-bolt>
             <div class="info-detalhe">
               <span class="info-label">Daily Ad views</span>
@@ -190,6 +215,7 @@
               width="18"
               height="18"
               fill="var(--cor-primaria)"
+              class="align-self-center"
             ></app-icon-clock>
             <div class="info-detalhe">
               <span class="info-label">Next Available</span>
@@ -204,10 +230,10 @@
       <div class="acoes-container">
         <button
           pButton
-          label="View in Google Maps"
-          icon="pi pi-map"
+          label="Wish list"
+          icon="pi pi-heart-fill"
           class="p-button p-button-secondary"
-          (click)="openGoogleMaps()"
+          (click)="addToWishlist()"
         ></button>
         <button
           pButton

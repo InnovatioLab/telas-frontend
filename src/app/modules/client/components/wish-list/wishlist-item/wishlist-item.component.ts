@@ -1,18 +1,12 @@
 import { CommonModule } from "@angular/common";
-import { Component, Inject, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { CartService } from "@app/core/service/api/cart.service";
-import {
-    GoogleMapsService,
-    PlaceDetails,
-} from "@app/core/service/api/google-maps.service";
 import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { CartResponseDto } from "@app/model/dto/response/cart-response.dto";
 import { MonitorWishlistResponseDto } from "@app/model/dto/response/wishlist-response.dto";
 import { Recurrence } from "@app/model/enums/recurrence.enum";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { ENVIRONMENT } from "src/environments/environment-token";
-import { Environment } from "src/environments/environment.interface";
 
 @Component({
   selector: "app-wishlist-item",
@@ -25,52 +19,13 @@ export class WishlistItemComponent implements OnInit {
   @Input() item!: MonitorWishlistResponseDto;
   @Input() authenticatedClient!: AuthenticatedClientResponseDto;
 
-  placeDetails: PlaceDetails | null = null;
-  isLoading = true;
-  hasPhoto = false;
-  streetViewUrl: string | null = null;
   isButtonDisabled = false;
   activeCart: CartResponseDto | null = null;
 
-  constructor(
-    private readonly googleMapsService: GoogleMapsService,
-    private readonly cartService: CartService,
-    @Inject(ENVIRONMENT) private readonly env: Environment
-  ) {}
+  constructor(private readonly cartService: CartService) {}
 
   ngOnInit(): void {
-    this.loadPlaceDetails();
-    this.loadStreetViewImage();
     this.checkActiveCart();
-  }
-
-  private async loadPlaceDetails(): Promise<void> {
-    try {
-      this.placeDetails =
-        await this.googleMapsService.getPlaceDetailsByCoordinates(
-          this.item.latitude,
-          this.item.longitude
-        );
-    } catch (error) {
-      console.error("Error loading place details:", error);
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  private loadStreetViewImage(): void {
-    const { latitude, longitude } = this.item;
-    const size = "400x200";
-    const fov = "80";
-    const pitch = "0";
-    const heading = "70";
-
-    const apiKeyParam = this.env.googleMapsApiKey
-      ? `&key=${this.env.googleMapsApiKey}`
-      : "";
-
-    this.streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=${size}&location=${latitude},${longitude}&fov=${fov}&heading=${heading}&pitch=${pitch}${apiKeyParam}`;
-    this.hasPhoto = true;
   }
 
   private checkActiveCart(): void {
@@ -96,14 +51,6 @@ export class WishlistItemComponent implements OnInit {
     } else {
       this.isButtonDisabled = !this.item.hasAvailableSlots || !this.item.active;
     }
-  }
-
-  get displayName(): string {
-    return this.placeDetails?.name || "Location";
-  }
-
-  get displayDescription(): string {
-    return this.placeDetails?.description || this.item.fullAddress;
   }
 
   get displaySize(): string {
@@ -183,9 +130,5 @@ export class WishlistItemComponent implements OnInit {
         console.error("Error updating cart:", error);
       },
     });
-  }
-
-  onImageError(): void {
-    this.hasPhoto = false;
   }
 }

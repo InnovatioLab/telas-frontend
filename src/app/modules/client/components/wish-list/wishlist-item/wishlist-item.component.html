@@ -1,25 +1,24 @@
 <p-card class="wishlist-item-card">
-  <div class="item-content" [class.no-photo]="!hasPhoto">
-    <!-- Foto -->
-    <div class="item-photo" *ngIf="hasPhoto">
+  <div class="item-content" [class.no-photo]="!item.photoUrl">
+    <div class="item-photo" *ngIf="item.photoUrl">
       <img
-        [src]="streetViewUrl"
-        [alt]="displayName"
-        (error)="onImageError()"
+        [src]="item.photoUrl"
+        [alt]="item.addressLocationName || 'Address image'"
         class="monitor-image"
       />
     </div>
 
-    <!-- Informações do monitor -->
-    <div class="item-info">
-      <div class="info-group" *ngIf="!isLoading">
-        <h3 class="item-name">{{ displayName }}</h3>
-        <p class="item-description">{{ displayDescription }}</p>
-      </div>
-
-      <div class="info-group" *ngIf="isLoading">
-        <p-skeleton width="200px" height="20px"></p-skeleton>
-        <p-skeleton width="300px" height="16px"></p-skeleton>
+    <div
+      class="item-info"
+      *ngIf="item.addressLocationName || item.addressLocationDescription"
+    >
+      <div class="info-group">
+        <h3 class="item-name" *ngIf="item.addressLocationName">
+          {{ item.addressLocationName }}
+        </h3>
+        <p class="item-description" *ngIf="item.addressLocationDescription">
+          {{ item.addressLocationDescription }}
+        </p>
       </div>
 
       <div class="info-details">
@@ -53,7 +52,7 @@
         </div>
       </div>
 
-      <div class="item-actions flex justify-content-end">
+      <div class="item-actions">
         <button
           pButton
           label="Add Screen"

@@ -1,7 +1,28 @@
 .wish-list-container {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.wishlist-item {
+  flex: 1 1 45%;
+  max-width: 48%;
+
+  // Quando há número ímpar de itens, o último item ocupa toda a largura
+  &:last-child:nth-child(odd) {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  // Se houver apenas 1 item, ele ocupa toda a largura
+  &:only-child {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
 }
 
 .header {
@@ -103,9 +124,33 @@
 }
 
 // Responsividade
+@media (max-width: 1024px) {
+  .wish-list-container {
+    gap: 1.5rem;
+  }
+
+  .wishlist-item {
+    flex: 1 1 100%;
+    max-width: 100%;
+
+    // Em tablets, todos os itens ocupam toda a largura
+    &:last-child:nth-child(odd),
+    &:only-child {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .wish-list-container {
     padding: 1rem;
+    gap: 1rem;
+  }
+
+  .wishlist-item {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 
   .header {

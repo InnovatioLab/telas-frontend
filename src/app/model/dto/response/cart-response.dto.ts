@@ -14,4 +14,8 @@ export interface CartItemResponseDto {
   monitorAddress: string;
   latitude: number;
   longitude: number;
+  photoUrl?: string;
+  addressLocationName?: string;
+  addressLocationDescription?: string;
+  locationDescription?: string;
 }

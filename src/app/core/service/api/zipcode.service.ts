@@ -1,12 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, catchError, switchMap, tap } from 'rxjs/operators';
-import { ENVIRONMENT } from 'src/environments/environment-token';
-import { LocalAddressResponse } from '@app/model/dto/response/local-address-response';
-import { ZipCodeResponse } from '@app/model/dto/response/zipcode-response';
-import { AddressData } from '@app/model/dto/request/address-data-request';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { AddressData } from '@app/model/dto/request/address-data-request';
+import { LocalAddressResponse } from '@app/model/dto/response/local-address-response';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { ENVIRONMENT } from 'src/environments/environment-token';
 
 
 
@@ -106,7 +105,7 @@ export class ZipCodeService {
           latitude: lat,
           longitude: lng,
           title: `${result.city || ''}, ${result.state || ''} ${result.zipCode}`,
-          description: `${result.street || ''} ${result.city || ''}, ${result.state || ''} ${result.zipCode}`,
+          locationDescription: `${result.street || ''} ${result.city || ''}, ${result.state || ''} ${result.zipCode}`,
           id: `zipcode-${result.zipCode}`,
           type: 'ADDRESS',
           category: 'ADDRESS'

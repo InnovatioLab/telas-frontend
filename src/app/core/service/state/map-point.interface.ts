@@ -1,7 +1,10 @@
 export interface MapPoint {
   id?: string;
   title?: string;
-  description?: string;
+  photoUrl?: string;
+  addressLocationName?: string;
+  addressLocationDescription?: string;
+  locationDescription?: string;
   latitude: number;
   longitude: number;
   position?: { lat: number; lng: number };

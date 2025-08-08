@@ -9,12 +9,16 @@ import { Component, Input } from "@angular/core";
       [attr.width]="size"
       [attr.height]="size"
       viewBox="0 -960 960 960"
-      fill="currentColor"
+      [attr.fill]="fill"
     >
-      <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
+      <path
+        d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"
+        [attr.fill]="fill"
+      />
     </svg>
   `,
 })
 export class IconCheckComponent {
   @Input() size: number | string = 24;
+  @Input() fill: string = "currentColor";
 }

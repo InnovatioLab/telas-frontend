@@ -28,32 +28,6 @@
       </div>
     </ng-template>
 
-    <!-- <div
-      class="recurrence-selector p-3"
-      *ngIf="cart && cart.items.length > 0"
-      (click)="onDropdownClick($event)"
-    >
-      <label for="recurrence" class="block text-sm font-medium mb-2"
-        >Recurrence:</label
-      >
-      <p-dropdown
-        id="recurrence"
-        [(ngModel)]="selectedRecurrence"
-        [options]="recurrenceOptions"
-        optionLabel="label"
-        optionValue="value"
-        (onChange)="onRecurrenceChange()"
-        (onShow)="onDropdownShow()"
-        (onHide)="onDropdownHide()"
-        (click)="onDropdownClick($event)"
-        placeholder="Select recurrence"
-        class="max-w-max"
-        appendTo="body"
-        [overlayOptions]="{ appendTo: 'body' }"
-      >
-      </p-dropdown>
-    </div> -->
-
     <div class="lista-items" *ngIf="cart && cart.items.length > 0">
       <div class="font-medium label-quantidade p-2 flex justify-content-center">
         <p class="font-semibold quantidade-items m-0">
@@ -72,17 +46,11 @@
           <div class="item flex cart-item">
             <div class="item-info flex-grow-1">
               <h4 class="item-title">
-                {{
-                  isLoadingLocationInfo(item.id)
-                    ? "Loading..."
-                    : getLocationInfo(item.id).name
-                }}
+                {{ item.addressLocationName || "Screen Title Not Available" }}
               </h4>
               <div class="location-description">
                 <small>{{
-                  isLoadingLocationInfo(item.id)
-                    ? "Loading location info..."
-                    : getLocationInfo(item.id).description
+                  item.locationDescription || "No description available"
                 }}</small>
               </div>
               <div class="item-address">
@@ -210,16 +178,6 @@
           (error)="onImageError($event)"
         />
       </div>
-
-      <!-- Loading state for location info -->
-      <div *ngIf="loadingSelectedMonitorLocationInfo" class="text-center mb-3">
-        <p-progressSpinner
-          [style]="{ width: '40px', height: '40px' }"
-        ></p-progressSpinner>
-        <p class="text-sm text-muted">Loading location information...</p>
-      </div>
-
-      <!-- Monitor Information -->
       <div class="monitor-info">
         <div
           *ngIf="
