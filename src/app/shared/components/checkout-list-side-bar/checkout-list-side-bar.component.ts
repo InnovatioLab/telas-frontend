@@ -250,13 +250,11 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   }
 
   onMonitorDialogHide(): void {
-    // Quando o dialog de detalhes do monitor for fechado, reabrir a sidebar
     this.selectedMonitor = null;
     this.monitorDetailsVisible = false;
 
-    // Reabrir a sidebar checkout
     setTimeout(() => {
       this.visibilidadeSidebar = true;
-    }, 100); // Pequeno delay para garantir que o dialog seja completamente fechado
+    }, 100);
   }
 }
