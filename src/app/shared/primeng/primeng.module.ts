@@ -59,7 +59,6 @@ interface PrimeDomHandlerType {
 }
 
 @NgModule({
-  providers: [MessageService],
   exports: [
     MenubarModule,
     ButtonModule,

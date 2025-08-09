@@ -2,7 +2,6 @@
   <div class="content">
     <p-card styleClass="card-header">
       <div class="card-header-content">
-        <i class="pi pi-search"></i>
         <div class="p-card-content">
           <span class="p-input-icon-left">
             <app-icon-search style="color: #496382"></app-icon-search>
@@ -32,6 +31,7 @@
       responsiveLayout="scroll"
       [lazy]="true"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} clients"
+      paginatorDropdownAppendTo="body"
       (onPage)="onPageChange($event)"
       (onSort)="onSort($event)"
       [sortField]="currentFilters.sortBy || 'name'"

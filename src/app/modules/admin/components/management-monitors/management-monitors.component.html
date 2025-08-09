@@ -199,6 +199,7 @@
     [resizable]="false"
     [closeOnEscape]="true"
     [dismissableMask]="true"
+    (onHide)="onAdsModalHide()"
   >
     <div class="ads-management" *ngIf="selectedMonitorForAds">
       <div class="ads-header">

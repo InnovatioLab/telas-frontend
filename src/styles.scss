@@ -2248,3 +2248,7 @@ label.required::after {
   padding-left: 0px;
   padding-right: 0px;
 }
+
+.p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled).p-focus {
+  background-color: var(--cor-branca) !important;
+}
