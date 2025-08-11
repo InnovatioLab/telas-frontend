@@ -362,22 +362,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Ads
-  loadPendingAds(): void {
-    this.loading = true;
-    this.clientService.getPendingAds().subscribe({
-      next: (ads) => {
-        this.ads = ads;
-        this.hasAds = ads.length > 0;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.toastService.erro("Erro ao carregar anúncios");
-        this.loading = false;
-      },
-    });
-  }
-
   openValidateAdDialog(ad: AdResponseDto): void {
     this.selectedAdForValidation = ad;
     this.showValidateAdDialog = true;
@@ -425,7 +409,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           next: () => {
             this.toastService.sucesso("Ad validated successfully");
             this.closeValidateAdDialog();
-            this.loadPendingAds();
+            this.loadAuthenticatedClient();
             this.loading = false;
           },
           error: (error) => {
