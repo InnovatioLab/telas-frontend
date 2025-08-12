@@ -1,0 +1,262 @@
+<div class="container">
+  <div class="content">
+    <!-- Search Input -->
+    <div class="search-container">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="Search ad requests..."
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="onSearch()"
+        />
+      </span>
+    </div>
+
+    <!-- Ad Requests Table -->
+    <p-table
+      [value]="adRequests"
+      [loading]="loading"
+      styleClass="p-datatable-sm"
+      [paginator]="true"
+      [rows]="pageSize"
+      [totalRecords]="totalRecords"
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [showCurrentPageReport]="true"
+      responsiveLayout="scroll"
+      [lazy]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} ad requests"
+      paginatorDropdownAppendTo="body"
+      (onPage)="onPageChange($event)"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col" pSortableColumn="clientName">
+            Client Name <p-sortIcon field="clientName"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="clientIdentificationNumber">
+            Identification
+            <p-sortIcon field="clientIdentificationNumber"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="clientRole">
+            Role <p-sortIcon field="clientRole"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="message">
+            Message <p-sortIcon field="message"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="submissionDate">
+            Submission Date <p-sortIcon field="submissionDate"></p-sortIcon>
+          </th>
+          <th scope="col" pSortableColumn="waitingDays">
+            Waiting Days <p-sortIcon field="waitingDays"></p-sortIcon>
+          </th>
+          <th scope="col" class="actions">Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-adRequest>
+        <tr>
+          <td>{{ adRequest.clientName }}</td>
+          <td>{{ adRequest.clientIdentificationNumber }}</td>
+          <td>{{ adRequest.clientRole }}</td>
+          <td>{{ adRequest.message | sliceString: 100 }}</td>
+          <td>{{ adRequest.submissionDate | date: "short" }}</td>
+          <td>{{ adRequest.waitingDays }} days</td>
+          <td class="actions">
+            <div class="action-buttons">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-eye"
+                class="p-button-rounded p-button-info p-button-text"
+                (click)="openViewDetailsDialog(adRequest)"
+                pTooltip="View Details"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-upload"
+                class="p-button-rounded p-button-success p-button-text"
+                (click)="openUploadAdDialog(adRequest)"
+                pTooltip="Upload Ad"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center">No ad requests found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- View Details Dialog -->
+<p-dialog
+  header="Ad Request Details"
+  [(visible)]="showViewDetailsDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '800px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div *ngIf="selectedAdRequest" class="details-content">
+    <div class="detail-row">
+      <strong>Message:</strong> {{ selectedAdRequest.message }}
+    </div>
+    <div class="detail-row" *ngIf="selectedAdRequest.phone">
+      <strong>Phone:</strong> {{ selectedAdRequest.phone }}
+    </div>
+    <div class="detail-row" *ngIf="selectedAdRequest.email">
+      <strong>Email:</strong> {{ selectedAdRequest.email }}
+    </div>
+
+    <!-- Attachments -->
+    <div
+      class="detail-row"
+      *ngIf="
+        selectedAdRequest.attachments &&
+        selectedAdRequest.attachments.length > 0
+      "
+    >
+      <strong>Attachments:</strong>
+      <div class="attachments-container">
+        <div
+          *ngFor="let attachment of selectedAdRequest.attachments"
+          class="attachment-item"
+        >
+          <img
+            [src]="attachment.attachmentLink"
+            alt="Attachment"
+            class="attachment-image"
+          />
+          <div
+            class="attachment-actions w-full flex justify-content-center gap-2"
+          >
+            <p-button
+              icon="pi pi-eye"
+              (onClick)="viewAttachment(attachment.attachmentLink)"
+              [disabled]="loading"
+              severity="info"
+              [text]="true"
+              pTooltip="View"
+            >
+            </p-button>
+            <p-button
+              icon="pi pi-download"
+              (onClick)="downloadAttachment(attachment.attachmentLink)"
+              [disabled]="loading"
+              severity="success"
+              [text]="true"
+              pTooltip="Download"
+            >
+            </p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ad -->
+    <div class="detail-row" *ngIf="selectedAdRequest.ad">
+      <strong>Last Ad Validated:</strong>
+      <div class="ad-container">
+        <img
+          [src]="selectedAdRequest.ad.attachmentLink"
+          alt="Ad"
+          class="ad-image"
+        />
+      </div>
+    </div>
+
+    <!-- Refused Ads -->
+    <div
+      class="detail-row"
+      *ngIf="
+        selectedAdRequest.refusedAds && selectedAdRequest.refusedAds.length > 0
+      "
+    >
+      <strong>Refused Ads:</strong>
+      <div class="refused-ads-container">
+        <div
+          *ngFor="let refusedAd of selectedAdRequest.refusedAds; index as i"
+          class="refused-ad-item"
+        >
+          <div class="refused-ad-content">
+            <p class="mb-0 error">
+              <strong>{{ "Refusal " + (i + 1) }}</strong>
+            </p>
+            <div>
+              <strong>Justification:</strong> {{ refusedAd.justification }}
+            </div>
+            <div *ngIf="refusedAd.description">
+              <strong>Description:</strong>
+              {{ refusedAd.description | sliceString: 70 }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Close" (click)="closeViewDetailsDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Upload Ad Dialog -->
+<p-dialog
+  header="Upload Ad"
+  [(visible)]="showUploadAdDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '500px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="upload-content">
+    <p-fileUpload
+      #fileUpload
+      [customUpload]="true"
+      (onSelect)="onFileSelect($event)"
+      accept="image/*"
+      [maxFileSize]="maxFileSize"
+      [auto]="true"
+      chooseLabel="Choose File"
+      cancelLabel="Clear"
+      [showCancelButton]="true"
+      [showUploadButton]="false"
+    >
+    </p-fileUpload>
+
+    <!-- File Preview -->
+    <div *ngIf="filePreview" class="file-preview">
+      <h4>Selected File Preview:</h4>
+      <img [src]="filePreview" alt="File Preview" class="preview-image" />
+      <button
+        pButton
+        type="button"
+        label="Clear File"
+        class="p-button-secondary p-button-sm"
+        (click)="clearFileUpload()"
+      ></button>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancel" (click)="closeUploadAdDialog()"></button>
+    <button
+      pButton
+      label="Upload"
+      (click)="uploadAd()"
+      [disabled]="!selectedFile || loadingUpload"
+      [loading]="loadingUpload"
+    ></button>
+  </ng-template>
+</p-dialog>
