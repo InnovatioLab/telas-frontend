@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -20,6 +20,7 @@ import { AttachmentResponseDto } from "@app/model/dto/response/attachment-respon
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { ErrorComponent } from "@app/shared/components";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
 
 @Component({
@@ -36,6 +37,7 @@ import { Subscription } from "rxjs";
   ],
 })
 export class MyTelasComponent implements OnInit, OnDestroy {
+  @ViewChild("adFileUpload") fileUploadComponent: FileUpload;
   loading = false;
   activeTabIndex: number = 0;
 
@@ -69,6 +71,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   pendingUpload = false; // Flag para controlar upload pendente
 
   // Ads
+  selectedAdFile: File | null = null;
   ads: AdResponseDto[] = [];
   hasAds = false;
 
@@ -349,19 +352,18 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       this.loading = true;
       this.clientService.createAdRequest(request).subscribe({
         next: () => {
-          this.toastService.sucesso(
-            "Solicitação de anúncio enviada com sucesso"
-          );
+          this.toastService.sucesso("Ad request successfully submitted");
           this.closeRequestAdDialog();
           // Limpar seleção após sucesso
           this.selectedClientAttachments = [];
           this.attachmentCheckboxStates = {};
           // Marcar que agora tem um adRequest ativo
           this.hasActiveAdRequest = true;
+          this.loadAuthenticatedClient();
           this.loading = false;
         },
         error: (error) => {
-          this.toastService.erro("Erro ao enviar solicitação");
+          this.toastService.erro("Error submitting request");
           this.loading = false;
         },
       });
@@ -496,7 +498,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   shouldDisplayMaxValidationsTry(): boolean {
     return (
       this.ads.length > 0 &&
-      this.ads.some((ad) => ad.validation === AdValidationType.PENDING)
+      this.ads.some(
+        (ad) =>
+          ad.validation === AdValidationType.PENDING && ad.canBeValidatedByOwner
+      )
     );
   }
 
@@ -541,6 +546,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.toastService.erro(
           `File name "${file.name}" is too long. Maximum of 255 characters allowed.`
         );
+
         return;
       }
 
@@ -549,6 +555,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         name: file.name,
         type: this.getFileType(file),
       });
+      this.selectedAdFile = file;
     }
   }
 
@@ -573,10 +580,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  submitAdUpload(): void {
+  submitAdUpload(event: any): void {
     if (this.uploadAdForm.valid) {
       const formValue = this.uploadAdForm.value;
-      const file = formValue.adFile;
+      const file = formValue.adFile || this.selectedAdFile;
 
       if (!file) {
         console.error("No file selected");
@@ -603,7 +610,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
             next: () => {
               console.log("chamou createClientAd");
               this.toastService.sucesso("Ad sent for admin review");
-              this.closeUploadAdDialog();
+              this.selectedAdFile = null;
+              if (this.fileUploadComponent) {
+                this.fileUploadComponent.clear();
+              }
               this.loadAuthenticatedClient();
               this.loading = false;
             },
@@ -635,7 +645,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       return true;
     }
 
-    return this.authenticatedClient.adRequest === null;
+    return this.authenticatedClient.adRequest !== null;
   }
 
   canValidateAd(ad: AdResponseDto): boolean {

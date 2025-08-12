@@ -3,9 +3,30 @@
     <p-tabView (onChange)="onTabChange($event)" [activeIndex]="activeTabIndex">
       <!-- Tab 1: Attachments -->
       <p-tabPanel header="Attachments">
+        <div class="upload-container" *ngIf="ads.length === 0">
+          <div class="card">
+            <h3>Upload Ads</h3>
+            <p>Select a media file to link to your ads.</p>
+            <p-fileUpload
+              #adFileUpload
+              [customUpload]="true"
+              (onSelect)="onAdFileSelect($event)"
+              (uploadHandler)="submitAdUpload($event)"
+              [accept]="acceptedFileTypes"
+              [maxFileSize]="maxFileSize"
+              [auto]="false"
+              [multiple]="false"
+              chooseLabel="Select file"
+              uploadLabel="Upload"
+              [disabled]="loading"
+            >
+            </p-fileUpload>
+          </div>
+        </div>
+
         <div class="attachments-content">
           <div class="upload-section">
-            <h3>Upload de Arquivos</h3>
+            <h3>Attachments</h3>
             <p>
               Upload up to 3 files at once in the following formats: JPG, PNG,
               GIF, SVG, BMP, TIFF (maximum 10MB each). You can select multiple
@@ -149,7 +170,7 @@
                     [disabled]="loading"
                     severity="info"
                     [text]="true"
-                    pTooltip="Visualizar"
+                    pTooltip="View"
                   >
                   </p-button>
                   <p-button
@@ -180,6 +201,26 @@
             </p>
           </div>
 
+          <div
+            class="py-0 px-2 mt-3"
+            *ngIf="shouldShowCreateAdRequestMessage()"
+          >
+            <div class="rejection-info flex gap-3">
+              <span
+                class="pi pi-exclamation-triangle"
+                style="color: #ff9800"
+              ></span>
+              <div class="message-content">
+                <h4>Ad Rejected</h4>
+                <p class="mb-0">
+                  Your ad has been rejected by the admin. You must create an
+                  AdRequest so that the admin can create a new ad for you to
+                  validate.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div class="request-ad-section" *ngIf="canRequestAd()">
             <div
               class="selection-info"
@@ -202,7 +243,7 @@
                   class="pi pi-info-circle"
                   style="color: var(--cor-primaria)"
                 ></span>
-                Attachments são opcionais para criar um AdRequest
+                Attachments are optional for creating an AdRequest.
               </p>
             </div>
             <button
@@ -211,27 +252,6 @@
               icon="pi pi-send"
               (click)="openRequestAdDialog()"
               [disabled]="loading"
-            ></button>
-          </div>
-
-          <!-- Nova seção para upload direto do Ad -->
-          <div class="upload-direct-ad-section" *ngIf="canUploadDirectAd()">
-            <div class="upload-direct-info">
-              <p>
-                <span
-                  class="pi pi-upload"
-                  style="color: var(--cor-primaria)"
-                ></span>
-                Você pode fazer upload direto do seu Ad para validação do admin
-              </p>
-            </div>
-            <button
-              pButton
-              label="Upload your own Ad"
-              icon="pi pi-upload"
-              (click)="openUploadAdDialog()"
-              [disabled]="loading"
-              severity="success"
             ></button>
           </div>
 
@@ -251,26 +271,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Nova mensagem para criar AdRequest após rejeição -->
-          <div
-            class="create-ad-request-after-rejection"
-            *ngIf="shouldShowCreateAdRequestMessage()"
-          >
-            <div class="rejection-info flex gap-3">
-              <span
-                class="pi pi-exclamation-triangle"
-                style="color: #ff9800"
-              ></span>
-              <div class="message-content">
-                <h4>Ad Rejected</h4>
-                <p>
-                  Seu ad foi rejeitado pelo admin. Você deve criar um AdRequest
-                  para que o admin possa criar um novo ad para você validar.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </p-tabPanel>
 
@@ -278,6 +278,7 @@
       <p-tabPanel header="Ads">
         <div class="ads-info" *ngIf="shouldDisplayMaxValidationsTry()">
           <p class="validation-info">
+            <!-- ad.canBeValidatedByOwner -->
             <span
               class="pi pi-info-circle"
               style="color: var(--cor-primaria)"
@@ -289,7 +290,7 @@
         <div class="ads-content w-full">
           <div class="ads-list w-full" *ngIf="ads.length > 0">
             <div class="ad-item w-full" *ngFor="let ad of ads">
-              <div class="ad-header">
+              <div class="ad-header flex gap-2">
                 <div class="ad-info">
                   <h5>Ad - {{ ad.name ?? "" }}</h5>
                   <p class="ad-date">
@@ -310,7 +311,11 @@
                     class="validation-count"
                     *ngIf="ad.validation === 'PENDING'"
                   >
-                    {{ ad.canBeValidatedByOwner ? 'Available for validation' : 'Waiting for admin approval' }}
+                    {{
+                      ad.canBeValidatedByOwner
+                        ? "Available for validation"
+                        : "Waiting for admin approval"
+                    }}
                   </small>
                   <small
                     class="validation-count"
@@ -340,7 +345,25 @@
                 </div>
               </div>
 
-              <div class="ad-actions" *ngIf="ad.validation === 'PENDING'">
+              <div class="ad-actions w-full">
+                <p-button
+                  icon="pi pi-eye"
+                  (onClick)="viewAttachment(ad.link)"
+                  [disabled]="loading"
+                  severity="info"
+                  [text]="true"
+                  pTooltip="View"
+                >
+                </p-button>
+                <p-button
+                  icon="pi pi-download"
+                  (onClick)="downloadAttachment(ad.link)"
+                  [disabled]="loading"
+                  severity="success"
+                  [text]="true"
+                  pTooltip="Download"
+                >
+                </p-button>
                 <button
                   pButton
                   *ngIf="canValidateAd(ad)"
@@ -401,8 +424,8 @@
           class="pi pi-info-circle"
           style="color: var(--cor-primaria)"
         ></span>
-        Attachments são opcionais para criar um AdRequest. Você pode enviar sem
-        attachments se desejar.
+        Attachments are optional when creating an AdRequest. You can send
+        without attachments if you wish.
       </p>
     </div>
 
@@ -561,68 +584,5 @@
       [loading]="loading"
     >
     </p-button>
-  </ng-template>
-</p-dialog>
-
-<!-- Dialog para Upload Direto do Ad -->
-<p-dialog
-  header="Upload your Ad"
-  [(visible)]="showUploadAdDialog"
-  [modal]="true"
-  [style]="{ width: '800px' }"
-  [draggable]="false"
-  [resizable]="false"
->
-  <div class="dialog-content">
-    <div class="upload-info">
-      <p>
-        <span
-          class="pi pi-info-circle"
-          style="color: var(--cor-primaria)"
-        ></span>
-        Faça upload do seu ad para validação do admin. Apenas imagens nos
-        formatos JPG, PNG, GIF, SVG, BMP e TIFF são aceitas (máximo 10MB).
-      </p>
-    </div>
-
-    <form [formGroup]="uploadAdForm" class="upload-form">
-      <div class="form-field">
-        <label for="adFile" class="required">Ad File</label>
-        <p-fileUpload
-          [customUpload]="true"
-          (uploadHandler)="onAdFileSelect($event)"
-          [accept]="acceptedFileTypes"
-          [maxFileSize]="maxFileSize"
-          [auto]="false"
-          [multiple]="false"
-          chooseLabel="Select file"
-          [disabled]="loading"
-        >
-        </p-fileUpload>
-        <app-error
-          id="error-msg-file"
-          [control]="uploadAdForm.get('adFile')"
-          *ngIf="mostrarErroForm(uploadAdForm, 'adFile')"
-        ></app-error>
-      </div>
-    </form>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <button
-      pButton
-      label="Cancelar"
-      id="btnSecundario"
-      (click)="closeUploadAdDialog()"
-      class="p-button-secondary"
-    ></button>
-    <button
-      pButton
-      label="Enviar Ad"
-      (click)="submitAdUpload()"
-      [disabled]="uploadAdForm.invalid || loading"
-      [loading]="loading"
-      severity="success"
-    ></button>
   </ng-template>
 </p-dialog>
