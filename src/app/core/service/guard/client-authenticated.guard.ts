@@ -1,26 +1,23 @@
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { Role } from '@app/model/client';
-import { Authentication } from '../auth/autenthication';
-import { ToastService } from '../state/toast.service';
+import { inject } from "@angular/core";
+import { CanActivateFn, Router } from "@angular/router";
+import { Role } from "@app/model/client";
+import { Authentication } from "../auth/autenthication";
 
 export const ClientAuthenticatedGuard: CanActivateFn = () => {
   const router = inject(Router);
   const authentication = inject(Authentication);
-  const toastService = inject(ToastService);
-  
+
   if (!authentication.isTokenValido()) {
-    router.navigate(['/login']);
+    router.navigate(["/login"]);
     return false;
   }
-  
+
   const userRole = authentication._clientSignal()?.role;
-  
-  if (userRole !== Role.CLIENT && userRole !== Role.ADMIN) {
-    toastService.erro('You do not have permission to access this page');
-    router.navigate(['/']);
+
+  if (userRole === Role.ADMIN) {
+    router.navigate(["/admin"]);
     return false;
   }
-  
+
   return true;
 };

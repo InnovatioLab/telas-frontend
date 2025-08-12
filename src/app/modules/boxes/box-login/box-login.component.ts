@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { IconTvDisplayComponent } from '@app/shared/icons/tv-display.icon';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
 
 interface Box {
   id: string;
