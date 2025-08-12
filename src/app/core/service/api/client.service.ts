@@ -282,7 +282,6 @@ export class ClientService extends BaseHttpService<Client> {
       );
   }
 
-  // Upload de attachments
   uploadAttachment(file: File): Observable<any> {
     // Converter arquivo para Base64
     return new Observable((observer) => {
@@ -308,7 +307,6 @@ export class ClientService extends BaseHttpService<Client> {
     });
   }
 
-  // Upload de múltiplos attachments
   uploadMultipleAttachments(files: File[]): Observable<any> {
     return new Observable((observer) => {
       const attachmentPromises = files.map((file) => {
@@ -338,7 +336,6 @@ export class ClientService extends BaseHttpService<Client> {
     });
   }
 
-  // Criar request de ad
   createAdRequest(request: ClientAdRequestDto): Observable<any> {
     return this.http.post(`${this.baseUrl}/request-ad`, request);
   }
