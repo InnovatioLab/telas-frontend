@@ -1,0 +1,109 @@
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.actions {
+  text-align: center;
+  width: 120px;
+}
+
+// Dialog styles
+.details-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.detail-row {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.attachments-container {
+  // display: flex;
+  // flex-wrap: wrap;
+  // gap: 1rem;
+  // margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.attachment-item {
+  .attachment-image {
+    // max-width: 150px;
+    // max-height: 150px;
+    // border-radius: 4px;
+    // border: 1px solid #ddd;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+}
+
+.ad-container {
+  margin-top: 0.5rem;
+  
+  .ad-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+}
+
+.refused-ads-container {
+  margin-top: 0.5rem;
+}
+
+.refused-ad-item {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  
+  .refused-ad-header {
+    margin-bottom: 0.5rem;
+    color: #dc3545;
+  }
+  
+  .refused-ad-content {
+    div {
+      margin-bottom: 0.25rem;
+    }
+  }
+}
+
+.file-preview {
+  background: #f8f9fa;
+  border-radius: 4px;
+  
+  
+  
+  .preview-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+}
+
+// Table responsive styles
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .actions {
+    width: 80px;
+  }
+}

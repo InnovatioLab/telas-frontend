@@ -1,115 +1,15 @@
 <div class="container">
-  <div class="content">
-    <p-card styleClass="card-header">
-      <div class="card-header-content">
-          <div class="p-card-content">
-            <span class="p-input-icon-left">
-              <app-icon-search style="color: #496382" class="search-icon"></app-icon-search>
-              <input 
-                type="text" 
-                style="width: 250px;"
-                pInputText 
-                placeholder="Search advertisements..." 
-                [(ngModel)]="searchTerm"
-                [ngModelOptions]="{standalone: true}"
-                (keyup.enter)="onSearch()" />
-            </span>
-            <button pButton label="Create Ad" icon="pi pi-plus" (click)="openCreateAdModal()"></button>
-          </div>
-      </div>
-    </p-card>
-
-    <p-dialog header="Create Advertisement" [(visible)]="showCreateAdModal" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{width: '400px'}">
-      <form (ngSubmit)="createAdvertisement()" #adForm="ngForm">
-        <div class="p-fluid" style="gap: 1.5rem; display: flex; flex-direction: column;">
-          <div class="p-field" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
-            <label for="adFile" style="margin-bottom: 0;">File</label>
-            <button type="button" pButton class="p-button-outlined" (click)="fileInput.click()">
-              <app-icon-upload></app-icon-upload>
-              <span class="file-label">Select file</span>
-            </button>
-            <input #fileInput id="adFile" type="file" (change)="onFileSelected($event)" accept="image/*,video/*" style="display: none;" required />
-            <span *ngIf="selectedFile" style="font-size: 0.95em; color: #555; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ selectedFile.name }}</span>
-          </div>
-        </div>
-        <div class="p-dialog-footer" style="margin-top: 2rem;">
-          <button pButton type="submit" label="Create" [disabled]="loadingCreateAd || !adForm.form.valid"></button>
-          <button pButton type="button" label="Cancel" class="p-button-secondary" (click)="showCreateAdModal=false"></button>
-        </div>
-      </form>
-    </p-dialog>
-
-    <p-table 
-      [value]="advertisements" 
-      [loading]="loading" 
-      styleClass="p-datatable-sm" 
-      [paginator]="true" 
-      [rows]="pageSize" 
-      [totalRecords]="totalRecords"
-      [rowsPerPageOptions]="[5,10,25,50]" 
-      [showCurrentPageReport]="true" 
-      responsiveLayout="scroll"
-      [lazy]="true"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} advertisements"
-      paginatorDropdownAppendTo="body"
-      (onPage)="onPageChange($event)">
-      <ng-template pTemplate="header">
-        <tr>
-          <th scope="col">Id</th>
-          <th scope="col">Link</th>
-          <th scope="col">Status</th>
-          <th scope="col">Submission Date</th>
-          <th scope="col">Waiting Days</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-ad>
-        <tr>
-          <td class="text-center">{{ad.id?.substring(0, 8) || 'N/A'}}</td>
-          <td class="text-center">
-            <a [href]="ad.link" target="_blank" class="ad-link">
-              {{ad.link || 'No link'}}
-            </a>
-          </td>
-          <td class="text-center">
-            <p-badge 
-              [value]="getStatusLabel(ad.validation)" 
-              [severity]="getStatusSeverity(ad.validation)">
-            </p-badge>
-          </td>
-          <td class="text-center">{{ad.submissionDate | date:'short'}}</td>
-          <td class="text-center">{{ad.waitingDays || 0}} days</td>
-          <td class="text-center">
-            <div class="action-buttons">
-              <button pButton pRipple 
-                      icon="pi pi-check" 
-                      class="p-button-rounded p-button-success p-button-text" 
-                      (click)="approveAdvertisement(ad)"
-                      pTooltip="Approve Advertisement"
-                      [disabled]="ad.validation?.toLowerCase() === 'approved'">
-              </button>
-              <button pButton pRipple 
-                      icon="pi pi-times" 
-                      class="p-button-rounded p-button-warning p-button-text" 
-                      (click)="rejectAdvertisement(ad)"
-                      pTooltip="Reject Advertisement"
-                      [disabled]="ad.validation?.toLowerCase() === 'rejected'">
-              </button>
-              <button pButton pRipple 
-                      icon="pi pi-trash" 
-                      class="p-button-rounded p-button-danger p-button-text" 
-                      (click)="deleteAdvertisement(ad)"
-                      pTooltip="Delete Advertisement">
-              </button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="6" class="text-center">No advertisements found.</td>
-        </tr>
-      </ng-template>
-    </p-table>
+  <div class="content management-ads">
+    <p-tabView>
+      <!-- Tab 1: Ad Request -->
+      <p-tabPanel header="Ad Request">
+        <app-ad-request-management></app-ad-request-management>
+      </p-tabPanel>
+      
+      <!-- Tab 2: Ads -->
+      <p-tabPanel header="Ads">
+        <app-ads-management></app-ads-management>
+      </p-tabPanel>
+    </p-tabView>
   </div>
 </div> 

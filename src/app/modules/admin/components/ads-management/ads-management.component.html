@@ -1,0 +1,228 @@
+<p-card styleClass="card-header">
+  <div class="card-header-content">
+    <div class="p-card-content">
+      <span class="p-input-icon-left">
+        <app-icon-search
+          style="color: #496382"
+          class="search-icon"
+          (click)="onSearch()"
+        ></app-icon-search>
+        <input
+          type="text"
+          style="width: 250px"
+          pInputText
+          placeholder="Search Ads"
+          [(ngModel)]="searchTerm"
+          [ngModelOptions]="{ standalone: true }"
+          (keyup.enter)="onSearch()"
+        />
+      </span>
+      <span
+        class="pi pi-info-circle"
+        style="color: var(--cor-primaria)"
+        pTooltip="Search by Client BusinessName, Identification, Phone, Email or Role"
+      ></span>
+    </div>
+  </div>
+</p-card>
+
+<!-- Pending Ads Table -->
+<p-table
+  [value]="pendingAds"
+  [loading]="loading"
+  styleClass="p-datatable-sm"
+  [paginator]="true"
+  [rows]="pageSize"
+  [totalRecords]="totalRecords"
+  [rowsPerPageOptions]="[5, 10, 25, 50]"
+  [showCurrentPageReport]="true"
+  responsiveLayout="scroll"
+  [lazy]="true"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} pending ads"
+  paginatorDropdownAppendTo="body"
+  (onPage)="onPageChange($event)"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th scope="col" pSortableColumn="clientName">
+        Client Name <p-sortIcon field="clientName"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="clientIdentificationNumber">
+        Identification
+        <p-sortIcon field="clientIdentificationNumber"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="clientRole">
+        Role <p-sortIcon field="clientRole"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="name">
+        Ad Name <p-sortIcon field="name"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="submissionDate">
+        Submission Date <p-sortIcon field="submissionDate"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="waitingDays">
+        Waiting Days <p-sortIcon field="waitingDays"></p-sortIcon>
+      </th>
+      <th scope="col" class="actions">Actions</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-ad>
+    <tr>
+      <td>{{ ad.clientName }}</td>
+      <td>{{ ad.clientIdentificationNumber }}</td>
+      <td>
+        <p-badge
+          [value]="getPartnerStatusLabel(ad.clientRole)"
+          [severity]="getPartnerStatusSeverity(ad.clientRole)"
+        >
+        </p-badge>
+      </td>
+      <td>{{ ad.name }}</td>
+      <td>{{ ad.submissionDate | date: "short" }}</td>
+      <td>{{ ad.waitingDays }} days</td>
+      <td class="actions">
+        <div class="action-buttons">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-check-circle"
+            class="p-button-rounded p-button-success p-button-text"
+            (click)="openValidateDialog(ad)"
+            pTooltip="Validate Ad"
+            tooltipPosition="left"
+          ></button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7" class="text-center">No pending ads found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Validate Ad Dialog -->
+<p-dialog
+  header="Validate Ad"
+  [(visible)]="showValidateDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '700px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div *ngIf="selectedAd" class="validate-content">
+    <!-- Ad Details Section -->
+    <div class="ad-details-section">
+      <h4><strong>Ad Details</strong></h4>
+      <div class="detail-row">
+        <strong class="mr-2">Status:</strong>
+        <p-badge
+          [value]="getStatusLabel(selectedAd.validation)"
+          [severity]="getStatusSeverity(selectedAd.validation)"
+        >
+        </p-badge>
+      </div>
+
+      <!-- Ad Image -->
+      <div class="detail-row" *ngIf="selectedAd.link">
+        <strong>Ad:</strong>
+        <div class="ad-container">
+          <img [src]="selectedAd.link" alt="Ad" class="ad-image" />
+          <div class="w-full flex justify-content-center">
+            <p-button
+              icon="pi pi-eye"
+              (onClick)="viewAd(selectedAd.link)"
+              [disabled]="loading"
+              severity="info"
+              [text]="true"
+              pTooltip="View"
+            >
+            </p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Validation Form Section -->
+    <div class="validation-form-section">
+      <h4><strong>Validation Options</strong></h4>
+      <form [formGroup]="validateForm" class="validate-form">
+        <div class="form-field">
+          <label for="validation" class="required">Validation</label>
+          <p-select
+            id="validation"
+            class="w-full select-validation"
+            [options]="validationOptions"
+            formControlName="validation"
+            placeholder="Select a validation"
+            (onChange)="onValidationChange($event)"
+            [overlayOptions]="{ appendTo: 'body' }"
+            appendTo="body"
+          >
+          </p-select>
+          <app-error
+            id="error-msg-validation"
+            [control]="validateForm.get('validation')"
+            *ngIf="mostrarErro(validateForm, 'validation')"
+          ></app-error>
+        </div>
+
+        <div
+          class="rejected-validation-fields w-full formgrid grid mt-3"
+          *ngIf="validateForm.get('validation')?.value === 'REJECTED'"
+        >
+          <div class="field col">
+            <label for="justification" class="required">Justification</label>
+            <input
+              id="justification"
+              type="text"
+              pInputText
+              formControlName="justification"
+              placeholder="Type your justification"
+              class="w-full"
+            />
+            <app-error
+              id="error-msg-justification"
+              [control]="validateForm.get('justification')"
+              *ngIf="mostrarErro(validateForm, 'justification')"
+            ></app-error>
+          </div>
+
+          <div class="field col">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              pInputTextarea
+              formControlName="description"
+              placeholder="Type additional description"
+              rows="3"
+              class="w-full"
+            >
+            </textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      id="btnSecundario"
+      label="Cancel"
+      (click)="closeValidateDialog()"
+    ></button>
+    <button
+      pButton
+      label="Validate Ad"
+      (click)="submitValidation()"
+      [disabled]="validateForm.invalid || loadingValidation"
+      [loading]="loadingValidation"
+    ></button>
+  </ng-template>
+</p-dialog>

@@ -1,8 +1,4 @@
-::ng-deep {
-
-  .file-label {
-    color: var(--cor-cinza-fundo);
-  }
+::ng-deep .management-ads {
   .p-card-body {
     width: 100%;
     display: flex;
@@ -11,6 +7,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+
+    .p-tabview-panels,
+    .p-tabpanels,
+    .p-tabview-panel {
+      padding: 0.5rem 0rem !important;
     }
 
     p-button {
@@ -40,10 +42,6 @@
         }
       }
     }
-  }
-
-  .card-header {
-    padding: var(--espacamento-padrao);
   }
 
   .p-card-content {
@@ -100,137 +98,3 @@
     }
   }
 }
-
-.container {
-  margin-top: 60px !important;
-  padding: var(--espacamento-medio);
-  // max-width: var(--largura-max-card-grande);
-  // margin: 0 auto;
-
-  .content {
-    .card-header {
-      margin-bottom: var(--espacamento-medio);
-
-      .card-header-content {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--espacamento-padrao);
-
-        .p-card-content {
-          display: flex;
-          align-items: center;
-          gap: var(--espacamento-padrao);
-          flex: 1;
-
-          .p-input-icon-left {
-            flex: 1;
-            max-width: 400px;
-
-            input {
-              width: 100%;
-              padding-left: 2.5rem;
-            }
-
-            app-icon-search {
-              position: absolute;
-              left: var(--espacamento-padrao);
-              top: 50%;
-              transform: translateY(-50%);
-              color: var(--cor-legenda);
-              z-index: 1;
-            }
-          }
-
-          .p-button {
-            height: var(--altura-botao);
-            background-color: var(--cor-primaria);
-            border-color: var(--cor-primaria);
-            
-            &:hover {
-              background-color: var(--cor-primaria-escura);
-              border-color: var(--cor-primaria-escura);
-            }
-          }
-        }
-      }
-    }
-
-    .ad-link {
-      color: var(--cor-primaria);
-      text-decoration: none;
-      word-break: break-all;
-      
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: var(--espacamento-pequeno);
-      justify-content: center;
-      
-      .p-button-rounded {
-        width: 2rem;
-        height: 2rem;
-        
-        &.p-button-text {
-          background-color: transparent;
-          
-          &.p-button-success {
-            color: var(--cor-sucesso);
-            
-            &:hover {
-              background-color: rgba(40, 167, 69, 0.1);
-            }
-          }
-          
-          &.p-button-warning {
-            color: var(--cor-alerta);
-            
-            &:hover {
-              background-color: rgba(245, 156, 0, 0.1);
-            }
-          }
-          
-          &.p-button-danger {
-            color: var(--cor-erro);
-            
-            &:hover {
-              background-color: rgba(220, 53, 69, 0.1);
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: var(--espacamento-padrao);
-    
-    .content {
-      .card-header {
-        .card-header-content {
-          flex-direction: column;
-          align-items: stretch;
-          
-          .p-card-content {
-            flex-direction: column;
-            gap: var(--espacamento-pequeno);
-            
-            .p-input-icon-left {
-              max-width: none;
-            }
-            
-            .p-button {
-              width: 100%;
-            }
-          }
-        }
-      }
-    }
-  }
-} 

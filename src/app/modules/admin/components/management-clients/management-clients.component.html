@@ -4,10 +4,14 @@
       <div class="card-header-content">
         <div class="p-card-content">
           <span class="p-input-icon-left">
-            <app-icon-search style="color: #496382" class="search-icon"></app-icon-search>
+            <app-icon-search
+              style="color: #496382"
+              class="search-icon"
+              (click)="onSearch()"
+            ></app-icon-search>
             <input
               type="text"
-              style="width: 250px;"
+              style="width: 250px"
               pInputText
               placeholder="Search clients..."
               [(ngModel)]="searchTerm"
@@ -15,6 +19,11 @@
               (keyup.enter)="onSearch()"
             />
           </span>
+          <span
+            class="pi pi-info-circle"
+            style="color: var(--cor-primaria)"
+            pTooltip="Search by BusinessName, Identification, Phone, Email, Industry or Role"
+          ></span>
         </div>
       </div>
     </p-card>
@@ -46,7 +55,8 @@
             Email <p-sortIcon field="email"></p-sortIcon>
           </th>
           <th scope="col" pSortableColumn="identificationNumber">
-            Identification Number <p-sortIcon field="identificationNumber"></p-sortIcon>
+            Identification Number
+            <p-sortIcon field="identificationNumber"></p-sortIcon>
           </th>
           <th scope="col" pSortableColumn="industry">
             Industry <p-sortIcon field="industry"></p-sortIcon>
@@ -72,7 +82,14 @@
           </td>
           <td class="text-center">{{ client.identificationNumber }}</td>
           <td class="text-center">{{ client.industry }}</td>
-          <td class="text-center">{{ client.status ? (client.status.charAt(0).toUpperCase() + client.status.slice(1).toLowerCase()) : '' }}</td>
+          <td class="text-center">
+            {{
+              client.status
+                ? client.status.charAt(0).toUpperCase() +
+                  client.status.slice(1).toLowerCase()
+                : ""
+            }}
+          </td>
           <td class="text-center">
             <p-badge
               [value]="getPartnerStatusLabel(client.role || '')"
