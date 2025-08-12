@@ -2220,3 +2220,8 @@ label.required::after {
     cursor: pointer;
   }
 }
+
+.p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled).p-focus {
+  background-color: var(--cor-branca) !important;
+}
+

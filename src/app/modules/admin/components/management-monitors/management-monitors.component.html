@@ -2,7 +2,6 @@
   <div class="content">
     <p-card styleClass="card-header">
       <div class="card-header-content">
-        <i class="pi pi-search"></i>
         <div class="p-card-content">
           <span class="p-input-icon-left">
             <app-icon-search style="color: #496382" class="search-icon"></app-icon-search>
@@ -87,11 +86,12 @@
               <button
                 pButton
                 pRipple
-                class="p-button-rounded p-button-info p-button-text custom-ads-button"
+                class="p-button-rounded p-button-info p-button-text"
                 (click)="openAdsModal(monitor)"
                 pTooltip="Manage Ads"
+                style="background: rgba(51, 153, 255, 0.1)"
               >
-                <app-icon-tv-display class="custom-icon"></app-icon-tv-display>
+                <app-icon-tv-display class="custom-icon" style="color: #3399ff"></app-icon-tv-display>
                 <span
                   class="ads-badge"
                   *ngIf="monitor.adLinks && monitor.adLinks.length > 0"
@@ -101,29 +101,34 @@
               <button
                 pButton
                 pRipple
-                icon="pi pi-pencil"
                 class="p-button-rounded p-button-success p-button-text"
                 (click)="onSelectMonitor(monitor)"
                 pTooltip="Edit Monitor"
-              ></button>
-              <button
-                pButton
-                pRipple
-                class="p-button-rounded p-button-secondary p-button-text"
-                (click)="openUploadAdsModal(monitor)"
-                pTooltip="Upload ads"
+                style="background: rgba(34, 197, 94, 0.1)"
               >
-                <app-icon-upload class="custom-icon"></app-icon-upload>
+                <app-icon-etiqueta class="custom-icon" style="color: #22c55e"></app-icon-etiqueta>
               </button>
               <button
                 pButton
                 pRipple
-                icon="pi pi-trash"
-                [class]="getDeleteButtonClass(monitor)"
+                class="p-button-rounded p-button-primary p-button-text"
+                (click)="openUploadAdsModal(monitor)"
+                pTooltip="Upload ads"
+                style="background: rgba(99, 102, 241, 0.1)"
+              >
+                <app-icon-upload class="custom-icon" style="color: #6366f1"></app-icon-upload>
+              </button>
+              <button
+                pButton
+                pRipple
+                class="p-button-rounded p-button-danger p-button-text"
                 (click)="deleteMonitor(monitor)"
                 [disabled]="!canDeleteMonitor(monitor)"
                 [pTooltip]="getDeleteTooltip(monitor)"
-              ></button>
+                style="background: rgba(244, 63, 94, 0.12)"
+              >
+                <app-icon-trash class="custom-icon" style="color: #f43f5e"></app-icon-trash>
+              </button>
             </div>
           </td>
         </tr>
@@ -187,13 +192,14 @@
   <p-dialog
     header="Manage Monitor Ads"
     [(visible)]="adsModalVisible"
-    [style]="{ width: '50vw', maxWidth: '800px' }"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [style]="{ width: '95vw', maxWidth: '1600px' }"
+    [breakpoints]="{ '1199px': '98vw', '575px': '100vw' }"
     [modal]="true"
     [draggable]="false"
     [resizable]="false"
     [closeOnEscape]="true"
     [dismissableMask]="true"
+    (onHide)="onAdsModalHide()"
   >
     <div class="ads-management" *ngIf="selectedMonitorForAds">
       <div class="ads-header">
@@ -419,14 +425,15 @@
         <button
           pButton
           type="submit"
-          label="Create"
+          label="Cancel"
+          class="p-button-text"
           [disabled]="loadingCreateAd || !adForm.form.valid"
         ></button>
         <button
           pButton
           type="button"
           label="Cancel"
-          class="p-button-secondary"
+          class="p-button-text"
           (click)="showCreateAdModal = false"
         ></button>
       </div>

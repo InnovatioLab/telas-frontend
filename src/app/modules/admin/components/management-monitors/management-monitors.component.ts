@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdService } from '@app/core/service/api/ad.service';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
@@ -86,6 +86,7 @@ export class ManagementMonitorsComponent implements OnInit {
     private readonly toastService: ToastService,
     private readonly messageService: MessageService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly ngZone: NgZone,
     private readonly autenticacaoService: AutenticacaoService,
     private readonly adService: AdService,
     private readonly clientService: ClientService
@@ -353,14 +354,38 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   closeAdsModal(): void {
-    console.log('Fechando modal de gerenciamento de ads');
+    this.ngZone.run(() => {
+      this.adsModalVisible = false;
+      this.selectedMonitorForAds = null;
+      this.orderedAdLinks = [];
+      this.galleryImages = [];
+      this.selectedAdIndex = 0;
+      this.cdr.detectChanges();
+    });
+  }
+
+  forceCloseAdsModal(): void {
     this.adsModalVisible = false;
     this.selectedMonitorForAds = null;
     this.orderedAdLinks = [];
     this.galleryImages = [];
     this.selectedAdIndex = 0;
     this.cdr.detectChanges();
-    console.log('adsModalVisible após fechar:', this.adsModalVisible);
+    
+    setTimeout(() => {
+      this.ngZone.run(() => {
+        this.adsModalVisible = false;
+        this.cdr.detectChanges();
+      });
+    }, 50);
+  }
+
+  onAdsModalHide(): void {
+    this.selectedMonitorForAds = null;
+    this.orderedAdLinks = [];
+    this.galleryImages = [];
+    this.selectedAdIndex = 0;
+    this.isAdsLoading = false;
   }
 
   selectAd(index: number): void {
@@ -410,15 +435,43 @@ export class ManagementMonitorsComponent implements OnInit {
         ads
       };
 
+      console.log('Iniciando saveAdOrder para monitor:', monitorId);
+      
       this.monitorService.updateMonitor(monitorId, payload).subscribe({
-        next: () => {
-          console.log('Requisição de save order foi sucesso, fechando modal...');
+        next: (response: any) => {
+          console.log('Save order sucesso, fechando modal...');
           this.toastService.sucesso('Ad order saved!');
+          
           this.closeAdsModal();
-          this.loadMonitors();
+          
+          setTimeout(() => {
+            if (this.adsModalVisible) {
+              console.log('Primeira tentativa falhou, tentando novamente...');
+              this.forceCloseAdsModal();
+            }
+          }, 50);
+          
+          setTimeout(() => {
+            if (this.adsModalVisible) {
+              console.log('Segunda tentativa falhou, forçando fechamento...');
+              this.adsModalVisible = false;
+              this.cdr.detectChanges();
+            }
+            this.loadMonitors();
+          }, 150);
         },
-        error: () => {
+        error: (error) => {
+          console.error('Erro no saveAdOrder:', error);
           this.toastService.erro('Failed to save ad order.');
+          
+          this.closeAdsModal();
+          
+          setTimeout(() => {
+            if (this.adsModalVisible) {
+              console.log('Fechando modal após erro...');
+              this.forceCloseAdsModal();
+            }
+          }, 50);
         }
       });
     }

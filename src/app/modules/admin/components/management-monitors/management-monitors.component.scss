@@ -1,4 +1,14 @@
 ::ng-deep {
+  .btn-cancelar,
+  .p-button-secondary,
+  .p-button-text {
+    color: var(--cor-branca) !important;
+
+    .p-button-icon {
+      color: var(--cor-branca) !important;
+    }
+  }
+
   .p-card-body {
     width: 100%;
     display: flex;
@@ -415,7 +425,9 @@
   }
 }
 
-:host ::ng-deep .p-datatable-thead > tr > th {
+
+
+:host ::ng-deep .p-datatable-thead>tr>th {
   background: var(--cor-primaria) !important;
   color: #fff !important;
 }
