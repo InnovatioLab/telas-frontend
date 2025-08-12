@@ -1,15 +1,15 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { SliceStringPipe } from '@app/core/pipes/slice-string.pipe';
-import { AdService } from '@app/core/service/api/ad.service';
-import { ClientService } from '@app/core/service/api/client.service';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
-import { AdRequestResponseDto } from '@app/model/dto/response/ad-request-response.dto';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { MessageService } from 'primeng/api';
-import { FileUpload } from 'primeng/fileupload';
+import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { SliceStringPipe } from "@app/core/pipes/slice-string.pipe";
+import { AdService } from "@app/core/service/api/ad.service";
+import { ClientService } from "@app/core/service/api/client.service";
+import { ToastService } from "@app/core/service/state/toast.service";
+import { Role } from "@app/model/client";
+import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
+import { AdRequestResponseDto } from "@app/model/dto/response/ad-request-response.dto";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { MessageService } from "primeng/api";
 
 @Component({
   selector: "app-ad-request-management",
@@ -19,8 +19,6 @@ import { FileUpload } from 'primeng/fileupload';
   styleUrls: ["./ad-request-management.component.scss"],
 })
 export class AdRequestManagementComponent implements OnInit {
-  @ViewChild("fileUpload") fileUploadComponent: FileUpload;
-
   adRequests: AdRequestResponseDto[] = [];
   loading = false;
   searchTerm = "";
@@ -37,7 +35,9 @@ export class AdRequestManagementComponent implements OnInit {
   selectedFile: File | null = null;
   filePreview: string | null = null;
   loadingUpload = false;
-  maxFileSize = 10 * 1024 * 1024; // 10MB
+
+  maxFileSize = 10 * 1024 * 1024;
+  acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff";
 
   constructor(
     private readonly clientService: ClientService,
@@ -108,6 +108,46 @@ export class AdRequestManagementComponent implements OnInit {
     this.filePreview = null;
   }
 
+  onFileInputChange(event: any, adRequest: AdRequestResponseDto): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Definir o adRequest selecionado
+      this.selectedAdRequest = adRequest;
+
+      // Validar tipo de arquivo
+      if (!this.isValidFileType(file)) {
+        this.toastService.erro(
+          `File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`
+        );
+        return;
+      }
+
+      // Validar tamanho
+      if (file.size > this.maxFileSize) {
+        this.toastService.erro(`File "${file.name}" must be at most 10MB.`);
+        return;
+      }
+
+      // Validar tamanho do nome do arquivo
+      if (file.name.length > 255) {
+        this.toastService.erro(
+          `File name "${file.name}" is too long. Maximum of 255 characters allowed.`
+        );
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Criar preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.filePreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+      this.showUploadAdDialog = true;
+    }
+  }
+
   onFileSelect(event: any): void {
     const file = event.files[0];
     if (file) {
@@ -141,6 +181,7 @@ export class AdRequestManagementComponent implements OnInit {
         this.filePreview = reader.result as string;
       };
       reader.readAsDataURL(file);
+      this.showUploadAdDialog = true;
     }
   }
 
@@ -224,14 +265,6 @@ export class AdRequestManagementComponent implements OnInit {
     reader.readAsDataURL(this.selectedFile);
   }
 
-  clearFileUpload(): void {
-    this.selectedFile = null;
-    this.filePreview = null;
-    if (this.fileUploadComponent) {
-      this.fileUploadComponent.clear();
-    }
-  }
-
   viewAttachment(link: string): void {
     window.open(link, "_blank");
   }
@@ -245,5 +278,28 @@ export class AdRequestManagementComponent implements OnInit {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }
+
+  getPartnerStatusSeverity(
+    role: string
+  ): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
+    return role === Role.PARTNER ? "success" : "info";
+  }
+
+  getPartnerStatusLabel(role: string): string {
+    return role === Role.PARTNER ? "Partner" : "Client";
+  }
+
+  getRoleLabel(role: string): string {
+    switch (role?.toLowerCase()) {
+      case "admin":
+        return "Administrator";
+      case "client":
+        return "Client";
+      case "partner":
+        return "Partner";
+      default:
+        return role || "Unknown";
+    }
   }
 }

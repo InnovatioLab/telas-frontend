@@ -59,7 +59,13 @@
         <tr>
           <td>{{ adRequest.clientName }}</td>
           <td>{{ adRequest.clientIdentificationNumber }}</td>
-          <td>{{ adRequest.clientRole }}</td>
+          <td>
+            <p-badge
+              [value]="getPartnerStatusLabel(adRequest.clientRole)"
+              [severity]="getPartnerStatusSeverity(adRequest.clientRole)"
+            >
+            </p-badge>
+          </td>
           <td>{{ adRequest.message | sliceString: 100 }}</td>
           <td>{{ adRequest.submissionDate | date: "short" }}</td>
           <td>{{ adRequest.waitingDays }} days</td>
@@ -73,12 +79,19 @@
                 (click)="openViewDetailsDialog(adRequest)"
                 pTooltip="View Details"
               ></button>
+              <input
+                #fileInput
+                type="file"
+                [accept]="acceptedFileTypes"
+                style="display: none"
+                (change)="onFileInputChange($event, adRequest)"
+              />
               <button
                 pButton
                 pRipple
                 icon="pi pi-upload"
                 class="p-button-rounded p-button-success p-button-text"
-                (click)="openUploadAdDialog(adRequest)"
+                (click)="fileInput.click()"
                 pTooltip="Upload Ad"
               ></button>
             </div>
@@ -102,7 +115,7 @@
   [modal]="true"
   [closable]="true"
   [dismissableMask]="true"
-  [style]="{ width: '800px' }"
+  [style]="{ width: '90%', maxWidth: '650px' }"
   [draggable]="false"
   [resizable]="false"
 >
@@ -216,47 +229,36 @@
   [modal]="true"
   [closable]="true"
   [dismissableMask]="true"
-  [style]="{ width: '500px' }"
+  [style]="{ width: '90%', maxWidth: '700px' }"
   [draggable]="false"
   [resizable]="false"
 >
   <div class="upload-content">
-    <p-fileUpload
-      #fileUpload
-      [customUpload]="true"
-      (onSelect)="onFileSelect($event)"
-      accept="image/*"
-      [maxFileSize]="maxFileSize"
-      [auto]="true"
-      chooseLabel="Choose File"
-      cancelLabel="Clear"
-      [showCancelButton]="true"
-      [showUploadButton]="false"
-    >
-    </p-fileUpload>
-
     <!-- File Preview -->
-    <div *ngIf="filePreview" class="file-preview">
-      <h4>Selected File Preview:</h4>
+    <div
+      *ngIf="filePreview"
+      class="file-preview flex flex-column align-items-center gap-3"
+    >
+      <h4 class="align-self-start">Selected File Preview:</h4>
       <img [src]="filePreview" alt="File Preview" class="preview-image" />
-      <button
-        pButton
-        type="button"
-        label="Clear File"
-        class="p-button-secondary p-button-sm"
-        (click)="clearFileUpload()"
-      ></button>
     </div>
   </div>
 
   <ng-template pTemplate="footer">
-    <button pButton label="Cancel" (click)="closeUploadAdDialog()"></button>
-    <button
-      pButton
-      label="Upload"
-      (click)="uploadAd()"
-      [disabled]="!selectedFile || loadingUpload"
-      [loading]="loadingUpload"
-    ></button>
+    <div class="upload-dialog-footer w-full flex justify-content-center gap-3">
+      <button
+        pButton
+        id="btnSecundario"
+        label="Cancel"
+        (click)="closeUploadAdDialog()"
+      ></button>
+      <button
+        pButton
+        label="Upload"
+        (click)="uploadAd()"
+        [disabled]="!selectedFile || loadingUpload"
+        [loading]="loadingUpload"
+      ></button>
+    </div>
   </ng-template>
 </p-dialog>

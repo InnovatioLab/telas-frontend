@@ -59,7 +59,13 @@
         <tr>
           <td>{{ ad.clientName }}</td>
           <td>{{ ad.clientIdentificationNumber }}</td>
-          <td>{{ ad.clientRole }}</td>
+          <td>
+            <p-badge
+              [value]="getPartnerStatusLabel(ad.clientRole)"
+              [severity]="getPartnerStatusSeverity(ad.clientRole)"
+            >
+            </p-badge>
+          </td>
           <td>{{ ad.name }}</td>
           <td>{{ ad.submissionDate | date: "short" }}</td>
           <td>{{ ad.waitingDays }} days</td>
@@ -68,18 +74,11 @@
               <button
                 pButton
                 pRipple
-                icon="pi pi-eye"
-                class="p-button-rounded p-button-info p-button-text"
-                (click)="viewAd(ad)"
-                pTooltip="View Ad"
-              ></button>
-              <button
-                pButton
-                pRipple
                 icon="pi pi-check-circle"
                 class="p-button-rounded p-button-success p-button-text"
                 (click)="openValidateDialog(ad)"
                 pTooltip="Validate Ad"
+                tooltipPosition="left"
               ></button>
             </div>
           </td>
@@ -102,80 +101,112 @@
   [modal]="true"
   [closable]="true"
   [dismissableMask]="true"
-  [style]="{ width: '500px' }"
+  [style]="{ width: '700px' }"
   [draggable]="false"
   [resizable]="false"
 >
-  <div class="validate-content">
-    <form [formGroup]="validateForm" class="validate-form">
-      <div class="form-field">
-        <label for="validation" class="required">Validation</label>
-        <p-select
-          id="validation"
-          class="w-full"
-          [options]="validationOptions"
-          formControlName="validation"
-          placeholder="Select a validation"
-          (onChange)="onValidationChange($event)"
-          [overlayOptions]="{ appendTo: 'body' }"
-          appendTo="body"
+  <div *ngIf="selectedAd" class="validate-content">
+    <!-- Ad Details Section -->
+    <div class="ad-details-section">
+      <h4><strong>Ad Details</strong></h4>
+      <div class="detail-row">
+        <strong class="mr-2">Status:</strong>
+        <p-badge
+          [value]="getStatusLabel(selectedAd.validation)"
+          [severity]="getStatusSeverity(selectedAd.validation)"
         >
-        </p-select>
-        <small
-          class="p-error"
-          *ngIf="
-            validateForm.get('validation')?.invalid &&
-            validateForm.get('validation')?.touched
-          "
-        >
-          Validation is required
-        </small>
+        </p-badge>
       </div>
 
-      <div
-        class="form-field"
-        *ngIf="validateForm.get('validation')?.value === 'REJECTED'"
-      >
-        <label for="justification" class="required">Justification</label>
-        <input
-          id="justification"
-          type="text"
-          pInputText
-          formControlName="justification"
-          placeholder="Type your justification"
-          class="w-full"
-        />
-        <small
-          class="p-error"
-          *ngIf="
-            validateForm.get('justification')?.invalid &&
-            validateForm.get('justification')?.touched
-          "
-        >
-          Justification is required when rejecting
-        </small>
+      <!-- Ad Image -->
+      <div class="detail-row" *ngIf="selectedAd.link">
+        <strong>Ad:</strong>
+        <div class="ad-container">
+          <img [src]="selectedAd.link" alt="Ad" class="ad-image" />
+          <div class="w-full flex justify-content-center">
+            <p-button
+              icon="pi pi-eye"
+              (onClick)="viewAd(selectedAd.link)"
+              [disabled]="loading"
+              severity="info"
+              [text]="true"
+              pTooltip="View"
+            >
+            </p-button>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div
-        class="form-field"
-        *ngIf="validateForm.get('validation')?.value === 'REJECTED'"
-      >
-        <label for="description">Description</label>
-        <textarea
-          id="description"
-          pInputTextarea
-          formControlName="description"
-          placeholder="Type additional description"
-          rows="3"
-          class="w-full"
+    <!-- Validation Form Section -->
+    <div class="validation-form-section">
+      <h4><strong>Validation Options</strong></h4>
+      <form [formGroup]="validateForm" class="validate-form">
+        <div class="form-field">
+          <label for="validation" class="required">Validation</label>
+          <p-select
+            id="validation"
+            class="w-full select-validation"
+            [options]="validationOptions"
+            formControlName="validation"
+            placeholder="Select a validation"
+            (onChange)="onValidationChange($event)"
+            [overlayOptions]="{ appendTo: 'body' }"
+            appendTo="body"
+          >
+          </p-select>
+          <app-error
+            id="error-msg-validation"
+            [control]="validateForm.get('validation')"
+            *ngIf="mostrarErro(validateForm, 'validation')"
+          ></app-error>
+        </div>
+
+        <div
+          class="rejected-validation-fields w-full formgrid grid mt-3"
+          *ngIf="validateForm.get('validation')?.value === 'REJECTED'"
         >
-        </textarea>
-      </div>
-    </form>
+          <div class="field col">
+            <label for="justification" class="required">Justification</label>
+            <input
+              id="justification"
+              type="text"
+              pInputText
+              formControlName="justification"
+              placeholder="Type your justification"
+              class="w-full"
+            />
+            <app-error
+              id="error-msg-justification"
+              [control]="validateForm.get('justification')"
+              *ngIf="mostrarErro(validateForm, 'justification')"
+            ></app-error>
+          </div>
+
+          <div class="field col">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              pInputTextarea
+              formControlName="description"
+              placeholder="Type additional description"
+              rows="3"
+              class="w-full"
+            >
+            </textarea>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 
   <ng-template pTemplate="footer">
-    <button pButton label="Cancel" (click)="closeValidateDialog()"></button>
+    <button
+      pButton
+      id="btnSecundario"
+      label="Cancel"
+      (click)="closeValidateDialog()"
+    ></button>
     <button
       pButton
       label="Validate Ad"
@@ -183,40 +214,5 @@
       [disabled]="validateForm.invalid || loadingValidation"
       [loading]="loadingValidation"
     ></button>
-  </ng-template>
-</p-dialog>
-
-<!-- View Ad Dialog -->
-<p-dialog
-  header="Ad Details"
-  [(visible)]="showViewAdDialog"
-  [modal]="true"
-  [closable]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '600px' }"
-  [draggable]="false"
-  [resizable]="false"
->
-  <div *ngIf="selectedAd" class="ad-details-content">
-    <div class="detail-row">
-      <strong class="mr-2">Status:</strong>
-      <p-badge
-        [value]="getStatusLabel(selectedAd.validation)"
-        [severity]="getStatusSeverity(selectedAd.validation)"
-      >
-      </p-badge>
-    </div>
-
-    <!-- Ad Image -->
-    <div class="detail-row" *ngIf="selectedAd.link">
-      <strong>Ad:</strong>
-      <div class="ad-container">
-        <img [src]="selectedAd.link" alt="Ad" class="ad-image" />
-      </div>
-    </div>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <button pButton label="Close" (click)="closeViewAdDialog()"></button>
   </ng-template>
 </p-dialog>

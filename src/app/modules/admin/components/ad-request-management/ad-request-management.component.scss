@@ -35,9 +35,9 @@
 
 // Dialog styles
 .details-content {
-  max-height: 60vh;
+  max-height: 80vh;
   overflow-y: auto;
-  padding: 1rem 0;
+  // padding: 1rem 0;
 }
 
 .detail-row {
@@ -107,25 +107,15 @@
   }
 }
 
-// Upload dialog styles
-.upload-content {
-  padding: 1rem 0;
-}
-
 .file-preview {
-  margin-top: 1rem;
-  padding: 1rem;
   background: #f8f9fa;
   border-radius: 4px;
   
-  h4 {
-    margin-bottom: 0.5rem;
-    color: #495057;
-  }
+  
   
   .preview-image {
     max-width: 100%;
-    max-height: 200px;
+    max-height: 300px;
     border-radius: 4px;
     border: 1px solid #ddd;
   }

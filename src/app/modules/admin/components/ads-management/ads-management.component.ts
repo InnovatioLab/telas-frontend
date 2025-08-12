@@ -1,45 +1,51 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ClientService } from '@app/core/service/api/client.service';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { PendingAdAdminValidationResponseDto } from '@app/model/dto/response/ad-request-response.dto';
-import { AdValidationType } from '@app/model/client';
-import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { MessageService } from 'primeng/api';
+import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { ClientService } from "@app/core/service/api/client.service";
+import { ToastService } from "@app/core/service/state/toast.service";
+import { AdValidationType, Role } from "@app/model/client";
+import { PendingAdAdminValidationResponseDto } from "@app/model/dto/response/ad-request-response.dto";
+import { ErrorComponent } from "@app/shared";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { MessageService } from "primeng/api";
 
 @Component({
-  selector: 'app-ads-management',
+  selector: "app-ads-management",
   standalone: true,
   imports: [
     CommonModule,
     PrimengModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ErrorComponent,
   ],
-  templateUrl: './ads-management.component.html',
-  styleUrls: ['./ads-management.component.scss']
+  templateUrl: "./ads-management.component.html",
+  styleUrls: ["./ads-management.component.scss"],
 })
 export class AdsManagementComponent implements OnInit {
   pendingAds: PendingAdAdminValidationResponseDto[] = [];
   loading = false;
-  searchTerm = '';
+  searchTerm = "";
   totalRecords = 0;
   currentPage = 1;
   pageSize = 10;
-  
+
   // Validation dialog states
   showValidateDialog = false;
-  showViewAdDialog = false;
   selectedAd: PendingAdAdminValidationResponseDto | null = null;
   loadingValidation = false;
-  
+
   // Validation form
   validateForm: FormGroup;
   validationOptions = [
-    { label: 'Approve', value: AdValidationType.APPROVED },
-    { label: 'Reject', value: AdValidationType.REJECTED }
+    { label: "Approve", value: AdValidationType.APPROVED },
+    { label: "Reject", value: AdValidationType.REJECTED },
   ];
 
   constructor(
@@ -49,9 +55,9 @@ export class AdsManagementComponent implements OnInit {
     private readonly fb: FormBuilder
   ) {
     this.validateForm = this.fb.group({
-      validation: ['', Validators.required],
-      justification: [''],
-      description: ['']
+      validation: ["", Validators.required],
+      justification: [""],
+      description: [""],
     });
   }
 
@@ -61,11 +67,11 @@ export class AdsManagementComponent implements OnInit {
 
   loadPendingAds(): void {
     this.loading = true;
-    
+
     const filters = {
       page: this.currentPage,
       size: this.pageSize,
-      genericFilter: this.searchTerm
+      genericFilter: this.searchTerm,
     };
 
     this.clientService.getPendingAds(filters).subscribe({
@@ -75,10 +81,10 @@ export class AdsManagementComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading pending ads:', error);
-        this.toastService.erro('Failed to load pending ads');
+        console.error("Error loading pending ads:", error);
+        this.toastService.erro("Failed to load pending ads");
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -99,31 +105,23 @@ export class AdsManagementComponent implements OnInit {
     this.showValidateDialog = true;
   }
 
-  viewAd(ad: PendingAdAdminValidationResponseDto): void {
-    this.selectedAd = ad;
-    this.showViewAdDialog = true;
-  }
-
   closeValidateDialog(): void {
     this.showValidateDialog = false;
     this.selectedAd = null;
     this.validateForm.reset();
   }
 
-  closeViewAdDialog(): void {
-    this.showViewAdDialog = false;
-    this.selectedAd = null;
-  }
-
   onValidationChange(event: any): void {
     const validation = event.value;
-    
+
     if (validation === AdValidationType.REJECTED) {
-      this.validateForm.get('justification')?.setValidators([Validators.required]);
-      this.validateForm.get('justification')?.updateValueAndValidity();
+      this.validateForm
+        .get("justification")
+        ?.setValidators([Validators.required]);
+      this.validateForm.get("justification")?.updateValueAndValidity();
     } else {
-      this.validateForm.get('justification')?.clearValidators();
-      this.validateForm.get('justification')?.updateValueAndValidity();
+      this.validateForm.get("justification")?.clearValidators();
+      this.validateForm.get("justification")?.updateValueAndValidity();
     }
   }
 
@@ -133,51 +131,89 @@ export class AdsManagementComponent implements OnInit {
     }
 
     this.loadingValidation = true;
-    
-    const formValue = this.validateForm.value;
-    const refusedData = formValue.validation === AdValidationType.REJECTED ? {
-      justification: formValue.justification,
-      description: formValue.description
-    } : undefined;
 
-    this.clientService.validateAd(this.selectedAd.id, formValue.validation, refusedData).subscribe({
-      next: () => {
-        this.toastService.sucesso('Ad validation submitted successfully');
-        this.closeValidateDialog();
-        this.loadPendingAds(); // Recarregar dados
-        this.loadingValidation = false;
-      },
-      error: (error) => {
-        console.error('Error validating ad:', error);
-        this.toastService.erro('Failed to validate ad');
-        this.loadingValidation = false;
-      }
-    });
+    const formValue = this.validateForm.value;
+    const refusedData =
+      formValue.validation === AdValidationType.REJECTED
+        ? {
+            justification: formValue.justification,
+            description: formValue.description,
+          }
+        : undefined;
+
+    this.clientService
+      .validateAd(this.selectedAd.id, formValue.validation, refusedData)
+      .subscribe({
+        next: () => {
+          this.toastService.sucesso("Ad validation submitted successfully");
+          this.closeValidateDialog();
+          this.loadPendingAds(); // Recarregar dados
+          this.loadingValidation = false;
+        },
+        error: (error) => {
+          console.error("Error validating ad:", error);
+          this.toastService.erro("Failed to validate ad");
+          this.loadingValidation = false;
+        },
+      });
   }
 
-  getStatusSeverity(validation: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+  getStatusSeverity(
+    validation: string
+  ): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
     switch (validation?.toLowerCase()) {
-      case 'approved':
-        return 'success';
-      case 'pending':
-        return 'warn';
-      case 'rejected':
-        return 'danger';
+      case "approved":
+        return "success";
+      case "pending":
+        return "warn";
+      case "rejected":
+        return "danger";
       default:
-        return 'info';
+        return "info";
     }
   }
 
   getStatusLabel(validation: string): string {
     switch (validation?.toLowerCase()) {
-      case 'approved':
-        return 'Approved';
-      case 'pending':
-        return 'Pending';
-      case 'rejected':
-        return 'Rejected';
+      case "approved":
+        return "Approved";
+      case "pending":
+        return "Pending";
+      case "rejected":
+        return "Rejected";
       default:
-        return 'Unknown';
+        return "Unknown";
     }
+  }
+
+  getPartnerStatusSeverity(
+    role: string
+  ): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
+    return role === Role.PARTNER ? "success" : "info";
+  }
+
+  getPartnerStatusLabel(role: string): string {
+    return role === Role.PARTNER ? "Partner" : "Client";
+  }
+
+  getRoleLabel(role: string): string {
+    switch (role?.toLowerCase()) {
+      case "admin":
+        return "Administrator";
+      case "client":
+        return "Client";
+      case "partner":
+        return "Partner";
+      default:
+        return role || "Unknown";
+    }
+  }
+
+  mostrarErro(form: FormGroup, campo: string): boolean {
+    return form.get(campo)?.invalid && form.get(campo)?.touched;
+  }
+
+  viewAd(link: string): void {
+    window.open(link, "_blank");
   }
 }
