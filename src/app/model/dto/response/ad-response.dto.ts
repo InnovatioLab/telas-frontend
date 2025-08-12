@@ -7,4 +7,5 @@ export interface AdResponseDto {
   link: string;
   validation: AdValidationType;
   waitingDays?: number;
+  canBeValidatedByOwner: boolean;
 }

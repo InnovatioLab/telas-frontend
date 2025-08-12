@@ -235,6 +235,26 @@ td {
   width: 100%;
 }
 
+.info {
+  color: var(--cor-primaria);
+}
+
+.success {
+  color: var(--cor-sucesso);
+}
+
+.warn {
+  color: var(--cor-alerta);
+}
+
+.error {
+  color: var(--cor-erro);
+}
+
+.p-badge-danger {
+  color: var(--cor-branca) !important;
+}
+
 .campos-filtros {
   display: flex;
   align-items: center;
@@ -1599,7 +1619,7 @@ textarea {
       &.p-button-success {
         color: var(--cor-sucesso);
 
-        &:hover {
+        &:active:hover {
           background-color: rgba(40, 167, 69, 0.1);
         }
       }
@@ -1607,8 +1627,16 @@ textarea {
       &.p-button-danger {
         color: var(--cor-erro);
 
-        &:hover {
+        &:active:hover {
           background-color: rgba(220, 53, 69, 0.1);
+        }
+      }
+
+      &.upgrade-button {
+        color: #ffc107;
+
+        &:hover {
+          background-color: rgba(255, 193, 7, 0.377);
         }
       }
     }
@@ -2000,68 +2028,6 @@ label.required::after {
   color: var(--cor-branca);
 }
 
-/* Ad Management Modal Styles */
-.orderlist-item-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 1rem;
-}
-
-.ad-filename {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-grow: 1;
-  min-width: 0;
-}
-
-.ad-filename.selected {
-  color: var(--cor-primaria);
-  font-weight: bold;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.ads-content {
-  max-width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-
-.ads-content > div {
-  flex: 1 1 0;
-  min-width: 220px;
-  max-width: 480px;
-  box-sizing: border-box;
-}
-
-.ads-content img {
-  max-width: 100%;
-  max-height: 240px;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
-}
-
-@media (max-width: 900px) {
-  .ads-content {
-    flex-direction: column;
-    gap: 16px;
-    padding: 0 0.5rem;
-  }
-  .ads-content > div {
-    max-width: 100%;
-    min-width: 0;
-  }
-  .ads-content img {
-    max-height: 180px;
-  }
-}
-
 .p-orderlist {
   max-width: 100%;
   box-sizing: border-box;
@@ -2249,6 +2215,13 @@ label.required::after {
   padding-right: 0px;
 }
 
+.search-icon {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled).p-focus {
   background-color: var(--cor-branca) !important;
 }
+

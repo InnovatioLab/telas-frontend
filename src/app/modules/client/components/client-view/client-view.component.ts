@@ -39,7 +39,6 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef
   ) {
-    console.log("[ClientViewComponent] Constructor: Component instantiated.");
   }
 
   ngOnInit(): void {

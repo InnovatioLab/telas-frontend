@@ -1,10 +1,12 @@
 import { Route } from "@angular/router";
 import {
   ClientAuthenticatedGuard,
-  MyTelasGuard,
+  MyTelasGuard
 } from "@app/core/service/guard";
+import { SubscriptionsGuard } from "@app/core/service/guard/subscriptions.guard";
 import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
 import { ClientViewComponent } from "./components/client-view/client-view.component";
+import { ManagementSubscriptionsComponent } from "./components/management-subscriptions/management-subscriptions.component";
 import { MyTelasComponent } from "./components/my-telas/my-telas.component";
 import { ViewEditProfileComponent } from "./components/view-edit-profile/view-edit-profile.component";
 import { WishListComponent } from "./components/wish-list/wish-list.component";
@@ -33,6 +35,12 @@ export const ROUTES: Route[] = [
         canActivate: [MyTelasGuard],
         title: "My Telas",
       },
+      {
+        path: "subscriptions",
+        component: ManagementSubscriptionsComponent,
+        canActivate: [SubscriptionsGuard],
+        title: "Subscriptions",
+      },
     ],
   },
   {
@@ -59,11 +67,6 @@ export const ROUTES: Route[] = [
         path: "progress-ad",
         component: ViewEditProfileComponent,
         title: "Ad Progress",
-      },
-      {
-        path: "subscriptions",
-        component: ViewEditProfileComponent,
-        title: "Subscriptions",
       },
     ],
   },

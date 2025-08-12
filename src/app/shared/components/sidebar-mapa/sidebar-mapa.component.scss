@@ -80,16 +80,16 @@
     overflow-x: hidden;
     
     /* Oculta a barra de scroll mas mantém a funcionalidade */
-    // scrollbar-width: none; /* Firefox */
-    // -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
     
-    // &::-webkit-scrollbar {
-    //   display: none; /* WebKit browsers */
-    // }
+    &::-webkit-scrollbar {
+      display: none; /* WebKit browsers */
+    }
     
     .ponto-titulo {
       font-size: 1.75rem;
-      font-weight: 700;
+      font-weight: 700 !important;
       margin-bottom: 2rem;
       text-align: center;
       color: var(--cor-cinza-escuro);
@@ -217,7 +217,7 @@
           
           .info-valor {
             color: var(--cor-cinza);
-            font-size: 1.125rem;
+            font-size: 1rem;
             font-weight: 500;
             line-height: 1.4;
           }
@@ -340,10 +340,6 @@
 }
 
 .monitor-details {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 2px solid var(--cor-cinza-medio);
-  
   .info-grupo {
     margin-bottom: 1rem;
     

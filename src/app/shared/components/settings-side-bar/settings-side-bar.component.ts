@@ -1,11 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { IconBackComponent } from '@app/shared/icons/back.icon';
+import { IconCreditCardComponent } from '@app/shared/icons/credit-card.icon';
 import { IconHomeComponent } from '@app/shared/icons/home.icon';
 import { IconLockComponent } from '@app/shared/icons/lock.icon';
 import { IconPlaceComponent } from '@app/shared/icons/place.icon';
-import { IconCreditCardComponent } from '@app/shared/icons/credit-card.icon';
 
 interface MenuItem {
   id: string;
@@ -39,12 +39,7 @@ export class SettingsSideBarComponent {
       route: 'change-password',
       icon: 'key'
     },
-    {
-      id: 'subscriptions',
-      label: 'Subscriptions',
-      route: 'subscriptions',
-      icon: 'credit-card'
-    },
+    
   ];
 
   activeMenuItem: string = 'profile';

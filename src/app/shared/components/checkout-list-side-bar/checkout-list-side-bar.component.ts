@@ -48,6 +48,12 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   visibilidadeSidebar = false;
   cart: CartResponseDto | null = null;
   selectedMonitor: Monitor | null = null;
+  selectedMonitorLocationInfo: {
+    name: string;
+    description: string;
+    photoUrl?: string;
+  } | null = null;
+  loadingSelectedMonitorLocationInfo: boolean = false;
   checkoutEmProgresso = false;
   dialogoRef: DynamicDialogRef | undefined;
   recurrenceOptions = [
@@ -59,6 +65,9 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   selectedRecurrence: Recurrence = Recurrence.MONTHLY;
   monitorDetailsVisible: boolean = false;
   dropdownOpen: boolean = false;
+
+  locationInfo: Map<string, { name: string; description: string }> = new Map();
+  loadingLocationInfo: Map<string, boolean> = new Map();
 
   private readonly subscriptions = new Subscription();
 
@@ -103,10 +112,14 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error("Erro ao carregar carrinho:", error);
+        console.error("Error loading cart:", error);
         this.cart = null;
       },
     });
+  }
+
+  isLoadingLocationInfo(itemId: string): boolean {
+    return this.loadingLocationInfo.get(itemId) || false;
   }
 
   removerItem(item: CartItemResponseDto): void {
@@ -155,7 +168,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         if (monitor) {
           this.selectedMonitor = monitor;
           this.monitorDetailsVisible = true;
-          // Fechar a sidebar quando abrir o dialog de detalhes
           this.visibilidadeSidebar = false;
         }
       },
@@ -163,6 +175,11 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         console.error("Erro ao carregar detalhes do monitor:", error);
       },
     });
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = "none";
   }
 
   onRecurrenceChange(): void {
@@ -251,6 +268,8 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
   onMonitorDialogHide(): void {
     this.selectedMonitor = null;
+    this.selectedMonitorLocationInfo = null;
+    this.loadingSelectedMonitorLocationInfo = false;
     this.monitorDetailsVisible = false;
 
     setTimeout(() => {

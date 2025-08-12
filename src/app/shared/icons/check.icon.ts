@@ -1,12 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
-  selector: 'app-icon-check',
+  selector: "app-icon-check",
   standalone: true,
   template: `
-    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
-      <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      [attr.width]="size"
+      [attr.height]="size"
+      viewBox="0 -960 960 960"
+      [attr.fill]="fill"
+    >
+      <path
+        d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"
+        [attr.fill]="fill"
+      />
     </svg>
-  `
+  `,
 })
-export class IconCheckComponent {}
+export class IconCheckComponent {
+  @Input() size: number | string = 24;
+  @Input() fill: string = "currentColor";
+}

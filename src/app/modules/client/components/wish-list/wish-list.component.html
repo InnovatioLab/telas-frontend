@@ -1,6 +1,48 @@
 <div class="wish-list-container">
-  <h1>Lista de Desejos</h1>
-  <div class="items-container">
-    <p>Seus itens favoritos aparecerão aqui</p>
+  <div class="header">
+    <h1>Wish List</h1>
+    <p class="header-subtitle">Screens saved for future campaigns</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="loading-item" *ngFor="let item of [1, 2, 3]">
+      <p-skeleton width="100%" height="200px" borderRadius="8px"></p-skeleton>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-container" *ngIf="error && !isLoading">
+    <p-message severity="error" [text]="error"></p-message>
+    <button
+      pButton
+      label="Tentar Novamente"
+      icon="pi pi-refresh"
+      class="p-button-outlined"
+      (click)="loadAuthenticatedClient()"
+    ></button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && !error && !hasWishlistItems">
+    <div class="empty-content">
+      <i class="pi pi-heart-fill empty-icon"></i>
+      <h3>Your wish list is empty</h3>
+      <p>Add screens to your wish list to keep track of future campaigns.</p>
+      <a routerLink="/client" class="p-button p-button-primary">
+        <i class="pi pi-search"></i>
+        Explore Screens
+      </a>
+    </div>
+  </div>
+
+  <!-- Wishlist Items -->
+  <div class="items-container" *ngIf="!isLoading && !error && hasWishlistItems">
+    <app-wishlist-item
+      *ngFor="let item of wishlistItems; trackBy: trackByMonitorId"
+      [item]="item"
+      [authenticatedClient]="authenticatedClient!"
+      class="wishlist-item"
+    ></app-wishlist-item>
   </div>
 </div>

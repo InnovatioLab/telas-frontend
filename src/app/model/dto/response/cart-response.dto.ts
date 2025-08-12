@@ -12,4 +12,10 @@ export interface CartItemResponseDto {
   monitorId: string;
   blockQuantity: number;
   monitorAddress: string;
+  latitude: number;
+  longitude: number;
+  photoUrl?: string;
+  addressLocationName?: string;
+  addressLocationDescription?: string;
+  locationDescription?: string;
 }

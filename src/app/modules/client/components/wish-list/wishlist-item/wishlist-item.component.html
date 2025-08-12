@@ -1,0 +1,62 @@
+<p-card class="wishlist-item-card">
+  <div class="item-content" [class.no-photo]="!item.photoUrl">
+    <div class="item-photo" *ngIf="item.photoUrl">
+      <img
+        [src]="item.photoUrl"
+        [alt]="item.addressLocationName || 'Address image'"
+        class="monitor-image"
+      />
+    </div>
+
+    <div
+      class="item-info"
+      *ngIf="item.addressLocationName || item.addressLocationDescription"
+    >
+      <div class="info-group">
+        <h3 class="item-name" *ngIf="item.addressLocationName">
+          {{ item.addressLocationName }}
+        </h3>
+        <p class="item-description" *ngIf="item.addressLocationDescription">
+          {{ item.addressLocationDescription }}
+        </p>
+      </div>
+
+      <div class="info-details">
+        <div class="detail-item">
+          <p-badge
+            [value]="item.active ? 'Active' : 'Inactive'"
+            [severity]="item.active ? 'success' : 'danger'"
+          ></p-badge>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Status:</span>
+          <span
+            class="detail-value"
+            [class.unavailable]="!item.hasAvailableSlots"
+          >
+            {{ displayAvailable }}
+          </span>
+        </div>
+
+        <div class="detail-item" *ngIf="showEstimatedDate">
+          <span class="detail-label">Next Available:</span>
+          <span class="detail-value">{{
+            item.estimatedSlotReleaseDate | date: "short"
+          }}</span>
+        </div>
+      </div>
+
+      <div class="item-actions">
+        <button
+          pButton
+          label="Add Screen"
+          icon="pi pi-plus"
+          class="p-button p-button-primary"
+          [disabled]="isButtonDisabled"
+          (click)="onAddToCart()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</p-card>

@@ -222,21 +222,28 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadingService.setLoading(true, "address-search");
     if (zipRegex.test(searchTextCopy)) {
       const zipCode = searchTextCopy.split("-")[0];
+
       this.searchMonitorsService
         .findNearestMonitors(zipCode, undefined, undefined, 3)
         .subscribe({
           next: (response) => {
             this.loadingService.setLoading(false, "address-search");
             let monitors: MapPoint[] = [];
+
             if (response && Object.keys(response).length > 0) {
               Object.keys(response).forEach((zipCodeKey) => {
                 const monitorsInZip = response[zipCodeKey];
+
                 if (Array.isArray(monitorsInZip)) {
                   monitorsInZip.forEach((monitor) => {
                     const mapPoint: MapPoint = {
                       id: monitor.id,
-                      title: `Monitor ${monitor.type} - ${monitor.size}"`,
-                      description: `Distance: ${monitor.distanceInKm.toFixed(2)} km`,
+                      title: `Screen ${monitor.size}"`,
+                      photoUrl: monitor.photoUrl,
+                      addressLocationName: monitor.addressLocationName,
+                      addressLocationDescription:
+                        monitor.addressLocationDescription,
+                      locationDescription: monitor.locationDescription,
                       latitude: monitor.latitude,
                       longitude: monitor.longitude,
                       type: monitor.type,

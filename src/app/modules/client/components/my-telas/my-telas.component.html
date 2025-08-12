@@ -3,9 +3,30 @@
     <p-tabView (onChange)="onTabChange($event)" [activeIndex]="activeTabIndex">
       <!-- Tab 1: Attachments -->
       <p-tabPanel header="Attachments">
+        <div class="upload-container" *ngIf="ads.length === 0">
+          <div class="card">
+            <h3>Upload Ads</h3>
+            <p>Select a media file to link to your ads.</p>
+            <p-fileUpload
+              #adFileUpload
+              [customUpload]="true"
+              (onSelect)="onAdFileSelect($event)"
+              (uploadHandler)="submitAdUpload($event)"
+              [accept]="acceptedFileTypes"
+              [maxFileSize]="maxFileSize"
+              [auto]="false"
+              [multiple]="false"
+              chooseLabel="Select file"
+              uploadLabel="Upload"
+              [disabled]="loading"
+            >
+            </p-fileUpload>
+          </div>
+        </div>
+
         <div class="attachments-content">
           <div class="upload-section">
-            <h3>Upload de Arquivos</h3>
+            <h3>Attachments</h3>
             <p>
               Upload up to 3 files at once in the following formats: JPG, PNG,
               GIF, SVG, BMP, TIFF (maximum 10MB each). You can select multiple
@@ -149,7 +170,7 @@
                     [disabled]="loading"
                     severity="info"
                     [text]="true"
-                    pTooltip="Visualizar"
+                    pTooltip="View"
                   >
                   </p-button>
                   <p-button
@@ -180,6 +201,26 @@
             </p>
           </div>
 
+          <div
+            class="py-0 px-2 mt-3"
+            *ngIf="shouldShowCreateAdRequestMessage()"
+          >
+            <div class="rejection-info flex gap-3">
+              <span
+                class="pi pi-exclamation-triangle"
+                style="color: #ff9800"
+              ></span>
+              <div class="message-content">
+                <h4>Ad Rejected</h4>
+                <p class="mb-0">
+                  Your ad has been rejected by the admin. You must create an
+                  AdRequest so that the admin can create a new ad for you to
+                  validate.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div class="request-ad-section" *ngIf="canRequestAd()">
             <div
               class="selection-info"
@@ -202,7 +243,7 @@
                   class="pi pi-info-circle"
                   style="color: var(--cor-primaria)"
                 ></span>
-                Select at least 1 attachment to request an ad
+                Attachments are optional for creating an AdRequest.
               </p>
             </div>
             <button
@@ -210,7 +251,7 @@
               label="Request Ad"
               icon="pi pi-send"
               (click)="openRequestAdDialog()"
-              [disabled]="loading || selectedClientAttachments.length === 0"
+              [disabled]="loading"
             ></button>
           </div>
 
@@ -237,6 +278,7 @@
       <p-tabPanel header="Ads">
         <div class="ads-info" *ngIf="shouldDisplayMaxValidationsTry()">
           <p class="validation-info">
+            <!-- ad.canBeValidatedByOwner -->
             <span
               class="pi pi-info-circle"
               style="color: var(--cor-primaria)"
@@ -248,7 +290,7 @@
         <div class="ads-content w-full">
           <div class="ads-list w-full" *ngIf="ads.length > 0">
             <div class="ad-item w-full" *ngFor="let ad of ads">
-              <div class="ad-header">
+              <div class="ad-header flex gap-2">
                 <div class="ad-info">
                   <h5>Ad - {{ ad.name ?? "" }}</h5>
                   <p class="ad-date">
@@ -269,13 +311,17 @@
                     class="validation-count"
                     *ngIf="ad.validation === 'PENDING'"
                   >
-                    Available for validation
+                    {{
+                      ad.canBeValidatedByOwner
+                        ? "Available for validation"
+                        : "Waiting for admin approval"
+                    }}
                   </small>
                   <small
                     class="validation-count"
                     *ngIf="ad.validation === 'REJECTED'"
                   >
-                    Waiting for admin edit
+                    Waiting for admin edition
                   </small>
                 </div>
               </div>
@@ -299,7 +345,25 @@
                 </div>
               </div>
 
-              <div class="ad-actions" *ngIf="ad.validation === 'PENDING'">
+              <div class="ad-actions w-full">
+                <p-button
+                  icon="pi pi-eye"
+                  (onClick)="viewAttachment(ad.link)"
+                  [disabled]="loading"
+                  severity="info"
+                  [text]="true"
+                  pTooltip="View"
+                >
+                </p-button>
+                <p-button
+                  icon="pi pi-download"
+                  (onClick)="downloadAttachment(ad.link)"
+                  [disabled]="loading"
+                  severity="success"
+                  [text]="true"
+                  pTooltip="Download"
+                >
+                </p-button>
                 <button
                   pButton
                   *ngIf="canValidateAd(ad)"
@@ -340,11 +404,28 @@
   [resizable]="false"
 >
   <div class="dialog-content">
-    <div class="selected-attachments-info">
+    <div
+      class="selected-attachments-info"
+      *ngIf="selectedClientAttachments.length > 0"
+    >
       <h4>Selected Attachments:</h4>
       <p>
         {{ selectedClientAttachments.length }} attachment(s) will be used for
         the ad request.
+      </p>
+    </div>
+    <div
+      class="no-attachments-info"
+      *ngIf="selectedClientAttachments.length === 0"
+    >
+      <h4>No Attachments Selected</h4>
+      <p>
+        <span
+          class="pi pi-info-circle"
+          style="color: var(--cor-primaria)"
+        ></span>
+        Attachments are optional when creating an AdRequest. You can send
+        without attachments if you wish.
       </p>
     </div>
 
@@ -411,11 +492,7 @@
       pButton
       label="Request Ad"
       (click)="submitAdRequest()"
-      [disabled]="
-        requestAdForm.invalid ||
-        selectedClientAttachments.length === 0 ||
-        loading
-      "
+      [disabled]="requestAdForm.invalid || loading"
       [loading]="loading"
     ></button>
   </ng-template>
