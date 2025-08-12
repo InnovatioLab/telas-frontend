@@ -1,7 +1,7 @@
 import { Route } from "@angular/router";
 import {
   ClientAuthenticatedGuard,
-  MyTelasGuard,
+  MyTelasGuard
 } from "@app/core/service/guard";
 import { SubscriptionsGuard } from "@app/core/service/guard/subscriptions.guard";
 import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";

@@ -1,4 +1,5 @@
 import { AdValidationType } from "@app/model/client";
+import { AdResponseDto } from "./ad-response.dto";
 
 export interface AuthenticatedClientResponseDto {
   id: string;
@@ -24,9 +25,9 @@ export interface AuthenticatedClientResponseDto {
   adRequest: {
     id: string;
     message: string;
-    phone: string | null;
-    email: string | null;
-    attachmentsIds: string[];
+    phone?: string;
+    emai?: string;
+    attachmentsIds?: string[];
     active: boolean;
   } | null;
   addresses: Array<{
@@ -47,14 +48,7 @@ export interface AuthenticatedClientResponseDto {
     attachmentName: string;
     attachmentLink: string;
   }>;
-  ads: Array<{
-    id: string;
-    name: string;
-    link: string;
-    submissionDate: string;
-    validation: AdValidationType;
-    waitingDays?: number;
-  }>;
+  ads: AdResponseDto[];
   termAccepted: boolean;
   currentSubscriptionFlowStep: number;
   hasSubscription: boolean;
