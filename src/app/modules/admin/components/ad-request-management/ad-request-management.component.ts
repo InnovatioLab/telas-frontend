@@ -8,13 +8,20 @@ import { ToastService } from "@app/core/service/state/toast.service";
 import { Role } from "@app/model/client";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
 import { AdRequestResponseDto } from "@app/model/dto/response/ad-request-response.dto";
+import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { MessageService } from "primeng/api";
 
 @Component({
   selector: "app-ad-request-management",
   standalone: true,
-  imports: [CommonModule, PrimengModule, FormsModule, SliceStringPipe],
+  imports: [
+    CommonModule,
+    PrimengModule,
+    FormsModule,
+    SliceStringPipe,
+    IconsModule,
+  ],
   templateUrl: "./ad-request-management.component.html",
   styleUrls: ["./ad-request-management.component.scss"],
 })

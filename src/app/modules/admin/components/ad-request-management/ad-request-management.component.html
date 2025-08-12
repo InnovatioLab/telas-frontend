@@ -1,112 +1,122 @@
-<div class="container">
-  <div class="content">
-    <!-- Search Input -->
-    <div class="search-container">
+<p-card styleClass="card-header">
+  <div class="card-header-content">
+    <div class="p-card-content">
       <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
+        <app-icon-search
+          style="color: #496382"
+          class="search-icon"
+          (click)="onSearch()"
+        ></app-icon-search>
         <input
           type="text"
+          style="width: 250px"
           pInputText
-          placeholder="Search ad requests..."
+          placeholder="Search Ad Requests"
           [(ngModel)]="searchTerm"
+          [ngModelOptions]="{ standalone: true }"
           (keyup.enter)="onSearch()"
         />
       </span>
+      <span
+        class="pi pi-info-circle"
+        style="color: var(--cor-primaria)"
+        pTooltip="Search by Client BusinessName, Identification, Phone, Email or Role"
+      ></span>
     </div>
-
-    <!-- Ad Requests Table -->
-    <p-table
-      [value]="adRequests"
-      [loading]="loading"
-      styleClass="p-datatable-sm"
-      [paginator]="true"
-      [rows]="pageSize"
-      [totalRecords]="totalRecords"
-      [rowsPerPageOptions]="[5, 10, 25, 50]"
-      [showCurrentPageReport]="true"
-      responsiveLayout="scroll"
-      [lazy]="true"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} ad requests"
-      paginatorDropdownAppendTo="body"
-      (onPage)="onPageChange($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th scope="col" pSortableColumn="clientName">
-            Client Name <p-sortIcon field="clientName"></p-sortIcon>
-          </th>
-          <th scope="col" pSortableColumn="clientIdentificationNumber">
-            Identification
-            <p-sortIcon field="clientIdentificationNumber"></p-sortIcon>
-          </th>
-          <th scope="col" pSortableColumn="clientRole">
-            Role <p-sortIcon field="clientRole"></p-sortIcon>
-          </th>
-          <th scope="col" pSortableColumn="message">
-            Message <p-sortIcon field="message"></p-sortIcon>
-          </th>
-          <th scope="col" pSortableColumn="submissionDate">
-            Submission Date <p-sortIcon field="submissionDate"></p-sortIcon>
-          </th>
-          <th scope="col" pSortableColumn="waitingDays">
-            Waiting Days <p-sortIcon field="waitingDays"></p-sortIcon>
-          </th>
-          <th scope="col" class="actions">Actions</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-adRequest>
-        <tr>
-          <td>{{ adRequest.clientName }}</td>
-          <td>{{ adRequest.clientIdentificationNumber }}</td>
-          <td>
-            <p-badge
-              [value]="getPartnerStatusLabel(adRequest.clientRole)"
-              [severity]="getPartnerStatusSeverity(adRequest.clientRole)"
-            >
-            </p-badge>
-          </td>
-          <td>{{ adRequest.message | sliceString: 100 }}</td>
-          <td>{{ adRequest.submissionDate | date: "short" }}</td>
-          <td>{{ adRequest.waitingDays }} days</td>
-          <td class="actions">
-            <div class="action-buttons">
-              <button
-                pButton
-                pRipple
-                icon="pi pi-eye"
-                class="p-button-rounded p-button-info p-button-text"
-                (click)="openViewDetailsDialog(adRequest)"
-                pTooltip="View Details"
-              ></button>
-              <input
-                #fileInput
-                type="file"
-                [accept]="acceptedFileTypes"
-                style="display: none"
-                (change)="onFileInputChange($event, adRequest)"
-              />
-              <button
-                pButton
-                pRipple
-                icon="pi pi-upload"
-                class="p-button-rounded p-button-success p-button-text"
-                (click)="fileInput.click()"
-                pTooltip="Upload Ad"
-              ></button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7" class="text-center">No ad requests found.</td>
-        </tr>
-      </ng-template>
-    </p-table>
   </div>
-</div>
+</p-card>
+
+<!-- Ad Requests Table -->
+<p-table
+  [value]="adRequests"
+  [loading]="loading"
+  styleClass="p-datatable-sm"
+  [paginator]="true"
+  [rows]="pageSize"
+  [totalRecords]="totalRecords"
+  [rowsPerPageOptions]="[5, 10, 25, 50]"
+  [showCurrentPageReport]="true"
+  responsiveLayout="scroll"
+  [lazy]="true"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} ad requests"
+  paginatorDropdownAppendTo="body"
+  (onPage)="onPageChange($event)"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th scope="col" pSortableColumn="clientName">
+        Client Name <p-sortIcon field="clientName"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="clientIdentificationNumber">
+        Identification
+        <p-sortIcon field="clientIdentificationNumber"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="clientRole">
+        Role <p-sortIcon field="clientRole"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="message">
+        Message <p-sortIcon field="message"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="submissionDate">
+        Submission Date <p-sortIcon field="submissionDate"></p-sortIcon>
+      </th>
+      <th scope="col" pSortableColumn="waitingDays">
+        Waiting Days <p-sortIcon field="waitingDays"></p-sortIcon>
+      </th>
+      <th scope="col" class="actions">Actions</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-adRequest>
+    <tr>
+      <td>{{ adRequest.clientName }}</td>
+      <td>{{ adRequest.clientIdentificationNumber }}</td>
+      <td>
+        <p-badge
+          [value]="getPartnerStatusLabel(adRequest.clientRole)"
+          [severity]="getPartnerStatusSeverity(adRequest.clientRole)"
+        >
+        </p-badge>
+      </td>
+      <td>{{ adRequest.message | sliceString: 100 }}</td>
+      <td>{{ adRequest.submissionDate | date: "short" }}</td>
+      <td>{{ adRequest.waitingDays }} days</td>
+      <td class="actions">
+        <div class="action-buttons">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-eye"
+            class="p-button-rounded p-button-info p-button-text"
+            (click)="openViewDetailsDialog(adRequest)"
+            pTooltip="View Details"
+          ></button>
+          <input
+            #fileInput
+            type="file"
+            [accept]="acceptedFileTypes"
+            style="display: none"
+            (change)="onFileInputChange($event, adRequest)"
+          />
+          <button
+            pButton
+            pRipple
+            icon="pi pi-upload"
+            class="p-button-rounded p-button-success p-button-text"
+            (click)="fileInput.click()"
+            pTooltip="Upload Ad"
+          ></button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7" class="text-center">No ad requests found.</td>
+    </tr>
+  </ng-template>
+</p-table>
 
 <!-- View Details Dialog -->
 <p-dialog

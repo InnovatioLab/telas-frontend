@@ -1,8 +1,4 @@
-::ng-deep {
-
-  .file-label {
-    color: var(--cor-cinza-fundo);
-  }
+::ng-deep .management-ads {
   .p-card-body {
     width: 100%;
     display: flex;
@@ -11,6 +7,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+
+    .p-tabview-panels,
+    .p-tabpanels,
+    .p-tabview-panel {
+      padding: 0.5rem 0rem !important;
     }
 
     p-button {
@@ -40,10 +42,6 @@
         }
       }
     }
-  }
-
-  .card-header {
-    padding: var(--espacamento-padrao);
   }
 
   .p-card-content {
@@ -100,25 +98,3 @@
     }
   }
 }
-
-.container {
-  padding: 1rem;
-}
-
-.content {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-// Estilos para o p-tabView
-::ng-deep .p-tabview {
-  .p-tabview-panels {
-    padding: 0;
-  }
-  
-  .p-tabview-panel {
-    padding: 0;
-  }
-} 

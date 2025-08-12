@@ -12,6 +12,7 @@ import { ToastService } from "@app/core/service/state/toast.service";
 import { AdValidationType, Role } from "@app/model/client";
 import { PendingAdAdminValidationResponseDto } from "@app/model/dto/response/ad-request-response.dto";
 import { ErrorComponent } from "@app/shared";
+import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { MessageService } from "primeng/api";
 
@@ -24,6 +25,7 @@ import { MessageService } from "primeng/api";
     FormsModule,
     ReactiveFormsModule,
     ErrorComponent,
+    IconsModule,
   ],
   templateUrl: "./ads-management.component.html",
   styleUrls: ["./ads-management.component.scss"],
