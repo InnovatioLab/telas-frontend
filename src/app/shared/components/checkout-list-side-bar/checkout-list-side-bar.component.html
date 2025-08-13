@@ -29,11 +29,13 @@
     </ng-template>
 
     <div class="lista-items" *ngIf="cart && cart.items.length > 0">
-      <div class="font-medium label-quantidade p-2 flex justify-content-center">
+      <div
+        class="font-medium label-quantidade p-2 pt-4 flex justify-content-center"
+      >
         <p class="font-semibold quantidade-items m-0">
           {{
             cart.items.length +
-              (cart.items.length > 1 ? " Monitors Added" : " Monitor Added")
+              (cart.items.length > 1 ? " Screens Added" : " Screen Added")
           }}
         </p>
       </div>
@@ -41,7 +43,7 @@
       <div class="flex gap-2 flex-column">
         <p-card
           *ngFor="let item of cart.items; trackBy: trackByFn"
-          class="card-item p-0"
+          class="card-item p-2"
         >
           <div class="item flex cart-item">
             <div class="item-info flex-grow-1">
@@ -91,9 +93,9 @@
       >
         <ui-imagem-carrinho-vazio></ui-imagem-carrinho-vazio>
         <div class="text-center texto-lista-vazia font-medium">
-          You haven't added any monitors to your cart yet.
+          You haven't added any screens to your cart yet.
           <br />
-          Add monitors on the map to display your ads on screens.
+          Add screens on the map to display your ads on screens.
         </div>
       </div>
     </div>

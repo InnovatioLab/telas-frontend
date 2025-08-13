@@ -253,11 +253,3 @@
     border: 1px solid var(--p-inputtext-border-color);
   }
 }
-
-img {
-  width: 100% !important;
-  max-height: 300px !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-  border-radius: var(--borda-raio-pequeno) !important;
-}

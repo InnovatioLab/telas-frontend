@@ -2227,3 +2227,23 @@ label.required::after {
   ).p-focus {
   background-color: var(--cor-branca) !important;
 }
+
+img {
+  width: 100% !important;
+  max-height: 300px !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  border-radius: var(--borda-raio-pequeno) !important;
+}
+
+@include responsive("desktop") {
+  img {
+    max-height: none !important;
+  }
+}
+
+@include responsive("tablet") {
+  img {
+    max-height: none !important;
+  }
+}
