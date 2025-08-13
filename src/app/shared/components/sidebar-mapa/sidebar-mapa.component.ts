@@ -78,12 +78,9 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.add(
       this.mapsService.selectedPoint$.subscribe((point) => {
-        if (point) {
+        if (point && !this.pontoSelecionado) {
           this.pontoSelecionado = point;
-          console.log("pontoSelecionado", this.pontoSelecionado);
           this.openSidebar();
-          this.loadStreetViewImage();
-          // this.loadLocationDetails();
           setTimeout(() => {
             this.cdr.detectChanges();
           }, 100);
@@ -93,11 +90,9 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
     window.addEventListener("monitor-marker-clicked", ((e: Event) => {
       const customEvent = e as CustomEvent;
-      if (customEvent.detail?.point) {
+      if (customEvent.detail?.point && !this.pontoSelecionado) {
         this.pontoSelecionado = customEvent.detail.point;
         this.openSidebar();
-        this.loadStreetViewImage();
-        // this.loadLocationDetails();
         setTimeout(() => {
           this.cdr.detectChanges();
         }, 100);
@@ -114,38 +109,40 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   }
 
   closeSidebar(): void {
+    console.log("chamou fechar sidebar");
     this.visibilidadeSidebar = false;
     this.mapsService.selectPoint(null);
     this.streetViewUrl = null;
     this.localInfo = null;
+    this.pontoSelecionado = null;
   }
 
   voltar(): void {
     this.closeSidebar();
   }
 
-  private loadStreetViewImage(): void {
-    if (!this.pontoSelecionado) return;
+  // private loadStreetViewImage(): void {
+  //   if (!this.pontoSelecionado) return;
 
-    this.loadingImage = true;
-    this.imageError = false;
+  //   this.loadingImage = true;
+  //   this.imageError = false;
 
-    const { latitude, longitude } = this.pontoSelecionado;
-    const tamanho = "800x350";
-    const fov = "80";
-    const pitch = "0";
-    const heading = "70";
+  //   const { latitude, longitude } = this.pontoSelecionado;
+  //   const tamanho = "800x350";
+  //   const fov = "80";
+  //   const pitch = "0";
+  //   const heading = "70";
 
-    const apiKeyParam = this.env.googleMapsApiKey
-      ? `&key=${this.env.googleMapsApiKey}`
-      : "";
+  //   const apiKeyParam = this.env.googleMapsApiKey
+  //     ? `&key=${this.env.googleMapsApiKey}`
+  //     : "";
 
-    this.streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=${tamanho}&location=${latitude},${longitude}&fov=${fov}&heading=${heading}&pitch=${pitch}${apiKeyParam}`;
+  //   this.streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=${tamanho}&location=${latitude},${longitude}&fov=${fov}&heading=${heading}&pitch=${pitch}${apiKeyParam}`;
 
-    setTimeout(() => {
-      this.loadingImage = false;
-    }, 800);
-  }
+  //   setTimeout(() => {
+  //     this.loadingImage = false;
+  //   }, 800);
+  // }
 
   handleImageError(): void {
     this.imageError = true;
@@ -173,33 +170,35 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   }
 
   addToList(): void {
+    console.log("chamou add to list");
     if (this.pontoSelecionado) {
-      this.addToCart();
+      const monitorToAdd = this.pontoSelecionado;
+      this.addToCart(monitorToAdd);
       this.closeSidebar();
     }
   }
 
-  private addToCart(): void {
+  private addToCart(monitor: MapPoint): void {
     this.cartService.getLoggedUserCart().subscribe({
       next: (activeCart) => {
         if (activeCart) {
-          this.updateExistingCart(activeCart);
+          this.updateExistingCart(activeCart, monitor);
         } else {
-          this.createNewCart();
+          this.createNewCart(monitor);
         }
       },
       error: () => {
-        this.createNewCart();
+        this.createNewCart(monitor);
       },
     });
   }
 
-  private createNewCart(): void {
+  private createNewCart(monitor: MapPoint): void {
     const cartRequest: CartRequestDto = {
       recurrence: Recurrence.MONTHLY,
       items: [
         {
-          monitorId: this.pontoSelecionado!.id,
+          monitorId: monitor.id,
           blockQuantity: 1,
         },
       ],
@@ -216,9 +215,12 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateExistingCart(activeCart: CartResponseDto): void {
+  private updateExistingCart(
+    activeCart: CartResponseDto,
+    monitor: MapPoint
+  ): void {
     const existingItem = activeCart.items.find(
-      (item) => item.monitorId === this.pontoSelecionado!.id
+      (item) => item.monitorId === monitor.id
     );
 
     if (!existingItem) {
@@ -228,7 +230,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
           blockQuantity: item.blockQuantity,
         })),
         {
-          monitorId: this.pontoSelecionado!.id,
+          monitorId: monitor.id,
           blockQuantity: 1,
         },
       ];
@@ -252,7 +254,8 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
   addToWishlist(): void {
     if (this.pontoSelecionado) {
-      this.clientService.addToWishlist(this.pontoSelecionado.id).subscribe({
+      const monitorToAdd = this.pontoSelecionado;
+      this.clientService.addToWishlist(monitorToAdd.id).subscribe({
         next: () => {
           this.toastService.sucesso("Monitor added to wishlist");
         },

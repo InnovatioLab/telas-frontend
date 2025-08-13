@@ -1,15 +1,15 @@
-import { JwtHelperService } from '@auth0/angular-jwt';
-import { map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import * as jwt_decode from 'jwt-decode';
 import { Client } from '@app/model/client';
-import { DecodedToken } from '@app/model/dto/response/decoded-token';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
-import { ClientService } from './client.service';
-import { AuthenticationStorage } from '../auth/authentication-storage';
 import { SenhaUpdate } from '@app/model/dto/request/senha-update.request';
+import { DecodedToken } from '@app/model/dto/response/decoded-token';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import * as jwt_decode from 'jwt-decode';
+import { map, Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { AuthenticationStorage } from '../auth/authentication-storage';
+import { ClientService } from './client.service';
 
 @Injectable({ providedIn: 'root' })
 export class AutenticacaoService {

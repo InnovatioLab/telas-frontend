@@ -212,103 +212,37 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     const searchTextCopy = this.searchText.trim();
     if (!searchTextCopy) return;
 
-    // Detectar múltiplos zip codes separados por vírgula
-    if (searchTextCopy.includes(",")) {
-      this.searchMultipleZipCodes(searchTextCopy);
-      return;
-    }
-
-    const zipRegex = /^\d{5}(-\d{4})?$/;
+    // Validar que seja apenas um zipCode de 5 dígitos
+    const zipRegex = /^\d{5}$/;
     this.loadingService.setLoading(true, "address-search");
+
     if (zipRegex.test(searchTextCopy)) {
-      const zipCode = searchTextCopy.split("-")[0];
+      this.searchMonitorsService.findNearestMonitors(searchTextCopy).subscribe({
+        next: (monitors) => {
+          this.loadingService.setLoading(false, "address-search");
 
-      this.searchMonitorsService
-        .findNearestMonitors(zipCode, undefined, undefined, 3)
-        .subscribe({
-          next: (response) => {
-            this.loadingService.setLoading(false, "address-search");
-            let monitors: MapPoint[] = [];
-
-            if (response && Object.keys(response).length > 0) {
-              Object.keys(response).forEach((zipCodeKey) => {
-                const monitorsInZip = response[zipCodeKey];
-
-                if (Array.isArray(monitorsInZip)) {
-                  monitorsInZip.forEach((monitor) => {
-                    const mapPoint: MapPoint = {
-                      id: monitor.id,
-                      title: `Screen ${monitor.size}"`,
-                      photoUrl: monitor.photoUrl,
-                      addressLocationName: monitor.addressLocationName,
-                      addressLocationDescription:
-                        monitor.addressLocationDescription,
-                      locationDescription: monitor.locationDescription,
-                      latitude: monitor.latitude,
-                      longitude: monitor.longitude,
-                      type: monitor.type,
-                      category: "MONITOR",
-                      data: monitor,
-                    };
-                    monitors.push(mapPoint);
-                  });
-                }
-              });
-            }
-            if (monitors.length > 0) {
-              this.emitMonitorsFoundEvent(monitors);
-              this.toastService.sucesso(
-                `Found ${monitors.length} monitors near ZIP code ${zipCode}`
-              );
-              this.searchText = "";
-            } else {
-              console.log("No monitors found! Disparando toast...");
-              this.toastService.aviso("No monitors found in this region");
-            }
-          },
-          error: (error) => {
-            this.loadingService.setLoading(false, "address-search");
-            console.error("Error searching monitors:", error);
-            this.toastService.erro(
-              `Error searching monitors with ZIP code ${zipCode}`
-            );
-          },
-        });
-    } else {
-      this.zipcodeService.findLocationByZipCode(searchTextCopy).subscribe({
-        next: (addressData) => {
-          if (addressData) {
+          if (monitors && monitors.length > 0) {
+            const mapPoints = this.convertMonitorsToMapPoints(monitors);
+            this.emitMonitorsFoundEvent(mapPoints);
             this.toastService.sucesso(
-              `Location found: ${addressData.city}, ${addressData.state}`
+              `Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`
             );
             this.searchText = "";
-            this.searchMonitorsService
-              .findByZipCode(addressData.zipCode || searchTextCopy)
-              .then((monitors) => {
-                if (monitors && monitors.length > 0) {
-                  this.emitMonitorsFoundEvent(monitors);
-                  this.toastService.sucesso(
-                    `Found ${monitors.length} monitors near ZIP code ${addressData.zipCode || searchTextCopy}`
-                  );
-                } else {
-                  this.toastService.aviso("No monitors found in this region");
-                }
-              })
-              .catch((error) => {
-                this.toastService.erro(
-                  `Error searching monitors with ZIP code ${addressData.zipCode || searchTextCopy}`
-                );
-              });
           } else {
-            this.toastService.erro("Address not found");
+            this.toastService.aviso("No monitors found in this region");
           }
-          this.loadingService.setLoading(false, "address-search");
         },
         error: (error) => {
           this.loadingService.setLoading(false, "address-search");
-          this.toastService.aviso("Error searching address");
+          console.error("Error searching monitors:", error);
+          this.toastService.erro(
+            `Error searching monitors with ZIP code ${searchTextCopy}`
+          );
         },
       });
+    } else {
+      this.loadingService.setLoading(false, "address-search");
+      this.toastService.erro("Please enter a valid 5-digit ZIP code");
     }
   }
 
@@ -383,6 +317,47 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
           this.toastService.erro(error);
         }
       });
+  }
+
+  private convertMonitorsToMapPoints(monitors: any[]): MapPoint[] {
+    return monitors.map((monitor) => ({
+      id: monitor.id,
+      title: `Monitor ${monitor.type} - ${monitor.size}"`,
+      description: this.buildMonitorDescription(monitor),
+      latitude: monitor.latitude,
+      longitude: monitor.longitude,
+      type: monitor.type,
+      category: "MONITOR",
+      addressLocationName: monitor.addressLocationName,
+      addressLocationDescription: monitor.addressLocationDescription,
+      locationDescription: monitor.monitorLocationDescription,
+      hasAvailableSlots: monitor.hasAvailableSlots,
+      photoUrl: monitor.photoUrl,
+      data: monitor,
+    }));
+  }
+
+  private buildMonitorDescription(monitor: any): string {
+    const parts: string[] = [];
+
+    if (monitor.hasAvailableSlots !== undefined) {
+      parts.push(
+        `Available Slots: ${monitor.hasAvailableSlots ? "Yes" : "No"}`
+      );
+    }
+
+    if (monitor.adsDailyDisplayTimeInMinutes) {
+      parts.push(
+        `Daily Display Time: ${monitor.adsDailyDisplayTimeInMinutes} min`
+      );
+    }
+
+    if (monitor.estimatedSlotReleaseDate && !monitor.hasAvailableSlots) {
+      const releaseDate = new Date(monitor.estimatedSlotReleaseDate);
+      parts.push(`Next Available: ${releaseDate.toLocaleDateString()}`);
+    }
+
+    return parts.join(" | ") || "Monitor Information";
   }
 
   private emitMonitorsFoundEvent(monitors: MapPoint[]): void {
@@ -589,9 +564,9 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onInputChange() {
-    // Filtrar caracteres inválidos (manter apenas números e vírgulas)
+    // Filtrar caracteres inválidos (manter apenas números)
     if (this.searchText) {
-      const filteredText = this.searchText.replace(/[^0-9,]/g, "");
+      const filteredText = this.searchText.replace(/[^0-9]/g, "");
       if (filteredText !== this.searchText) {
         this.searchText = filteredText;
       }
@@ -603,8 +578,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onKeyPress(event: KeyboardEvent): void {
-    // Permitir apenas números (0-9) e vírgula
-    const allowedKeys = /[0-9,]/;
+    // Permitir apenas números (0-9)
+    const allowedKeys = /[0-9]/;
     const key = event.key;
 
     // Permitir teclas de controle (backspace, delete, arrow keys, etc.)
@@ -623,7 +598,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Bloquear teclas que não são números ou vírgula
+    // Bloquear teclas que não são números
     if (!allowedKeys.test(key)) {
       event.preventDefault();
     }
@@ -635,8 +610,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const clipboardData = event.clipboardData?.getData("text") || "";
 
-    // Filtrar apenas números e vírgulas
-    const filteredText = clipboardData.replace(/[^0-9,]/g, "");
+    // Filtrar apenas números
+    const filteredText = clipboardData.replace(/[^0-9]/g, "");
 
     // Atualizar o searchText com o texto filtrado
     if (filteredText) {
@@ -699,7 +674,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private isValidZipCode(zipCode: string): boolean {
-    const zipRegex = /^\d{5}(-\d{4})?$/;
+    const zipRegex = /^\d{5}$/;
     return zipRegex.test(zipCode);
   }
 
@@ -714,19 +689,17 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const zipCode = searchTextCopy.split("-")[0];
-
-    if (this.isValidZipCode(zipCode)) {
-      this.zipcodeService.findLocationByZipCode(zipCode).subscribe({
+    if (this.isValidZipCode(searchTextCopy)) {
+      this.zipcodeService.findLocationByZipCode(searchTextCopy).subscribe({
         next: (addressData: any) => {
           if (addressData) {
             this.searchMonitorsService
-              .findByZipCode(zipCode)
+              .findByZipCode(searchTextCopy)
               .then((monitors: any) => {
                 if (monitors && monitors.length > 0) {
                   this.monitorsFound.emit(monitors);
                   this.toastService.sucesso(
-                    `Found ${monitors.length} monitors near ZIP code ${zipCode}`
+                    `Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`
                   );
                 } else {
                   this.monitorsFound.emit([]);
@@ -738,99 +711,17 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.toastService.aviso("No monitors found in this region");
               });
           } else {
-            this.googleMapsService
-              .geocodeAddress(searchTextCopy)
-              .then((result: any) => {
-                this.searchMonitorsService
-                  .findNearestMonitors(result.latitude, result.longitude)
-                  .subscribe({
-                    next: (monitors: any) => {
-                      if (monitors && monitors.length > 0) {
-                        this.monitorsFound.emit(monitors);
-                        this.toastService.sucesso(
-                          `Found ${monitors.length} monitors near this address`
-                        );
-                      } else {
-                        this.monitorsFound.emit([]);
-                        this.toastService.aviso(
-                          "No monitors found in this region"
-                        );
-                      }
-                    },
-                    error: (error: any) => {
-                      this.monitorsFound.emit([]);
-                      this.toastService.aviso(
-                        "No monitors found in this region"
-                      );
-                    },
-                  });
-              })
-              .catch((error: any) => {
-                this.monitorsFound.emit([]);
-                this.toastService.aviso("No monitors found in this region");
-              });
+            // Como a nova API só aceita zipCode, vamos usar o searchAddress() que já está adaptado
+            this.searchAddress();
           }
         },
         error: (error: any) => {
-          this.googleMapsService
-            .geocodeAddress(searchTextCopy)
-            .then((result: any) => {
-              this.searchMonitorsService
-                .findNearestMonitors(result.latitude, result.longitude)
-                .subscribe({
-                  next: (monitors: any) => {
-                    if (monitors && monitors.length > 0) {
-                      this.monitorsFound.emit(monitors);
-                      this.toastService.sucesso(
-                        `Found ${monitors.length} monitors near this address`
-                      );
-                    } else {
-                      this.monitorsFound.emit([]);
-                      this.toastService.aviso(
-                        "No monitors found in this region"
-                      );
-                    }
-                  },
-                  error: (error: any) => {
-                    this.monitorsFound.emit([]);
-                    this.toastService.aviso("No monitors found in this region");
-                  },
-                });
-            })
-            .catch((error: any) => {
-              this.monitorsFound.emit([]);
-              this.toastService.aviso("No monitors found in this region");
-            });
+          // Como a nova API só aceita zipCode, vamos usar o searchAddress() que já está adaptado
+          this.searchAddress();
         },
       });
     } else {
-      this.googleMapsService
-        .geocodeAddress(searchTextCopy)
-        .then((result: any) => {
-          this.searchMonitorsService
-            .findNearestMonitors(result.latitude, result.longitude)
-            .subscribe({
-              next: (monitors: any) => {
-                if (monitors && monitors.length > 0) {
-                  this.monitorsFound.emit(monitors);
-                  this.toastService.sucesso(
-                    `Found ${monitors.length} monitors near this address`
-                  );
-                } else {
-                  this.monitorsFound.emit([]);
-                  this.toastService.aviso("No monitors found in this region");
-                }
-              },
-              error: (error: any) => {
-                this.monitorsFound.emit([]);
-                this.toastService.aviso("No monitors found in this region");
-              },
-            });
-        })
-        .catch((error: any) => {
-          this.monitorsFound.emit([]);
-          this.toastService.aviso("No monitors found in this region");
-        });
+      this.toastService.erro("Please enter a valid 5-digit ZIP code");
     }
   }
 

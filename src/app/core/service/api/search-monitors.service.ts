@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError, map } from "rxjs/operators";
@@ -6,22 +6,24 @@ import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
 import { MapPoint } from "../state/map-point.interface";
 
-export interface MonitorMinResponseDto {
+export interface MonitorMapsResponseDto {
   id: string;
   active: boolean;
   type: string;
   size: number;
-  distanceInKm: number;
   latitude: number;
   longitude: number;
-  photoUrl?: string;
+  hasAvailableSlots: boolean;
+  estimatedSlotReleaseDate?: string;
+  adsDailyDisplayTimeInMinutes: number;
   addressLocationName?: string;
   addressLocationDescription?: string;
-  locationDescription?: string;
+  monitorLocationDescription?: string;
+  photoUrl?: string;
 }
 
 export interface NearestMonitorsResponse {
-  [zipCode: string]: MonitorMinResponseDto[];
+  data: MonitorMapsResponseDto[];
 }
 
 export interface ApiResponseDto<T> {
@@ -53,104 +55,85 @@ export class SearchMonitorsService {
   }
 
   public findNearestMonitors(
-    zipCode: string,
-    size?: number,
-    type?: string,
-    limit: number = 3
-  ): Observable<NearestMonitorsResponse> {
+    zipCode: string
+  ): Observable<MonitorMapsResponseDto[]> {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
 
-    let params = new HttpParams()
-      .set("zipCodes", zipCode)
-      .set("limit", limit.toString());
-
-    if (size) {
-      params = params.set("size", size.toString());
-    }
-
-    if (type) {
-      params = params.set("type", type);
-    }
-
-    const url = `${this.env.apiUrl}monitors/nearest`;
+    const url = `${this.env.apiUrl}monitors/search`;
     const headers = this.getAuthHeaders();
 
     return this.http
-      .get<ApiResponseDto<NearestMonitorsResponse>>(url, {
-        params,
+      .get<ApiResponseDto<MonitorMapsResponseDto[]>>(url, {
         headers,
+        params: { zipCode },
       })
       .pipe(
         map((response) => {
-          const allPoints: MapPoint[] = [];
-
-          if (Array.isArray(response.data)) {
-            try {
-              const coordPairs = response.data[0];
-              if (Array.isArray(coordPairs) && coordPairs.length >= 2) {
-                coordPairs.forEach((pair, index) => {
-                  if (Array.isArray(pair) && pair.length === 2) {
-                    const point: MapPoint = {
-                      id: `monitor-${index}`,
-                      latitude: pair[0],
-                      longitude: pair[1],
-                      title: `Monitor #${index + 1}`,
-                      addressLocationName: `Monitor at ${pair[0].toFixed(6)}, ${pair[1].toFixed(6)}`,
-                      addressLocationDescription: `Address: ${pair[0].toFixed(6)}, ${pair[1].toFixed(6)}`,
-                      locationDescription: `Location: ${pair[0].toFixed(6)}, ${pair[1].toFixed(6)}`,
-                      type: "MONITOR",
-                      category: "MONITOR",
-                    };
-                    allPoints.push(point);
-                  }
-                });
-              }
-            } catch (error) {
-              console.error("Error processing coordinates:", error);
-            }
-          } else if (typeof response.data === "object") {
-            Object.keys(response.data).forEach((zipCode) => {
-              const monitors = response.data[zipCode];
-              const points = this.convertMonitorsToMapPoints(monitors);
-              allPoints.push(...points);
-            });
-          }
+          const monitors = response.data || [];
+          const allPoints = this.convertMonitorsToMapPoints(monitors);
 
           this.nearestMonitorsSubject.next(allPoints);
           this.loadingSubject.next(false);
 
           if (allPoints.length === 0) {
-            const zipCodes = Object.keys(response.data || {}).join(", ");
-            const errorMsg = `No monitors found for ZIP code ${zipCodes || zipCode}`;
+            const errorMsg = `No monitors found for ZIP code ${zipCode}`;
             this.errorSubject.next(errorMsg);
           }
 
-          return response.data as NearestMonitorsResponse;
+          return monitors;
         }),
         catchError((error) => {
           this.loadingSubject.next(false);
           const errorMsg =
             error.error?.message ?? "Error searching for nearby monitors";
           this.errorSubject.next(errorMsg);
-          return of({} as NearestMonitorsResponse);
+          return of([]);
         })
       );
   }
 
   private convertMonitorsToMapPoints(
-    monitors: MonitorMinResponseDto[]
+    monitors: MonitorMapsResponseDto[]
   ): MapPoint[] {
-    return monitors.map((monitor) => ({
-      id: monitor.id,
-      title: `Monitor ${monitor.type} - ${monitor.size}"`,
-      description: `Distance: ${monitor.distanceInKm.toFixed(2)} km`,
-      latitude: monitor.latitude,
-      longitude: monitor.longitude,
-      type: monitor.type,
-      category: "MONITOR",
-      data: monitor,
-    }));
+    return monitors
+      .filter((monitor) => monitor.latitude && monitor.longitude)
+      .map((monitor) => ({
+        id: monitor.id,
+        title: `Monitor ${monitor.type} - ${monitor.size}"`,
+        description: this.buildMonitorDescription(monitor),
+        latitude: monitor.latitude,
+        longitude: monitor.longitude,
+        type: monitor.type,
+        category: "MONITOR",
+        addressLocationName: monitor.addressLocationName,
+        addressLocationDescription: monitor.addressLocationDescription,
+        locationDescription: monitor.monitorLocationDescription,
+        data: monitor,
+      }));
+  }
+
+  private buildMonitorDescription(monitor: MonitorMapsResponseDto): string {
+    const parts: string[] = [];
+
+    if (monitor.hasAvailableSlots !== undefined) {
+      parts.push(
+        `Available Slots: ${monitor.hasAvailableSlots ? "Yes" : "No"}`
+      );
+    }
+
+    if (monitor.adsDailyDisplayTimeInMinutes) {
+      parts.push(
+        `Daily Display Time: ${monitor.adsDailyDisplayTimeInMinutes} min`
+      );
+    }
+
+    if (monitor.estimatedSlotReleaseDate && !monitor.hasAvailableSlots) {
+      const releaseDate = new Date(monitor.estimatedSlotReleaseDate);
+      parts.push(`Next Available: ${releaseDate.toLocaleDateString()}`);
+    }
+
+    return parts.join(" | ") || "Monitor Information";
   }
 
   public findByZipCode(zipCode: string): Promise<MapPoint[]> {

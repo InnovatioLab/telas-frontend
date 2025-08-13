@@ -205,9 +205,22 @@
     height: 100vh !important;
     overflow: hidden !important;
     color: #212529;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 400;
-    width: 500px !important;
+    width: 95% !important;
+    max-width: 500px !important;
+
+    @media (min-width: 576px) {
+      width: 95% !important;
+    }
+
+    @media (min-width: 768px) {
+      width: 400px !important;
+    }
+
+    @media (min-width: 992px) {
+      width: 500px !important;
+    }
 
     .p-sidebar-content,
     .p-drawer-content {
@@ -239,4 +252,12 @@
   input {
     border: 1px solid var(--p-inputtext-border-color);
   }
+}
+
+img {
+  width: 100% !important;
+  max-height: 300px !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  border-radius: var(--borda-raio-pequeno) !important;
 }

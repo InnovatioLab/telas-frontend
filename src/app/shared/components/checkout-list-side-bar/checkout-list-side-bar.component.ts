@@ -163,16 +163,25 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   }
 
   verDetalhes(item: CartItemResponseDto): void {
+    this.loadingSelectedMonitorLocationInfo = true;
     this.monitorService.getMonitorById(item.monitorId).subscribe({
       next: (monitor) => {
         if (monitor) {
           this.selectedMonitor = monitor;
           this.monitorDetailsVisible = true;
           this.visibilidadeSidebar = false;
+          this.selectedMonitorLocationInfo = {
+            name: item.addressLocationName,
+            description: item.addressLocationDescription,
+            photoUrl: item.photoUrl,
+          };
+          this.loadingSelectedMonitorLocationInfo = false;
         }
       },
       error: (error) => {
-        console.error("Erro ao carregar detalhes do monitor:", error);
+        console.error("Error while loading monitor details:", error);
+        this.toastService.erro("Error while loading monitor details");
+        this.loadingSelectedMonitorLocationInfo = false;
       },
     });
   }
@@ -193,7 +202,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
       })),
     };
 
-    console.log("Updating cart with request:", cartRequest);
     this.cartService.update(cartRequest, this.cart.id).subscribe({
       next: () => {
         this.loadActiveCart();

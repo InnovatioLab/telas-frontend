@@ -1,61 +1,12 @@
 <div class="sidebar-mapa">
   <p-sidebar
-    [showCloseIcon]="false"
     [(visible)]="visibilidadeSidebar"
     position="right"
     [dismissible]="true"
     (onHide)="closeSidebar()"
     [blockScroll]="true"
-    [closeOnEscape]="false"
   >
-    <!-- <ng-template pTemplate="header">
-      <div class="flex align-items-center gap-2 w-full">
-        <button
-          (click)="voltar()"
-          class="botao-voltar flex-none cursor-pointer"
-          pTooltip="Back"
-          tooltipPosition="right"
-        >
-          <app-icon-back
-            width="24"
-            height="24"
-            fill="var(--cor-primaria)"
-          ></app-icon-back>
-        </button>
-        <div
-          class="flex line-height-1 gap-2 justify-content-center align-items-center w-full"
-        >
-          <app-icon-tv-display
-            width="24"
-            height="24"
-            fill="var(--cor-primaria)"
-          ></app-icon-tv-display>
-          <span class="font-bold">{{
-            getMonitorData()?.addressLocationName
-          }}</span>
-        </div>
-        <button
-          (click)="closeSidebar()"
-          class="botao-fechar flex-none cursor-pointer"
-          pTooltip="Close"
-          tooltipPosition="left"
-        >
-          <span
-            class="material-symbols-outlined"
-            style="color: var(--cor-primaria); font-size: 24px"
-            >close</span
-          >
-        </button>
-      </div>
-    </ng-template> -->
-
-    <div
-      class="ponto-detalhes"
-      *ngIf="
-        (pontoSelecionado && pontoSelecionado?.addressLocationDescription) ||
-        getMonitorData()?.addressLocationDescription
-      "
-    >
+    <div class="ponto-detalhes" *ngIf="pontoSelecionado || getMonitorData()">
       <h4 class="ponto-titulo">
         {{ getMonitorData()?.addressLocationName | sliceString: 50 }}
       </h4>
@@ -71,7 +22,6 @@
           class="street-view-image"
           (error)="handleImageError()"
         />
-        
       </div>
 
       <div class="ponto-info">
@@ -83,7 +33,9 @@
           <div class="info-detalhe">
             <span class="info-label">Description</span>
             <span class="info-valor">
-              {{ getMonitorData().addressLocationDescription | sliceString: 100 }}</span
+              {{
+                getMonitorData().addressLocationDescription | sliceString: 100
+              }}</span
             >
           </div>
         </div>
