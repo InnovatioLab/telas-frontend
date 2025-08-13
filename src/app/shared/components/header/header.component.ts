@@ -193,9 +193,13 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     );
 
-    // Adicionar verificação do carrinho ativo e subscription para mudanças
-    this.checkActiveCart();
+    // Inicializar subscription para mudanças do carrinho
     this.subscribeToCartChanges();
+
+    // Inicializar carrinho apenas se logado (só uma vez na aplicação)
+    if (this.isLogado()) {
+      this.cartService.initializeCart();
+    }
   }
 
   ngAfterViewInit() {
@@ -733,23 +737,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.cartSubscription = this.cartService.cartUpdatedStream$.subscribe({
-        next: (cart) => {
-          if (cart && cart.items) {
-            this.itensCarrinho.set(cart.items.length);
-          } else {
-            this.itensCarrinho.set(0);
-          }
-        },
-        error: () => {
-          this.itensCarrinho.set(0);
-        },
-      });
-    }
-  }
-
-  private checkActiveCart(): void {
-    if (this.isLogado()) {
-      this.cartService.getLoggedUserActiveCart().subscribe({
         next: (cart) => {
           if (cart && cart.items) {
             this.itensCarrinho.set(cart.items.length);

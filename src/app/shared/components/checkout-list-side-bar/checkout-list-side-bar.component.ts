@@ -82,7 +82,27 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadActiveCart();
+    // Subscribe to cart changes stream
+    this.subscriptions.add(
+      this.cartService.cartUpdatedStream$.subscribe({
+        next: (cart) => {
+          this.cart = cart;
+          if (cart) {
+            this.selectedRecurrence = cart.recurrence;
+          }
+        },
+        error: (error) => {
+          console.error("Error loading cart:", error);
+          this.cart = null;
+        },
+      })
+    );
+
+    // Set initial cart data from current value
+    this.cart = this.cartService.currentCart;
+    if (this.cart) {
+      this.selectedRecurrence = this.cart.recurrence;
+    }
   }
 
   ngOnDestroy(): void {
@@ -91,7 +111,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
   abrirSidebar(): void {
     this.visibilidadeSidebar = true;
-    this.loadActiveCart();
+    // O carrinho já está sendo observado via stream, não precisa recarregar
   }
 
   fecharSidebar(): void {
@@ -101,21 +121,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
   voltar(): void {
     this.fecharSidebar();
-  }
-
-  private loadActiveCart(): void {
-    this.cartService.getLoggedUserActiveCart().subscribe({
-      next: (cart) => {
-        this.cart = cart;
-        if (cart) {
-          this.selectedRecurrence = cart.recurrence;
-        }
-      },
-      error: (error) => {
-        console.error("Error loading cart:", error);
-        this.cart = null;
-      },
-    });
   }
 
   isLoadingLocationInfo(itemId: string): boolean {
@@ -145,7 +150,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
           this.cartService.update(cartRequest, this.cart!.id).subscribe({
             next: () => {
-              this.loadActiveCart();
+              // O cart será atualizado automaticamente via stream
             },
             error: (error) => {
               console.error("Erro ao remover item:", error);
@@ -204,7 +209,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     this.cartService.update(cartRequest, this.cart.id).subscribe({
       next: () => {
-        this.loadActiveCart();
+        // O cart será atualizado automaticamente via stream
       },
       error: (error) => {
         console.error("Erro ao atualizar recorrência:", error);

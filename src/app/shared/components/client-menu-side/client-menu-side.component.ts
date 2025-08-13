@@ -75,21 +75,15 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
 
-  get menuItems(): MenuItem[] {
-    if (!this.authenticatedClient) {
-      return this.allMenuItems;
-    }
-
-    if (this.authenticatedClient.shouldDisplayAttachments === false) {
-      return this.allMenuItems.filter((item) => item.id !== "myTelas");
-    }
-
-    if (this.authenticatedClient.hasSubscription === false) {
-      return this.allMenuItems.filter((item) => item.id !== "subscriptions");
-    }
-
-    return this.allMenuItems;
-  }
+  menuItems: MenuItem[] = [
+    { id: "home", label: "Home", icon: "pi-home" },
+    { id: "wishList", label: "Wish list", icon: "pi-heart" },
+    { id: "myTelas", label: "My telas", icon: "pi-map-marker" },
+    { id: "subscriptions", label: "Subscriptions", icon: "pi-desktop" },
+    { id: "settings", label: "Settings", icon: "pi-cog" },
+    { id: "help", label: "Help", icon: "pi-question-circle" },
+    { id: "logout", label: "Logout", icon: "pi-sign-out" },
+  ];
 
   loading = false;
   authenticatedClient: AuthenticatedClientResponseDto | null = null;
@@ -147,12 +141,36 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       next: (client) => {
         this.authenticatedClient = client;
         this.loading = false;
+        // Atualiza os itens do menu após carregar o cliente
+        this.updateMenuItems();
       },
       error: (error) => {
         console.error("Error while getting logged client:", error);
         this.loading = false;
+        // Atualiza os itens do menu mesmo em caso de erro
+        this.updateMenuItems();
       },
     });
+  }
+
+  private updateMenuItems(): void {
+    // Sempre começa com todos os itens
+    let filteredItems = [...this.allMenuItems];
+
+    // Só aplica filtros se o cliente estiver carregado
+    if (this.authenticatedClient) {
+      if (this.authenticatedClient.shouldDisplayAttachments === false) {
+        filteredItems = filteredItems.filter((item) => item.id !== "myTelas");
+      }
+
+      if (this.authenticatedClient.hasSubscription === false) {
+        filteredItems = filteredItems.filter(
+          (item) => item.id !== "subscriptions"
+        );
+      }
+    }
+
+    this.menuItems = filteredItems;
   }
 
   toggleMenu(): void {
