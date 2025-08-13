@@ -111,6 +111,10 @@
   gap: 1rem;
   justify-content: center;
 
+  button {
+    cursor: pointer;
+  }
+
   @media (min-width: 640px) {
     flex-direction: row;
   }

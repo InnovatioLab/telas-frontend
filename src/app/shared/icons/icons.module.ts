@@ -22,6 +22,8 @@ import { IconLockOpenComponent } from "./lock-open.icon";
 import { IconLockComponent } from "./lock.icon";
 import { IconLogoutComponent } from "./logout.icon";
 import { IconMapMarkerComponent } from "./map-marker.icon";
+import { IconMailComponent } from "./mail.icon";
+import { IconPhoneComponent } from "./phone.icon";
 import { IconMarkChatReadComponent } from "./mark-chat-read.icon";
 import { IconMoonComponent } from "./moon.icon";
 import { IconNotificationsComponent } from "./notifications.icon";
@@ -87,7 +89,9 @@ import { IconTrashComponent } from './trash.icon';
     IconEtiquetaComponent,
     IconPlusComponent,
     SubscriptionsIconComponent,
-    IconTrashComponent
+  IconTrashComponent,
+  IconMailComponent,
+  IconPhoneComponent
   ],
   exports: [
     IconArquivoComponent,
@@ -131,7 +135,9 @@ import { IconTrashComponent } from './trash.icon';
     IconEtiquetaComponent,
     IconPlusComponent,
     SubscriptionsIconComponent,
-    IconTrashComponent
+  IconTrashComponent,
+  IconMailComponent,
+  IconPhoneComponent
   ],
   declarations: [],
 })

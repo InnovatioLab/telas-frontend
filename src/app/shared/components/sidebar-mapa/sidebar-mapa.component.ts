@@ -36,7 +36,6 @@ import { PrimengModule } from "../../primeng/primeng.module";
     CommonModule,
     PrimengModule,
     IconsModule,
-    IconBackComponent,
     IconTvDisplayComponent,
     IconBoltComponent,
     IconCheckComponent,
