@@ -1,21 +1,29 @@
-import { Component, HostListener, ElementRef, Renderer2, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { PrimengModule } from '../../primeng/primeng.module';
-import { DialogModule } from 'primeng/dialog';
-import { ToggleComponent } from '../toogle/toogle.component';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
-import { Authentication } from '@app/core/service/auth/autenthication';
-import { DialogoComponent } from '../dialogo/dialogo.component';
-import { SidebarService } from '@app/core/service/state/sidebar.service';
-import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
-import { ToggleModeService } from '@app/core/service/state/toggle-mode.service';
-import { LayoutService } from '@app/core/service/state/layout.service';
-import { IconsModule } from '@app/shared/icons/icons.module';
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  inject,
+} from "@angular/core";
+import { Router } from "@angular/router";
+import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { Authentication } from "@app/core/service/auth/autenthication";
+import { LayoutService } from "@app/core/service/state/layout.service";
+import { SidebarService } from "@app/core/service/state/sidebar.service";
+import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
 import { IconDocumentoComponent } from "@app/shared/icons/documento.icon";
 import { IconEtiquetaComponent } from "@app/shared/icons/etiqueta.icon";
+import { IconsModule } from "@app/shared/icons/icons.module";
+import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { DialogModule } from "primeng/dialog";
+import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { Subscription } from "rxjs";
+import { PrimengModule } from "../../primeng/primeng.module";
+import { DialogoComponent } from "../dialogo/dialogo.component";
+import { ToggleComponent } from "../toogle/toogle.component";
 
 interface MenuItem {
   id: string;
@@ -25,7 +33,7 @@ interface MenuItem {
 }
 
 @Component({
-  selector: 'app-admin-menu-side',
+  selector: "app-admin-menu-side",
   standalone: true,
   imports: [
     CommonModule,
@@ -34,11 +42,11 @@ interface MenuItem {
     ToggleComponent,
     IconsModule,
     IconDocumentoComponent,
-    IconEtiquetaComponent
-],
+    IconEtiquetaComponent,
+  ],
   providers: [DialogService, DialogoUtils],
-  templateUrl: './admin-menu-side.component.html',
-  styleUrls: ['./admin-menu-side.component.scss']
+  templateUrl: "./admin-menu-side.component.html",
+  styleUrls: ["./admin-menu-side.component.scss"],
 })
 export class AdminMenuSideComponent implements OnInit, OnDestroy {
   private readonly layoutService = inject(LayoutService);
@@ -63,24 +71,24 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   currentSidebarWidth = this.layoutService.currentSidebarWidth;
 
   menuItems: MenuItem[] = [
-    { id: 'home', label: 'Map', icon: 'dashboard' },
-    { id: 'monitors', label: 'Monitors', icon: 'tv-display' },
-    { id: 'boxes', label: 'Boxes', icon: 'box'},
-    { id: 'advertisements', label: 'Advertisements', icon: 'etiqueta' },
-    { id: 'clients', label: 'Clients', icon: 'user' },
-    { id: 'logout', label: 'Logout', icon: 'sair' },
+    { id: "home", label: "Map", icon: "dashboard" },
+    { id: "monitors", label: "Monitors", icon: "tv-display" },
+    { id: "boxes", label: "Boxes", icon: "box" },
+    { id: "advertisements", label: "Advertisements", icon: "etiqueta" },
+    { id: "clients", label: "Clients", icon: "user" },
+    { id: "logout", label: "Logout", icon: "sair" },
   ];
 
   ngOnInit(): void {
     this.setupSubscriptions();
     this.toggleModeService.theme$.subscribe((theme: string) => {
-      this.isDarkMode = theme === 'dark';
+      this.isDarkMode = theme === "dark";
     });
-    
-    const loadEvent = new CustomEvent('admin-menu-loaded');
+
+    const loadEvent = new CustomEvent("admin-menu-loaded");
     window.dispatchEvent(loadEvent);
   }
-  
+
   ngOnDestroy(): void {
     if (this.sidebarSubscription) {
       this.sidebarSubscription.unsubscribe();
@@ -91,22 +99,32 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   private setupSubscriptions(): void {
-    // Subscription para o sidebar service (mantido para compatibilidade)
-    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(() => {
-      const isVisible = this.sidebarService.visibilidade();
-      const tipo = this.sidebarService.tipo();
-      
-      if (isVisible && tipo === 'admin-menu') {
-        this.layoutService.openMenu('admin');
-      } else if (!isVisible) {
-        this.layoutService.closeMenu();
+    // Subscription para o sidebar service (usado pelo header)
+    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(
+      () => {
+        const isVisible = this.sidebarService.visibilidade();
+        const tipo = this.sidebarService.tipo();
+
+        if (isVisible && tipo === "admin-menu") {
+          // Só atualiza o layoutService se ainda não estiver aberto
+          if (!this.layoutService.isMenuOpen()) {
+            this.layoutService.openMenu("admin");
+          }
+        } else if (!isVisible) {
+          // Só fecha o layoutService se ainda estiver aberto
+          if (this.layoutService.isMenuOpen()) {
+            this.layoutService.closeMenu();
+          }
+        }
       }
-    });
+    );
 
     // Subscription para o layout service
-    this.layoutSubscription = this.layoutService.layoutChange$.subscribe((state) => {
-      this.updateBodyClasses(state);
-    });
+    this.layoutSubscription = this.layoutService.layoutChange$.subscribe(
+      (state) => {
+        this.updateBodyClasses(state);
+      }
+    );
   }
 
   private updateBodyClasses(state: any): void {
@@ -119,7 +137,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('document:keydown.escape')
+  @HostListener("document:keydown.escape")
   fecharMenuComEsc(): void {
     if (this.isMenuOpen()) {
       this.toggleMenu();
@@ -127,39 +145,49 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   toggleMenu(): void {
-    this.layoutService.toggleMenu('admin');
+    const isCurrentlyOpen = this.isMenuOpen();
+
+    if (isCurrentlyOpen) {
+      // Fechando o menu - sincronizar ambos os serviços
+      this.layoutService.closeMenu();
+      this.sidebarService.fechar();
+    } else {
+      // Abrindo o menu - sincronizar ambos os serviços
+      this.layoutService.openMenu("admin");
+      this.sidebarService.abrirMenu("admin-menu");
+    }
   }
 
   selecionarOpcao(item: MenuItem): void {
     switch (item.id) {
-      case 'home':
+      case "home":
         this.navegarPaginaInicial();
         break;
-      case 'users':
+      case "users":
         this.navegarParaUsers();
         break;
-      case 'monitors':
+      case "monitors":
         this.navegarParaMonitores();
         break;
-      case 'boxes':
+      case "boxes":
         this.navegarParaBoxes();
         break;
-      case 'advertisements':
+      case "advertisements":
         this.navegarParaAdvertisements();
         break;
-      case 'clients':
+      case "clients":
         this.navegarParaClients();
         break;
-      case 'alerts':
+      case "alerts":
         this.toggleAdminSidebar();
         break;
-      case 'settings':
+      case "settings":
         this.navegarParaConfiguracoes();
         break;
-      case 'help':
+      case "help":
         this.abrirHelp();
         break;
-      case 'logout':
+      case "logout":
         this.logout();
         break;
       default:
@@ -168,53 +196,53 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarParaUsers(): void {
-    this.router.navigate(['/admin/users']);
+    this.router.navigate(["/admin/users"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
 
   navegarParaConfiguracoes(): void {
-    this.router.navigate(['/admin/settings']);
+    this.router.navigate(["/admin/settings"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
 
   navegarParaMonitores(): void {
-    this.router.navigate(['/admin/monitors']);
+    this.router.navigate(["/admin/monitors"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
 
   navegarParaBoxes(): void {
-    this.router.navigate(['/admin/boxes']);
+    this.router.navigate(["/admin/boxes"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
 
   navegarParaAdvertisements(): void {
-    this.router.navigate(['/admin/advertisements']);
+    this.router.navigate(["/admin/advertisements"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
 
   navegarParaClients(): void {
-    this.router.navigate(['/admin/clients']);
+    this.router.navigate(["/admin/clients"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
 
   toggleAdminSidebar(): void {
-    const event = new CustomEvent('toggle-admin-sidebar', {
-      detail: { visible: true }
+    const event = new CustomEvent("toggle-admin-sidebar", {
+      detail: { visible: true },
     });
     window.dispatchEvent(event);
-    
+
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
@@ -227,17 +255,20 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    const config = DialogoUtils.exibirAlerta('Are you sure you want to log out?', {
-      acaoPrimaria: 'Yes, log out',
-      acaoPrimariaCallback: () => {
-        this.refDialogo.close();
-        this.desconectar();
-      },
-      acaoSecundaria: 'No, stay logged in',
-      acaoSecundariaCallback: () => {
-        this.refDialogo.close();
+    const config = DialogoUtils.exibirAlerta(
+      "Are you sure you want to log out?",
+      {
+        acaoPrimaria: "Yes, log out",
+        acaoPrimariaCallback: () => {
+          this.refDialogo.close();
+          this.desconectar();
+        },
+        acaoSecundaria: "No, stay logged in",
+        acaoSecundariaCallback: () => {
+          this.refDialogo.close();
+        },
       }
-    });
+    );
 
     this.refDialogo = this.dialogService.open(DialogoComponent, config);
   }
@@ -245,12 +276,12 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   desconectar() {
     this.authenticationService.logout();
     this.authentication.removerAutenticacao();
-    window.location.href = '/';
+    window.location.href = "/";
   }
 
   navegarPaginaInicial(): void {
-    this.router.navigate(['/admin']);
-    
+    this.router.navigate(["/admin"]);
+
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
@@ -258,26 +289,26 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   getMenuItemTooltip(item: MenuItem): string {
     switch (item.id) {
-      case 'home':
-        return 'Go to dashboard';
-      case 'users':
-        return 'Manage system users';
-      case 'monitors':
-        return 'View system monitors';
-      case 'boxes':
-        return 'Manage system boxes';
-      case 'advertisements':
-        return 'Manage advertisements';
-      case 'clients':
-        return 'Manage system clients';
-      case 'alerts':
-        return 'View system alerts';
-      case 'settings':
-        return 'Configure system settings';
-      case 'help':
-        return 'Get help and support';
-      case 'logout':
-        return 'Sign out from your account';
+      case "home":
+        return "Go to dashboard";
+      case "users":
+        return "Manage system users";
+      case "monitors":
+        return "View system monitors";
+      case "boxes":
+        return "Manage system boxes";
+      case "advertisements":
+        return "Manage advertisements";
+      case "clients":
+        return "Manage system clients";
+      case "alerts":
+        return "View system alerts";
+      case "settings":
+        return "Configure system settings";
+      case "help":
+        return "Get help and support";
+      case "logout":
+        return "Sign out from your account";
       default:
         return item.label;
     }

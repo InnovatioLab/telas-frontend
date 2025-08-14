@@ -12,9 +12,9 @@ import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
+import { LayoutService } from "@app/core/service/state/layout.service";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
-import { LayoutService } from "@app/core/service/state/layout.service";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { IconPlaceComponent } from "@app/shared/icons/place.icon";
 import { SubscriptionsIconComponent } from "@app/shared/icons/subscriptions.icon";
@@ -122,22 +122,32 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   private setupSubscriptions(): void {
-    // Subscription para o sidebar service (mantido para compatibilidade)
-    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(() => {
-      const isVisible = this.sidebarService.visibilidade();
-      const tipo = this.sidebarService.tipo();
+    // Subscription para o sidebar service (usado pelo header)
+    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(
+      () => {
+        const isVisible = this.sidebarService.visibilidade();
+        const tipo = this.sidebarService.tipo();
 
-      if (isVisible && tipo === "client-menu") {
-        this.layoutService.openMenu('client');
-      } else if (!isVisible) {
-        this.layoutService.closeMenu();
+        if (isVisible && tipo === "client-menu") {
+          // Só atualiza o layoutService se ainda não estiver aberto
+          if (!this.layoutService.isMenuOpen()) {
+            this.layoutService.openMenu("client");
+          }
+        } else if (!isVisible) {
+          // Só fecha o layoutService se ainda estiver aberto
+          if (this.layoutService.isMenuOpen()) {
+            this.layoutService.closeMenu();
+          }
+        }
       }
-    });
+    );
 
     // Subscription para o layout service
-    this.layoutSubscription = this.layoutService.layoutChange$.subscribe((state) => {
-      this.updateBodyClasses(state);
-    });
+    this.layoutSubscription = this.layoutService.layoutChange$.subscribe(
+      (state) => {
+        this.updateBodyClasses(state);
+      }
+    );
   }
 
   private updateBodyClasses(state: any): void {
@@ -196,7 +206,17 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   toggleMenu(): void {
-    this.layoutService.toggleMenu('client');
+    const isCurrentlyOpen = this.isMenuOpen();
+
+    if (isCurrentlyOpen) {
+      // Fechando o menu - sincronizar ambos os serviços
+      this.layoutService.closeMenu();
+      this.sidebarService.fechar();
+    } else {
+      // Abrindo o menu - sincronizar ambos os serviços
+      this.layoutService.openMenu("client");
+      this.sidebarService.abrirMenu("client-menu");
+    }
   }
 
   selecionarOpcao(item: MenuItem): void {
