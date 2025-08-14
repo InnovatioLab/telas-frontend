@@ -1,49 +1,88 @@
-<div class="menu-side-container" [ngClass]="{'active': menuAberto}">
-  <div class="menu-header">
+<div
+  class="menu-side-container"
+  [ngClass]="{
+    active: isMenuOpen(),
+    mobile: isMobile(),
+    'mobile-compact': isMobileCompact(),
+  }"
+>
+  <div class="menu-header flex justify-content-between">
     <div class="menu-actions">
-      <!-- Botão de fixar menu removido -->
-      <button class="close-btn" (click)="toggleMenu()" aria-label="Close sidebar"
-        pTooltip="Close" tooltipPosition="right">
+      <button
+        class="close-btn"
+        (click)="toggleMenu()"
+        aria-label="Close sidebar"
+        pTooltip="Close"
+        tooltipPosition="right"
+      >
         <app-icon-close></app-icon-close>
       </button>
     </div>
 
     <span class="menu-title">Menu</span>
-    <!-- Logo fixo removido -->
   </div>
 
   <div class="menu-content">
     <ul class="menu-list" role="menu">
-      <li class="menu-item" *ngFor="let item of menuItems" (click)="selecionarOpcao(item)"
-        (keydown.enter)="selecionarOpcao(item)" (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
-        tabindex="0" role="menuitem" [id]="'menu-item-' + item.id" pTooltip="{{getMenuItemTooltip(item)}}"
-        tooltipPosition="right">
-        <ng-container [ngSwitch]="item.icon">
-          <app-icon-home *ngSwitchCase="'pi-home'"></app-icon-home>
-          <app-icon-favorite *ngSwitchCase="'pi-heart'"></app-icon-favorite>
-          <app-icon-place *ngSwitchCase="'pi-map-marker'"></app-icon-place>
-          <app-icon-subscriptions *ngSwitchCase="'pi-desktop'"></app-icon-subscriptions>
-          <app-icon-settings *ngSwitchCase="'pi-cog'"></app-icon-settings>
-          <app-icon-help *ngSwitchCase="'pi-question-circle'"></app-icon-help>
-          <app-icon-logout *ngSwitchCase="'pi-sign-out'"></app-icon-logout>
-        </ng-container>
-        <span>{{item.label}}</span>
+      <li
+        class="menu-item"
+        *ngFor="let item of menuItems"
+        (click)="selecionarOpcao(item)"
+        (keydown.enter)="selecionarOpcao(item)"
+        (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
+        tabindex="0"
+        role="menuitem"
+        [id]="'menu-item-' + item.id"
+        pTooltip="{{ getMenuItemTooltip(item) }}"
+        tooltipPosition="right"
+      >
+        <div class="menu-icon">
+          <ng-container [ngSwitch]="item.icon">
+            <app-icon-home *ngSwitchCase="'pi-home'"></app-icon-home>
+            <app-icon-favorite *ngSwitchCase="'pi-heart'"></app-icon-favorite>
+            <app-icon-place *ngSwitchCase="'pi-map-marker'"></app-icon-place>
+            <app-icon-subscriptions
+              *ngSwitchCase="'pi-desktop'"
+            ></app-icon-subscriptions>
+            <app-icon-settings *ngSwitchCase="'pi-cog'"></app-icon-settings>
+            <app-icon-help *ngSwitchCase="'pi-question-circle'"></app-icon-help>
+            <app-icon-logout *ngSwitchCase="'pi-sign-out'"></app-icon-logout>
+          </ng-container>
+        </div>
+        <span class="menu-label">{{ item.label }}</span>
       </li>
     </ul>
   </div>
 
-  <div class="menu-footer">
-    <span class="version" pTooltip="Current application version" tooltipPosition="top">v1.0.0</span>
+  <div class="menu-footer" *ngIf="!isMobile()">
+    <span
+      class="version"
+      pTooltip="Current application version"
+      tooltipPosition="top"
+      >v1.0.0</span
+    >
     <ui-toggle></ui-toggle>
-  </div>
-  <div class="menu-sidebar" [ngClass]="{'menu-aberto': menuAberto}">
   </div>
 </div>
 
-<div class="menu-overlay" *ngIf="menuAberto" (click)="toggleMenu()" (keydown.escape)="toggleMenu()"
-  tabindex="-1" role="presentation"></div>
+<div
+  class="menu-overlay"
+  *ngIf="isMenuOpen() && isMobileCompact()"
+  (click)="toggleMenu()"
+  (keydown.escape)="toggleMenu()"
+  tabindex="-1"
+  role="presentation"
+></div>
 
-<p-dialog [(visible)]="showPaymentModal" [modal]="true" [style]="{width: '90%', maxWidth: '500px'}" [draggable]="false"
-  [resizable]="false" header="Pagamento" [closeOnEscape]="true" [dismissableMask]="true">
+<p-dialog
+  [(visible)]="showPaymentModal"
+  [modal]="true"
+  [style]="{ width: '90%', maxWidth: '500px' }"
+  [draggable]="false"
+  [resizable]="false"
+  header="Pagamento"
+  [closeOnEscape]="true"
+  [dismissableMask]="true"
+>
   vai mudar
 </p-dialog>

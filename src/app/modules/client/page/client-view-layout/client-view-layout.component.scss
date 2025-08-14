@@ -1,14 +1,18 @@
 main {
-  transition: padding-left 0.3s;
-  padding-left: 0;
+  min-height: 100vh;
+  padding-top: 70px; // Para compensar o header fixo
+  box-sizing: border-box;
 }
 
-body.menu-fixed main {
-  padding-left: 280px;
-}
-
+// Estilos responsivos para o conteúdo
 @media (max-width: 768px) {
-  body.menu-fixed main {
-    padding-left: 0;
+  main {
+    padding-top: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding-top: 50px;
   }
 } 

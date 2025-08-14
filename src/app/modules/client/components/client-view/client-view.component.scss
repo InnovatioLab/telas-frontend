@@ -501,8 +501,11 @@
   
   .paginacao-wrapper {
     width: 100%;
-    justify-content: center;
-    margin-bottom: 10px;
+    box-sizing: border-box;
+    padding: 10px 0;
+    margin: 0;
+    max-width: 100%;
+    overflow-x: hidden;
   }
   
   .p-paginator {
@@ -591,15 +594,6 @@
   }
 }
 
-:host {
-  display: block;
-  width: 100%;
-  overflow-x: hidden;
-  box-sizing: border-box;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
 body.menu-open {
   overflow-x: hidden;
 }
@@ -619,7 +613,8 @@ feat-rodape {
 .map-container {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 70px); // Ajuste para o header
+  margin-top: 0;
 }
 
 .map-loading {
@@ -655,4 +650,26 @@ feat-rodape {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .map-container {
+    height: calc(100vh - 60px);
+  }
+}
+
+@media (max-width: 480px) {
+  .map-container {
+    height: calc(100vh - 50px);
+  }
+  
+  .map-loading p {
+    font-size: 16px;
+  }
+  
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+  }
 }

@@ -4,4 +4,8 @@
   [userName]="userName"
   (visibilityChange)="onAlertSidebarVisibilityChange($event)">
 </app-alert-admin-sidebar>
-<router-outlet></router-outlet>
+<app-content-wrapper>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</app-content-wrapper>

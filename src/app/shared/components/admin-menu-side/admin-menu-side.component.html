@@ -1,29 +1,35 @@
-<div class="menu-side-container" [ngClass]="{'active': menuAberto, 'fixed': menuFixo}">
+<div class="menu-side-container" 
+     [ngClass]="{
+       'active': isMenuOpen(),
+       'mobile': isMobile(),
+       'mobile-compact': isMobileCompact()
+     }">
   <div class="menu-header">
     <div class="menu-actions">
-      <button class="pin-btn desktop-only" (click)="toggleFixarMenu($event)" [ngClass]="{'pinned': menuFixo}"
-        aria-label="Pin/Unpin menu" pTooltip="{{menuFixo ? 'Unpin menu' : 'Pin menu'}}" tooltipPosition="right">
-        <app-icon-lock *ngIf="menuFixo"></app-icon-lock>
-        <app-icon-lock-open *ngIf="!menuFixo"></app-icon-lock-open>
-      </button>
-
-      <button *ngIf="!menuFixo" class="close-btn" (click)="toggleMenu()" aria-label="Close sidebar"
-        pTooltip="Close" tooltipPosition="right">
+      <button class="close-btn" 
+              (click)="toggleMenu()" 
+              aria-label="Close sidebar"
+              pTooltip="Close" 
+              tooltipPosition="right">
         <app-icon-close></app-icon-close>
       </button>
     </div>
 
-    <span class="menu-title" *ngIf="!menuFixo">Admin Menu</span>
-    <img *ngIf="menuFixo" src="assets/img/logo.png" alt="Company Logo" height="40" width="100" class="menu-logo"
-      (click)="navegarPaginaInicial()">
+    <span class="menu-title">Admin Menu</span>
   </div>
 
   <div class="menu-content">
     <ul class="menu-list" role="menu">
-      <li class="menu-item" *ngFor="let item of menuItems" (click)="selecionarOpcao(item)"
-        (keydown.enter)="selecionarOpcao(item)" (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
-        tabindex="0" role="menuitem" [id]="'menu-item-' + item.id" pTooltip="{{getMenuItemTooltip(item)}}"
-        tooltipPosition="right">
+      <li class="menu-item" 
+          *ngFor="let item of menuItems" 
+          (click)="selecionarOpcao(item)"
+          (keydown.enter)="selecionarOpcao(item)" 
+          (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
+          tabindex="0" 
+          role="menuitem" 
+          [id]="'menu-item-' + item.id" 
+          pTooltip="{{getMenuItemTooltip(item)}}"
+          tooltipPosition="right">
         <div class="menu-icon">
           <app-icon-dashboard *ngIf="item.icon === 'dashboard'"></app-icon-dashboard>
           <app-icon-user *ngIf="item.icon === 'user'"></app-icon-user>
@@ -42,11 +48,17 @@
     </ul>
   </div>
 
-  <div class="menu-footer">
-    <span class="version" pTooltip="Current application version" tooltipPosition="top">v1.0.0</span>
+  <div class="menu-footer" *ngIf="!isMobile()">
+    <span class="version" 
+          pTooltip="Current application version" 
+          tooltipPosition="top">v1.0.0</span>
     <ui-toggle></ui-toggle>
   </div>
 </div>
 
-<div class="menu-overlay" *ngIf="menuAberto && !menuFixo" (click)="toggleMenu()" (keydown.escape)="toggleMenu()"
-  tabindex="-1" role="presentation"></div>
+<div class="menu-overlay" 
+     *ngIf="isMenuOpen() && isMobileCompact()" 
+     (click)="toggleMenu()" 
+     (keydown.escape)="toggleMenu()"
+     tabindex="-1" 
+     role="presentation"></div>

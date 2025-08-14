@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HeaderComponent } from '@app/shared/components/header/header.component';
 import { AdminMenuSideComponent } from '@app/shared/components/admin-menu-side/admin-menu-side.component';
 import { AlertAdminSidebarComponent } from '@app/shared/components/alert-admin-sidebar/alert-admin-sidebar.component';
+import { ContentWrapperComponent } from '@app/shared/components/content-wrapper/content-wrapper.component';
 import { Authentication } from '@app/core/service/auth/autenthication';
 
 interface ToggleAdminSidebarEvent {
@@ -18,7 +19,8 @@ interface ToggleAdminSidebarEvent {
     RouterModule,
     HeaderComponent,
     AdminMenuSideComponent,
-    AlertAdminSidebarComponent
+    AlertAdminSidebarComponent,
+    ContentWrapperComponent
   ],
   templateUrl: './admin-view-layout.component.html',
   styleUrls: ['./admin-view-layout.component.scss']

@@ -1,0 +1,119 @@
+// Estilos globais para o layout responsivo
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  overflow-x: hidden;
+  
+  &.menu-open {
+    overflow: hidden;
+  }
+}
+
+.content-wrapper {
+  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
+  
+  &.menu-active {
+    padding-left: 200px;
+  }
+  
+  &.mobile {
+    padding-left: 0 !important;
+  }
+  
+  &.mobile-compact {
+    padding-left: 70px !important;
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .content-wrapper {
+    &.menu-active {
+      padding-left: 200px !important;
+    }
+    
+    &.mobile-compact {
+      padding-left: 70px !important;
+    }
+  }
+}
+
+@media (max-width: 550px) {
+  .content-wrapper {
+    &.menu-active {
+      padding-left: 70px !important;
+    }
+  }
+}
+
+// Animações
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Utilitários
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Melhorias de acessibilidade
+*:focus {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+// Melhorias de performance
+* {
+  box-sizing: border-box;
+}
+
+// Scrollbar personalizada
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cor-cinza-fundo);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cor-cinza-medio);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cor-cinza-escuro);
+}

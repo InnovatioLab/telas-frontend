@@ -1,11 +1,11 @@
-import { HttpHandlerFn, HttpRequest, HttpErrorResponse, HttpEvent, HttpStatusCode } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest, HttpStatusCode } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { inject } from '@angular/core';
-import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { Router } from '@angular/router';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
 import { AutenticacaoService } from '../service/api/autenticacao.service';
 
 export function errorInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {

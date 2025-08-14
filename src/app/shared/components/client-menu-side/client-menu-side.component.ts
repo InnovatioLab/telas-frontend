@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnInit,
   Renderer2,
+  inject,
 } from "@angular/core";
 import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
@@ -13,6 +14,7 @@ import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
+import { LayoutService } from "@app/core/service/state/layout.service";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { IconPlaceComponent } from "@app/shared/icons/place.icon";
 import { SubscriptionsIconComponent } from "@app/shared/icons/subscriptions.icon";
@@ -59,11 +61,28 @@ interface MenuItem {
   styleUrls: ["./client-menu-side.component.scss"],
 })
 export class ClientMenuSideComponent implements OnInit, OnDestroy {
-  menuAberto = false;
+  private readonly layoutService = inject(LayoutService);
+  private readonly sidebarService = inject(SidebarService);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly router = inject(Router);
+  private readonly authentication = inject(Authentication);
+  private readonly authenticationService = inject(AutenticacaoService);
+  private readonly dialogService = inject(DialogService);
+  private readonly toggleModeService = inject(ToggleModeService);
+  private readonly clientService = inject(ClientService);
+
   showPaymentModal = false;
   private sidebarSubscription: Subscription;
+  private layoutSubscription: Subscription;
   refDialogo: DynamicDialogRef | undefined;
   isDarkMode = false;
+
+  // Layout state
+  isMenuOpen = this.layoutService.isMenuOpen;
+  isMobile = this.layoutService.isMobile;
+  isMobileCompact = this.layoutService.isMobileCompact;
+  currentSidebarWidth = this.layoutService.currentSidebarWidth;
 
   private allMenuItems: MenuItem[] = [
     { id: "home", label: "Home", icon: "pi-home" },
@@ -88,33 +107,8 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   loading = false;
   authenticatedClient: AuthenticatedClientResponseDto | null = null;
 
-  constructor(
-    private readonly sidebarService: SidebarService,
-    private readonly elementRef: ElementRef,
-    private readonly renderer: Renderer2,
-    private readonly router: Router,
-    private readonly authentication: Authentication,
-    private readonly authenticationService: AutenticacaoService,
-    public dialogService: DialogService,
-    private readonly toggleModeService: ToggleModeService,
-    private readonly clientService: ClientService
-  ) {}
-
   ngOnInit(): void {
-    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(
-      () => {
-        const isVisible = this.sidebarService.visibilidade();
-        const tipo = this.sidebarService.tipo();
-
-        if (!this.menuAberto) {
-          if (isVisible && tipo === "client-menu") {
-            this.abrirMenu();
-          } else if (!isVisible) {
-            this.fecharMenu();
-          }
-        }
-      }
-    );
+    this.setupSubscriptions();
     this.loadAuthenticatedClient();
   }
 
@@ -122,11 +116,43 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     if (this.sidebarSubscription) {
       this.sidebarSubscription.unsubscribe();
     }
+    if (this.layoutSubscription) {
+      this.layoutSubscription.unsubscribe();
+    }
+  }
+
+  private setupSubscriptions(): void {
+    // Subscription para o sidebar service (mantido para compatibilidade)
+    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(() => {
+      const isVisible = this.sidebarService.visibilidade();
+      const tipo = this.sidebarService.tipo();
+
+      if (isVisible && tipo === "client-menu") {
+        this.layoutService.openMenu('client');
+      } else if (!isVisible) {
+        this.layoutService.closeMenu();
+      }
+    });
+
+    // Subscription para o layout service
+    this.layoutSubscription = this.layoutService.layoutChange$.subscribe((state) => {
+      this.updateBodyClasses(state);
+    });
+  }
+
+  private updateBodyClasses(state: any): void {
+    if (state.menuOpen) {
+      this.renderer.addClass(document.body, "menu-open");
+      this.renderer.addClass(document.body, "client-menu-active");
+    } else {
+      this.renderer.removeClass(document.body, "menu-open");
+      this.renderer.removeClass(document.body, "client-menu-active");
+    }
   }
 
   @HostListener("document:keydown.escape")
   fecharMenuComEsc(): void {
-    if (this.menuAberto) {
+    if (this.isMenuOpen()) {
       this.toggleMenu();
     }
 
@@ -141,23 +167,19 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       next: (client) => {
         this.authenticatedClient = client;
         this.loading = false;
-        // Atualiza os itens do menu após carregar o cliente
         this.updateMenuItems();
       },
       error: (error) => {
         console.error("Error while getting logged client:", error);
         this.loading = false;
-        // Atualiza os itens do menu mesmo em caso de erro
         this.updateMenuItems();
       },
     });
   }
 
   private updateMenuItems(): void {
-    // Sempre começa com todos os itens
     let filteredItems = [...this.allMenuItems];
 
-    // Só aplica filtros se o cliente estiver carregado
     if (this.authenticatedClient) {
       if (this.authenticatedClient.shouldDisplayAttachments === false) {
         filteredItems = filteredItems.filter((item) => item.id !== "myTelas");
@@ -174,33 +196,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   toggleMenu(): void {
-    if (this.menuAberto) {
-      this.fecharMenu();
-    } else {
-      this.abrirMenu();
-    }
-  }
-
-  private abrirMenu(): void {
-    this.menuAberto = true;
-    this.sidebarService.abrirMenu("client-menu");
-    this.renderer.addClass(document.body, "menu-open");
-    this.renderer.addClass(document.body, "client-menu-active");
-    setTimeout(() => {
-      const primeiroItem =
-        this.elementRef.nativeElement.querySelector(".menu-item");
-      if (primeiroItem) {
-        primeiroItem.focus();
-      }
-    }, 100);
-  }
-
-  private fecharMenu(): void {
-    this.menuAberto = false;
-    this.sidebarService.fechar();
-    this.renderer.removeClass(document.body, "menu-open");
-    this.renderer.removeClass(document.body, "client-menu-active");
-    setTimeout(() => {}, 300);
+    this.layoutService.toggleMenu('client');
   }
 
   selecionarOpcao(item: MenuItem): void {
@@ -234,7 +230,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   navegarParaWishList(): void {
     if (this.isLogado()) {
       this.router.navigate(["client/wish-list"]);
-      if (this.menuAberto) {
+      if (this.isMenuOpen()) {
         this.toggleMenu();
       }
     } else {
@@ -245,7 +241,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   navegarParaMyTelas(): void {
     if (this.isLogado()) {
       this.router.navigate(["/client/my-telas"]);
-      if (this.menuAberto) {
+      if (this.isMenuOpen()) {
         this.toggleMenu();
       }
     } else {
@@ -256,7 +252,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   navegarParaSubscriptions(): void {
     if (this.isLogado()) {
       this.router.navigate(["/client/subscriptions"]);
-      if (this.menuAberto) {
+      if (this.isMenuOpen()) {
         this.toggleMenu();
       }
     } else {
@@ -264,13 +260,12 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Método para navegar diretamente para a tab de ads
   navegarParaMyTelasAds(): void {
     if (this.isLogado()) {
       this.router.navigate(["/client/my-telas"], {
         queryParams: { ads: "true" },
       });
-      if (this.menuAberto) {
+      if (this.isMenuOpen()) {
         this.toggleMenu();
       }
     } else {
@@ -329,7 +324,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       this.router.navigate(["/"]);
     }
 
-    if (this.menuAberto) {
+    if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
@@ -341,7 +336,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   navegarParaConfiguracoes(): void {
     if (this.isLogado()) {
       this.router.navigate(["/client/settings"]);
-      if (this.menuAberto) {
+      if (this.isMenuOpen()) {
         this.toggleMenu();
       }
     } else {
