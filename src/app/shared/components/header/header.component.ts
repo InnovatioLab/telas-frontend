@@ -95,6 +95,13 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       : "Your cart is empty";
   }
 
+  // Getter para verificar se o menu está aberto em mobile com largura <= 600px
+  get isMenuOpenInSmallMobile(): boolean {
+    const isSmallMobile = window.innerWidth <= 600;
+    const isMenuOpen = this.menuAberto;
+    return isMenuOpen && isSmallMobile;
+  }
+
   private resizeListener: () => void;
   private authSubscription: Subscription;
   private authStateSubscription: Subscription;
@@ -153,9 +160,17 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.menuSubscription = this.sidebarService.atualizarLista.subscribe(() => {
+      const isVisible = this.sidebarService.visibilidade();
+      const menuTipo = this.sidebarService.tipo();
+
       this.menuAberto =
-        this.sidebarService.visibilidade() &&
-        this.sidebarService.tipo() === "client-menu";
+        isVisible && (menuTipo === "client-menu" || menuTipo === "admin-menu");
+
+      // Atualizar isMobileMenuOpen baseado no estado do menu e se está em mobile
+      this.isMobileMenuOpen = this.menuAberto && this.isMobile;
+
+      // Forçar detecção de mudança para o getter ser reavaliado
+      this.cdr.detectChanges();
     });
 
     this.router.events
@@ -502,6 +517,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     const newIsMobile = window.innerWidth <= 768;
     if (this.isMobile !== newIsMobile) {
       this.isMobile = newIsMobile;
+      // Atualizar isMobileMenuOpen quando o tamanho da tela muda
+      this.isMobileMenuOpen = this.menuAberto && this.isMobile;
     }
   }
 

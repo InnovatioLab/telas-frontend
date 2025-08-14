@@ -12,7 +12,7 @@ export class DialogoUtils {
       showHeader: false,
       modal: true,
       breakpoints: {
-        '640px': '90vw'
+        '500px': '90vw'
       },
       baseZIndex: 10000
     };
@@ -33,7 +33,7 @@ export class DialogoUtils {
       showHeader: false,
       modal: true,
       breakpoints: {
-        '640px': '90vw'
+        '500px': '90vw'
       },
       baseZIndex: 10000
     };
@@ -55,7 +55,7 @@ export class DialogoUtils {
       modal: true,
       closeOnEscape: false,
       breakpoints: {
-        '640px': '90vw'
+        '500px': '90vw'
       },
       baseZIndex: 10000
     };

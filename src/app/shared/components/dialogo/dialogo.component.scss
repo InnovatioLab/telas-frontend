@@ -15,12 +15,12 @@
     border-radius: var(--borda-raio-padrao) !important;
   }
 
-  @media screen and (min-width: 680px) {
-    min-width: 680px;
-  }
+  // @media screen and (min-width: 680px) {
+  //   min-width: 500px;
+  // }
 
   .dialogo-icone {
-    font-size: 60px;
+    font-size: 60px !important;
     color: var(--cor-primaria-escura);
     font-variation-settings:
       "FILL" 0,
@@ -30,7 +30,7 @@
   }
 
   .icone-custon {
-    height: 80px;
+    height: 80px !important;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -46,7 +46,7 @@
   }
 
   .dialogo-titulo {
-    font-size: var(--fonte-tamanho-titulo);
+    font-size: var(--fonte-tamanho-titulo) !important;
     font-weight: var(--fonte-peso-negrito);
     text-align: center;
     line-height: 160%;
@@ -92,11 +92,6 @@
       flex-direction: column;
       align-items: center;
       gap: 12px;
-    }
-
-    #btnPrimario,
-    #btnSecundario {
-      min-width: 100%;
     }
   }
 }

@@ -295,14 +295,14 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   logout() {
     const config = DialogoUtils.exibirAlerta(
-      "Are you sure you want to log out?",
+      "Are you sure you want to logout?",
       {
-        acaoPrimaria: "Yes, log out",
+        acaoPrimaria: "Logout",
         acaoPrimariaCallback: () => {
           this.refDialogo.close();
           this.desconectar();
         },
-        acaoSecundaria: "No, stay logged in",
+        acaoSecundaria: "Stay",
         acaoSecundariaCallback: () => {
           this.refDialogo.close();
         },

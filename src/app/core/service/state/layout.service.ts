@@ -1,9 +1,9 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { computed, Injectable, signal } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
 
 export interface LayoutState {
   menuOpen: boolean;
-  menuType: 'client' | 'admin' | null;
+  menuType: "client" | "admin" | null;
   isMobile: boolean;
   isMobileCompact: boolean;
   sidebarWidth: number;
@@ -11,7 +11,7 @@ export interface LayoutState {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class LayoutService {
   private _layoutState = signal<LayoutState>({
@@ -20,11 +20,11 @@ export class LayoutService {
     isMobile: false,
     isMobileCompact: false,
     sidebarWidth: 200,
-    mobileSidebarWidth: 200
+    mobileSidebarWidth: 200,
   });
 
   public layoutState = this._layoutState.asReadonly();
-  
+
   // Computed values
   public isMenuOpen = computed(() => this._layoutState().menuOpen);
   public menuType = computed(() => this._layoutState().menuType);
@@ -40,7 +40,7 @@ export class LayoutService {
     }
     return state.menuOpen ? state.sidebarWidth : 0;
   });
-  
+
   public contentMargin = computed(() => {
     const state = this._layoutState();
     if (state.isMobileCompact) {
@@ -66,23 +66,28 @@ export class LayoutService {
   }
 
   private setupResizeListener(): void {
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       const isMobile = window.innerWidth <= 768;
       const isMobileCompact = window.innerWidth <= 550;
-      
-      if (isMobile !== this._layoutState().isMobile || isMobileCompact !== this._layoutState().isMobileCompact) {
+
+      if (
+        isMobile !== this._layoutState().isMobile ||
+        isMobileCompact !== this._layoutState().isMobileCompact
+      ) {
         this.updateState({ isMobile, isMobileCompact });
       }
     });
   }
 
   private updateState(updates: Partial<LayoutState>): void {
-    const newState = { ...this._layoutState(), ...updates };
+    const oldState = this._layoutState();
+    const newState = { ...oldState, ...updates };
+
     this._layoutState.set(newState);
     this.layoutChange$.next(newState);
   }
 
-  openMenu(type: 'client' | 'admin'): void {
+  openMenu(type: "client" | "admin"): void {
     this.updateState({ menuOpen: true, menuType: type });
   }
 
@@ -90,8 +95,9 @@ export class LayoutService {
     this.updateState({ menuOpen: false });
   }
 
-  toggleMenu(type: 'client' | 'admin'): void {
+  toggleMenu(type: "client" | "admin"): void {
     const currentState = this._layoutState();
+
     if (currentState.menuOpen && currentState.menuType === type) {
       this.closeMenu();
     } else {
@@ -101,23 +107,23 @@ export class LayoutService {
 
   getMenuClasses(): string {
     const state = this._layoutState();
-    const classes = ['menu-side-container'];
-    
-    if (state.menuOpen) classes.push('active');
-    if (state.isMobile) classes.push('mobile');
-    if (state.isMobileCompact) classes.push('mobile-compact');
-    
-    return classes.join(' ');
+    const classes = ["menu-side-container"];
+
+    if (state.menuOpen) classes.push("active");
+    if (state.isMobile) classes.push("mobile");
+    if (state.isMobileCompact) classes.push("mobile-compact");
+
+    return classes.join(" ");
   }
 
   getContentClasses(): string {
     const state = this._layoutState();
-    const classes = ['content-wrapper'];
-    
-    if (state.menuOpen) classes.push('menu-active');
-    if (state.isMobile) classes.push('mobile');
-    if (state.isMobileCompact) classes.push('mobile-compact');
-    
-    return classes.join(' ');
+    const classes = ["content-wrapper"];
+
+    if (state.menuOpen) classes.push("menu-active");
+    if (state.isMobile) classes.push("mobile");
+    if (state.isMobileCompact) classes.push("mobile-compact");
+
+    return classes.join(" ");
   }
 }

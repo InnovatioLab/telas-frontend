@@ -1,6 +1,9 @@
 <header
   class="header"
-  [ngClass]="{ 'dark-header': isDarkMode }"
+  [ngClass]="{
+    'dark-header': isDarkMode,
+    'is-admin': isAdministrador(),
+  }"
   [appShowInRoutes]="headerAllowedRoutes"
 >
   <div
@@ -26,7 +29,7 @@
             <app-icon-bars></app-icon-bars>
           </div>
 
-          <div class="logo-container">
+          <!-- <div class="logo-container">
             <app-icon-tv-display
               (click)="navegarPaginaInicial()"
               (keydown.enter)="navegarPaginaInicial()"
@@ -35,6 +38,48 @@
               tabindex="0"
               aria-label="Go to home"
             ></app-icon-tv-display>
+          </div> -->
+
+          <div
+            class="search-container"
+            [ngClass]="{ 'menu-open-small-mobile': isMenuOpenInSmallMobile }"
+            *ngIf="isLogado() && isInAllowedRoutes()"
+          >
+            <div class="address-search-container">
+              <div class="address-search-input">
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="searchText"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Type a zipcode"
+                  maxlength="5"
+                  id="inp-pesquisar"
+                  (keydown.enter)="searchAddress()"
+                  (keydown)="onKeyPress($event)"
+                  (paste)="onPaste($event)"
+                  (ngModelChange)="onInputChange()"
+                />
+                <button
+                  type="button"
+                  class="botao-pesquisa"
+                  [disabled]="isSearching || !searchText"
+                  (click)="searchAddress()"
+                  aria-label="Search"
+                  pTooltip="Search address"
+                  tooltipPosition="left"
+                  id="btn-pesquisar"
+                >
+                  <span
+                    *ngIf="isSearching"
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  <app-icon-search *ngIf="!isSearching"></app-icon-search>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="right-container">
@@ -60,9 +105,18 @@
             </div>
 
             <div class="icons-container" *ngIf="isLogado()">
+              <app-icon-tv-display
+                (click)="navegarPaginaInicial()"
+                (keydown.enter)="navegarPaginaInicial()"
+                [size]="24"
+                class="imagem-logo"
+                tabindex="0"
+                aria-label="Go to home"
+              ></app-icon-tv-display>
               <button
                 pButton
                 (click)="abrirCheckout()"
+                *ngIf="!isAdministrador()"
                 class="icon-button"
                 id="test-btn-checkout"
                 [pTooltip]="cartTooltip"
@@ -93,44 +147,6 @@
                 >
                   {{ itensNotificacao() }}</span
                 >
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="search-container" *ngIf="isLogado() && isInAllowedRoutes()">
-          <div class="address-search-container">
-            <div class="address-search-input">
-              <input
-                type="text"
-                pInputText
-                [(ngModel)]="searchText"
-                [ngModelOptions]="{ standalone: true }"
-                placeholder="Type a zipcode"
-                maxlength="5"
-                id="inp-pesquisar"
-                (keydown.enter)="searchAddress()"
-                (keydown)="onKeyPress($event)"
-                (paste)="onPaste($event)"
-                (ngModelChange)="onInputChange()"
-              />
-              <button
-                type="button"
-                class="botao-pesquisa"
-                [disabled]="isSearching || !searchText"
-                (click)="searchAddress()"
-                aria-label="Search"
-                pTooltip="Search address"
-                tooltipPosition="left"
-                id="btn-pesquisar"
-              >
-                <span
-                  *ngIf="isSearching"
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-                <app-icon-search *ngIf="!isSearching"></app-icon-search>
               </button>
             </div>
           </div>
@@ -250,7 +266,7 @@
             <app-icon-bars></app-icon-bars>
           </div>
 
-          <div class="logo-container">
+          <!-- <div class="logo-container">
             <img
               (click)="navegarPaginaInicial()"
               (keydown.enter)="navegarPaginaInicial()"
@@ -259,11 +275,61 @@
               class="imagem-logo"
               tabindex="0"
             />
+          </div> -->
+
+          <div
+            class="search-container"
+            [ngClass]="{ 'menu-open-small-mobile': isMenuOpenInSmallMobile }"
+            *ngIf="isLogado() && isInAllowedRoutes()"
+          >
+            <div class="address-search-container">
+              <div class="address-search-input">
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="searchText"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Type a zipcode"
+                  maxlength="5"
+                  id="inp-pesquisar"
+                  (keydown.enter)="searchAddress()"
+                  (keydown)="onKeyPress($event)"
+                  (paste)="onPaste($event)"
+                  (ngModelChange)="onInputChange()"
+                />
+                <button
+                  type="button"
+                  class="botao-pesquisa"
+                  [disabled]="isSearching || !searchText"
+                  (click)="searchAddress()"
+                  aria-label="Search"
+                  pTooltip="Search address"
+                  tooltipPosition="left"
+                  id="btn-pesquisar"
+                >
+                  <span
+                    *ngIf="isSearching"
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  <app-icon-search *ngIf="!isSearching"></app-icon-search>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="right-container">
             <div class="icons-container">
-              <button
+              <app-icon-tv-display
+                (click)="navegarPaginaInicial()"
+                (keydown.enter)="navegarPaginaInicial()"
+                [size]="24"
+                class="imagem-logo"
+                tabindex="0"
+                aria-label="Go to home"
+              ></app-icon-tv-display>
+              <!-- <button
                 pButton
                 (click)="abrirNotificacoes()"
                 class="icon-button"
@@ -276,7 +342,13 @@
                 >
                   {{ itensNotificacao() }}</span
                 >
-              </button>
+              </button> -->
+
+              <app-alert-counter
+                *ngIf="isAdministrador()"
+                [toggleSidebar]="toggleAdminSidebar.bind(this)"
+              >
+              </app-alert-counter>
 
               <button
                 pButton
@@ -287,48 +359,12 @@
                 <app-icon-settings></app-icon-settings>
               </button>
 
-              <app-alert-counter
+              <!-- <app-alert-counter
                 *ngIf="isAdministrador()"
                 [isDesktop]="false"
                 [toggleSidebar]="toggleAdminSidebar.bind(this)"
               >
-              </app-alert-counter>
-            </div>
-          </div>
-        </div>
-
-        <div class="search-container" *ngIf="isLogado() && isInAllowedRoutes()">
-          <div class="address-search-container">
-            <div class="address-search-input">
-              <input
-                type="text"
-                pInputText
-                [(ngModel)]="searchText"
-                [ngModelOptions]="{ standalone: true }"
-                placeholder="Type a zipcode"
-                maxlength="5"
-                id="inp-pesquisar-admin"
-                (keydown.enter)="searchAddress()"
-                (keydown)="onKeyPress($event)"
-                (paste)="onPaste($event)"
-                (ngModelChange)="onInputChange()"
-              />
-              <button
-                type="button"
-                class="botao-pesquisa"
-                [disabled]="isSearching || !searchText"
-                (click)="searchAddress()"
-                aria-label="Pesquisar"
-                id="btn-pesquisar-admin"
-              >
-                <span
-                  *ngIf="isSearching"
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-                <app-icon-search *ngIf="!isSearching"></app-icon-search>
-              </button>
+              </app-alert-counter> -->
             </div>
           </div>
         </div>
@@ -356,19 +392,11 @@
           >
             <app-icon-bars></app-icon-bars>
           </div>
-
-          <app-icon-tv-display
-            (click)="navegarPaginaInicial()"
-            (keydown.enter)="navegarPaginaInicial()"
-            [size]="48"
-            class="imagem-logo"
-            tabindex="0"
-            aria-label="Go to home"
-          ></app-icon-tv-display>
         </section>
 
         <section
           class="search-container-desktop"
+          [ngClass]="{ 'menu-open-small-mobile': isMenuOpenInSmallMobile }"
           *ngIf="isLogado() && isInAllowedRoutes()"
         >
           <div class="address-search-container">
@@ -408,6 +436,15 @@
 
         <section class="box-actions main-actions desktop-only">
           <ng-container *ngIf="isLogado(); else deslogado">
+            <app-icon-tv-display
+              (click)="navegarPaginaInicial()"
+              (keydown.enter)="navegarPaginaInicial()"
+              [size]="24"
+              class="imagem-logo"
+              tabindex="0"
+              aria-label="Go to home"
+            ></app-icon-tv-display>
+
             <button
               id="test-btn-checkout-desktop"
               (click)="abrirCheckout()"
@@ -432,9 +469,15 @@
             </button>
 
             <!-- Botão de alertas no header desktop -->
-            <app-alert-counter
+            <!-- <app-alert-counter
               *ngIf="isAdministrador() && !isAdminSidebarVisible"
               [isDesktop]="true"
+              [toggleSidebar]="toggleAdminSidebar.bind(this)"
+            >
+            </app-alert-counter> -->
+
+            <app-alert-counter
+              *ngIf="isAdministrador() && !isAdminSidebarVisible"
               [toggleSidebar]="toggleAdminSidebar.bind(this)"
             >
             </app-alert-counter>

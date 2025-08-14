@@ -1,46 +1,63 @@
-<div class="menu-side-container" 
-     [ngClass]="{
-       'active': isMenuOpen(),
-       'mobile': isMobile(),
-       'mobile-compact': isMobileCompact()
-     }">
+<div
+  class="menu-side-container"
+  [ngClass]="{
+    active: isMenuOpen(),
+    mobile: isMobile(),
+    'mobile-compact': isMobileCompact(),
+  }"
+>
   <div class="menu-header">
-    <div class="menu-actions">
-      <button class="close-btn" 
-              (click)="toggleMenu()" 
-              aria-label="Close sidebar"
-              pTooltip="Close" 
-              tooltipPosition="right">
-        <app-icon-close></app-icon-close>
-      </button>
-    </div>
-
-    <span class="menu-title">Admin Menu</span>
+    <p class="mb-0 font-semibold menu-title">Menu</p>
+    <button
+      class="close-btn"
+      (click)="toggleMenu()"
+      aria-label="Close sidebar"
+      pTooltip="Close"
+      tooltipPosition="right"
+    >
+      <app-icon-close></app-icon-close>
+    </button>
   </div>
 
   <div class="menu-content">
     <ul class="menu-list" role="menu">
-      <li class="menu-item" 
-          *ngFor="let item of menuItems" 
-          (click)="selecionarOpcao(item)"
-          (keydown.enter)="selecionarOpcao(item)" 
-          (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
-          tabindex="0" 
-          role="menuitem" 
-          [id]="'menu-item-' + item.id" 
-          pTooltip="{{getMenuItemTooltip(item)}}"
-          tooltipPosition="right">
+      <li
+        class="menu-item"
+        *ngFor="let item of menuItems"
+        (click)="selecionarOpcao(item)"
+        (keydown.enter)="selecionarOpcao(item)"
+        (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
+        tabindex="0"
+        role="menuitem"
+        [id]="'menu-item-' + item.id"
+        pTooltip="{{ getMenuItemTooltip(item) }}"
+        tooltipPosition="right"
+      >
         <div class="menu-icon">
-          <app-icon-dashboard *ngIf="item.icon === 'dashboard'"></app-icon-dashboard>
+          <app-icon-dashboard
+            *ngIf="item.icon === 'dashboard'"
+          ></app-icon-dashboard>
           <app-icon-user *ngIf="item.icon === 'user'"></app-icon-user>
-          <app-icon-warning *ngIf="item.icon === 'pi-warning'"></app-icon-warning>
+          <app-icon-warning
+            *ngIf="item.icon === 'pi-warning'"
+          ></app-icon-warning>
           <app-icon-settings *ngIf="item.icon === 'pi-cog'"></app-icon-settings>
-          <app-icon-help *ngIf="item.icon === 'pi-question-circle'"></app-icon-help>
-          <app-icon-documento *ngIf="item.icon === 'pi-file'"></app-icon-documento>
-          <app-icon-logout *ngIf="item.icon === 'pi-sign-out'"></app-icon-logout>
-          <app-icon-tv-display *ngIf="item.icon === 'tv-display'"></app-icon-tv-display>
+          <app-icon-help
+            *ngIf="item.icon === 'pi-question-circle'"
+          ></app-icon-help>
+          <app-icon-documento
+            *ngIf="item.icon === 'pi-file'"
+          ></app-icon-documento>
+          <app-icon-logout
+            *ngIf="item.icon === 'pi-sign-out'"
+          ></app-icon-logout>
+          <app-icon-tv-display
+            *ngIf="item.icon === 'tv-display'"
+          ></app-icon-tv-display>
           <app-icon-box *ngIf="item.icon === 'box'"></app-icon-box>
-          <app-icon-etiqueta *ngIf="item.icon === 'etiqueta'"></app-icon-etiqueta>
+          <app-icon-etiqueta
+            *ngIf="item.icon === 'etiqueta'"
+          ></app-icon-etiqueta>
           <app-icon-sair *ngIf="item.icon === 'sair'"></app-icon-sair>
         </div>
         <span class="menu-label">{{ item.label }}</span>
@@ -49,16 +66,21 @@
   </div>
 
   <div class="menu-footer" *ngIf="!isMobile()">
-    <span class="version" 
-          pTooltip="Current application version" 
-          tooltipPosition="top">v1.0.0</span>
+    <span
+      class="version"
+      pTooltip="Current application version"
+      tooltipPosition="top"
+      >v1.0.0</span
+    >
     <ui-toggle></ui-toggle>
   </div>
 </div>
 
-<div class="menu-overlay" 
-     *ngIf="isMenuOpen() && isMobileCompact()" 
-     (click)="toggleMenu()" 
-     (keydown.escape)="toggleMenu()"
-     tabindex="-1" 
-     role="presentation"></div>
+<div
+  class="menu-overlay"
+  *ngIf="isMenuOpen() && isMobileCompact()"
+  (click)="toggleMenu()"
+  (keydown.escape)="toggleMenu()"
+  tabindex="-1"
+  role="presentation"
+></div>

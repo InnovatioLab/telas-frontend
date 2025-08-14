@@ -71,12 +71,12 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   currentSidebarWidth = this.layoutService.currentSidebarWidth;
 
   menuItems: MenuItem[] = [
-    { id: "home", label: "Map", icon: "dashboard" },
+    { id: "home", label: "Maps", icon: "dashboard" },
     { id: "monitors", label: "Monitors", icon: "tv-display" },
     { id: "boxes", label: "Boxes", icon: "box" },
-    { id: "advertisements", label: "Advertisements", icon: "etiqueta" },
+    { id: "advertisements", label: "Ads", icon: "etiqueta" },
     { id: "clients", label: "Clients", icon: "user" },
-    { id: "logout", label: "Logout", icon: "sair" },
+    { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
 
   ngOnInit(): void {
@@ -256,14 +256,14 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   logout() {
     const config = DialogoUtils.exibirAlerta(
-      "Are you sure you want to log out?",
+      "Are you sure you want to logout?",
       {
-        acaoPrimaria: "Yes, log out",
+        acaoPrimaria: "Logout",
         acaoPrimariaCallback: () => {
           this.refDialogo.close();
           this.desconectar();
         },
-        acaoSecundaria: "No, stay logged in",
+        acaoSecundaria: "Stay",
         acaoSecundariaCallback: () => {
           this.refDialogo.close();
         },
