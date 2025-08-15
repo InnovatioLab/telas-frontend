@@ -29,7 +29,6 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
 
   private initMap(): void {
     this.mapContainer.nativeElement.style.height = '100%';
-
     if (this.mapInstance) {
       this.mapInstance.remove();
     }

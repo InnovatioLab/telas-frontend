@@ -4,15 +4,11 @@
   (visibilityChange)="onAdminSidebarVisibilityChange($event)">
 </app-alert-admin-sidebar>
 
+
 <div class="map-container">
-  <app-maps 
-    [zoom]="15" 
-    height="600px" 
-    width="100%" 
-    (pointClick)="handlePointClick($event)"
-    (markerClicked)="handleMarkerClick($event)">
-  </app-maps>
+  <app-mapa></app-mapa>
 </div>
+
 
 <app-pop-up-add-list 
   [(visible)]="showPointMenu" 

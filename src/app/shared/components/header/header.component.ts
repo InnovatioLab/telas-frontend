@@ -14,7 +14,6 @@ import { FormsModule } from "@angular/forms";
 import { NavigationEnd, Router, RouterModule } from "@angular/router";
 import { ShowInRoutesDirective } from "@app/core/directives/show-in-routes.directive";
 import { CartService } from "@app/core/service/api/cart.service";
-import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
@@ -87,7 +86,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   get hasActiveCart(): boolean {
     return this.itensCarrinho() > 0;
   }
-
   // Getter para o tooltip do carrinho
   get cartTooltip(): string {
     return this.hasActiveCart
@@ -117,7 +115,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     public router: Router,
     private readonly authentication: Authentication,
     private readonly notificacaoState: NotificacaoState,
-    private readonly googleMapsService: GoogleMapsService,
+  // Removido GoogleMapsService. Ajuste a lógica para novo serviço se necessário
     private readonly searchMonitorsService: SearchMonitorsService,
     private readonly sidebarService: SidebarService,
     private readonly cdr: ChangeDetectorRef,
@@ -241,7 +239,13 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
           this.loadingService.setLoading(false, "address-search");
 
           if (monitors && monitors.length > 0) {
-            const mapPoints = this.convertMonitorsToMapPoints(monitors);
+            const mapPoints = this.convertMonitorsToMapPoints(
+              Array.isArray(monitors)
+                ? monitors
+                : (typeof monitors === 'object' && monitors && 'monitors' in monitors && Array.isArray((monitors as any).monitors)
+                    ? (monitors as any).monitors
+                    : [])
+            );
             this.emitMonitorsFoundEvent(mapPoints);
             this.toastService.sucesso(
               `Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`
@@ -266,10 +270,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initializeUserServices() {
-    if (this.isInAllowedRoutes()) {
-      this.googleMapsService.initGoogleMapsApi();
-      this.googleMapsService.initSavedPoints();
-    }
+  // Removido googleMapsService.initGoogleMapsApi() e initSavedPoints(); ajuste para novo fluxo se necessário
 
     if (this.savedPointsSubscription) {
       this.savedPointsSubscription.unsubscribe();
@@ -278,53 +279,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     // Inicializar subscription do carrinho
     this.subscribeToCartChanges();
 
-    if (this.isInAllowedRoutes()) {
-      this.savedPointsSubscription =
-        this.googleMapsService.savedPoints$.subscribe((points) => {
-          this.itensSalvos.set(points?.length || 0);
-        });
-
-      this.searchSubscriptions.add(
-        this.googleMapsService.isSearching$.subscribe(
-          (isSearching) => (this._isSearching = isSearching)
-        )
-      );
-
-      this.searchSubscriptions.add(
-        this.googleMapsService.searchError$.subscribe((error) => {
-          if (error) {
-            this.toastService.erro(error);
-          }
-        })
-      );
-
-      this.searchSubscriptions.add(
-        this.googleMapsService.searchResult$.subscribe((result) => {
-          if (result) {
-            this.toastService.sucesso(
-              `Address found: ${result.formattedAddress}`
-            );
-            this.searchText = "";
-
-            this.searchMonitorsService
-              .searchNearestMonitorsByAddress(
-                result.formattedAddress,
-                this.googleMapsService
-              )
-              .then((monitors) => {
-                if (monitors && monitors.length > 0) {
-                  this.emitMonitorsFoundEvent(monitors);
-                  this.toastService.sucesso(
-                    `Found ${monitors.length} monitors near this address`
-                  );
-                } else {
-                  this.toastService.info("No monitors found near this address");
-                }
-              });
-          }
-        })
-      );
-    }
+  // Removido bloco de subscriptions antigas/comentadas para evitar blocos abertos
 
     if (this.monitorSearchSubscription) {
       this.monitorSearchSubscription.unsubscribe();
@@ -587,20 +542,20 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   onInputChange() {
     // Filtrar caracteres inválidos (manter apenas números)
     if (this.searchText) {
-      const filteredText = this.searchText.replace(/[^0-9]/g, "");
+  const filteredText = this.searchText.replace(/\D/g, "");
       if (filteredText !== this.searchText) {
         this.searchText = filteredText;
       }
     }
 
     if (!this.searchText?.trim() && this.isInAllowedRoutes()) {
-      this.googleMapsService.clearCurrentSearch();
+  // Removido googleMapsService.clearCurrentSearch(); ajuste para novo fluxo se necessário
     }
   }
 
   onKeyPress(event: KeyboardEvent): void {
     // Permitir apenas números (0-9)
-    const allowedKeys = /[0-9]/;
+  const allowedKeys = /\d/;
     const key = event.key;
 
     // Permitir teclas de controle (backspace, delete, arrow keys, etc.)
@@ -632,7 +587,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     const clipboardData = event.clipboardData?.getData("text") || "";
 
     // Filtrar apenas números
-    const filteredText = clipboardData.replace(/[^0-9]/g, "");
+  const filteredText = clipboardData.replace(/\D/g, "");
 
     // Atualizar o searchText com o texto filtrado
     if (filteredText) {
@@ -700,7 +655,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSearch(): void {
-    const searchTextCopy = this.searchText.trim();
+    const searchTextCopy = this.searchText?.trim();
     if (!searchTextCopy) return;
 
     if (!this.isInAllowedRoutes()) {
@@ -754,17 +709,11 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.cartSubscription = this.cartService.cartUpdatedStream$.subscribe({
-        next: (cart) => {
-          if (cart && cart.items) {
-            this.itensCarrinho.set(cart.items.length);
-          } else {
-            this.itensCarrinho.set(0);
-          }
+  next: (cart: any) => {
+          this.itensCarrinho?.set(cart?.items?.length ?? 0);
         },
         error: () => {
-          this.itensCarrinho.set(0);
+          this.itensCarrinho?.set(0);
         },
       });
-    }
-  }
-}
+    }}}

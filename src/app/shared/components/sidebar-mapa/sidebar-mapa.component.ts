@@ -10,7 +10,6 @@ import {
 import { SliceStringPipe } from "@app/core/pipes/slice-string.pipe";
 import { CartService } from "@app/core/service/api/cart.service";
 import { ClientService } from "@app/core/service/api/client.service";
-import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
@@ -66,7 +65,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
 
   constructor(
-    private readonly mapsService: GoogleMapsService,
     private readonly cartService: CartService,
     @Inject(ENVIRONMENT) private readonly env: Environment,
     private readonly toastService: ToastService,
@@ -74,30 +72,19 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     private readonly clientService: ClientService
   ) {}
 
-  ngOnInit(): void {
-    this.subscriptions.add(
-      this.mapsService.selectedPoint$.subscribe((point) => {
-        if (point && !this.pontoSelecionado) {
-          this.pontoSelecionado = point;
-          this.openSidebar();
-          setTimeout(() => {
-            this.cdr.detectChanges();
-          }, 100);
-        }
-      })
-    );
-
-    window.addEventListener("monitor-marker-clicked", ((e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (customEvent.detail?.point && !this.pontoSelecionado) {
-        this.pontoSelecionado = customEvent.detail.point;
-        this.openSidebar();
-        setTimeout(() => {
-          this.cdr.detectChanges();
-        }, 100);
-      }
-    }) as EventListener);
-  }
+   ngOnInit(): void {
+     // Seleção de ponto agora apenas via evento window
+     window.addEventListener("monitor-marker-clicked", ((e: Event) => {
+       const customEvent = e as CustomEvent;
+       if (customEvent.detail?.point && !this.pontoSelecionado) {
+         this.pontoSelecionado = customEvent.detail.point;
+         this.openSidebar();
+         setTimeout(() => {
+           this.cdr.detectChanges();
+         }, 100);
+       }
+     }) as EventListener);
+   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -107,14 +94,12 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     this.visibilidadeSidebar = true;
   }
 
-  closeSidebar(): void {
-    console.log("chamou fechar sidebar");
-    this.visibilidadeSidebar = false;
-    this.mapsService.selectPoint(null);
-    this.streetViewUrl = null;
-    this.localInfo = null;
-    this.pontoSelecionado = null;
-  }
+   closeSidebar(): void {
+     this.visibilidadeSidebar = false;
+     this.streetViewUrl = null;
+     this.localInfo = null;
+     this.pontoSelecionado = null;
+   }
 
   voltar(): void {
     this.closeSidebar();

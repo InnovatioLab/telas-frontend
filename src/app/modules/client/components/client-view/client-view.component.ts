@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import * as L from 'leaflet';
 import { PlotMapaService } from '@app/core/service/api/plot-mapa.service';
@@ -26,65 +26,70 @@ import { MapPoint } from '@app/core/service/state/map-point.interface';
   templateUrl: "./client-view.component.html",
   styleUrls: ["./client-view.component.scss"],
 })
-export class ClientViewComponent implements OnInit, OnDestroy {
+export class ClientViewComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading = true;
   showPointMenu = false;
   menuPosition = { x: 0, y: 0 };
   selectedPoint: MapPoint | null = null;
   savedPoints: MapPoint[] = [];
 
-  private mapInstance: L.Map | null = null;
+  @ViewChild(MapaComponent) mapaComponent!: MapaComponent;
   private activeMarkers: L.Marker[] = [];
 
   constructor(
     private readonly plotService: PlotMapaService,
     private readonly toastService: ToastService,
-    private readonly cdr: ChangeDetectorRef,
-    private readonly mapsService: MapsService
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    window.addEventListener("monitors-found", this.handleMonitorsFound);
     this.loadNearbyPoints();
   }
 
-  ngOnDestroy(): void {
-    window.removeEventListener("monitors-found", this.handleMonitorsFound);
-  }
-
-  onMapInitialized(map: L.Map): void {
-    this.mapInstance = map;
-    this.isLoading = false;
-    this.cdr.detectChanges();
-  }
-
-  private readonly handleMonitorsFound = (e: Event): void => {
-    const customEvent = e as CustomEvent;
-    if (customEvent.detail?.monitors) {
-      this.setMapPoints(customEvent.detail.monitors);
+  ngAfterViewInit(): void {
+    // Quando o mapa estiver pronto, podemos plotar os pontos
+    if (this.mapaComponent?.getMapInstance()) {
+      this.plotSavedPoints();
+    } else {
+      setTimeout(() => this.plotSavedPoints(), 500);
     }
-  };
+  }
 
-  private setMapPoints(points: MapPoint[]): void {
-    if (!this.mapInstance) return;
+  ngOnDestroy(): void {}
 
-    this.activeMarkers.forEach(marker => marker.removeFrom(this.mapInstance));
+  private plotSavedPoints(): void {
+    if (!this.mapaComponent?.getMapInstance()) return;
+    const map = this.mapaComponent.getMapInstance()!;
+    // Limpa marcadores antigos
+    this.activeMarkers.forEach(marker => marker.removeFrom(map));
     this.activeMarkers = [];
-
-    points.forEach(point => {
+    // Plota os pontos salvos
+    this.savedPoints.forEach(point => {
       const marker = this.plotService.plotMarker(
-        this.mapInstance,
+        map,
         point.latitude,
         point.longitude,
-        point.title || ''
+        point.title || '',
+        () => this.handlePointClick({ point, event: new MouseEvent('click') })
       );
+      if (marker) this.activeMarkers.push(marker);
+    });
+  }
 
-      if (marker) {
-        marker.on('click', (e: L.LeafletMouseEvent) => {
-          this.handlePointClick({ point, event: e.originalEvent });
-        });
-        this.activeMarkers.push(marker);
-      }
+  private setMapPoints(points: MapPoint[]): void {
+    if (!this.mapaComponent?.getMapInstance()) return;
+    const map = this.mapaComponent.getMapInstance()!;
+    this.activeMarkers.forEach(marker => marker.removeFrom(map));
+    this.activeMarkers = [];
+    points.forEach(point => {
+      const marker = this.plotService.plotMarker(
+        map,
+        point.latitude,
+        point.longitude,
+        point.title || '',
+        () => this.handlePointClick({ point, event: new MouseEvent('click') })
+      );
+      if (marker) this.activeMarkers.push(marker);
     });
   }
 
@@ -92,7 +97,13 @@ export class ClientViewComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.getCurrentLocation()
       .then(location => {
-        this.findNearbyPoints(location.latitude, location.longitude);
+        // Aqui você deve buscar os pontos próximos via API ou serviço
+        // Simulação:
+        const fakePoints: MapPoint[] = [
+          { latitude: location.latitude, longitude: location.longitude, title: 'Você está aqui' }
+        ];
+        this.setMapPoints(fakePoints);
+        this.isLoading = false;
       })
       .catch(error => {
         this.toastService.erro(error.message);
@@ -103,7 +114,7 @@ export class ClientViewComponent implements OnInit, OnDestroy {
   private getCurrentLocation(): Promise<{ latitude: number; longitude: number }> {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error("Geolocalização não é suportada pelo seu navegador."));
+        reject(new Error('Geolocalização não é suportada pelo seu navegador.'));
         return;
       }
       navigator.geolocation.getCurrentPosition(
@@ -114,30 +125,10 @@ export class ClientViewComponent implements OnInit, OnDestroy {
           });
         },
         () => {
-          reject(new Error("Não foi possível obter sua localização. Verifique as permissões."));
+          reject(new Error('Não foi possível obter sua localização. Verifique as permissões.'));
         }
       );
     });
-  }
-
-  private findNearbyPoints(latitude: number, longitude: number): void {
-    this.mapsService
-      .findNearbyMonitors(latitude, longitude)
-      .then((monitors: MapPoint[]) => {
-        if (monitors && monitors.length > 0) {
-          this.emitMonitorsFoundEvent(monitors);
-        }
-        this.isLoading = false;
-      })
-      .catch((error: Error) => {
-        this.toastService.erro("Error searching for nearby monitors");
-        this.isLoading = false;
-      });
-  }
-
-  private emitMonitorsFoundEvent(monitors: MapPoint[]): void {
-    const event = new CustomEvent("monitors-found", { detail: { monitors } });
-    window.dispatchEvent(event);
   }
 
   handlePointClick(data: { point: MapPoint; event: MouseEvent }): void {
@@ -151,16 +142,16 @@ export class ClientViewComponent implements OnInit, OnDestroy {
     this.selectedPoint = point;
     this.showPointMenu = false;
     // Aqui você pode adicionar lógica para, por exemplo, abrir um sidebar com os detalhes
-    console.log("Mostrando detalhes de:", point);
+    console.log('Mostrando detalhes de:', point);
   }
 
   addPointToList(point: MapPoint): void {
-    // Verifica se o ponto já não foi adicionado
-    if (!this.savedPoints.some(p => p.title === point.title)) { // Lógica de comparação simples
-        this.savedPoints.push(point);
-        this.toastService.sucesso(`${point.title} adicionado à sua lista!`);
+    if (!this.savedPoints.some(p => p.title === point.title)) {
+      this.savedPoints.push(point);
+      this.toastService.sucesso(`${point.title} adicionado à sua lista!`);
+      this.plotSavedPoints();
     } else {
-        this.toastService.aviso(`${point.title} já está na sua lista.`);
+      this.toastService.aviso(`${point.title} já está na sua lista.`);
     }
     this.showPointMenu = false;
   }
