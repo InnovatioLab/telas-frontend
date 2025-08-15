@@ -6,17 +6,7 @@
     <div class="loading-spinner"></div>
   </div>
   
-  <app-maps 
-    #mapsComponent
-    [zoom]="15" 
-    height="95vh" 
-    width="100%" 
-    (pointClick)="handlePointClick($event)"
-    (markerClicked)="handleMarkerClick($event)"
-    (mapInitialized)="onMapInitialized()"
-    (mapReady)="onMapReady()"
-    (mapError)="onMapError($event)">
-  </app-maps>
+  <app-mapa></app-mapa>
 </div>
 
 <app-pop-up-add-list 
