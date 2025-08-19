@@ -3,34 +3,43 @@
     <p-card styleClass="card-header">
       <div class="card-header-content">
         <div class="p-card-content">
-          <span class="p-input-icon-left">
-            <app-icon-search
-              style="color: #496382"
-              class="search-icon"
-              (click)="onSearch()"
-            ></app-icon-search>
-            <input
-              type="text"
-              style="width: 320px"
-              pInputText
-              placeholder="Search Monitors"
-              [(ngModel)]="searchTerm"
-              [ngModelOptions]="{ standalone: true }"
-              (keyup.enter)="onSearch()"
-            />
-          </span>
-          <span
-            class="pi pi-info-circle"
-            style="color: var(--cor-primaria)"
-            pTooltip="Search by address, status, type or size"
-          ></span>
-          <button
-            pButton
-            label="Create Monitor"
-            icon="pi pi-plus"
-            (click)="openCreateMonitorModal()"
-            onKeyDown="openCreateMonitorModal()"
-          ></button>
+          <div class="w-full flex align-items-center gap-2">
+            <span class="p-input-icon-left">
+              <app-icon-search
+                style="color: #496382"
+                class="search-icon"
+                (click)="onSearch()"
+              ></app-icon-search>
+              <input
+                type="text"
+                style="width: 250px"
+                pInputText
+                placeholder="Search Screens..."
+                [(ngModel)]="searchTerm"
+                [ngModelOptions]="{ standalone: true }"
+                (keyup.enter)="onSearch()"
+              />
+            </span>
+            <span
+              class="pi pi-info-circle"
+              style="color: var(--cor-primaria)"
+              pTooltip="Search by address, status, type or size"
+              tooltipPosition="top"
+            ></span>
+          </div>
+
+          <div
+            class="create-monitor-container w-full flex justify-content-center align-items-center"
+          >
+            <button
+              pButton
+              class="btn-create-monitor"
+              label="Create Screen"
+              icon="pi pi-plus"
+              (click)="openCreateMonitorModal()"
+              onKeyDown="openCreateMonitorModal()"
+            ></button>
+          </div>
         </div>
       </div>
     </p-card>
@@ -46,7 +55,7 @@
       [showCurrentPageReport]="true"
       responsiveLayout="scroll"
       [lazy]="true"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} monitors"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} screens"
       paginatorDropdownAppendTo="body"
       (onPage)="onPageChange($event)"
       (onSort)="onSort($event)"
@@ -55,7 +64,6 @@
     >
       <ng-template pTemplate="header">
         <tr>
-          <th scope="col">Id</th>
           <th scope="col" pSortableColumn="active">
             Status <p-sortIcon field="active"></p-sortIcon>
           </th>
@@ -65,14 +73,15 @@
           <th scope="col" pSortableColumn="type">
             Type <p-sortIcon field="type"></p-sortIcon>
           </th>
-          <th scope="col">Address</th>
+          <th scope="col" pSortableColumn="address">
+            Address <p-sortIcon field="address"></p-sortIcon>
+          </th>
           <th scope="col">Actions</th>
         </tr>
       </ng-template>
 
       <ng-template pTemplate="body" let-monitor>
         <tr>
-          <td>{{ monitor.id }}</td>
           <td>
             <p-badge
               [value]="monitor.active ? 'Active' : 'Inactive'"
@@ -89,7 +98,6 @@
             }}
           </td>
           <td>{{ getMonitorAddress(monitor) }}</td>
-
           <td>
             <div class="action-buttons">
               <button
@@ -98,6 +106,7 @@
                 class="p-button-rounded p-button-info p-button-text"
                 (click)="openAdsModal(monitor)"
                 pTooltip="Manage Ads"
+                tooltipPosition="top"
                 style="background: rgba(51, 153, 255, 0.1)"
               >
                 <app-icon-tv-display
@@ -115,7 +124,8 @@
                 pRipple
                 class="p-button-rounded p-button-success p-button-text"
                 (click)="onSelectMonitor(monitor)"
-                pTooltip="Edit Monitor"
+                pTooltip="Edit Screen"
+                tooltipPosition="top"
                 style="background: rgba(34, 197, 94, 0.1)"
               >
                 <app-icon-etiqueta
@@ -129,11 +139,12 @@
                 class="p-button-rounded p-button-primary p-button-text"
                 (click)="openUploadAdsModal(monitor)"
                 pTooltip="Upload ads"
+                tooltipPosition="top"
                 style="background: rgba(99, 102, 241, 0.1)"
               >
                 <app-icon-upload
                   class="custom-icon"
-                  style="color: #6366f1"
+                  fill="#6366f1"
                 ></app-icon-upload>
               </button>
               <button
@@ -143,6 +154,7 @@
                 (click)="deleteMonitor(monitor)"
                 [disabled]="!canDeleteMonitor(monitor)"
                 [pTooltip]="getDeleteTooltip(monitor)"
+                tooltipPosition="top"
                 style="background: rgba(244, 63, 94, 0.12)"
               >
                 <app-icon-trash
@@ -211,10 +223,9 @@
 
   <!-- Modal de gerenciamento de Ads -->
   <p-dialog
-    header="Manage Monitor Ads"
+    header="Manage Screen Ads Display Order"
     [(visible)]="adsModalVisible"
-    [style]="{ width: '95vw', maxWidth: '1600px' }"
-    [breakpoints]="{ '1199px': '98vw', '575px': '100vw' }"
+    [style]="{ width: '95vw', maxWidth: '800px' }"
     [modal]="true"
     [draggable]="false"
     [resizable]="false"
@@ -223,15 +234,6 @@
     (onHide)="onAdsModalHide()"
   >
     <div class="ads-management" *ngIf="selectedMonitorForAds">
-      <div class="ads-header">
-        <h4>
-          Monitor:
-          {{
-            selectedMonitorForAds.name ||
-              "Monitor " + selectedMonitorForAds.id.substring(0, 8)
-          }}
-        </h4>
-      </div>
       <div *ngIf="isAdsLoading" class="loading-spinner-container">
         <p-progressSpinner></p-progressSpinner>
       </div>
@@ -240,19 +242,17 @@
         class="ads-content"
         style="display: flex; gap: 32px; flex-wrap: wrap"
       >
-        <!-- Parte 1: Galleria -->
         <div style="flex: 1; min-width: 320px">
           <h5>Image Preview</h5>
           <img
             *ngIf="orderedAdLinks[selectedAdIndex]"
             [src]="orderedAdLinks[selectedAdIndex].link"
-            style="width: 100%; max-height: 300px; object-fit: contain"
+            class="ad-preview-image"
             [alt]="orderedAdLinks[selectedAdIndex].fileName"
           />
         </div>
-        <!-- Parte 2: OrderList -->
         <div style="flex: 1; min-width: 320px">
-          <h5>Sort Images</h5>
+          <h5>Sort Ads</h5>
           <p-orderList
             [value]="orderedAdLinks"
             (onReorder)="onOrderListReorder($event)"
@@ -285,6 +285,7 @@
       <button
         pButton
         pRipple
+        id="btnSecundario"
         label="Close"
         icon="pi pi-times"
         class="p-button-text"
@@ -295,7 +296,6 @@
         pRipple
         label="Save Order"
         icon="pi pi-check"
-        class="p-button-success"
         (click)="saveAdOrder()"
       ></button>
     </ng-template>
@@ -362,7 +362,7 @@
 
   <!-- Modal de upload de ads -->
   <p-dialog
-    header="Create Advertisement"
+    header="Upload Ad"
     [(visible)]="showCreateAdModal"
     [modal]="true"
     [closable]="true"

@@ -1,5 +1,18 @@
 <div class="container">
   <div class="content">
+    <p-card styleClass="card-header">
+      <div class="card-header-content">
+        <div class="p-card-content">
+          <button
+            pButton
+            label="Create Box"
+            icon="pi pi-plus"
+            (click)="openCreateBoxModal()"
+            onKeyDown="openCreateBoxModal()"
+          ></button>
+        </div>
+      </div>
+    </p-card>
 
     <p-table
       [value]="boxes"
@@ -96,18 +109,20 @@
           [loading]="loadingBoxAddresses"
           [disabled]="loadingBoxAddresses"
           (onChange)="onBoxAddressChange($event.value)"
+          [overlayOptions]="{ appendTo: 'body' }"
         >
+          <ng-template #empty>
+            <p class="font-semibold">No IP address found.</p>
+          </ng-template>
         </p-select>
-        <ng-template pTemplate="empty">
-          <span>No IP address found.</span>
-        </ng-template>
+
         <small class="help-text" *ngIf="loadingBoxAddresses"
           >Loading IP addresses...</small
         >
         <small
           class="help-text error-text"
           *ngIf="!loadingBoxAddresses && availableBoxAddresses.length === 0"
-          >No IP addresses available. Please create box addresses first.</small
+          >Please create box addresses first.</small
         >
       </div>
 
@@ -126,19 +141,19 @@
           [loading]="loadingMonitors"
           [disabled]="loadingMonitors"
           [overlayOptions]="{ appendTo: 'body' }"
-          appendTo="body"
         >
+          <ng-template pTemplate="empty">
+            <span>No monitors found.</span>
+          </ng-template>
         </p-multiSelect>
-        <ng-template pTemplate="empty">
-          <span>No monitors found.</span>
-        </ng-template>
+
         <small class="help-text" *ngIf="loadingMonitors"
           >Loading monitors...</small
         >
         <small
           class="help-text error-text"
           *ngIf="!loadingMonitors && availableMonitors.length === 0"
-          >No monitors available. Please create monitors first.</small
+          >Please create monitors first.</small
         >
       </div>
     </div>

@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { HeaderComponent } from '@app/shared/components/header/header.component';
+import { Authentication } from '@app/core/service/auth/autenthication';
 import { AdminMenuSideComponent } from '@app/shared/components/admin-menu-side/admin-menu-side.component';
 import { AlertAdminSidebarComponent } from '@app/shared/components/alert-admin-sidebar/alert-admin-sidebar.component';
 import { ContentWrapperComponent } from '@app/shared/components/content-wrapper/content-wrapper.component';
-import { Authentication } from '@app/core/service/auth/autenthication';
+import { HeaderComponent } from '@app/shared/components/header/header.component';
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;

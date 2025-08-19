@@ -1,12 +1,12 @@
 import { Route } from '@angular/router';
-import { AdminViewLayoutComponent } from './pages/admin-view-layout/admin-view-layout.component';
-import { AdminViewComponent } from './components/admin-view/admin-view.component';
 import { AdminAuthenticatedGuard } from '@app/core/service/guard/admin-authenticated.guard';
-import { ManagementMonitorsComponent } from './components/management-monitors/management-monitors.component';
 import { AdminManagementProfileComponent } from './components/admin-managemnt-profile/admin-managemnt-profile.component';
-import { ManagementBoxesComponent } from './components/management-boxes/management-boxes.component';
+import { AdminViewComponent } from './components/admin-view/admin-view.component';
 import { ManagementAdvertisementsComponent } from './components/management-advertisements/management-advertisements.component';
+import { ManagementBoxesComponent } from './components/management-boxes/management-boxes.component';
 import { ManagementClientsComponent } from './components/management-clients/management-clients.component';
+import { ManagementMonitorsComponent } from './components/management-monitors/management-monitors.component';
+import { AdminViewLayoutComponent } from './pages/admin-view-layout/admin-view-layout.component';
 
 export const ROUTES: Route[] = [
   {
@@ -19,7 +19,7 @@ export const ROUTES: Route[] = [
         component: AdminViewComponent
       },
       {
-        path: 'monitors',
+        path: 'screens',
         component: ManagementMonitorsComponent
       },
       {
@@ -31,7 +31,7 @@ export const ROUTES: Route[] = [
         component: ManagementBoxesComponent
       },
       {
-        path: 'advertisements',
+        path: 'ads',
         component: ManagementAdvertisementsComponent
       },
       {

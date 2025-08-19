@@ -16,15 +16,17 @@
     .card-header-content {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
     }
 
-    @media (max-width: 480px) {
-      flex-direction: column;
+    .p-card-content {
+      @media (max-width: 580px) {
+        flex-direction: column;
 
-      .p-input-icon-left {
-        width: 100%;
-        margin-bottom: var(--espacamento-pequeno);
+        .p-input-icon-left {
+          width: 100%;
+          margin-bottom: var(--espacamento-pequeno);
+        }
       }
     }
   }
@@ -182,7 +184,6 @@
         width: 100%;
         margin-bottom: var(--espacamento-pequeno);
       }
-
     }
   }
 
@@ -425,9 +426,14 @@
   }
 }
 
-
-
-:host ::ng-deep .p-datatable-thead>tr>th {
+:host ::ng-deep .p-datatable-thead > tr > th {
   background: var(--cor-primaria) !important;
   color: #fff !important;
+}
+
+.ad-preview-image {
+  width: 100%;
+  max-height: 450px !important;
+  object-fit: contain !important;
+  object-position: center center;
 }

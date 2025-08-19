@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="content">
+  <div class="content mt-6">
     <p-tabView (onChange)="onTabChange($event)" [activeIndex]="activeTabIndex">
       <!-- Tab 1: Attachments -->
       <p-tabPanel header="Attachments">
@@ -221,7 +221,10 @@
             </div>
           </div>
 
-          <div class="request-ad-section" *ngIf="canRequestAd()">
+          <div
+            class="request-ad-section"
+            *ngIf="isClientDataLoaded && canCreateAdRequest()"
+          >
             <div
               class="selection-info"
               *ngIf="selectedClientAttachments.length > 0"
@@ -375,8 +378,11 @@
             </div>
           </div>
 
-          <div class="no-ads-message" *ngIf="ads.length === 0">
-            <div class="empty-state">
+          <div
+            class="no-ads-message flex flex-column align-items-center"
+            *ngIf="ads.length === 0"
+          >
+            <div class="empty-state flex flex-column align-items-center gap-3">
               <span
                 class="pi pi-image"
                 style="font-size: 48px; color: #ccc"
@@ -484,7 +490,7 @@
     <button
       pButton
       label="Cancel"
-      id="#btnSecundario"
+      id="btnSecundario"
       (click)="closeRequestAdDialog()"
       class="p-button-secondary"
     ></button>

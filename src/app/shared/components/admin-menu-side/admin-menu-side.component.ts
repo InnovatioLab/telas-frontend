@@ -72,9 +72,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   menuItems: MenuItem[] = [
     { id: "home", label: "Maps", icon: "dashboard" },
-    { id: "monitors", label: "Monitors", icon: "tv-display" },
+    { id: "screens", label: "Screens", icon: "tv-display" },
     { id: "boxes", label: "Boxes", icon: "box" },
-    { id: "advertisements", label: "Ads", icon: "etiqueta" },
+    { id: "ads", label: "Ads", icon: "etiqueta" },
     { id: "clients", label: "Clients", icon: "user" },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
@@ -166,14 +166,14 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "users":
         this.navegarParaUsers();
         break;
-      case "monitors":
-        this.navegarParaMonitores();
+      case "screens":
+        this.navegarParaScreens();
         break;
       case "boxes":
         this.navegarParaBoxes();
         break;
-      case "advertisements":
-        this.navegarParaAdvertisements();
+      case "ads":
+        this.navegarParaAds();
         break;
       case "clients":
         this.navegarParaClients();
@@ -209,8 +209,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
-  navegarParaMonitores(): void {
-    this.router.navigate(["/admin/monitors"]);
+  navegarParaScreens(): void {
+    this.router.navigate(["/admin/screens"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
@@ -223,8 +223,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
-  navegarParaAdvertisements(): void {
-    this.router.navigate(["/admin/advertisements"]);
+  navegarParaAds(): void {
+    this.router.navigate(["/admin/ads"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }

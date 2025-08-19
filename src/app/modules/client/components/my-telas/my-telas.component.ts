@@ -46,6 +46,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   authenticatedClient: AuthenticatedClientResponseDto | null = null;
   hasActiveAdRequest = false;
+  isClientDataLoaded = false; // Flag para controlar se os dados foram carregados
 
   clientAttachments: Array<{
     attachmentId: string;
@@ -154,10 +155,12 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.hasActiveAdRequest = client.adRequest !== null;
         this.ads = client.ads || [];
         this.hasAds = true; // Sempre mostrar a tab de ads
+        this.isClientDataLoaded = true; // Marcar dados como carregados
         this.loading = false;
       },
       error: (error) => {
         this.toastService.erro("Erro ao carregar dados do cliente");
+        this.isClientDataLoaded = false; // Marcar que houve erro no carregamento
         this.loading = false;
       },
     });
@@ -459,10 +462,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     window.open(link, "_blank");
   }
 
-  canRequestAd(): boolean {
-    return this.canCreateAdRequest();
-  }
-
   mostrarErro(form: FormGroup, campo: string): boolean {
     return form.get(campo)?.invalid && form.get(campo)?.touched;
   }
@@ -630,6 +629,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   }
 
   canCreateAdRequest(): boolean {
+    if (!this.isClientDataLoaded) {
+      return false;
+    }
+
     if (
       !this.authenticatedClient ||
       this.authenticatedClient.adRequest !== null
@@ -645,7 +648,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       return true;
     }
 
-    return this.authenticatedClient.adRequest !== null;
+    return this.authenticatedClient.adRequest !== null ? false : true;
   }
 
   canValidateAd(ad: AdResponseDto): boolean {
@@ -654,6 +657,11 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   // Verifica se pode fazer upload direto
   canUploadDirectAd(): boolean {
+    // Retornar false se os dados ainda não foram carregados
+    if (!this.isClientDataLoaded) {
+      return false;
+    }
+
     if (
       !this.authenticatedClient ||
       this.authenticatedClient.adRequest !== null ||
@@ -667,10 +675,15 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   // Verifica se deve mostrar mensagem para criar AdRequest após rejeição
   shouldShowCreateAdRequestMessage(): boolean {
+    // Retornar false se os dados ainda não foram carregados
+    if (!this.isClientDataLoaded) {
+      return false;
+    }
+
     return (
       this.ads.length === 1 &&
       this.ads[0].validation === "REJECTED" &&
-      (!this.hasActiveAdRequest || this.authenticatedClient.adRequest === null)
+      (!this.hasActiveAdRequest || this.authenticatedClient?.adRequest === null)
     );
   }
 }

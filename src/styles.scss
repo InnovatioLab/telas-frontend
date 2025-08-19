@@ -1245,7 +1245,6 @@ textarea {
     color: var(--cor-legenda);
     font-weight: var(--fonte-peso-regular) !important;
     font-size: var(--fonte-tamanho-padrao) !important;
-    // padding: 0 0 0 var(--espacamento-padrao) !important;
     display: flex;
     align-items: center;
   }
@@ -2245,5 +2244,11 @@ img {
 @include responsive("tablet") {
   img {
     max-height: none !important;
+  }
+}
+
+.p-paginator-rpp-dropdown.p-select {
+  .p-select-label {
+    padding-left: 10px !important;
   }
 }
