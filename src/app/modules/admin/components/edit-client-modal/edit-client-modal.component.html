@@ -13,10 +13,6 @@
               maxlength="100"
               formControlName="businessName"
               placeholder="Enter business name"
-              [class.ng-invalid]="
-                editForm.get('businessName')?.invalid &&
-                editForm.get('businessName')?.touched
-              "
             />
             <small
               class="error-message"
@@ -38,10 +34,6 @@
               autoClear="false"
               formControlName="identificationNumber"
               placeholder="Enter identification number"
-              [class.ng-invalid]="
-                editForm.get('identificationNumber')?.invalid &&
-                editForm.get('identificationNumber')?.touched
-              "
             />
             <small
               class="error-message"
@@ -64,10 +56,6 @@
               formControlName="industry"
               maxlength="50"
               placeholder="Enter industry"
-              [class.ng-invalid]="
-                editForm.get('industry')?.invalid &&
-                editForm.get('industry')?.touched
-              "
             />
             <small
               class="error-message"
@@ -105,10 +93,6 @@
               formControlName="contactEmail"
               placeholder="Enter contact email"
               maxLength="255"
-              [class.ng-invalid]="
-                editForm.get('contactEmail')?.invalid &&
-                editForm.get('contactEmail')?.touched
-              "
             />
             <small
               class="error-message"
@@ -128,10 +112,6 @@
               class="w-full"
               formControlName="contactPhone"
               placeholder="Enter contact phone"
-              [class.ng-invalid]="
-                editForm.get('contactPhone')?.invalid &&
-                editForm.get('contactPhone')?.touched
-              "
             />
             <small
               class="error-message"
@@ -157,10 +137,6 @@
               pInputText
               formControlName="ownerFirstName"
               placeholder="Enter first name"
-              [class.ng-invalid]="
-                editForm.get('ownerFirstName')?.invalid &&
-                editForm.get('ownerFirstName')?.touched
-              "
             />
             <small
               class="error-message"
@@ -193,10 +169,6 @@
               formControlName="ownerEmail"
               placeholder="Enter email"
               maxLength="255"
-              [class.ng-invalid]="
-                editForm.get('ownerEmail')?.invalid &&
-                editForm.get('ownerEmail')?.touched
-              "
             />
             <small
               class="error-message"
@@ -216,10 +188,6 @@
               class="w-full"
               formControlName="ownerPhone"
               placeholder="Enter phone number"
-              [class.ng-invalid]="
-                editForm.get('ownerPhone')?.invalid &&
-                editForm.get('ownerPhone')?.touched
-              "
             />
             <small
               class="error-message"
@@ -382,7 +350,7 @@
         [class.p-button-loading]="loading"
       >
         <app-icon-check></app-icon-check>
-        <span>Save Changes</span>
+        <span>Save</span>
       </button>
     </div>
   </form>
