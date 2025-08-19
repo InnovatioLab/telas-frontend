@@ -25,8 +25,8 @@ import { LayoutService } from "@app/core/service/state/layout.service";
   styles: [
     `
       .content-wrapper {
-        min-height: 100vh;
-        margin-top: 2rem;
+        height: 100vh;
+        margin-top: 60px;
         transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background-color: var(--cor-branca);
         box-sizing: border-box;
@@ -37,8 +37,7 @@ import { LayoutService } from "@app/core/service/state/layout.service";
 
       .content-container {
         flex: 1;
-        padding: 2rem;
-        padding-top: 3rem;
+        padding: 1.5rem;
         max-width: 1600px;
         margin: 0 auto;
         width: 100%;
@@ -55,20 +54,6 @@ import { LayoutService } from "@app/core/service/state/layout.service";
 
       .content-wrapper.menu-active.mobile-compact {
         padding-left: 70px !important;
-      }
-
-      @media (max-width: 768px) {
-        .content-container {
-          padding: 1.5rem;
-          padding-top: 3rem;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .content-container {
-          padding: 1rem;
-          padding-top: 3rem;
-        }
       }
     `,
   ],

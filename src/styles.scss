@@ -1365,6 +1365,13 @@ p {
   line-height: 1.5;
 }
 
+a,
+li {
+  font-size: 1rem !important;
+  font-weight: var(--fonte-peso-regular);
+  line-height: 1.5;
+}
+
 /* Classes de alinhamento de texto (mantidas como utilidades) */
 .text-center {
   text-align: center;
@@ -2171,6 +2178,8 @@ label.required::after {
   select,
   textarea,
   span,
+  a,
+  li,
   .p-multiselect-option {
     font-size: var(--fonte-tamanho-padrao) !important;
   }
