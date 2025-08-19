@@ -26,13 +26,11 @@
   <!-- Empty State -->
   <div class="empty-state" *ngIf="!isLoading && !error && !hasWishlistItems">
     <div class="empty-content">
-      <i class="pi pi-heart-fill empty-icon"></i>
+      <span class="pi pi-heart-fill empty-icon"></span>
       <h3>Your wish list is empty</h3>
-      <p>Add screens to your wish list to keep track of future campaigns.</p>
-      <a routerLink="/client" class="p-button p-button-primary">
-        <i class="pi pi-search"></i>
-        Explore Screens
-      </a>
+      <p class="mb-0">
+        Add screens to your wish list to keep track of future campaigns.
+      </p>
     </div>
   </div>
 

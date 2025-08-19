@@ -9,19 +9,19 @@
         ></app-icon-search>
         <input
           type="text"
-          style="width: 250px"
+          style="width: 200px"
           pInputText
           placeholder="Search clients..."
           [(ngModel)]="searchTerm"
           [ngModelOptions]="{ standalone: true }"
           (keyup.enter)="onSearch()"
         />
+        <span
+          class="pi pi-info-circle ml-2"
+          style="color: var(--cor-primaria)"
+          pTooltip="Search by BusinessName, Identification, Phone, Email, Industry or Role"
+        ></span>
       </span>
-      <span
-        class="pi pi-info-circle"
-        style="color: var(--cor-primaria)"
-        pTooltip="Search by BusinessName, Identification, Phone, Email, Industry or Role"
-      ></span>
     </div>
   </div>
 </p-card>

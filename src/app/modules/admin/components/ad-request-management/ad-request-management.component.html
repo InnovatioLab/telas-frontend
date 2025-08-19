@@ -16,12 +16,12 @@
           [ngModelOptions]="{ standalone: true }"
           (keyup.enter)="onSearch()"
         />
+        <span
+          class="pi pi-info-circle ml-2"
+          style="color: var(--cor-primaria)"
+          pTooltip="Search by Client BusinessName, Identification, Phone, Email or Role"
+        ></span>
       </span>
-      <span
-        class="pi pi-info-circle"
-        style="color: var(--cor-primaria)"
-        pTooltip="Search by Client BusinessName, Identification, Phone, Email or Role"
-      ></span>
     </div>
   </div>
 </p-card>

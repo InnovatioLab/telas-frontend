@@ -1,14 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { MapsComponent } from '@app/shared/components/maps/maps.component';
-import { PopUpStepAddListComponent } from '@app/shared/components/pop-up-add-list/pop-up-add-list.component';
-import { RodapeComponent } from '@app/shared/components/rodape/rodape.component';
-import { SidebarMapaComponent } from '@app/shared/components/sidebar-mapa/sidebar-mapa.component';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { CommonModule } from "@angular/common";
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
+import { RouterModule } from "@angular/router";
+import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
+import { MapPoint } from "@app/core/service/state/map-point.interface";
+import { ToastService } from "@app/core/service/state/toast.service";
+import { MapsComponent } from "@app/shared/components/maps/maps.component";
+import { PopUpStepAddListComponent } from "@app/shared/components/pop-up-add-list/pop-up-add-list.component";
+import { SidebarMapaComponent } from "@app/shared/components/sidebar-mapa/sidebar-mapa.component";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
 
 @Component({
   selector: "feat-client-view",
@@ -19,7 +25,6 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
     PrimengModule,
     MapsComponent,
     SidebarMapaComponent,
-    RodapeComponent,
     PopUpStepAddListComponent,
   ],
   templateUrl: "./client-view.component.html",
@@ -38,8 +43,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     public readonly mapsService: GoogleMapsService,
     private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     console.log("[ClientViewComponent] ngOnInit: Initializing component.");
