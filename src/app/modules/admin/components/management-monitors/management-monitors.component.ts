@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import {
   ChangeDetectorRef,
   Component,
+  ElementRef,
   NgZone,
   OnInit,
   ViewChild,
@@ -28,6 +29,7 @@ import { OrderListModule } from "primeng/orderlist";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { CreateMonitorModalComponent } from "../create-monitor-modal/create-monitor-modal.component";
 import { EditMonitorModalComponent } from "../edit-monitor-modal/edit-monitor-modal.component";
+import { CdkDragPlaceholder } from "@angular/cdk/drag-drop";
 
 interface Ad {
   id: string;
@@ -50,7 +52,8 @@ interface Ad {
     GalleriaModule,
     OrderListModule,
     ProgressSpinnerModule,
-  ],
+    CdkDragPlaceholder
+],
   templateUrl: "./management-monitors.component.html",
   styleUrls: ["./management-monitors.component.scss"],
 })
@@ -58,6 +61,8 @@ export class ManagementMonitorsComponent implements OnInit {
   @ViewChild("createMonitorModal")
   createMonitorModal!: CreateMonitorModalComponent;
   @ViewChild("editMonitorModal") editMonitorModal!: EditMonitorModalComponent;
+  @ViewChild("fileInput") fileInput!: ElementRef;
+
   monitors: Monitor[] = [];
   selectedMonitorForAds: Monitor | null = null;
   selectedMonitorForEdit: Monitor | null = null;
@@ -90,6 +95,8 @@ export class ManagementMonitorsComponent implements OnInit {
     sortDir: "desc",
   };
   selectedAdIndex: number = 0;
+
+  acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff";
 
   constructor(
     private readonly monitorService: MonitorService,
@@ -609,7 +616,7 @@ export class ManagementMonitorsComponent implements OnInit {
         this.advertisements = (response.content || []).map((adDto) => ({
           id: adDto.id,
           title: `Advertisement ${adDto.id}`,
-          description: `Advertisement submitted on ${adDto.submissionDate}`,
+          description: `Ad submitted on ${adDto.submissionDate}`,
           status: this.convertValidationTypeToStatus(adDto.validation),
           clientId: "",
           clientName: "",
@@ -625,8 +632,8 @@ export class ManagementMonitorsComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error("Error loading advertisements:", error);
-        this.toastService.erro("Failed to load advertisements");
+        console.error("Error loading ads:", error);
+        this.toastService.erro("Failed to load ads");
         this.loading = false;
       },
     });
@@ -637,7 +644,7 @@ export class ManagementMonitorsComponent implements OnInit {
     this.selectedFile = null;
     this.newAd = { name: "", type: "", bytes: "" };
     this.uploadAdPreview = null;
-    this.showCreateAdModal = true;
+    this.fileInput.nativeElement.click();
   }
 
   onFileSelected(event: any): void {
@@ -654,6 +661,7 @@ export class ManagementMonitorsComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
+    this.showCreateAdModal = true;
   }
 
   createAdvertisement(): void {
@@ -674,12 +682,12 @@ export class ManagementMonitorsComponent implements OnInit {
       next: () => {
         this.loadingCreateAd = false;
         this.showCreateAdModal = false;
-        this.toastService.sucesso("Advertisement created successfully");
+        this.toastService.sucesso("Ads created successfully");
         this.closeAdsModal();
       },
       error: () => {
         this.loadingCreateAd = false;
-        this.toastService.erro("Failed to create advertisement");
+        this.toastService.erro("Failed to create ad");
       },
     });
   }

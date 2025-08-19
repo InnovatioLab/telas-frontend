@@ -185,13 +185,15 @@ export class ManagementClientsComponent implements OnInit {
           {
             data: { client: fullClient },
             header: "Edit Client",
-            width: "900px",
+
             contentStyle: {
               "max-height": "90vh",
               overflow: "auto",
               padding: "0",
               display: "flex",
               "flex-direction": "column",
+              width: "98vw",
+              "max-width": "800px",
             },
             baseZIndex: 10000,
           }

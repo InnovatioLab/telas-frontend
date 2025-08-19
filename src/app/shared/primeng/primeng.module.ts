@@ -1,7 +1,6 @@
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { AccordionModule } from "primeng/accordion";
-import { MessageService } from "primeng/api";
 import { AutoCompleteModule } from "primeng/autocomplete";
 import { AvatarModule } from "primeng/avatar";
 import { BadgeModule } from "primeng/badge";
@@ -29,9 +28,11 @@ import { InputMaskModule } from "primeng/inputmask";
 import { InputNumberModule } from "primeng/inputnumber";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { InputTextModule } from "primeng/inputtext";
+import { KeyFilterModule } from "primeng/keyfilter";
 import { ListboxModule } from "primeng/listbox";
 import { MenuModule } from "primeng/menu";
 import { MenubarModule } from "primeng/menubar";
+import { MessageModule } from "primeng/message";
 import { MessagesModule } from "primeng/messages";
 import { MultiSelectModule } from "primeng/multiselect";
 import { OverlayPanelModule } from "primeng/overlaypanel";
@@ -53,7 +54,6 @@ import { TableModule } from "primeng/table";
 import { TabViewModule } from "primeng/tabview";
 import { ToastModule } from "primeng/toast";
 import { TooltipModule } from "primeng/tooltip";
-import { MessageModule } from "primeng/message";
 
 interface PrimeDomHandlerType {
   zindex: number;
@@ -118,6 +118,7 @@ interface PrimeDomHandlerType {
     SelectModule,
     DrawerModule,
     MessageModule,
+    KeyFilterModule,
   ],
 })
 export class PrimengModule {

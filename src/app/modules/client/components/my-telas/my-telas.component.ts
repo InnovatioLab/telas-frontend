@@ -641,11 +641,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
 
     // Se tem ads, só pode criar se tiver exatamente 1 ad com status REJECTED
-    if (
-      this.ads.length > 0 &&
-      this.ads.some((ad) => ad.validation === "REJECTED")
-    ) {
-      return true;
+    if (this.ads.length > 0) {
+      return this.ads.some((ad) => ad.validation === "REJECTED");
     }
 
     return this.authenticatedClient.adRequest !== null ? false : true;

@@ -1,0 +1,389 @@
+<div class="edit-client-modal w-full">
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+    <div class="form-content">
+      <div class="form-section">
+        <h4>Business Information</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="businessName" class="required">Business Name</label>
+            <input
+              id="businessName"
+              type="text"
+              pInputText
+              maxlength="100"
+              formControlName="businessName"
+              placeholder="Enter business name"
+              [class.ng-invalid]="
+                editForm.get('businessName')?.invalid &&
+                editForm.get('businessName')?.touched
+              "
+            />
+            <small
+              class="error-message"
+              *ngIf="
+                editForm.get('businessName')?.invalid &&
+                editForm.get('businessName')?.touched
+              "
+            >
+              Business name is required
+            </small>
+          </div>
+          <div class="form-field">
+            <label for="identificationNumber" class="required"
+              >Identification Number</label
+            >
+            <p-inputMask
+              id="identificationNumber"
+              mask="999999999"
+              autoClear="false"
+              formControlName="identificationNumber"
+              placeholder="Enter identification number"
+              [class.ng-invalid]="
+                editForm.get('identificationNumber')?.invalid &&
+                editForm.get('identificationNumber')?.touched
+              "
+            />
+            <small
+              class="error-message"
+              *ngIf="
+                editForm.get('identificationNumber')?.invalid &&
+                editForm.get('identificationNumber')?.touched
+              "
+            >
+              Identification number is required
+            </small>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="industry" class="required">Industry</label>
+            <input
+              id="industry"
+              type="text"
+              pInputText
+              formControlName="industry"
+              maxlength="50"
+              placeholder="Enter industry"
+              [class.ng-invalid]="
+                editForm.get('industry')?.invalid &&
+                editForm.get('industry')?.touched
+              "
+            />
+            <small
+              class="error-message"
+              *ngIf="
+                editForm.get('industry')?.invalid &&
+                editForm.get('industry')?.touched
+              "
+            >
+              Industry is required
+            </small>
+          </div>
+          <div class="form-field">
+            <label for="websiteUrl">Website URL</label>
+            <input
+              id="websiteUrl"
+              type="url"
+              maxlength="200"
+              pInputText
+              formControlName="websiteUrl"
+              placeholder="Enter website URL"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>Contact Information</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="contactEmail" class="required">Email</label>
+            <input
+              id="contactEmail"
+              type="email"
+              pInputText
+              formControlName="contactEmail"
+              placeholder="Enter contact email"
+              maxLength="255"
+              [class.ng-invalid]="
+                editForm.get('contactEmail')?.invalid &&
+                editForm.get('contactEmail')?.touched
+              "
+            />
+            <small
+              class="error-message"
+              *ngIf="
+                editForm.get('contactEmail')?.invalid &&
+                editForm.get('contactEmail')?.touched
+              "
+            >
+              Valid contact email is required
+            </small>
+          </div>
+          <div class="form-field">
+            <label for="contactPhone" class="required">Phone</label>
+            <p-inputMask
+              id="contactPhone"
+              mask="+1 999 999 9999"
+              class="w-full"
+              formControlName="contactPhone"
+              placeholder="Enter contact phone"
+              [class.ng-invalid]="
+                editForm.get('contactPhone')?.invalid &&
+                editForm.get('contactPhone')?.touched
+              "
+            />
+            <small
+              class="error-message"
+              *ngIf="
+                editForm.get('contactPhone')?.invalid &&
+                editForm.get('contactPhone')?.touched
+              "
+            >
+              Contact phone is required
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>Owner Information</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="ownerFirstName" class="required">First Name</label>
+            <input
+              id="ownerFirstName"
+              type="text"
+              pInputText
+              formControlName="ownerFirstName"
+              placeholder="Enter first name"
+              [class.ng-invalid]="
+                editForm.get('ownerFirstName')?.invalid &&
+                editForm.get('ownerFirstName')?.touched
+              "
+            />
+            <small
+              class="error-message"
+              *ngIf="
+                editForm.get('ownerFirstName')?.invalid &&
+                editForm.get('ownerFirstName')?.touched
+              "
+            >
+              First name is required
+            </small>
+          </div>
+          <div class="form-field">
+            <label for="ownerLastName">Last Name</label>
+            <input
+              id="ownerLastName"
+              type="text"
+              pInputText
+              formControlName="ownerLastName"
+              placeholder="Enter last name"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="ownerEmail" class="required">Email</label>
+            <input
+              id="ownerEmail"
+              type="email"
+              pInputText
+              formControlName="ownerEmail"
+              placeholder="Enter email"
+              maxLength="255"
+              [class.ng-invalid]="
+                editForm.get('ownerEmail')?.invalid &&
+                editForm.get('ownerEmail')?.touched
+              "
+            />
+            <small
+              class="error-message"
+              *ngIf="
+                editForm.get('ownerEmail')?.invalid &&
+                editForm.get('ownerEmail')?.touched
+              "
+            >
+              Valid email is required
+            </small>
+          </div>
+          <div class="form-field">
+            <label for="ownerPhone" class="required">Phone</label>
+            <p-inputMask
+              id="ownerPhone"
+              mask="+1 999 999 9999"
+              class="w-full"
+              formControlName="ownerPhone"
+              placeholder="Enter phone number"
+              [class.ng-invalid]="
+                editForm.get('ownerPhone')?.invalid &&
+                editForm.get('ownerPhone')?.touched
+              "
+            />
+            <small
+              class="error-message"
+              *ngIf="
+                editForm.get('ownerPhone')?.invalid &&
+                editForm.get('ownerPhone')?.touched
+              "
+            >
+              Phone number is required
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>Status</h4>
+        <div class="form-row status-row">
+          <div class="form-field full-width">
+            <label for="status">Status</label>
+            <p-dropdown
+              id="status"
+              [options]="statusOptions"
+              formControlName="status"
+              placeholder="Select status"
+              optionLabel="label"
+              optionValue="value"
+              [style.max-width.px]="150"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>Addresses</h4>
+        <div class="addresses-container">
+          <div
+            class="address-item"
+            *ngFor="let address of addresses; let i = index"
+          >
+            <div class="address-header">
+              <h5>Address {{ i + 1 }}</h5>
+              <button
+                type="button"
+                class="remove-address-btn"
+                (click)="removeAddress(i)"
+                *ngIf="addresses.length > 1"
+              >
+                <app-icon-close></app-icon-close>
+              </button>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="required">Street</label>
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="address.street"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Enter street"
+                  maxlength="100"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="required">City</label>
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="address.city"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Enter city"
+                  maxlength="50"
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label class="required">State</label>
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="address.state"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Enter state"
+                  minlingth="2"
+                  maxlength="2"
+                />
+              </div>
+              <div class="form-field">
+                <label class="required">Zipcode</label>
+                <p-inputMask
+                  mask="99999"
+                  [(ngModel)]="address.zipCode"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Enter ZIP code"
+                  (ngModelChange)="onZipCodeChange(address, $event)"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Country</label>
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="address.country"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Enter country"
+                  maxlength="100"
+                  uiTextOnly
+                />
+              </div>
+              <div class="form-field">
+                <label>Complement</label>
+                <input
+                  type="text"
+                  pInputText
+                  [(ngModel)]="address.complement"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Enter complement"
+                  maxlength="100"
+                />
+              </div>
+            </div>
+            <div class="form-row"></div>
+          </div>
+
+          <div class="add-address-btn">
+            <button
+              type="button"
+              class="p-button p-button-secondary p-button-outlined"
+              (click)="addAddress()"
+            >
+              <app-icon-upload></app-icon-upload>
+              <span>Add Address</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        pButton
+        id="btnSecundario"
+        type="button"
+        class="p-button p-button-secondary p-button-outlined"
+        (click)="onCancel()"
+      >
+        <app-icon-close></app-icon-close>
+        <span>Cancel</span>
+      </button>
+      <button
+        pButton
+        type="submit"
+        class="p-button-rounded"
+        [disabled]="editForm.invalid || loading"
+        [class.p-button-loading]="loading"
+      >
+        <app-icon-check></app-icon-check>
+        <span>Save Changes</span>
+      </button>
+    </div>
+  </form>
+</div>

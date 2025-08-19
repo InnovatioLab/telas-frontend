@@ -1,6 +1,6 @@
 <div class="create-monitor-modal">
   <div class="modal-header">
-    <h2>Create New Monitor</h2>
+    <h2>Create Screen</h2>
     <button
       pButton
       pRipple
@@ -12,7 +12,7 @@
 
   <form [formGroup]="monitorForm" (ngSubmit)="submit()" class="modal-content">
     <div class="form-section p-0">
-      <h3>Monitor Information</h3>
+      <h3>Screen Info</h3>
 
       <div class="form-row">
         <div class="form-field">
@@ -65,6 +65,7 @@
                 formControlName="zipCode"
                 placeholder="Enter 5-digit zip code"
                 maxlength="5"
+                pKeyFilter="int"
               />
               <i
                 *ngIf="loadingZipCode"
@@ -178,7 +179,7 @@
         pButton
         pRipple
         type="submit"
-        label="Create Monitor"
+        label="Create Screen"
         [disabled]="monitorForm.invalid"
       ></button>
     </div>

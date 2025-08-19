@@ -1616,29 +1616,38 @@ textarea {
       background-color: transparent;
 
       &.p-button-success {
-        color: var(--cor-sucesso);
+        color: var(--cor-sucesso) !important;
 
         &:active:hover {
-          background-color: rgba(40, 167, 69, 0.1);
+          background-color: rgba(40, 167, 69, 0.1) !important;
         }
       }
 
       &.p-button-danger {
-        color: var(--cor-erro);
+        color: var(--cor-erro) !important;
 
         &:active:hover {
-          background-color: rgba(220, 53, 69, 0.1);
+          background-color: rgba(220, 53, 69, 0.1) !important;
         }
       }
 
       &.upgrade-button {
-        color: #ffc107;
+        color: #ffc107 !important;
 
         &:hover {
-          background-color: rgba(255, 193, 7, 0.377);
+          background-color: rgba(255, 193, 7, 0.377) !important;
         }
       }
     }
+  }
+}
+
+.btn-danger {
+  color: var(--cor-branca) !important;
+  background-color: var(--cor-erro) !important;
+
+  &:active:hover {
+    background-color: rgba(220, 53, 69, 0.1) !important;
   }
 }
 
