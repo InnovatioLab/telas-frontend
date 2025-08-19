@@ -1,13 +1,14 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
+import { RouterModule } from "@angular/router";
 import { LayoutService } from "@app/core/service/state/layout.service";
 
 @Component({
   selector: "app-content-wrapper",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
-    <div
+    <main
       class="content-wrapper"
       [ngClass]="{
         'menu-active': isMenuOpen(),
@@ -16,26 +17,57 @@ import { LayoutService } from "@app/core/service/state/layout.service";
       }"
       [style.padding-left.px]="contentPadding()"
     >
-      <ng-content></ng-content>
-    </div>
+      <div class="content-container">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
   `,
   styles: [
     `
       .content-wrapper {
         min-height: 100vh;
+        margin-top: 2rem;
         transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background-color: var(--cor-branca);
+        box-sizing: border-box;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
 
-        &.menu-active {
-          padding-left: 200px;
+      .content-container {
+        flex: 1;
+        padding: 2rem;
+        padding-top: 3rem;
+        max-width: 1600px;
+        margin: 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+      }
 
-          &.mobile {
-            padding-left: 150px !important;
-          }
+      .content-wrapper.menu-active {
+        padding-left: 200px;
+      }
 
-          &.mobile-compact {
-            padding-left: 70px !important;
-          }
+      .content-wrapper.menu-active.mobile {
+        padding-left: 150px !important;
+      }
+
+      .content-wrapper.menu-active.mobile-compact {
+        padding-left: 70px !important;
+      }
+
+      @media (max-width: 768px) {
+        .content-container {
+          padding: 1.5rem;
+          padding-top: 3rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .content-container {
+          padding: 1rem;
+          padding-top: 3rem;
         }
       }
     `,

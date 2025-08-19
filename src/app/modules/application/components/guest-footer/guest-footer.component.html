@@ -1,14 +1,18 @@
-<footer id="contact" class="footer-bg text-white py-16">
-  <div class="container px-4">
+<footer id="contact" class="footer-bg text-white py-3 rodape-container">
+  <div class="px-4">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="flex items-center space-x-3 mb-6">
-          <app-icon-tv-display class="text-primary-light" width="32" height="32"></app-icon-tv-display>
+        <div class="flex items-center gap-2 mb-3">
+          <app-icon-tv-display
+            class="text-primary-light"
+            width="32"
+            height="32"
+          ></app-icon-tv-display>
           <h3 class="text-2xl font-bold">Telas</h3>
         </div>
-        <p class="text-gray-300 mb-6">
-          The leading platform for digital advertising on location-based screens.
-          Connect with your audience where it matters most.
+        <p class="text-gray-300 mb-3">
+          The leading platform for digital advertising on location-based
+          screens. Connect with your audience where it matters most.
         </p>
         <div class="flex space-x-4">
           <a class="social-icon" href="#" aria-label="Facebook">
@@ -23,17 +27,8 @@
         </div>
       </div>
       <div>
-        <h4 class="text-lg font-semibold mb-6">Platform</h4>
-        <ul class="space-y-3">
-          <li><a href="#how-it-works" class="footer-link">How It Works</a></li>
-          <li><a href="#features" class="footer-link">Features</a></li>
-          <li><a href="/login" class="footer-link">Login</a></li>
-          <li><a href="/register" class="footer-link">Sign Up</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-lg font-semibold mb-6">Support</h4>
-        <ul class="space-y-3">
+        <h4 class="text-lg font-semibold mb-3">Support</h4>
+        <ul class="flex flex-column gap-2">
           <li><a href="#" class="footer-link">Help Center</a></li>
           <li><a href="#" class="footer-link">Documentation</a></li>
           <li><a href="#" class="footer-link">Privacy Policy</a></li>
@@ -41,26 +36,36 @@
         </ul>
       </div>
       <div>
-        <h4 class="text-lg font-semibold mb-6">Contact</h4>
+        <h4 class="text-lg font-semibold mb-3">Contact</h4>
         <div class="space-y-4">
-          <div class="flex items-center space-x-3">
-            <app-icon-mail class="text-primary-light" width="20" height="20"></app-icon-mail>
-            <span class="text-gray-300">email</span>
+          <div class="flex items-center gap-2">
+            <app-icon-mail
+              class="text-primary-light"
+              width="20"
+              height="20"
+            ></app-icon-mail>
+            <a
+              href="mailto:support&#64;telas-ads.com"
+              aria-label="Email support at Telas"
+              style="text-decoration: none"
+              >support&#64;telas-ads.com</a
+            >
           </div>
-          <div class="flex items-center space-x-3">
-            <app-icon-phone class="text-primary-light" width="20" height="20"></app-icon-phone>
-            <span class="text-gray-300">+1 (555) 123-4567</span>
-          </div>
-          <div class="flex items-center space-x-3">
-            <app-icon-map-marker class="text-primary-light" width="20" height="20"></app-icon-map-marker>
-            <span class="text-gray-300">San Francisco, CA</span>
+          <div class="flex items-center gap-2">
+            <app-icon-phone
+              class="text-primary-light"
+              width="20"
+              height="20"
+            ></app-icon-phone>
+            <span>+1 (555) 123-4567</span>
           </div>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="text-gray-300">
-        © 2024 Telas. All rights reserved. Connecting businesses with digital advertising opportunities.
+      <p class="mb-0 font-semibold">
+        © 2024 Telas. All rights reserved. Connecting businesses with digital
+        advertising opportunities.
       </p>
     </div>
   </div>

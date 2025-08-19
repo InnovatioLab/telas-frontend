@@ -6,32 +6,30 @@
   overflow-x: hidden;
 }
 
-main {
-  min-height: 100vh;
-  padding-top: 70px; // Para compensar o header fixo
-  box-sizing: border-box;
-  flex: 1;
-}
-
 app-header {
   width: 100%;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 1000;
   height: 70px;
 }
 
-// Estilos responsivos para o conteúdo
-@media (max-width: 768px) {
-  main {
-    padding-top: 60px;
-  }
+app-menu {
+  position: relative;
+  z-index: 1001;
+  height: 100vh;
 }
 
-@media (max-width: 480px) {
-  main {
-    padding-top: 50px;
-  }
+app-alert-admin-sidebar {
+  position: absolute;
+  top: 70px;
+  right: 0;
+  height: calc(100vh - 70px);
+  z-index: 998;
+}
+
+app-content-wrapper {
+  flex: 1;
+  margin-left: 0;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

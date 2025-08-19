@@ -1,18 +1,27 @@
-main {
-  min-height: 100vh;
-  padding-top: 70px; // Para compensar o header fixo
-  box-sizing: border-box;
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
-// Estilos responsivos para o conteúdo
-@media (max-width: 768px) {
-  main {
-    padding-top: 60px;
-  }
+app-header {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 70px;
 }
 
-@media (max-width: 480px) {
-  main {
-    padding-top: 50px;
-  }
+app-menu {
+  position: relative;
+  z-index: 1001;
+  height: 100vh;
+}
+
+app-content-wrapper {
+  flex: 1;
+  margin-left: 0;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 } 

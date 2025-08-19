@@ -10,13 +10,13 @@ import { ManagementSubscriptionsComponent } from "./components/management-subscr
 import { MyTelasComponent } from "./components/my-telas/my-telas.component";
 import { ViewEditProfileComponent } from "./components/view-edit-profile/view-edit-profile.component";
 import { WishListComponent } from "./components/wish-list/wish-list.component";
-import { ClientLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
+import { ClientViewLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
 import { SettingsLayoutComponent } from "./page/settings/settings-layout.component";
 
 export const ROUTES: Route[] = [
   {
     path: "",
-    component: ClientLayoutComponent,
+    component: ClientViewLayoutComponent,
     canActivate: [ClientAuthenticatedGuard],
     children: [
       {
