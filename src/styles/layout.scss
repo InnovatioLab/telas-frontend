@@ -1,30 +1,28 @@
-// Estilos globais para o layout responsivo
-body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-  overflow-x: hidden;
-  
-  &.menu-open {
-    overflow: hidden;
-  }
-}
-
 .content-wrapper {
   transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 100vh;
-  
+
   &.menu-active {
     padding-left: 200px;
   }
-  
+
   &.mobile {
     padding-left: 0 !important;
   }
-  
+
   &.mobile-compact {
     padding-left: 70px !important;
   }
+}
+
+// Garantir que o layout principal ocupe toda a altura quando necessário
+html,
+body {
+  height: 100%;
+}
+
+// Prevenir problemas de layout em mobile
+* {
+  -webkit-overflow-scrolling: touch;
 }
 
 // Responsividade
@@ -33,7 +31,7 @@ body {
     &.menu-active {
       padding-left: 200px !important;
     }
-    
+
     &.mobile-compact {
       padding-left: 70px !important;
     }

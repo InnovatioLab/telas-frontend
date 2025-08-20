@@ -25,26 +25,21 @@ import { LayoutService } from "@app/core/service/state/layout.service";
   styles: [
     `
       .content-wrapper {
-        height: 100vh;
+        width: 100%;
         transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background-color: var(--cor-branca);
         box-sizing: border-box;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
+        min-height: calc(100vh - 70px); /* Header height */
       }
 
       .content-container {
-        flex: 1;
-        padding: 90px 1.5rem 1.5rem 1.5rem;
+        padding: 1.5rem;
         max-width: 1600px;
         margin: 0 auto;
         width: 100%;
         box-sizing: border-box;
-      }
-
-      .content-wrapper.menu-active {
-        padding-left: 200px;
+        /* Remove altura fixa para permitir altura natural do conteúdo */
+        min-height: inherit;
       }
 
       .content-wrapper.menu-active.mobile {
@@ -53,6 +48,33 @@ import { LayoutService } from "@app/core/service/state/layout.service";
 
       .content-wrapper.menu-active.mobile-compact {
         padding-left: 70px !important;
+      }
+
+      /* Ajustes específicos para mobile */
+      @media screen and (max-width: 768px) {
+        .content-container {
+          padding: 1rem;
+        }
+
+        .content-wrapper {
+          min-height: calc(100vh - 70px);
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .content-container {
+          padding: 0.75rem;
+        }
+
+        .content-wrapper {
+          min-height: calc(100vh - 70px);
+        }
+      }
+
+      /* Previne scroll horizontal */
+      .content-container * {
+        max-width: 100%;
+        box-sizing: border-box;
       }
     `,
   ],
