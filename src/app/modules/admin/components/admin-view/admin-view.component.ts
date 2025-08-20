@@ -27,8 +27,9 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
           #mapsComponent
           [points]="monitors"
           [center]="mapCenter"
-          height="100%"
+          height="88%"
           width="100%"
+          [zoom]="15"
           (markerClicked)="onMarkerClick($event)"
           (mapInitialized)="onMapInitialized($event)"
         >
