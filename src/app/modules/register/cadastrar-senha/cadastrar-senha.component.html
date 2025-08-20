@@ -117,6 +117,7 @@
           pButton
           (click)="salvar()"
           class="w-full md:w-6 btn-fill my-2 justify-content-center"
+          [disabled]="!alterarContatoForm.valid || exibirErroSenhaDiferente()"
         >
           {{ TEXTO_ACAO.salvar }}
         </button>

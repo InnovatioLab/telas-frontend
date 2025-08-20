@@ -9,13 +9,19 @@
   #social-media-input {
     padding: 6px 8px;
     border-radius: var(--borda-raio-pequeno);
-    background-color: var(--cor-cinza);
-    border-color: var(--cor-cinza);
+    background-color: var(--cor-primaria-clara);
+    border-color: var(--cor-primaria-clara);
     transition: var(--transicao-padrao);
 
     &:hover {
-      border-color: var(--cor-primaria-clara) !important;
-      background-color: var(--cor-primaria-clara) !important;
+      opacity: 0.9 !important;
+    }
+  }
+
+  ::ng-deep {
+    .p-button {
+      padding: 6px 8px !important;
+      border-radius: var(--borda-raio-pequeno);
     }
   }
 }

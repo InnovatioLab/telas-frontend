@@ -34,10 +34,10 @@
             [control]="validacaoForm.get('codigo')"
           ></app-error>
         </div>
-        <div class="text-center">
+        <div class="text-center flex justify-content-center align-items-center">
           <button
             pButton
-            class="w-full max-w-12rem my-3 justify-content-center custom-button"
+            class="my-3"
             [disabled]="!validacaoForm.valid"
             (click)="validarCodigo()"
           >
@@ -53,7 +53,7 @@
         <button
           pButton
           (click)="enviarCodigo()"
-          class="w-full max-w-12rem link-text bg-transparent border-0 cursor-pointer resend-button"
+          class="bg-transparent border-0 cursor-pointer resend-button"
           [disabled]="inativarBotaoReenviarCodigo"
         >
           Resend Code

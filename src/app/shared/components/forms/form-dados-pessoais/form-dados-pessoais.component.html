@@ -107,7 +107,7 @@
             type="button"
             pButton
             icon="pi pi-plus"
-            label=""
+            class="icon-button"
             aria-label="Add Social Media"
             (click)="adicionarSocialMedia()"
           ></button>
@@ -116,7 +116,7 @@
             type="button"
             pButton
             icon="pi pi-trash"
-            class="p-button-danger ml-2"
+            class="p-button-danger ml-2 icon-button btn-danger"
             (click)="removerUltimoSocialMedia()"
           ></button>
         </div>
@@ -125,10 +125,10 @@
       <div
         formArrayName="socialMedia"
         *ngFor="let socialMedia of socialMediaArray.controls; let i = index"
-        class="col-12"
+        class="col-12 md:col-6 lg:col-3"
       >
         <div [formGroupName]="i" class="grid">
-          <div class="col-6">
+          <div class="col-12 md:col-6 lg:col-3">
             <p-dropdown
               [options]="socialMediaOptions"
               formControlName="platform"
@@ -143,7 +143,7 @@
               [control]="socialMedia.get('platform')"
             ></app-error>
           </div>
-          <div class="col-6">
+          <div class="col-12 md:col-6 lg:col-3">
             <input
               type="url"
               pInputText

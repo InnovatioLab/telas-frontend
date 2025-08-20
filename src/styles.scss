@@ -2093,7 +2093,8 @@ label.required::after {
 }
 
 .p-button:not(.icon-button) {
-  width: auto !important;
+  width: auto;
+  min-width: 100px !important;
   flex: 1 !important;
   border-radius: var(--borda-raio-pequeno);
   padding: 1rem !important;

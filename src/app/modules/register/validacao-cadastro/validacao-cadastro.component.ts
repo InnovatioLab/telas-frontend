@@ -1,18 +1,18 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
-import { ClientService } from '@app/core/service/api/client.service';
-import { Authentication } from '@app/core/service/auth/autenthication';
-import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
-import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CadastrarSenhaComponent } from '../cadastrar-senha/cadastrar-senha.component';
-import { TermosComponent } from '../termos-condicoes/termos.component';
+import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
+import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { ClientService } from "@app/core/service/api/client.service";
+import { Authentication } from "@app/core/service/auth/autenthication";
+import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
+import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from "@app/utility/src";
+import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { CadastrarSenhaComponent } from "../cadastrar-senha/cadastrar-senha.component";
+import { TermosComponent } from "../termos-condicoes/termos.component";
 
 @Component({
   selector: "feat-validacao-cadastro",
@@ -44,7 +44,6 @@ export class ValidacaoCadastroComponent implements OnInit {
   constructor(
     private readonly activatedRoute: ActivatedRoute,
     private readonly formBuilder: FormBuilder,
-    private readonly router: Router,
     private readonly service: ClientService,
     private readonly dialogService: DialogService,
     private readonly authService: AutenticacaoService,
@@ -115,7 +114,6 @@ export class ValidacaoCadastroComponent implements OnInit {
         password: senha,
       })
       .subscribe(() => {
-        this.authentication.pegarDadosAutenticado();
         this.exibirTermos = true;
       });
   }

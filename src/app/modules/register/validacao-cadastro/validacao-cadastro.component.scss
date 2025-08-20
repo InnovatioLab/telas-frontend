@@ -1,10 +1,3 @@
-label {
-  margin-left: 10px;
-  &.required::after {
-    content: " *";
-  }
-}
-
 :host ::ng-deep {
   .validacao-cadastro {
     .card .p-card .p-card-body,
@@ -12,10 +5,10 @@ label {
     .card .p-card .p-card-content {
       border-radius: 35px;
       color: var(--cor-primaria);
+      // height: 95%;
     }
 
     .input-form {
-      height: 48px;
       border-radius: 10px !important;
     }
 
@@ -27,6 +20,8 @@ label {
 
     .resend-button {
       background-color: var(--cor-primaria) !important;
+      width: 100% !important;
+      max-width: 200px;
     }
   }
 }
