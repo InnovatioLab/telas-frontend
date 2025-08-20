@@ -21,7 +21,6 @@
 @media screen and (max-width: 600px) {
   .search-container-desktop,
   .search-container {
-    // justify-self: flex-end;
 
     &.menu-open-small-mobile {
       margin-left: 50px;
@@ -487,9 +486,7 @@
   .mobile-header {
     display: none;
   }
-}
 
-@media screen and (min-width: 769px) {
   ::ng-deep {
     .container-header-content {
       position: fixed;

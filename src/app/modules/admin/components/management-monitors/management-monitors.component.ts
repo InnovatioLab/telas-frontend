@@ -354,15 +354,13 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   openAdsModal(monitor: Monitor): void {
-    console.log("Abrindo modal de gerenciamento de ads para monitor:", monitor);
-    this.selectedMonitorForAds = { ...monitor };
+    this.selectedMonitorForAds = monitor;
     this.orderedAdLinks = [];
     this.galleryImages = [];
     this.selectedAdIndex = 0;
     this.adsModalVisible = true;
     this.isAdsLoading = true;
     this.loadValidAds(monitor.id);
-    console.log("adsModalVisible após abrir:", this.adsModalVisible);
   }
 
   loadValidAds(monitorId: string): void {
@@ -455,70 +453,27 @@ export class ManagementMonitorsComponent implements OnInit {
         orderIndex: idx + 1,
       }));
 
-      const address = this.selectedMonitorForAds.address || {};
       const payload = {
         size: this.selectedMonitorForAds.size,
-        addressId: address.id,
-        address: {
-          id: address.id,
-          street: address.street || "",
-          zipCode: address.zipCode || "",
-          city: address.city || "",
-          state: address.state || "",
-          country: address.country || "",
-          complement: address.complement || "",
-          latitude:
-            typeof address.latitude === "string"
-              ? parseFloat(address.latitude)
-              : (address.latitude ?? 0),
-          longitude:
-            typeof address.longitude === "string"
-              ? parseFloat(address.longitude)
-              : (address.longitude ?? 0),
-        },
+        addressId: this.selectedMonitorForAds.address.id,
         locationDescription: this.selectedMonitorForAds.locationDescription,
         type: this.selectedMonitorForAds.type,
         active: this.selectedMonitorForAds.active,
         ads,
       };
 
-      console.log("Iniciando saveAdOrder para monitor:", monitorId);
-
       this.monitorService.updateMonitor(monitorId, payload).subscribe({
         next: (response: any) => {
-          console.log("Save order sucesso, fechando modal...");
-          this.toastService.sucesso("Ad order saved!");
-
-          this.closeAdsModal();
-
-          setTimeout(() => {
-            if (this.adsModalVisible) {
-              console.log("Primeira tentativa falhou, tentando novamente...");
-              this.forceCloseAdsModal();
-            }
-          }, 50);
-
-          setTimeout(() => {
-            if (this.adsModalVisible) {
-              console.log("Segunda tentativa falhou, forçando fechamento...");
-              this.adsModalVisible = false;
-              this.cdr.detectChanges();
-            }
-            this.loadMonitors();
-          }, 150);
+          if (response) {
+            this.toastService.sucesso("Ad order saved!");
+          }
         },
         error: (error) => {
           console.error("Erro no saveAdOrder:", error);
           this.toastService.erro("Failed to save ad order.");
-
+        },
+        complete: () => {
           this.closeAdsModal();
-
-          setTimeout(() => {
-            if (this.adsModalVisible) {
-              console.log("Fechando modal após erro...");
-              this.forceCloseAdsModal();
-            }
-          }, 50);
         },
       });
     }

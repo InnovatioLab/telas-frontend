@@ -32,8 +32,7 @@
         [id]="'menu-item-' + item.id"
         pTooltip="{{ getMenuItemTooltip(item) }}"
         tooltipPosition="right"
-      >
-        <div class="menu-icon">
+      ><div class="menu-icon">
           <ng-container [ngSwitch]="item.icon">
             <app-icon-home *ngSwitchCase="'pi-home'"></app-icon-home>
             <app-icon-favorite *ngSwitchCase="'pi-heart'"></app-icon-favorite>

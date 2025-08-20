@@ -11,7 +11,7 @@
     *ngIf="isMobile"
     [ngClass]="{ 'is-open': isMobileMenuOpen }"
   >
-    <div class="mobile-header-user">
+    <div class="mobile-header-user" *ngIf="!isAdministrador()">
       <div class="mobile-header">
         <div class="header-content">
           <div
@@ -93,14 +93,25 @@
             </div>
 
             <div class="icons-container" *ngIf="isLogado()">
-              <app-icon-tv-display
+              <button
+                pButton
                 (click)="navegarPaginaInicial()"
                 (keydown.enter)="navegarPaginaInicial()"
-                [size]="24"
-                class="imagem-logo"
-                tabindex="0"
-                aria-label="Go to home"
-              ></app-icon-tv-display>
+                *ngIf="!isAdministrador()"
+                class="icon-button"
+                id="test-btn-home"
+                pTooltip="Navegar para Home"
+                tooltipPosition="top"
+              >
+                <app-icon-tv-display
+                  (click)="navegarPaginaInicial()"
+                  (keydown.enter)="navegarPaginaInicial()"
+                  [size]="24"
+                  class="imagem-logo"
+                  tabindex="0"
+                  aria-label="Go to home"
+                ></app-icon-tv-display>
+              </button>
               <button
                 pButton
                 (click)="abrirCheckout()"
@@ -236,7 +247,7 @@
       </div>
     </div>
 
-    <div class="mobile-header-admin">
+    <div class="mobile-header-admin" *ngIf="isAdministrador()">
       <div class="mobile-header">
         <div class="header-content">
           <div

@@ -155,6 +155,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
     ) {
       return ["N/A"];
     }
+
     return subscription.monitors
       .map((monitor) => monitor.addressData)
       .filter((addr) => addr && addr.trim() !== "");
@@ -214,7 +215,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
       );
       return;
     }
-    
+
     this.selectedUpgradeRecurrence = null;
 
     // Show upgrade dialog

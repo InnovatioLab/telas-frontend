@@ -517,13 +517,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     const newIsMobile = window.innerWidth <= 768;
     if (this.isMobile !== newIsMobile) {
       this.isMobile = newIsMobile;
-      // Atualizar isMobileMenuOpen quando o tamanho da tela muda
       this.isMobileMenuOpen = this.menuAberto && this.isMobile;
     }
-  }
-
-  private recriarComponente() {
-    this.cdr.detectChanges();
   }
 
   redirecionarAdministracao() {

@@ -144,15 +144,12 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
         active: formValue.active,
         locationDescription: formValue.locationDescription,
         address: {
-          id: addressValue.id,
           street: addressValue.street,
           city: addressValue.city,
           state: addressValue.state,
           country: addressValue.country,
           zipCode: addressValue.zipCode,
           complement: addressValue.complement ?? null,
-          latitude: addressValue.latitude ?? null,
-          longitude: addressValue.longitude ?? null
         }
       };
 

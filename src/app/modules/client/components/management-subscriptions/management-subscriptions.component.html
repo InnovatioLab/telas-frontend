@@ -9,16 +9,17 @@
         ></app-icon-search>
         <input
           type="text"
-          style="width: 200px"
+          style="width: 250px"
           pInputText
           [(ngModel)]="searchTerm"
           [ngModelOptions]="{ standalone: true }"
           (keyup.enter)="onSearch()"
+          placeholder="Search subscriptions"
         />
         <span
           class="pi pi-info-circle ml-2"
           style="color: var(--cor-primaria)"
-          pTooltip="Search by Status, Recurrence or Monitor Street."
+          pTooltip="Search by Status, Recurrence or Screen Street."
         ></span>
       </span>
     </div>
@@ -45,7 +46,7 @@
 >
   <ng-template pTemplate="header">
     <tr>
-      <th scope="col">Locations</th>
+      <th scope="col">Screens Locations</th>
       <th scope="col" pSortableColumn="status">
         Status <p-sortIcon field="status"></p-sortIcon>
       </th>
@@ -82,10 +83,10 @@
         {{ getRecurrenceLabel(subscription.recurrence) }}
       </td>
       <td>{{ subscription.amount | currency }}</td>
-      <td>{{ subscription.startedAt | date: "shortDate" }}</td>
+      <td>{{ subscription.startedAt | date: "MM/dd/yyyy" }}</td>
       <td>
         {{
-          subscription.endsAt ? (subscription.endsAt | date: "shortDate") : "-"
+          subscription.endsAt ? (subscription.endsAt | date: "MM/dd/yyyy") : "-"
         }}
       </td>
       <td>
@@ -205,7 +206,7 @@
         ></button>
         <button
           pButton
-          label="Confirm Upgrade"
+          label="Confirm"
           severity="primary"
           (click)="confirmUpgrade()"
           [disabled]="!selectedUpgradeRecurrence || loading"

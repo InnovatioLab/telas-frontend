@@ -40,20 +40,23 @@
         </p>
       </div>
 
-      <div class="flex gap-2 flex-column">
+      <div class="flex flex-column">
         <p-card
           *ngFor="let item of cart.items; trackBy: trackByFn"
           class="card-item p-2"
         >
           <div class="item flex cart-item">
-            <div class="item-info flex-grow-1">
+            <div
+              class="item-info flex-grow-1 flex flex-column justify-content-center"
+            >
               <h4 class="item-title">
                 {{ item.addressLocationName || "Screen Title Not Available" }}
               </h4>
-              <div class="location-description">
-                <small>{{
-                  item.locationDescription || "No description available"
-                }}</small>
+              <div
+                class="location-description"
+                *ngIf="item.locationDescription"
+              >
+                <small>{{ item.locationDescription }}</small>
               </div>
               <div class="item-address">
                 <small>Address: {{ item.monitorAddress }}</small>

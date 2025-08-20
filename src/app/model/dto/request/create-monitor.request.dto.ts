@@ -1,6 +1,6 @@
-import { AddressRequestDTO } from "./client-request.dto";
 import { DisplayType } from "@app/model/enums/display-type.enum";
 import { MonitorType } from "@app/model/monitors";
+import { AddressRequestDTO } from "./client-request.dto";
 
 export interface CreateMonitorRequestDto {
   size: number;
@@ -11,16 +11,13 @@ export interface CreateMonitorRequestDto {
 export interface UpdateMonitorRequestDto {
   size: number;
   addressId?: string;
-  address: {
-    id?: string;
+  address?: {
     street: string;
     zipCode: string;
     city: string;
     state: string;
     country: string;
     complement?: string;
-    latitude?: number;
-    longitude?: number;
   };
   locationDescription?: string;
   type: MonitorType;
