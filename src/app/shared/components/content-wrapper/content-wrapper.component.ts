@@ -25,7 +25,8 @@ import { LayoutService } from "@app/core/service/state/layout.service";
   styles: [
     `
       .content-wrapper {
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background-color: var(--cor-branca);
         box-sizing: border-box;
@@ -36,12 +37,14 @@ import { LayoutService } from "@app/core/service/state/layout.service";
 
       .content-container {
         flex: 1;
-        padding: 1.5rem;
-        padding-top: 90px;
+        padding: 90px 1.5rem 1.5rem 1.5rem;
         max-width: 1600px;
         margin: 0 auto;
         width: 100%;
+        height: 100%;
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
       }
 
       .content-wrapper.menu-active {

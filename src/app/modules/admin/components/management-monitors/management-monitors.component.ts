@@ -29,7 +29,6 @@ import { OrderListModule } from "primeng/orderlist";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { CreateMonitorModalComponent } from "../create-monitor-modal/create-monitor-modal.component";
 import { EditMonitorModalComponent } from "../edit-monitor-modal/edit-monitor-modal.component";
-import { CdkDragPlaceholder } from "@angular/cdk/drag-drop";
 
 interface Ad {
   id: string;
@@ -52,8 +51,7 @@ interface Ad {
     GalleriaModule,
     OrderListModule,
     ProgressSpinnerModule,
-    CdkDragPlaceholder
-],
+  ],
   templateUrl: "./management-monitors.component.html",
   styleUrls: ["./management-monitors.component.scss"],
 })

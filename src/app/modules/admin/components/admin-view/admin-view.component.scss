@@ -14,6 +14,7 @@
   border-radius: var(--borda-raio-pequeno);
   box-shadow: var(--sombra-padrao);
   margin: 1rem;
+  box-sizing: border-box;
 }
 
 .admin-header {

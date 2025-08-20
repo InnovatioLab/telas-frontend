@@ -1,29 +1,31 @@
 <app-sidebar-mapa></app-sidebar-mapa>
 
-<div class="map-container">
-  <div *ngIf="isLoading" class="map-loading">
-    <p>Loading map, please wait...</p>
-    <div class="loading-spinner"></div>
+<div class="client-view">
+  <div class="map-container">
+    <div *ngIf="isLoading" class="map-loading">
+      <p>Loading map, please wait...</p>
+      <div class="loading-spinner"></div>
+    </div>
+
+    <app-maps
+      #mapsComponent
+      height="88%"
+      width="100%"
+      (pointClick)="handlePointClick($event)"
+      (markerClicked)="handleMarkerClick($event)"
+      (mapInitialized)="onMapInitialized()"
+      (mapReady)="onMapReady()"
+      (mapError)="onMapError($event)"
+    >
+    </app-maps>
   </div>
-  
-  <app-maps 
-    #mapsComponent
-    [zoom]="15" 
-    height="95vh" 
-    width="100%" 
-    (pointClick)="handlePointClick($event)"
-    (markerClicked)="handleMarkerClick($event)"
-    (mapInitialized)="onMapInitialized()"
-    (mapReady)="onMapReady()"
-    (mapError)="onMapError($event)">
-  </app-maps>
+
+  <app-pop-up-add-list
+    [(visible)]="showPointMenu"
+    [position]="menuPosition"
+    [selectedPoint]="selectedPoint"
+    (detailsClicked)="showPointDetails($event)"
+    (addToListClicked)="addPointToList($event)"
+  >
+  </app-pop-up-add-list>
 </div>
-
-<app-pop-up-add-list 
-  [(visible)]="showPointMenu" 
-  [position]="menuPosition" 
-  [selectedPoint]="selectedPoint"
-  (detailsClicked)="showPointDetails($event)"
-  (addToListClicked)="addPointToList($event)">
-</app-pop-up-add-list>
-

@@ -3,7 +3,7 @@
   flex-direction: column;
   width: 100%;
   max-width: 100%;
-  height: 100vh;
+  height: 100%;
   transition: var(--transicao-padrao);
   box-sizing: border-box;
   overflow-x: hidden;
@@ -22,7 +22,7 @@
     overflow: hidden;
     box-shadow: var(--sombra-padrao);
     width: 100%;
-    height: 100vh;
+    height: 100%;
     transition: var(--transicao-padrao);
     box-sizing: border-box;
     flex: 1;
@@ -31,7 +31,7 @@
       transition: var(--transicao-padrao);
       max-width: 100%;
       box-sizing: border-box;
-      height: 100vh;
+      height: 100%;
       width: 100%;
     }
   }
@@ -83,7 +83,7 @@
       border-radius: 0;
       
       google-map {
-        height: 100vh;
+        height: 100%;
       }
     }
   }
