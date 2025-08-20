@@ -14,7 +14,7 @@
           [maxFileSize]="maxFileSize"
           [auto]="false"
           [multiple]="false"
-          chooseLabel="Select file"
+          chooseLabel="Browse"
           uploadLabel="Upload"
           [disabled]="loading"
         >
@@ -38,7 +38,7 @@
           [customUpload]="true"
           (uploadHandler)="onFileUpload($event)"
           [disabled]="clientAttachments.length >= maxAttachments || loading"
-          chooseLabel="Select files"
+          chooseLabel="Browse"
           uploadLabel="Upload"
           cancelLabel="Cancel"
           [auto]="false"
@@ -236,13 +236,15 @@
             Attachments are optional for creating an AdRequest.
           </p>
         </div>
-        <button
-          pButton
-          label="Request Ad"
-          icon="pi pi-send"
-          (click)="openRequestAdDialog()"
-          [disabled]="loading"
-        ></button>
+        <div class="request-ad-section">
+          <button
+            pButton
+            label="Request Ad"
+            icon="pi pi-send"
+            (click)="openRequestAdDialog()"
+            [disabled]="loading"
+          ></button>
+        </div>
       </div>
 
       <!-- Mensagem quando já tem adRequest ativo -->
@@ -335,7 +337,7 @@
             </div>
           </div>
 
-          <div class="ad-actions w-full">
+          <div class="ad-actions">
             <p-button
               icon="pi pi-eye"
               (onClick)="viewAttachment(ad.link)"
@@ -474,20 +476,23 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <button
-      pButton
-      label="Cancel"
-      id="btnSecundario"
-      (click)="closeRequestAdDialog()"
-      class="p-button-secondary"
-    ></button>
-    <button
-      pButton
-      label="Request Ad"
-      (click)="submitAdRequest()"
-      [disabled]="requestAdForm.invalid || loading"
-      [loading]="loading"
-    ></button>
+    <div class="w-full">
+      <button
+        pButton
+        label="Cancel"
+        id="btnSecundario"
+        (click)="closeRequestAdDialog()"
+        class="p-button-secondary"
+      ></button>
+      <button
+        pButton
+        label="Request Ad"
+        (click)="submitAdRequest()"
+        [disabled]="requestAdForm.invalid || loading"
+        [loading]="loading"
+        class="p-button-primary"
+      ></button>
+    </div>
   </ng-template>
 </p-dialog>
 
@@ -564,18 +569,20 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <button
-      pButton
-      label="Cancel"
-      id="btnSecundario"
-      (click)="closeValidateAdDialog()"
-    ></button>
-    <p-button
-      label="Validate Ad"
-      (onClick)="submitAdValidation()"
-      [disabled]="validateAdForm.invalid || loading"
-      [loading]="loading"
-    >
-    </p-button>
+    <div class="btn-container-responsive">
+      <button
+        pButton
+        label="Cancel"
+        id="btnSecundario"
+        (click)="closeValidateAdDialog()"
+      ></button>
+      <p-button
+        label="Validate Ad"
+        (onClick)="submitAdValidation()"
+        [disabled]="validateAdForm.invalid || loading"
+        [loading]="loading"
+      >
+      </p-button>
+    </div>
   </ng-template>
 </p-dialog>

@@ -1658,7 +1658,6 @@ textarea {
   }
 }
 
-/* Badge Styles */
 .p-badge {
   font-size: var(--fonte-tamanho-pequeno);
   font-weight: var(--fonte-peso-medio);
@@ -2094,16 +2093,16 @@ label.required::after {
 }
 
 .p-button:not(.icon-button) {
-  width: var(--largura-botao-padrao);
-  height: var(--altura-botao);
+  width: auto !important;
+  flex: 1 !important;
   border-radius: var(--borda-raio-pequeno);
-  padding: var(--espacamento-pequeno) var(--espacamento-padrao);
+  padding: 1rem !important;
   font-weight: var(--fonte-peso-semibold);
   background-color: var(--cor-primaria-clara);
   font-size: 1rem !important;
   transition: var(--transicao-padrao) !important;
   border: none !important;
-  max-width: 200px;
+  max-width: 200px !important;
 
   &:disabled {
     background-color: var(--cor-desabilitado);

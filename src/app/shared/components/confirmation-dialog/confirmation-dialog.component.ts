@@ -53,6 +53,7 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
           id="btnSecundario"
           (click)="onCancel()"
           [outlined]="true"
+          style="flex: 1;"
         >
           {{ data.cancelLabel || "Cancel" }}
         </button>
@@ -64,6 +65,7 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
           [ngClass]="{ btnDanger: data.severity === 'error' }"
           id="btnPrimario"
           (click)="onConfirm()"
+          style="flex: 1;"
         >
           {{ data.confirmLabel || "Confirm" }}
         </button>
