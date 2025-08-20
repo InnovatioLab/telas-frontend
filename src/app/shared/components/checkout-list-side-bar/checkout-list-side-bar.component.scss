@@ -238,39 +238,6 @@
     min-width: 140px;
     max-width: 160px;
     height: 40px;
-
-    // // Forçar dropdown para abrir para cima
-    // ::ng-deep {
-    //   .p-dropdown-panel {
-    //     transform-origin: center bottom !important;
-    //     z-index: 99999 !important;
-
-    //     // Garantir que as opções ocupem toda a largura
-    //     .p-dropdown-items {
-    //       width: 100%;
-
-    //       .p-dropdown-item {
-    //         width: 100%;
-    //         padding: 8px 12px;
-    //         white-space: nowrap;
-    //         box-sizing: border-box;
-
-    //         // Garantir que o texto ocupe toda a largura
-    //         .p-dropdown-item-label {
-    //           width: 100%;
-    //           text-align: left;
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-  }
-
-  .checkout-button {
-    flex: 1; // Ocupa o espaço restante
-    height: 40px;
-    min-width: 100px;
-    padding: 8px 16px;
   }
 }
 
