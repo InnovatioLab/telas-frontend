@@ -50,18 +50,18 @@ header {
 }
 
 .btn-outline {
-  border: 1px solid var(--cor-primaria);
+  border: 1px solid var(--cor-primaria-clara);
   background: var(--cor-branca);
-  color: var(--cor-primaria);
+  color: var(--cor-primaria-clara);
 
   app-icon-logout {
-    color: var(--cor-primaria);
+    color: var(--cor-primaria-clara);
     transition: color 0.2s;
   }
 }
 
 .btn-outline:hover {
-  background: var(--cor-primaria);
+  background: var(--cor-primaria-clara);
   color: var(--cor-branca);
 
   app-icon-logout {
@@ -70,13 +70,13 @@ header {
 }
 
 .btn-primary {
-  background: var(--cor-primaria);
+  background: var(--cor-primaria-escura);
   color: var(--cor-branca);
   border: none;
 }
 
 .btn-primary:hover {
-  background: var(--cor-primaria-escura);
+  opacity: 0.9;
 }
 
 @media (max-width: 768px) {
