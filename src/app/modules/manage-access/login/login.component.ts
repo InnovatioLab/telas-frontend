@@ -5,7 +5,6 @@ import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { AuthenticationStorage } from "@app/core/service/auth/authentication-storage";
 import { Client, Role } from "@app/model/client";
 import { ILoginRequest } from "@app/model/dto/request/login.request";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
@@ -103,27 +102,21 @@ export class LoginComponent implements OnInit {
   async verificarTermo(): Promise<void> {
     this.loading = true;
     try {
-      const userId = AuthenticationStorage.getUserId();
-      if (!userId) {
-        throw new Error("ID do usuário não encontrado");
-      }
-
-      const client = await firstValueFrom(
-        this.clientService.buscarClient<Client>(userId)
+      const authenticatedClient = await firstValueFrom(
+        this.clientService.getAuthenticatedClient()
       );
 
-      this.authentication.updateClientData(client);
+      this.authentication.updateClientData(authenticatedClient as any);
 
-      if (client.termAccepted) {
-        this.redirecionarParaHome(client);
+      if (authenticatedClient.termAccepted) {
+        this.redirecionarParaHome(authenticatedClient as any);
       } else {
-        // Redirecionar para a página de termos e condições
         this.router.navigate(["/terms-of-service"]);
       }
     } catch (error) {
-      console.error("Erro ao verificar aceitação de termos:", error);
+      console.error("Error checking acceptance of terms:", error);
       this.mensagemLoginInvalidoDialog(
-        "Erro ao verificar seus dados. Por favor, tente novamente."
+        "Error checking your data. Please try again."
       );
       this.logout();
     } finally {

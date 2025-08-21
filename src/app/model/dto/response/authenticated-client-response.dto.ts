@@ -1,4 +1,3 @@
-import { AdValidationType } from "@app/model/client";
 import { AdResponseDto } from "./ad-response.dto";
 
 export interface AuthenticatedClientResponseDto {

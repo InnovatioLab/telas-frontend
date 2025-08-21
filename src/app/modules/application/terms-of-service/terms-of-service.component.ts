@@ -68,12 +68,7 @@ export class TermsOfServiceComponent implements OnInit {
 
   private async verificarCliente(): Promise<void> {
     if (this.isLoggedIn) {
-      try {
-        await this.authentication.pegarDadosAutenticado();
-        this.client = this.authentication._clientSignal();
-      } catch (error) {
-        console.error("Error loading client data:", error);
-      }
+      this.client = this.authentication._clientSignal();
     }
   }
 
