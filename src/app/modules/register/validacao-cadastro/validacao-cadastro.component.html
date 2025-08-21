@@ -1,8 +1,5 @@
 <div class="validacao-cadastro h-full w-full">
-  <app-card-centralizado
-    type="formulario-pequeno"
-    *ngIf="!codigoValido && !exibirTermos"
-  >
+  <app-card-centralizado type="formulario-pequeno" *ngIf="!codigoValido">
     <ng-template pTemplate="content">
       <ng-container>
         <h5 class="text-center text-xlarge-bold mt-0 mb-4">
@@ -63,10 +60,8 @@
   </app-card-centralizado>
 
   <feat-cadastrar-senha
-    *ngIf="codigoValido && !exibirTermos"
+    *ngIf="codigoValido"
     class="fadein animation-duration-500"
     (cadastroConcluído)="cadastroSenhaFinalizado($event)"
   />
-
-  <app-termos *ngIf="exibirTermos" class="fadein animation-duration-500" />
 </div>

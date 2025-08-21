@@ -3,9 +3,9 @@
     <ng-container>
       <div class="flex justify-content-center">
         @if (logoSrc) {
-        <img src="{{ logoSrc }}" alt="Logo" class="logo" id="logo" />
+          <img src="{{ logoSrc }}" alt="Logo" class="logo" id="logo" />
         } @else {
-        <!-- <img src="assets/img/ematece.png" alt="EMATECE LOGO" class="imagem-logo" /> -->
+          <!-- <img src="assets/img/ematece.png" alt="EMATECE LOGO" class="imagem-logo" /> -->
         }
       </div>
 
@@ -14,41 +14,89 @@
       </div>
     </ng-container>
 
-    <form [formGroup]="form" class="flex flex-column justify-content-center sm:justify-content-between">
+    <form
+      [formGroup]="form"
+      class="flex flex-column justify-content-center sm:justify-content-between"
+    >
       <div class="col-12">
         <div class="label-input">
           <label htmlFor="login" id="lb-login">
-            <app-icon-user class="icon-custon" id="test-icon-person" width="20" height="20"></app-icon-user>
+            <app-icon-user
+              class="icon-custon"
+              id="test-icon-person"
+              width="20"
+              height="20"
+            ></app-icon-user>
             Identification Number
           </label>
         </div>
-        <input type="text" pInputText formControlName="login" id="test-input-login" class="w-full input-form"
-          placeholder="Enter your identification number (up to 9 digits)" maxlength="9" pattern="[0-9]*"
-          inputmode="numeric" (input)="onlyNumbersInput($event)" (keyup.enter)="login()" />
-        <app-error *ngIf="form.get('login').errors" id="error-msg-login" [control]="form.get('login')"
-          class="error-msg"></app-error>
+        <input
+          type="text"
+          pInputText
+          formControlName="login"
+          id="test-input-login"
+          class="w-full input-form"
+          placeholder="Enter your identification number (up to 9 digits)"
+          maxlength="9"
+          pattern="[0-9]*"
+          inputmode="numeric"
+          (input)="onlyNumbersInput($event)"
+          (keyup.enter)="login()"
+        />
+        <app-error
+          *ngIf="form.get('login').errors"
+          id="error-msg-login"
+          [control]="form.get('login')"
+          class="error-msg"
+        ></app-error>
       </div>
 
       <div class="col-12">
         <div class="label-input">
           <label htmlFor="senha" id="lb-senha">
-            <app-icon-lock class="icon-custon" id="test-icon-lock" width="20" height="20"></app-icon-lock>
+            <app-icon-lock
+              class="icon-custon"
+              id="test-icon-lock"
+              width="20"
+              height="20"
+            ></app-icon-lock>
             Password
           </label>
         </div>
-        <p-password [toggleMask]="true" [feedback]="false" formControlName="senha" placeholder="Enter your password"
-          class="w-full password" id="test-input-senha" minlength="8" maxLength="32" (onKeyup.enter)="login()">
+        <p-password
+          [toggleMask]="true"
+          [feedback]="false"
+          formControlName="senha"
+          placeholder="Enter your password"
+          class="w-full password"
+          id="test-input-senha"
+          minlength="8"
+          maxLength="32"
+          (onKeyup.enter)="login()"
+        >
         </p-password>
-        <app-error id="error-msg-senha" [control]="form.get('senha')" class="error-msg"></app-error>
+        <app-error
+          id="error-msg-senha"
+          [control]="form.get('senha')"
+          class="error-msg"
+        ></app-error>
       </div>
 
       <span id="test-texto-esqueceu-senha" class="ml-3 mb-3 font-normal">
         Forgot your password?
-        <a id="test-link-clique-aqui" routerLink="/auth/recover-password">Click here.</a> </span>
+        <a id="test-link-clique-aqui" routerLink="/auth/recover-password"
+          >Click here.</a
+        >
+      </span>
 
       <div class="flex justify-content-center btn-enter">
-        <button pButton id="test-btn-entrar" class="botao-entrar justify-content-center w-full"
-          [disabled]="habilitarBotao()" (click)="login()">
+        <button
+          pButton
+          id="test-btn-entrar"
+          class="botao-entrar justify-content-center w-full"
+          [disabled]="habilitarBotao()"
+          (click)="login()"
+        >
           <span *ngIf="loading" class="pi pi-spin pi-spinner mr-2"></span>
           Login
         </button>
@@ -61,9 +109,9 @@
         <a id="test-link-cadastre-se" routerLink="/register"> Sign up </a>
       </p>
 
-      <a id="test-link-retomar-cadastro" routerLink="/register/resume"> Resume Registration </a>
+      <a id="test-link-retomar-cadastro" routerLink="/register/resume">
+        Resume Registration
+      </a>
     </div>
   </ng-template>
 </app-card-centralizado>
-
-<app-termos *ngIf="exibirTermos" (isAceitouTermo)="respostaTermo($event)"></app-termos>

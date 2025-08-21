@@ -4,23 +4,6 @@
 <div class="terms-of-service-container">
   <div class="mx-auto py-4 px-3 lg:px-6">
     <div class="max-w-4xl mx-auto">
-      <div *ngIf="precisaAceitarTermos" class="mb-6 text-center">
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-          <p class="text-blue-800 mb-3">
-            <strong>Attention:</strong> You must accept the terms of use to
-            continue using the platform.
-          </p>
-          <button
-            pButton
-            label="Accept"
-            (click)="aceitarTermos()"
-            [disabled]="!podeAceitarTermos"
-            [loading]="aceitandoTermos"
-            class="p-button-primary"
-          ></button>
-        </div>
-      </div>
-
       <div *ngIf="loading" class="text-center">
         <p-progressSpinner
           styleClass="w-8 h-8"
@@ -65,14 +48,20 @@
           </ng-template>
 
           <ng-template pTemplate="footer" *ngIf="precisaAceitarTermos">
-            <div class="flex justify-center">
+            <div
+              class="bg-blue-50 border border-blue-200 rounded-lg p-2 flex flex-column align-items-center"
+            >
+              <p class="text-blue-800 mb-3">
+                <strong>Attention:</strong> You must accept the terms of use to
+                continue using the platform.
+              </p>
               <button
                 pButton
                 label="Accept"
                 (click)="aceitarTermos()"
                 [disabled]="!podeAceitarTermos"
                 [loading]="aceitandoTermos"
-                class="p-button-primary p-button-lg"
+                class="p-button-primary w-2"
               ></button>
             </div>
           </ng-template>

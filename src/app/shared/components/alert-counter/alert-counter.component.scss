@@ -2,11 +2,15 @@
   display: inline-block;
 }
 
+#admin-alerts-button {
+  padding: 6px 10px !important;
+}
+
 .alert-badge {
   background-color: var(--cor-primaria-clara);
   color: var(--cor-branca);
   position: absolute;
-  top: -8px;
+  top: -3px;
   right: -8px;
   font-size: 12px;
   min-width: 20px;
