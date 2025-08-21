@@ -39,11 +39,6 @@ interface AdminSidebarPinChangedEvent {
   visible: boolean;
 }
 
-interface AlertCountEvent {
-  count: number;
-  hasCritical: boolean;
-}
-
 @Component({
   selector: "app-header",
   standalone: true,

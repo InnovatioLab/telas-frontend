@@ -14,20 +14,35 @@
     <div class="mobile-header-user" *ngIf="!isAdministrador()">
       <div class="mobile-header">
         <div class="header-content">
-          <div
-            class="menu-trigger"
-            *ngIf="isLogado() && !isProfileManagementRoute()"
-            [ngClass]="{ active: menuAberto }"
-            (click)="toggleMenu()"
-            (keydown.enter)="toggleMenu()"
-            (keydown.space)="toggleMenu()"
-            tabindex="0"
-            role="button"
-            aria-label="Abrir menu lateral"
-            [attr.aria-expanded]="menuAberto"
-          >
-            <app-icon-bars></app-icon-bars>
-          </div>
+          <section class="flex align-items-center gap-2">
+            <div
+              class="menu-trigger"
+              *ngIf="isLogado() && !isProfileManagementRoute()"
+              [ngClass]="{ active: menuAberto }"
+              (click)="toggleMenu()"
+              (keydown.enter)="toggleMenu()"
+              (keydown.space)="toggleMenu()"
+              tabindex="0"
+              role="button"
+              aria-label="Open Side Menu"
+              [attr.aria-expanded]="menuAberto"
+            >
+              <app-icon-bars></app-icon-bars>
+            </div>
+            <div class="logo-container">
+              <img
+                src="assets/img/Logo-black.png"
+                alt="Logo"
+                class="header-logo"
+                (click)="navegarPaginaInicial()"
+                (keydown.enter)="navegarPaginaInicial()"
+                tabindex="0"
+                role="button"
+                aria-label="Ir para página inicial"
+              />
+            </div>
+          </section>
+
           <div
             class="search-container"
             [ngClass]="{ 'menu-open-small-mobile': isMenuOpenInSmallMobile }"
@@ -71,47 +86,7 @@
           </div>
 
           <div class="right-container">
-            <div class="auth-buttons" *ngIf="!isLogado()">
-              <button
-                pButton
-                class="btn-entrar"
-                (click)="redirecionarLogin()"
-                pTooltip="Login to your account"
-                tooltipPosition="bottom"
-              >
-                {{ TEXTO_ACAO.entrar }}
-              </button>
-              <button
-                pButton
-                class="btn-cadastrar"
-                (click)="redirecionarCadastro()"
-                pTooltip="Create a new account"
-                tooltipPosition="bottom"
-              >
-                {{ TEXTO_ACAO.cadastrar }}
-              </button>
-            </div>
-
             <div class="icons-container" *ngIf="isLogado()">
-              <button
-                pButton
-                (click)="navegarPaginaInicial()"
-                (keydown.enter)="navegarPaginaInicial()"
-                *ngIf="!isAdministrador()"
-                class="icon-button"
-                id="test-btn-home"
-                pTooltip="Navegar para Home"
-                tooltipPosition="top"
-              >
-                <app-icon-tv-display
-                  (click)="navegarPaginaInicial()"
-                  (keydown.enter)="navegarPaginaInicial()"
-                  [size]="24"
-                  class="imagem-logo"
-                  tabindex="0"
-                  aria-label="Go to home"
-                ></app-icon-tv-display>
-              </button>
               <button
                 pButton
                 (click)="abrirCheckout()"
@@ -152,97 +127,61 @@
         </div>
 
         <section class="box-actions main-actions mobile-only">
-          <ng-container *ngIf="isLogado(); else deslogado">
-            <button
-              class="icon-button"
-              id="link-administracao"
-              *ngIf="isAdministrador()"
-              pButton
-              [rounded]="true"
-              [text]="true"
-              (click)="redirecionarAdministracao()"
+          <button
+            class="icon-button"
+            id="test-btn-checkout-mobile"
+            (click)="abrirCheckout()"
+            *ngIf="!isAdministrador()"
+            pButton
+            [rounded]="true"
+            [text]="true"
+            [disabled]="!hasActiveCart"
+            [pTooltip]="cartTooltip"
+            tooltipPosition="bottom"
+          >
+            <app-icon-shopping-basket></app-icon-shopping-basket>
+            <span
+              *ngIf="itensCarrinho() > 0"
+              class="badge flex justify-content-center align-items-center absolute"
             >
-              <app-icon-settings></app-icon-settings>
-            </button>
+              {{ itensCarrinho() }}</span
+            >
+          </button>
 
-            <button
-              class="icon-button"
-              id="test-btn-checkout-mobile"
-              (click)="abrirCheckout()"
-              *ngIf="!isAdministrador()"
-              pButton
-              [rounded]="true"
-              [text]="true"
-              [disabled]="!hasActiveCart"
-              [pTooltip]="cartTooltip"
-              tooltipPosition="bottom"
+          <button
+            class="icon-button"
+            id="test-btn-notification"
+            (click)="abrirNotificacoes()"
+            *ngIf="isAdministrador()"
+            pButton
+            [rounded]="true"
+            [text]="true"
+          >
+            <app-icon-notifications></app-icon-notifications>
+            <span
+              *ngIf="itensNotificacao()"
+              class="badge flex justify-content-center align-items-center absolute"
             >
-              <app-icon-shopping-basket></app-icon-shopping-basket>
-              <span
-                *ngIf="itensCarrinho() > 0"
-                class="badge flex justify-content-center align-items-center absolute"
-              >
-                {{ itensCarrinho() }}</span
-              >
-            </button>
+              {{ itensNotificacao() }}</span
+            >
+          </button>
 
-            <button
-              class="icon-button"
-              id="test-btn-notification"
-              (click)="abrirNotificacoes()"
-              *ngIf="isAdministrador()"
-              pButton
-              [rounded]="true"
-              [text]="true"
+          <button
+            class="icon-button"
+            id="test-btn-notification"
+            (click)="abrirNotificacoes()"
+            pButton
+            [rounded]="true"
+            [text]="true"
+          >
+            <app-icon-notifications></app-icon-notifications>
+            <span
+              *ngIf="itensNotificacao()"
+              class="badge flex justify-content-center align-items-center absolute"
             >
-              <app-icon-notifications></app-icon-notifications>
-              <span
-                *ngIf="itensNotificacao()"
-                class="badge flex justify-content-center align-items-center absolute"
-              >
-                {{ itensNotificacao() }}</span
-              >
-            </button>
-
-            <ng-container *ngIf="!isAdministrador()">
-              <button
-                class="icon-button"
-                id="test-btn-notification"
-                (click)="abrirNotificacoes()"
-                pButton
-                [rounded]="true"
-                [text]="true"
-              >
-                <app-icon-notifications></app-icon-notifications>
-                <span
-                  *ngIf="itensNotificacao()"
-                  class="badge flex justify-content-center align-items-center absolute"
-                >
-                  {{ itensNotificacao() }}</span
-                >
-              </button>
-            </ng-container>
-          </ng-container>
-
-          <ng-template #deslogado>
-            <button
-              id="link-login"
-              pButton
-              [rounded]="true"
-              [text]="true"
-              (click)="redirecionarLogin()"
+              {{ itensNotificacao() }}</span
             >
-              {{ TEXTO_ACAO.entrar }}
-            </button>
-            <button
-              pButton
-              id="test-link-cadastro"
-              class="botao-cadastro w-11 btn-fill my-2 justify-content-center"
-              (click)="redirecionarCadastro()"
-            >
-              {{ TEXTO_ACAO.cadastrar }}
-            </button>
-          </ng-template>
+          </button>
         </section>
       </div>
     </div>
@@ -250,20 +189,35 @@
     <div class="mobile-header-admin" *ngIf="isAdministrador()">
       <div class="mobile-header">
         <div class="header-content">
-          <div
-            class="menu-trigger"
-            *ngIf="isLogado() && !isProfileManagementRoute()"
-            [ngClass]="{ active: menuAberto }"
-            (click)="toggleMenu()"
-            (keydown.enter)="toggleMenu()"
-            (keydown.space)="toggleMenu()"
-            tabindex="0"
-            role="button"
-            aria-label="Abrir menu lateral"
-            [attr.aria-expanded]="menuAberto"
-          >
-            <app-icon-bars></app-icon-bars>
-          </div>
+          <section class="flex align-items-center gap-2">
+            <div
+              class="menu-trigger"
+              *ngIf="isLogado() && !isProfileManagementRoute()"
+              [ngClass]="{ active: menuAberto }"
+              (click)="toggleMenu()"
+              (keydown.enter)="toggleMenu()"
+              (keydown.space)="toggleMenu()"
+              tabindex="0"
+              role="button"
+              aria-label="Open Side Menu"
+              [attr.aria-expanded]="menuAberto"
+            >
+              <app-icon-bars></app-icon-bars>
+            </div>
+            <div class="logo-container">
+              <img
+                src="assets/img/Logo-black.png"
+                alt="Logo"
+                class="header-logo"
+                (click)="navegarPaginaInicial()"
+                (keydown.enter)="navegarPaginaInicial()"
+                tabindex="0"
+                role="button"
+                aria-label="Ir para página inicial"
+              />
+            </div>
+          </section>
+
           <div
             class="search-container"
             [ngClass]="{ 'menu-open-small-mobile': isMenuOpenInSmallMobile }"
@@ -308,29 +262,6 @@
 
           <div class="right-container">
             <div class="icons-container">
-              <app-icon-tv-display
-                (click)="navegarPaginaInicial()"
-                (keydown.enter)="navegarPaginaInicial()"
-                [size]="24"
-                class="imagem-logo"
-                tabindex="0"
-                aria-label="Go to home"
-              ></app-icon-tv-display>
-              <!-- <button
-                pButton
-                (click)="abrirNotificacoes()"
-                class="icon-button"
-                id="test-btn-notification-admin"
-              >
-                <app-icon-notifications></app-icon-notifications>
-                <span
-                  *ngIf="itensNotificacao()"
-                  class="badge flex justify-content-center align-items-center absolute"
-                >
-                  {{ itensNotificacao() }}</span
-                >
-              </button> -->
-
               <app-alert-counter
                 *ngIf="isAdministrador()"
                 [toggleSidebar]="toggleAdminSidebar.bind(this)"
@@ -345,13 +276,6 @@
               >
                 <app-icon-settings></app-icon-settings>
               </button>
-
-              <!-- <app-alert-counter
-                *ngIf="isAdministrador()"
-                [isDesktop]="false"
-                [toggleSidebar]="toggleAdminSidebar.bind(this)"
-              >
-              </app-alert-counter> -->
             </div>
           </div>
         </div>
@@ -364,7 +288,7 @@
       <div
         class="header-container flex flex-row justify-content-between align-items-center w-full"
       >
-        <section class="flex align-items-center gap-5">
+        <section class="flex align-items-center gap-2">
           <div
             class="menu-trigger-desktop"
             *ngIf="isLogado() && !isProfileManagementRoute()"
@@ -374,10 +298,22 @@
             (keydown.space)="toggleMenu()"
             tabindex="0"
             role="button"
-            aria-label="Abrir menu lateral"
+            aria-label="Open Side Menu"
             [attr.aria-expanded]="menuAberto"
           >
             <app-icon-bars></app-icon-bars>
+          </div>
+          <div class="logo-container">
+            <img
+              src="assets/img/Logo-black.png"
+              alt="Logo"
+              class="header-logo"
+              (click)="navegarPaginaInicial()"
+              (keydown.enter)="navegarPaginaInicial()"
+              tabindex="0"
+              role="button"
+              aria-label="Ir para página inicial"
+            />
           </div>
         </section>
 
@@ -422,120 +358,76 @@
         </section>
 
         <section class="box-actions main-actions desktop-only">
-          <ng-container *ngIf="isLogado(); else deslogado">
-            <app-icon-tv-display
-              (click)="navegarPaginaInicial()"
-              (keydown.enter)="navegarPaginaInicial()"
-              [size]="24"
-              class="imagem-logo"
-              tabindex="0"
-              aria-label="Go to home"
-            ></app-icon-tv-display>
+          <button
+            id="test-btn-checkout-desktop"
+            (click)="abrirCheckout()"
+            *ngIf="!isAdministrador()"
+            pButton
+            [rounded]="true"
+            [text]="true"
+            [pTooltip]="cartTooltip"
+            tooltipPosition="bottom"
+            class="icon-button"
+            [disabled]="!hasActiveCart"
+          >
+            <app-icon-shopping-basket
+              class="icon cursor-pointer"
+            ></app-icon-shopping-basket>
+            <span
+              *ngIf="itensCarrinho() > 0"
+              class="badge flex justify-content-center align-items-center absolute"
+            >
+              {{ itensCarrinho() }}</span
+            >
+          </button>
 
+          <app-alert-counter
+            *ngIf="isAdministrador() && !isAdminSidebarVisible"
+            [toggleSidebar]="toggleAdminSidebar.bind(this)"
+          >
+          </app-alert-counter>
+
+          <button
+            class="icon-button"
+            id="link-administracao"
+            *ngIf="isAdministrador()"
+            pButton
+            [rounded]="true"
+            [text]="true"
+            (click)="redirecionarAdministracao()"
+            pTooltip="Admin settings"
+            tooltipPosition="bottom"
+          >
+            <app-icon-settings
+              class="icon cursor-pointer icon-fill"
+            ></app-icon-settings>
+          </button>
+
+          <ng-container *ngIf="!isAdministrador()">
             <button
-              id="test-btn-checkout-desktop"
-              (click)="abrirCheckout()"
-              *ngIf="!isAdministrador()"
+              id="test-btn-notification"
+              (click)="abrirNotificacoes()"
               pButton
               [rounded]="true"
               [text]="true"
-              [pTooltip]="cartTooltip"
+              pTooltip="View notifications"
               tooltipPosition="bottom"
               class="icon-button"
-              [disabled]="!hasActiveCart"
             >
-              <app-icon-shopping-basket
+              <app-icon-notifications
                 class="icon cursor-pointer"
-              ></app-icon-shopping-basket>
+              ></app-icon-notifications>
               <span
-                *ngIf="itensCarrinho() > 0"
+                *ngIf="itensNotificacao()"
                 class="badge flex justify-content-center align-items-center absolute"
               >
-                {{ itensCarrinho() }}</span
+                {{ itensNotificacao() }}</span
               >
             </button>
-
-            <!-- Botão de alertas no header desktop -->
-            <!-- <app-alert-counter
-              *ngIf="isAdministrador() && !isAdminSidebarVisible"
-              [isDesktop]="true"
-              [toggleSidebar]="toggleAdminSidebar.bind(this)"
-            >
-            </app-alert-counter> -->
-
-            <app-alert-counter
-              *ngIf="isAdministrador() && !isAdminSidebarVisible"
-              [toggleSidebar]="toggleAdminSidebar.bind(this)"
-            >
-            </app-alert-counter>
-
-            <button
-              class="icon-button"
-              id="link-administracao"
-              *ngIf="isAdministrador()"
-              pButton
-              [rounded]="true"
-              [text]="true"
-              (click)="redirecionarAdministracao()"
-              pTooltip="Admin settings"
-              tooltipPosition="bottom"
-            >
-              <app-icon-settings
-                class="icon cursor-pointer icon-fill"
-              ></app-icon-settings>
-            </button>
-
-            <ng-container *ngIf="!isAdministrador()">
-              <button
-                id="test-btn-notification"
-                (click)="abrirNotificacoes()"
-                pButton
-                [rounded]="true"
-                [text]="true"
-                pTooltip="View notifications"
-                tooltipPosition="bottom"
-                class="icon-button"
-              >
-                <app-icon-notifications
-                  class="icon cursor-pointer"
-                ></app-icon-notifications>
-                <span
-                  *ngIf="itensNotificacao()"
-                  class="badge flex justify-content-center align-items-center absolute"
-                >
-                  {{ itensNotificacao() }}</span
-                >
-              </button>
-            </ng-container>
           </ng-container>
-
-          <ng-template #deslogado>
-            <button
-              id="link-login"
-              pButton
-              [rounded]="true"
-              [text]="true"
-              (click)="redirecionarLogin()"
-              pTooltip="Login to your account"
-              tooltipPosition="bottom"
-            >
-              {{ TEXTO_ACAO.entrar }}
-            </button>
-            <button
-              pButton
-              id="test-link-cadastro"
-              class="botao-cadastro w-10 btn-fill my-2 justify-content-center"
-              (click)="redirecionarCadastro()"
-              pTooltip="Create a new account"
-              tooltipPosition="bottom"
-            >
-              {{ TEXTO_ACAO.cadastrar }}
-            </button>
-          </ng-template>
         </section>
       </div>
     </div>
   </div>
 </header>
 <app-checkout-list-side-bar *ngIf="isLogado()"></app-checkout-list-side-bar>
-<div class="espaco-header" [appShowInRoutes]="headerAllowedRoutes"></div>

@@ -1,8 +1,38 @@
-
-
 .imagem-logo {
   cursor: pointer;
   align-self: center;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .header-logo {
+    cursor: pointer;
+    max-height: 55px !important;
+    width: auto !important;
+    transition: all 0.3s ease;
+    object-fit: cover;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:focus {
+      outline: 2px solid rgba(255, 255, 255, 0.5);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    @media screen and (max-width: 360px) {
+      max-height: 35px !important;
+    }
+
+    @media screen and (max-width: 768px) {
+      max-height: 45px !important;
+    }
+  }
 }
 
 .mobile-only {
@@ -23,7 +53,6 @@
 @media screen and (max-width: 600px) {
   .search-container-desktop,
   .search-container {
-
     &.menu-open-small-mobile {
       margin-left: 50px;
       transition: margin-left 0.3s ease;
@@ -805,6 +834,25 @@ header {
       height: 60px;
       box-sizing: border-box;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      gap: 8px; // Espaçamento entre menu, logo e search
+
+      // Layout específico para mobile
+      .menu-trigger {
+        flex-shrink: 0; // Não permite encolher o menu
+      }
+
+      .logo-container {
+        flex-shrink: 0; // Não permite encolher a logo
+      }
+
+      .search-container {
+        flex: 1; // Permite que a busca ocupe o espaço disponível
+        min-width: 0; // Permite que encolha se necessário
+      }
+
+      .right-container {
+        flex-shrink: 0; // Não permite encolher os botões da direita
+      }
     }
 
     .btn-menu {
@@ -959,8 +1007,16 @@ header {
       border: none;
       box-shadow: none;
     }
-  }
 
+    // Layout para desktop
+    section {
+      &:first-child {
+        display: flex;
+        align-items: center;
+        gap: 12px; // Espaçamento entre menu e logo
+      }
+    }
+  }
   .search-container {
     width: 100%;
     max-width: 250px;
@@ -1137,12 +1193,6 @@ header {
   }
 }
 
-@media (max-width: 410px) {
-  .search-container {
-    display: none;
-  }
-}
-
 .alert {
   width: 100%;
   max-width: 600px;
@@ -1311,10 +1361,10 @@ header {
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 530px) {
   .search-container-desktop,
   .search-container {
-    max-width: 160px;
+    display: none;
   }
   .botao-pesquisa {
     display: none !important;
