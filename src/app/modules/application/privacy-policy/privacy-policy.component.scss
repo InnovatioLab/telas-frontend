@@ -1,0 +1,79 @@
+.privacy-policy-container {
+  min-height: 100vh;
+  background-color: var(--surface-ground);
+}
+
+.privacy-policy-card {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+
+  ::ng-deep .p-card {
+    border: none;
+  }
+
+  ::ng-deep .p-card-header {
+    background-color: var(--surface-card);
+    border-bottom: 1px solid var(--surface-border);
+    padding: 1.5rem;
+  }
+
+  ::ng-deep .p-card-content {
+    padding: 2rem;
+    line-height: 1.6;
+  }
+}
+
+.privacy-policy-container {
+  min-height: 100vh;
+  background-color: var(--surface-ground);
+}
+
+.privacy-policy-card {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+
+  ::ng-deep .p-card {
+    border: none;
+  }
+
+  ::ng-deep .p-card-header {
+    background-color: var(--surface-card);
+    border-bottom: 1px solid var(--surface-border);
+    padding: 1.5rem;
+  }
+
+  ::ng-deep .p-card-content {
+    padding: 2rem;
+    line-height: 1.6;
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .privacy-policy-container {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  .privacy-policy-card {
+    ::ng-deep .p-card-header {
+      padding: 1rem;
+    }
+
+    ::ng-deep .p-card-content {
+      padding: 1rem;
+    }
+  }
+
+  .privacy-policy-content {
+    font-size: 0.9rem;
+  }
+}
+
+

@@ -1,4 +1,6 @@
+import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
+import { RouterModule } from "@angular/router";
 import { IconsModule } from "@app/shared/icons/icons.module";
 
 @Component({
@@ -6,6 +8,6 @@ import { IconsModule } from "@app/shared/icons/icons.module";
   templateUrl: "./guest-footer.component.html",
   styleUrls: ["./guest-footer.component.scss"],
   standalone: true,
-  imports: [IconsModule],
+  imports: [RouterModule, IconsModule, CommonModule],
 })
 export class GuestFooterComponent {}

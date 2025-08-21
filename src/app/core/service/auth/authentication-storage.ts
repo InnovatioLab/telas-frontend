@@ -54,4 +54,8 @@ export class AuthenticationStorage {
       return null;
     }
   }
+
+  static removerIndicadorDeAcesso() {
+    localStorage.setItem('FEZ_ACESSO', 'false');
+  }
 }

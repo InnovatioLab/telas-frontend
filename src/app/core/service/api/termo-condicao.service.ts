@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map } from 'rxjs';
-import { ENVIRONMENT } from 'src/environments/environment-token';
 import { ResponseDTO } from '@app/model/dto/response.dto';
 import { TermoCondicao } from '@app/model/termo-condicao';
+import { map } from 'rxjs';
+import { ENVIRONMENT } from 'src/environments/environment-token';
 
 @Injectable({ providedIn: 'root' })
 export class TermoCondicaoService {

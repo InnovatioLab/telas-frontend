@@ -1,16 +1,16 @@
-import { DialogoComponent } from './../dialogo/dialogo.component';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { PrimengModule } from '../../primeng/primeng.module';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MENSAGENS } from '@app/utility/src';
-import { TermoCondicaoService } from '@app/core/service/api/termo-condicao.service';
 import { ClientService } from '@app/core/service/api/client.service';
+import { TermoCondicaoService } from '@app/core/service/api/termo-condicao.service';
 import { Authentication } from '@app/core/service/auth/autenthication';
+import { Role } from '@app/model/client';
 import { TermoCondicao } from '@app/model/termo-condicao';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { Role } from '@app/model/client';
+import { MENSAGENS } from '@app/utility/src';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { PrimengModule } from '../../primeng/primeng.module';
+import { DialogoComponent } from './../dialogo/dialogo.component';
 
 
 @Component({

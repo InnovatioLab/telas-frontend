@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { map, catchError, of } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import { ClientService } from '../api/client.service';
 import { AuthenticationStorage } from '../auth/authentication-storage';
 
