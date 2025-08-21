@@ -1,36 +1,29 @@
 <header>
   <div class="container">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <app-icon-tv-display
-          width="32"
-          height="32"
-          class="text-primary-color"
-        ></app-icon-tv-display>
-        <h1 class="text-2xl font-bold text-primary-color">Telas</h1>
+    <div class="flex align-items-center justify-content-between">
+      <div class="logo-container">
+        <img src="assets/img/Logo-white.png" alt="Logo" class="header-logo" />
       </div>
-      <nav class="md:flex items-center space-x-8">
+
+      <nav
+        class="flex align-items-center justify-content-center gap-2 md:gap-3 lg:gap-6 text-center nav-container"
+      >
         @for (link of navLinks; track $index) {
           <a
             href="{{ link.section }}"
-            class="text-gray-dark nav-link cursor-pointer"
+            class="text-gray-dark nav-link cursor-pointer hover:underline"
           >
             {{ link.label }}
-            <span class="nav-underline"></span>
           </a>
         }
       </nav>
-      <div class="flex items-center space-x-4">
+      <div class="flex align-items-center gap-3">
         <button type="button" class="btn btn-outline" (click)="onLogin()">
-          <app-icon-logout
-            width="18"
-            height="18"
-            class="mr-2"
-          ></app-icon-logout>
+          <app-icon-logout width="18" height="18" class="icon mr-2"></app-icon-logout>
           Login
         </button>
         <button type="button" class="btn btn-primary" (click)="onRegister()">
-          <app-icon-user width="18" height="18" class="mr-2"></app-icon-user>
+          <app-icon-user width="18" height="18" class="icon mr-2"></app-icon-user>
           Sign Up
         </button>
       </div>

@@ -14,30 +14,6 @@ header {
   padding: 0 var(--espacamento-padrao);
 }
 
-.flex {
-  display: flex;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.space-x-3 > :not(:last-child) {
-  margin-right: var(--espacamento-pequeno);
-}
-
-.space-x-4 > :not(:last-child) {
-  margin-right: var(--espacamento-padrao);
-}
-
-.space-x-8 > :not(:last-child) {
-  margin-right: var(--espacamento-medio);
-}
-
 .text-primary-color {
   color: var(--cor-primaria);
 }
@@ -61,12 +37,16 @@ header {
   border-radius: var(--borda-raio-padrao);
   font-size: var(--fonte-tamanho-medio);
   font-weight: var(--fonte-peso-medio);
-  height: var(--altura-botao);
-  padding: 0 var(--espacamento-padrao);
+  padding: 1rem;
   cursor: pointer;
   transition: var(--transicao-padrao);
   border: 1px solid transparent;
   background: transparent;
+
+  @media (max-width: 900px) {
+    font-size: 16px !important;
+    padding: 10px;
+  }
 }
 
 .btn-outline {
@@ -99,46 +79,44 @@ header {
   background: var(--cor-primaria-escura);
 }
 
-.mr-2 {
-  margin-right: var(--espacamento-pequeno);
+@media (max-width: 768px) {
+  .md\:flex {
+    display: none !important;
+  }
 }
 
 .nav-link {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-  text-decoration: none;
-  transition: color 0.2s;
+  transition: all 0.3s ease;
+}
 
-  .nav-underline {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -2px;
-    height: 2px;
-    background: var(--cor-primaria);
-    border-radius: 2px;
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
-    content: '';
-    display: block;
-    pointer-events: none;
-  }
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  &:hover .nav-underline,
-  &:focus .nav-underline {
-    transform: scaleX(1);
-    transform-origin: center;
-  }
+  .header-logo {
+    max-height: 55px !important;
+    width: auto !important;
+    object-fit: cover;
 
-  .nav-underline {
-    will-change: transform;
+    @media (max-width: 768px) {
+      max-height: 35px !important;
+    }
+
+    @media (max-width: 450px) {
+      max-height: 35px !important;
+    }
   }
 }
 
-@media (max-width: 768px) {
-  .md\:flex {
+@media (max-width: 650px) {
+  .icon {
+    display: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-container {
     display: none !important;
   }
 }
