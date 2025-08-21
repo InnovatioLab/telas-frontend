@@ -4,7 +4,7 @@ import enUS from "@angular/common/locales/en";
 import { LOCALE_ID, importProvidersFrom } from "@angular/core";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { provideRouter } from "@angular/router";
+import { provideRouter, withInMemoryScrolling } from "@angular/router";
 import { appRoutes } from "@app/app-routes.routes";
 import { AppComponent } from "@app/app.component";
 import { enUsLocale } from "@app/config/localizacao";
@@ -34,7 +34,13 @@ bootstrapApplication(AppComponent, {
     DialogService,
     ConfirmationService,
     { provide: LOCALE_ID, useValue: "en-US" },
-    provideRouter(appRoutes),
+    provideRouter(
+      appRoutes,
+      withInMemoryScrolling({
+        scrollPositionRestoration: "top",
+        anchorScrolling: "enabled",
+      })
+    ),
     providePrimeNG({
       theme: {
         preset: MyPreset,
