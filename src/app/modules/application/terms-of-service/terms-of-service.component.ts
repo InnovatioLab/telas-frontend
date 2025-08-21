@@ -7,7 +7,6 @@ import { Authentication } from "@app/core/service/auth/autenthication";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Client, Role } from "@app/model/client";
 import { TermoCondicao } from "@app/model/termo-condicao";
-import { HeaderComponent } from "@app/shared/components/header/header.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { GuestHeaderComponent } from "../components/guest-header/guest-header.component";
@@ -19,7 +18,6 @@ import { GuestHeaderComponent } from "../components/guest-header/guest-header.co
     CommonModule,
     RouterModule,
     PrimengModule,
-    HeaderComponent,
     GuestHeaderComponent,
     ProgressSpinnerModule,
   ],

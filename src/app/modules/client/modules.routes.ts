@@ -1,7 +1,7 @@
 import { Route } from "@angular/router";
 import {
   ClientAuthenticatedGuard,
-  MyTelasGuard
+  MyTelasGuard,
 } from "@app/core/service/guard";
 import { SubscriptionsGuard } from "@app/core/service/guard/subscriptions.guard";
 import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
@@ -12,6 +12,8 @@ import { ViewEditProfileComponent } from "./components/view-edit-profile/view-ed
 import { WishListComponent } from "./components/wish-list/wish-list.component";
 import { ClientViewLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
 import { SettingsLayoutComponent } from "./page/settings/settings-layout.component";
+import { PrivacyPolicyComponent } from "../application/privacy-policy/privacy-policy.component";
+import { TermsOfServiceComponent } from "../application/terms-of-service/terms-of-service.component";
 
 export const ROUTES: Route[] = [
   {
@@ -40,6 +42,16 @@ export const ROUTES: Route[] = [
         component: ManagementSubscriptionsComponent,
         canActivate: [SubscriptionsGuard],
         title: "Subscriptions",
+      },
+      {
+        path: "privacy-policy",
+        component: PrivacyPolicyComponent,
+        title: "Privacy Policy",
+      },
+      {
+        path: "terms-of-service",
+        component: TermsOfServiceComponent,
+        title: "Terms of Service",
       },
     ],
   },

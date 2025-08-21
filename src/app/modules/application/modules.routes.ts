@@ -17,12 +17,12 @@ export const ROUTES: Route[] = [
       {
         path: "privacy-policy",
         component: PrivacyPolicyComponent,
-        title: "Política de Privacidade",
+        title: "Privacy Policy",
       },
       {
         path: "terms-of-service",
         component: TermsOfServiceComponent,
-        title: "Termos de Uso",
+        title: "Terms of Service",
       },
     ],
   },
