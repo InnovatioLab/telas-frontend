@@ -12,7 +12,7 @@
       <nav class="md:flex items-center space-x-8">
         @for (link of navLinks; track $index) {
           <a
-            (click)="navigateToSection(link.section)"
+            href="{{ link.section }}"
             class="text-gray-dark nav-link cursor-pointer"
           >
             {{ link.label }}
