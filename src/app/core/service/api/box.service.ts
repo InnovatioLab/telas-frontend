@@ -83,13 +83,13 @@ export class BoxService {
       .pipe(
         map((response: ResponseDto<PaginationResponseDto<BoxResponseDto>>) => {
           let boxes: BoxResponseDto[] = [];
-          
+
           if (Array.isArray(response.data)) {
             boxes = response.data;
           } else if (response.data?.list) {
             boxes = response.data.list;
           }
-          
+
           return boxes.map((box) => this.mapBoxResponseToBox(box));
         }),
         catchError((error) => {
@@ -122,7 +122,7 @@ export class BoxService {
         map((response: ResponseDto<PaginationResponseDto<BoxResponseDto>>) => {
           let boxes: BoxResponseDto[] = [];
           let totalElements = 0;
-          
+
           if (Array.isArray(response.data)) {
             boxes = response.data;
             totalElements = response.data.length;
@@ -130,9 +130,9 @@ export class BoxService {
             boxes = response.data.list;
             totalElements = response.data.totalElements || 0;
           }
-          
+
           const mappedBoxes = boxes.map((box) => this.mapBoxResponseToBox(box));
-          
+
           return {
             list: mappedBoxes,
             totalElements: totalElements,
@@ -237,7 +237,7 @@ export class BoxService {
       ip: boxResponse.boxAddress.ip,
       macAddress: boxResponse.boxAddress.mac,
       boxAddressId: boxResponse.boxAddress.id,
-      monitorIds: boxResponse.monitors.map(monitor => monitor.id),
+      monitorIds: boxResponse.monitors.map((monitor) => monitor.id),
       active: boxResponse.active,
       monitorCount: boxResponse.monitors.length,
     };
