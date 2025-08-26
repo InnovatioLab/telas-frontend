@@ -211,7 +211,7 @@ export class MonitorService {
         country: "",
         zipCode: "",
       },
-      adLinks: [] as string[],
+      adLinks: monitorResponse.adLinks || [],
       createdAt: monitorResponse.createdAt,
       updatedAt: monitorResponse.updatedAt,
     };

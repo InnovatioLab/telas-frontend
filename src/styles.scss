@@ -1612,45 +1612,6 @@ textarea {
   }
 }
 
-.action-buttons {
-  display: flex;
-  gap: var(--espacamento-pequeno);
-  justify-content: center;
-
-  .p-button-rounded {
-    width: 2rem;
-    height: 2rem;
-
-    &.p-button-text {
-      background-color: transparent;
-
-      &.p-button-success {
-        color: var(--cor-sucesso) !important;
-
-        &:active:hover {
-          background-color: rgba(40, 167, 69, 0.1) !important;
-        }
-      }
-
-      &.p-button-danger {
-        color: var(--cor-erro) !important;
-
-        &:active:hover {
-          background-color: rgba(220, 53, 69, 0.1) !important;
-        }
-      }
-
-      &.upgrade-button {
-        color: #ffc107 !important;
-
-        &:hover {
-          background-color: rgba(255, 193, 7, 0.377) !important;
-        }
-      }
-    }
-  }
-}
-
 .btn-danger {
   color: var(--cor-branca) !important;
   background-color: var(--cor-erro) !important;
@@ -2097,7 +2058,7 @@ label.required::after {
 .p-button:not(.icon-button) {
   width: auto;
   max-height: fit-content;
-  flex: 1 !important;
+
   border-radius: var(--borda-raio-pequeno);
   padding: 1rem !important;
   font-weight: var(--fonte-peso-semibold);
@@ -2106,6 +2067,10 @@ label.required::after {
   transition: var(--transicao-padrao) !important;
   border: none !important;
   max-width: 200px !important;
+
+  &:not(.close-btn) {
+    flex: 1 !important;
+  }
 
   &:disabled {
     background-color: var(--cor-desabilitado);
@@ -2116,6 +2081,10 @@ label.required::after {
   &:hover:not(:disabled) {
     background: var(--cor-primaria-clara);
     opacity: 0.9;
+  }
+
+  &.p-button-icon-only {
+    padding: 0.5rem !important;
   }
 }
 
@@ -2140,6 +2109,49 @@ label.required::after {
 .p-button.p-dialog-close-button {
   width: auto;
   height: auto;
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--espacamento-pequeno);
+  justify-content: center;
+
+  .p-button-rounded {
+    width: 2rem;
+    height: 2rem;
+
+    &.p-button-text {
+      background-color: transparent;
+
+      &.p-button-success {
+        color: var(--cor-sucesso) !important;
+
+        &:enabled:hover {
+          background-color: rgba(40, 167, 69, 0.1) !important;
+        }
+      }
+
+      &.p-button-danger {
+        color: var(--cor-erro) !important;
+
+        &:enabled:hover {
+          background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+      }
+
+      &.upgrade-button {
+        color: #ffc107 !important;
+
+        &:enabled:hover {
+          background-color: rgba(255, 193, 7, 0.377) !important;
+        }
+
+        &:disabled {
+          color: #ffc10779 !important;
+        }
+      }
+    }
+  }
 }
 
 @include responsive("mobile") {

@@ -100,6 +100,7 @@
         <td>
           <div class="action-buttons">
             <button
+              [disabled]="!shouldShowManageAdsButton(monitor)"
               pButton
               pRipple
               class="p-button-rounded p-button-info p-button-text"
@@ -112,11 +113,6 @@
                 class="custom-icon"
                 style="color: #3399ff"
               ></app-icon-tv-display>
-              <span
-                class="ads-badge"
-                *ngIf="monitor.adLinks && monitor.adLinks.length > 0"
-                >{{ monitor.adLinks.length }}</span
-              >
             </button>
             <button
               pButton

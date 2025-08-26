@@ -1,5 +1,5 @@
-import { DefaultStatus } from '@app/model/client';
-import { MonitorType } from '@app/model/monitors';
+import { DefaultStatus } from "@app/model/client";
+import { MonitorType } from "@app/model/monitors";
 
 export interface MonitorResponseDto {
   id: string;
@@ -25,6 +25,14 @@ export interface MonitorResponseDto {
     latitude?: number;
     longitude?: number;
   };
+  adLinks?: MonitorAdResponseDto[];
   createdAt?: Date;
   updatedAt?: Date;
-} 
+}
+
+export interface MonitorAdResponseDto {
+  id: string;
+  link: string;
+  fileName: string;
+  orderIndex?: number;
+}

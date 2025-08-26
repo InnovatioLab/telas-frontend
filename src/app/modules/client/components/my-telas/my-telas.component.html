@@ -240,7 +240,7 @@
               class="ad-status flex flex-column justify-content-center align-items-center gap-2"
             >
               <span
-                class="badge w-full"
+                class="badge w-full text-center"
                 [ngClass]="getValidationBadgeClass(ad.validation)"
               >
                 {{ getValidationLabel(ad.validation) }}
@@ -304,16 +304,27 @@
               tooltipPosition="top"
             >
             </p-button>
-            <button
+            <!-- <button
               pButton
               pRipple
               icon="pi pi-check-circle"
               class="p-button-rounded p-button-success p-button-text"
               *ngIf="canValidateAd(ad)"
-              (click)="openValidateAdDialog(ad)"
+              (onClick)="openValidateAdDialog(ad)"
               pTooltip="Validate Ad"
               tooltipPosition="top"
-            ></button>
+            ></button> -->
+            <p-button
+              icon="pi pi-check-circle"
+              (click)="openValidateAdDialog(ad)"
+              *ngIf="canValidateAd(ad)"
+              [disabled]="loading"
+              severity="success"
+              [text]="true"
+              pTooltip="Validate Ad"
+              tooltipPosition="top"
+            >
+            </p-button>
           </div>
         </div>
       </div>
@@ -515,20 +526,21 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <div class="btn-container-responsive">
+    <div class="w-full flex justify-content-between align-items-center">
       <button
         pButton
         label="Cancel"
         id="btnSecundario"
         (click)="closeValidateAdDialog()"
       ></button>
-      <p-button
+      <button
+        pButton
+        pRipple
         label="Validate Ad"
-        (onClick)="submitAdValidation()"
+        (click)="submitAdValidation()"
         [disabled]="validateAdForm.invalid || loading"
         [loading]="loading"
-      >
-      </p-button>
+      ></button>
     </div>
   </ng-template>
 </p-dialog>

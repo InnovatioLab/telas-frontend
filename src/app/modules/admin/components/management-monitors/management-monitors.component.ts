@@ -19,6 +19,7 @@ import {
   UpdateMonitorRequestDto,
 } from "@app/model/dto/request/create-monitor.request.dto";
 import { FilterMonitorRequestDto } from "@app/model/dto/request/filter-monitor.request.dto";
+import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
@@ -94,6 +95,7 @@ export class ManagementMonitorsComponent implements OnInit {
     sortDir: "desc",
   };
   selectedAdIndex: number = 0;
+  authenticatedClient: AuthenticatedClientResponseDto | null = null;
 
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff";
 
@@ -110,6 +112,18 @@ export class ManagementMonitorsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInitialData();
+    this.loadAuthenticatedClient();
+  }
+
+  loadAuthenticatedClient(): void {
+    this.clientService.getAuthenticatedClient().subscribe({
+      next: (client) => {
+        this.authenticatedClient = client;
+      },
+      error: (error) => {
+        console.error("Error loading authenticated client:", error);
+      },
+    });
   }
 
   loadInitialData(): void {
@@ -127,6 +141,7 @@ export class ManagementMonitorsComponent implements OnInit {
           result.totalElements ?? (result as any).totalRecords ?? 0
         );
         this.loading = false;
+        console.log(this.monitors);
       },
       error: (error) => {
         this.toastService.erro("Error loading monitors");
@@ -552,6 +567,15 @@ export class ManagementMonitorsComponent implements OnInit {
       return baseClass + " p-button-disabled";
     }
     return baseClass;
+  }
+
+  shouldShowManageAdsButton(monitor: Monitor): boolean {
+    const monitorHasNoAds = !monitor.adLinks || monitor.adLinks.length === 0;
+    const clientHasNoAds =
+      !this.authenticatedClient?.ads ||
+      this.authenticatedClient.ads.length === 0;
+
+    return !(monitorHasNoAds && clientHasNoAds);
   }
 
   viewMonitorDetails(monitor: Monitor): void {

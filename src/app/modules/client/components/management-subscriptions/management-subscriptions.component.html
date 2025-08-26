@@ -111,9 +111,8 @@
       <td>
         <div class="action-buttons">
           <button
-            *ngIf="subscription.ableToUpgrade"
+            [disabled]="!subscription.ableToUpgrade"
             pButton
-            pRipple
             icon="pi pi-star-fill"
             class="p-button-rounded p-button-text upgrade-button"
             (click)="onUpgradeMode(subscription)"

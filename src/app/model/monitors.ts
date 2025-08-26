@@ -1,8 +1,9 @@
 import { Address, DefaultStatus } from "./client";
+import { MonitorAdResponseDto } from "./dto/response/monitor-response.dto";
 
 export enum MonitorType {
-  BASIC = 'BASIC',
-  PREMIUM = 'PREMIUM',
+  BASIC = "BASIC",
+  PREMIUM = "PREMIUM",
 }
 
 export interface Monitor {
@@ -22,7 +23,7 @@ export interface Monitor {
   location?: string;
   latitude?: number;
   longitude?: number;
-  adLinks?: string[];
+  adLinks?: MonitorAdResponseDto[];
   validAds?: any[];
   hasAvailableSlots?: boolean;
   fullAddress?: string;
