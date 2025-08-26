@@ -2096,6 +2096,7 @@ label.required::after {
 
 .p-button:not(.icon-button) {
   width: auto;
+  max-height: fit-content;
   flex: 1 !important;
   border-radius: var(--borda-raio-pequeno);
   padding: 1rem !important;
