@@ -2276,3 +2276,77 @@ img {
 a {
   text-decoration: none !important;
 }
+
+.p-button-label {
+  color: var(--cor-branca);
+}
+
+.p-checkbox {
+  .p-checkbox-box {
+    border-color: var(--cor-primaria) !important;
+    background: var(--cor-branca);
+
+    &:hover {
+      border-color: var(--cor-primaria-escura) !important;
+    }
+
+    &.p-highlight,
+    &.p-checkbox-checked {
+      background: var(--cor-primaria) !important;
+      border-color: var(--cor-primaria) !important;
+    }
+
+    &.p-focus {
+      border-color: var(--cor-primaria) !important;
+    }
+
+    &.p-disabled {
+      background-color: var(--cor-cinza-medio) !important;
+      border-color: var(--cor-cinza) !important;
+    }
+  }
+
+  .p-checkbox-icon {
+    color: var(--cor-branca) !important;
+  }
+}
+
+.p-multiselect-panel {
+  .p-multiselect-header {
+    .p-checkbox {
+      .p-checkbox-box {
+        background-color: var(--cor-branca) !important;
+        border-color: var(--cor-primaria) !important;
+
+        &.p-highlight {
+          background-color: var(--cor-primaria) !important;
+          border-color: var(--cor-primaria) !important;
+
+          .p-checkbox-icon {
+            color: var(--cor-branca) !important;
+          }
+        }
+      }
+    }
+  }
+
+  .p-multiselect-items {
+    .p-multiselect-item {
+      .p-checkbox {
+        .p-checkbox-box {
+          background-color: var(--cor-branca) !important;
+          border-color: var(--cor-primaria) !important;
+
+          &.p-highlight {
+            background-color: var(--cor-primaria) !important;
+            border-color: var(--cor-primaria) !important;
+
+            .p-checkbox-icon {
+              color: var(--cor-branca) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
