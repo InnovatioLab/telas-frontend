@@ -23,6 +23,7 @@ import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { MessageService } from "primeng/api";
 import { GalleriaModule } from "primeng/galleria";
 import { OrderListModule } from "primeng/orderlist";
@@ -603,18 +604,33 @@ export class ManagementMonitorsComponent implements OnInit {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      this.selectedFile = file;
-      this.newAd.name = file.name;
-      this.newAd.type = file.type;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = (reader.result as string).split(",")[1];
-        this.newAd.bytes = base64;
-        this.uploadAdPreview = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+      // Validar arquivo usando a utility
+      ImageValidationUtil.validateImageFile(file)
+        .then((validationResult) => {
+          if (!validationResult.isValid) {
+            validationResult.errors.forEach((error) => {
+              this.toastService.erro(error);
+            });
+            return;
+          }
+
+          this.selectedFile = file;
+          this.newAd.name = file.name;
+          this.newAd.type = file.type;
+          const reader = new FileReader();
+          reader.onload = () => {
+            const base64 = (reader.result as string).split(",")[1];
+            this.newAd.bytes = base64;
+            this.uploadAdPreview = reader.result as string;
+          };
+          reader.readAsDataURL(file);
+          this.showCreateAdModal = true;
+        })
+        .catch((error) => {
+          console.error("Error validating image:", error);
+          this.toastService.erro("Error validating image file");
+        });
     }
-    this.showCreateAdModal = true;
   }
 
   createAdvertisement(): void {

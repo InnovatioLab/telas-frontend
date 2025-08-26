@@ -1,7 +1,10 @@
 <p-tabView (onChange)="onTabChange($event)" [activeIndex]="activeTabIndex">
   <!-- Tab 1: Attachments -->
   <p-tabPanel header="Attachments">
-    <div class="upload-container" *ngIf="ads.length === 0">
+    <div
+      class="upload-container"
+      *ngIf="ads.length === 0 && !hasActiveAdRequest"
+    >
       <div class="card">
         <h3>Upload Ads</h3>
         <p>Select a media file to link to your ads.</p>
@@ -9,7 +12,6 @@
           #adFileUpload
           [customUpload]="true"
           (onSelect)="onAdFileSelect($event)"
-          (uploadHandler)="submitAdUpload($event)"
           [accept]="acceptedFileTypes"
           [maxFileSize]="maxFileSize"
           [auto]="false"
@@ -17,6 +19,9 @@
           chooseLabel="Browse"
           uploadLabel="Upload"
           [disabled]="loading"
+          [showUploadButton]="selectedAdFile !== null"
+          [showCancelButton]="selectedAdFile !== null"
+          (uploadHandler)="submitAdUpload($event)"
         >
         </p-fileUpload>
       </div>
@@ -32,80 +37,23 @@
         </p>
 
         <p-fileUpload
+          #attachmentFileUpload
           [multiple]="true"
           [accept]="acceptedFileTypes"
           [maxFileSize]="maxFileSize"
           [customUpload]="true"
-          (uploadHandler)="onFileUpload($event)"
+          (onSelect)="onFileUpload($event)"
+          (uploadHandler)="confirmUpload()"
           [disabled]="clientAttachments.length >= maxAttachments || loading"
           chooseLabel="Browse"
           uploadLabel="Upload"
           cancelLabel="Cancel"
           [auto]="false"
           [fileLimit]="maxFilesPerUpload"
+          [showUploadButton]="selectedFiles.length > 0"
+          [showCancelButton]="selectedFiles.length > 0"
         >
         </p-fileUpload>
-
-        <!-- Preview dos arquivos selecionados -->
-        <div *ngIf="uploadPreviews.length > 0" class="files-preview">
-          <h5>Preview dos arquivos:</h5>
-          <div class="preview-grid">
-            <div
-              *ngFor="let preview of uploadPreviews; let i = index"
-              class="preview-item"
-            >
-              <div class="preview-container">
-                <img
-                  *ngIf="selectedFiles[i]?.type.startsWith('image/')"
-                  [src]="preview"
-                  [alt]="'Preview do arquivo ' + selectedFiles[i]?.name"
-                  class="preview-image"
-                />
-                <video
-                  *ngIf="selectedFiles[i]?.type.startsWith('video/')"
-                  [src]="preview"
-                  controls
-                  class="preview-video"
-                ></video>
-                <div
-                  *ngIf="
-                    !selectedFiles[i]?.type.startsWith('image/') &&
-                    !selectedFiles[i]?.type.startsWith('video/')
-                  "
-                  class="preview-file-info"
-                >
-                  <span
-                    class="pi pi-file"
-                    style="color: var(--cor-primaria)"
-                  ></span>
-                  <span>{{ selectedFiles[i]?.name }}</span>
-                </div>
-              </div>
-              <div class="file-name">{{ selectedFiles[i]?.name }}</div>
-            </div>
-          </div>
-
-          <!-- Botões de confirmação/cancelamento do upload -->
-          <div class="upload-actions">
-            <button
-              pButton
-              label="Confirm Upload"
-              icon="pi pi-upload"
-              (click)="confirmUpload()"
-              [disabled]="loading"
-              severity="success"
-            ></button>
-            <button
-              pButton
-              label="Cancel"
-              id="btnSecundario"
-              icon="pi pi-times"
-              (click)="cancelUpload()"
-              [disabled]="loading"
-              severity="secondary"
-            ></button>
-          </div>
-        </div>
 
         <div class="upload-info">
           <small
@@ -247,7 +195,6 @@
         </div>
       </div>
 
-      <!-- Mensagem quando já tem adRequest ativo -->
       <div
         class="ad-request-active-section"
         *ngIf="hasActiveAdRequest && clientAttachments.length > 0"
@@ -270,7 +217,6 @@
   <p-tabPanel header="Ads">
     <div class="ads-info" *ngIf="shouldDisplayMaxValidationsTry()">
       <p class="validation-info">
-        <!-- ad.canBeValidatedByOwner -->
         <span
           class="pi pi-info-circle"
           style="color: var(--cor-primaria)"
@@ -476,7 +422,7 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <div class="w-full">
+    <div class="w-full flex justify-content-between align-items-center">
       <button
         pButton
         label="Cancel"

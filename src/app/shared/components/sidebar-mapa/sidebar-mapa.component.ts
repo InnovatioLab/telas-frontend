@@ -158,7 +158,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
     this.cartService.addToCart(cartRequest).subscribe({
       next: () => {
-        this.toastService.sucesso("Monitor added to cart");
+        this.toastService.sucesso("Screen added to cart");
       },
       error: (error) => {
         this.toastService.erro("Error adding to cart");
@@ -209,7 +209,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
       const monitorToAdd = this.pontoSelecionado;
       this.clientService.addToWishlist(monitorToAdd.id).subscribe({
         next: () => {
-          this.toastService.sucesso("Monitor added to wishlist");
+          this.toastService.sucesso("Screen added to wishlist");
         },
         error: (error) => {
           this.toastService.erro("Error adding to wishlist");

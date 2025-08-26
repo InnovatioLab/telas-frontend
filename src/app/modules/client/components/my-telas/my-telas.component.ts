@@ -20,6 +20,7 @@ import { AttachmentResponseDto } from "@app/model/dto/response/attachment-respon
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { ErrorComponent } from "@app/shared/components";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
 
@@ -38,15 +39,15 @@ import { Subscription } from "rxjs";
 })
 export class MyTelasComponent implements OnInit, OnDestroy {
   @ViewChild("adFileUpload") fileUploadComponent: FileUpload;
+  @ViewChild("attachmentFileUpload") attachmentFileUploadComponent: FileUpload;
   loading = false;
   activeTabIndex: number = 0;
 
-  // Subscription para gerenciar observables
   private routeParamsSubscription: Subscription;
 
   authenticatedClient: AuthenticatedClientResponseDto | null = null;
   hasActiveAdRequest = false;
-  isClientDataLoaded = false; // Flag para controlar se os dados foram carregados
+  isClientDataLoaded = false;
 
   clientAttachments: Array<{
     attachmentId: string;
@@ -54,40 +55,33 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     attachmentLink: string;
   }> = [];
 
-  // Seleção de attachments para request ad
   selectedClientAttachments: string[] = [];
   attachmentCheckboxStates: { [key: string]: boolean } = {};
 
-  // Attachments
   attachments: AttachmentResponseDto[] = [];
   selectedAttachments: string[] = [];
   maxAttachments = 3;
   maxFileSize = 10 * 1024 * 1024;
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff";
 
-  // File upload properties
   selectedFiles: File[] = [];
   uploadPreviews: string[] = [];
   maxFilesPerUpload = 3;
-  pendingUpload = false; // Flag para controlar upload pendente
+  pendingUpload = false;
 
-  // Ads
   selectedAdFile: File | null = null;
   ads: AdResponseDto[] = [];
   hasAds = false;
 
-  // Dialogs
   showRequestAdDialog = false;
   showValidateAdDialog = false;
   showUploadAdDialog = false;
   selectedAdForValidation: AdResponseDto | null = null;
 
-  // Forms
   requestAdForm: FormGroup;
   validateAdForm: FormGroup;
   uploadAdForm: FormGroup;
 
-  // Validation options
   validationOptions = [
     { label: "Approved", value: "APPROVED" },
     { label: "Rejected", value: "REJECTED" },
@@ -125,7 +119,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkRouteParams();
     this.loadAuthenticatedClient();
-    this.loadAttachments();
   }
 
   ngOnDestroy(): void {
@@ -134,7 +127,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Verifica parâmetros da rota e define a tab ativa
   checkRouteParams(): void {
     this.routeParamsSubscription = this.route.queryParams.subscribe(
       (params) => {
@@ -145,7 +137,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     );
   }
 
-  // Carrega dados do cliente autenticado
   loadAuthenticatedClient(): void {
     this.loading = true;
     this.clientService.getAuthenticatedClient().subscribe({
@@ -154,13 +145,13 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.clientAttachments = client.attachments || [];
         this.hasActiveAdRequest = client.adRequest !== null;
         this.ads = client.ads || [];
-        this.hasAds = true; // Sempre mostrar a tab de ads
-        this.isClientDataLoaded = true; // Marcar dados como carregados
+        this.hasAds = true;
+        this.isClientDataLoaded = true;
         this.loading = false;
       },
       error: (error) => {
-        this.toastService.erro("Erro ao carregar dados do cliente");
-        this.isClientDataLoaded = false; // Marcar que houve erro no carregamento
+        this.toastService.erro("Error loading client data");
+        this.isClientDataLoaded = false;
         this.loading = false;
       },
     });
@@ -170,92 +161,132 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     this.activeTabIndex = event.index;
   }
 
-  // Upload de attachments - só prepara os arquivos
+  // Método auxiliar para validar attachments (sem proporção)
+  private async validateAttachmentFile(
+    file: File
+  ): Promise<{ isValid: boolean; errors: string[] }> {
+    // Validações básicas usando a utility
+    if (!ImageValidationUtil.isValidFileType(file)) {
+      return {
+        isValid: false,
+        errors: [
+          `File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`,
+        ],
+      };
+    }
+
+    if (!ImageValidationUtil.isValidFileSize(file, 10)) {
+      return {
+        isValid: false,
+        errors: [`File "${file.name}" must be at most 10MB.`],
+      };
+    }
+
+    if (!ImageValidationUtil.isValidFileName(file, 255)) {
+      return {
+        isValid: false,
+        errors: [
+          `File name "${file.name}" is too long. Maximum of 255 characters allowed.`,
+        ],
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+    };
+  }
+
   onFileUpload(event: any): void {
     const files = event.files;
     if (files && files.length > 0) {
-      // Limpar arrays anteriores
       this.selectedFiles = [];
       this.uploadPreviews = [];
 
-      // Validar quantidade de arquivos
       if (files.length > this.maxFilesPerUpload) {
         this.toastService.erro(
           `Maximum of ${this.maxFilesPerUpload} attachments per upload`
         );
+        // Limpar o componente
+        if (this.attachmentFileUploadComponent) {
+          this.attachmentFileUploadComponent.clear();
+        }
         return;
       }
 
-      // Validar cada arquivo
-      for (const file of files) {
-        // Validar tipo de arquivo
-        if (!this.isValidFileType(file)) {
-          this.toastService.erro(
-            `Attachment "${file.name}" invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`
-          );
-          return;
+      // Validar quantidade total
+      if (this.clientAttachments.length + files.length > this.maxAttachments) {
+        this.toastService.erro(
+          `Maximum of ${this.maxAttachments} attachments reached. Please remove some before uploading more.`
+        );
+        // Limpar o componente
+        if (this.attachmentFileUploadComponent) {
+          this.attachmentFileUploadComponent.clear();
         }
-
-        // Validar tamanho
-        if (file.size > this.maxFileSize) {
-          this.toastService.erro(
-            `Arquivo "${file.name}" must be no larger than 10MB.`
-          );
-          return;
-        }
-
-        // Validar quantidade total
-        if (
-          this.clientAttachments.length + files.length >
-          this.maxAttachments
-        ) {
-          this.toastService.erro(
-            `Maximum of ${this.maxAttachments} attachments reached. Please remove some before uploading more.`
-          );
-          return;
-        }
-
-        // Validar tamanho do nome do arquivo
-        if (file.name.length > 255) {
-          this.toastService.erro(
-            `Attachment name "${file.name} too long. Maximum 255 characters allowed.`
-          );
-          return;
-        }
-
-        this.selectedFiles.push(file);
+        return;
       }
 
-      // Preparar previews dos arquivos
-      this.selectedFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.uploadPreviews[index] = reader.result as string;
-        };
-        reader.readAsDataURL(file);
-      });
+      // Validar cada arquivo usando a utility
+      const validateFiles = async () => {
+        for (const file of files) {
+          const validation = await this.validateAttachmentFile(file);
+          if (!validation.isValid) {
+            validation.errors.forEach((error) => {
+              this.toastService.erro(error);
+            });
+            // Limpar o componente se alguma validação falhar
+            if (this.attachmentFileUploadComponent) {
+              this.attachmentFileUploadComponent.clear();
+            }
+            return;
+          }
+          this.selectedFiles.push(file);
+        }
 
-      // Marcar como pendente para upload
-      this.pendingUpload = true;
+        // Se chegou até aqui, todos os arquivos são válidos
+        // Preparar previews dos arquivos
+        this.selectedFiles.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.uploadPreviews[index] = reader.result as string;
+          };
+          reader.readAsDataURL(file);
+        });
+
+        // Marcar como pendente para upload
+        this.pendingUpload = true;
+      };
+
+      validateFiles().catch((error) => {
+        console.error("Error validating files:", error);
+        this.toastService.erro("Error validating files");
+        if (this.attachmentFileUploadComponent) {
+          this.attachmentFileUploadComponent.clear();
+        }
+      });
     }
   }
 
   // Método para confirmar o upload
   confirmUpload(): void {
     if (this.selectedFiles.length === 0) {
-      this.toastService.erro("Nenhum arquivo selecionado para upload");
+      this.toastService.erro("No files selected for upload");
       return;
     }
 
     this.loading = true;
     this.clientService.uploadMultipleAttachments(this.selectedFiles).subscribe({
       next: (response) => {
-        // Recarregar dados do cliente para obter os novos attachments
         this.loadAuthenticatedClient();
         this.toastService.sucesso("Attachments uploaded successfully");
         this.loading = false;
-        // Limpar dados de upload após sucesso
+
+        // Limpar dados de upload e componente
         this.clearUploadData();
+        // Limpar também o componente de upload de attachments para remover thumbnails
+        if (this.attachmentFileUploadComponent) {
+          this.attachmentFileUploadComponent.clear();
+        }
       },
       error: (error) => {
         this.toastService.erro("Error uploading attachments");
@@ -264,12 +295,14 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Cancelar upload
   cancelUpload(): void {
     this.clearUploadData();
+    // Limpar também o componente de upload de attachments
+    if (this.attachmentFileUploadComponent) {
+      this.attachmentFileUploadComponent.clear();
+    }
   }
 
-  // Limpar dados de upload
   clearUploadData(): void {
     this.selectedFiles = [];
     this.uploadPreviews = [];
@@ -288,18 +321,12 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     ];
     const isValidType = validTypes.includes(file.type);
 
-    // Validar também o nome do arquivo
     const nameRegex = /.*\.(jpg|jpeg|png|gif|svg|bmp|tiff)$/i;
     const isValidName = nameRegex.test(file.name);
 
     return isValidType && isValidName;
   }
 
-  loadAttachments(): void {
-    // Implementar carregamento de attachments existentes se necessário
-  }
-
-  // Seleção de attachments do cliente
   toggleClientAttachmentSelection(attachmentId: string): void {
     const index = this.selectedClientAttachments.indexOf(attachmentId);
     if (index > -1) {
@@ -332,16 +359,13 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     return this.attachmentCheckboxStates[attachmentId] || false;
   }
 
-  // Request Ad
   openRequestAdDialog(): void {
-    // Attachments não são mais obrigatórios para criar AdRequest
     this.showRequestAdDialog = true;
   }
 
   closeRequestAdDialog(): void {
     this.showRequestAdDialog = false;
     this.requestAdForm.reset();
-    // Não limpar selectedClientAttachments aqui para manter a seleção
   }
 
   submitAdRequest(): void {
@@ -357,10 +381,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         next: () => {
           this.toastService.sucesso("Ad request successfully submitted");
           this.closeRequestAdDialog();
-          // Limpar seleção após sucesso
+
           this.selectedClientAttachments = [];
           this.attachmentCheckboxStates = {};
-          // Marcar que agora tem um adRequest ativo
+
           this.hasActiveAdRequest = true;
           this.loadAuthenticatedClient();
           this.loading = false;
@@ -431,7 +455,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Utilitários
   getValidationBadgeClass(validation: AdValidationType): string {
     switch (validation) {
       case AdValidationType.PENDING:
@@ -466,17 +489,14 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     return form.get(campo)?.invalid && form.get(campo)?.touched;
   }
 
-  // Método genérico para mostrar erro em qualquer form
   mostrarErroForm(form: FormGroup, campo: string): boolean {
     return form.get(campo)?.invalid && form.get(campo)?.touched;
   }
 
-  // Visualizar attachment
   viewAttachment(link: string): void {
     window.open(link, "_blank");
   }
 
-  // Download attachment
   downloadAttachment(link: string): void {
     const a = document.createElement("a");
     a.href = link;
@@ -487,7 +507,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     document.body.removeChild(a);
   }
 
-  // Handle image error
   onImageError(event: any): void {
     if (event.target) {
       (event.target as HTMLElement).style.display = "none";
@@ -504,12 +523,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     );
   }
 
-  // Método para navegar programaticamente para a tab de ads
   navigateToAdsTab(): void {
     this.activeTabIndex = 1;
   }
 
-  // Upload direto do Ad
   openUploadAdDialog(): void {
     this.showUploadAdDialog = true;
     this.uploadAdForm.reset();
@@ -523,38 +540,46 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   onAdFileSelect(event: any): void {
     const file = event.files[0];
     if (file) {
-      // Validar tipo de arquivo
-      if (!this.isValidFileType(file)) {
-        console.error("Invalid file type:", file.type);
-        this.toastService.erro(
-          `File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`
-        );
-        return;
-      }
+      ImageValidationUtil.validateImageFile(file)
+        .then((validationResult) => {
+          if (!validationResult.isValid) {
+            validationResult.errors.forEach((error) => {
+              this.toastService.erro(error);
+            });
+            // Limpar o componente de upload se a validação falhar
+            if (this.fileUploadComponent) {
+              this.fileUploadComponent.clear();
+            }
+            this.selectedAdFile = null;
+            this.uploadAdForm.patchValue({
+              adFile: null,
+              name: "",
+              type: "",
+            });
+            return;
+          }
 
-      // Validar tamanho
-      if (file.size > this.maxFileSize) {
-        console.error("File too large:", file.size);
-        this.toastService.erro(`File "${file.name}" must be at most 10MB.`);
-        return;
-      }
-
-      // Validar tamanho do nome do arquivo
-      if (file.name.length > 255) {
-        console.error("File name too long:", file.name);
-        this.toastService.erro(
-          `File name "${file.name}" is too long. Maximum of 255 characters allowed.`
-        );
-
-        return;
-      }
-
-      this.uploadAdForm.patchValue({
-        adFile: file,
-        name: file.name,
-        type: this.getFileType(file),
-      });
-      this.selectedAdFile = file;
+          this.uploadAdForm.patchValue({
+            adFile: file,
+            name: file.name,
+            type: this.getFileType(file),
+          });
+          this.selectedAdFile = file;
+        })
+        .catch((error) => {
+          console.error("Error validating image:", error);
+          this.toastService.erro("Error validating image file");
+          // Limpar o componente de upload em caso de erro
+          if (this.fileUploadComponent) {
+            this.fileUploadComponent.clear();
+          }
+          this.selectedAdFile = null;
+          this.uploadAdForm.patchValue({
+            adFile: null,
+            name: "",
+            type: "",
+          });
+        });
     }
   }
 
@@ -590,41 +615,55 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Converter arquivo para base64
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        const base64Data = base64String.split(",")[1]; // Remove o prefixo data:image/...;base64,
+      this.loading = true;
+      ImageValidationUtil.validateImageFile(file)
+        .then((validationResult) => {
+          if (!validationResult.isValid) {
+            validationResult.errors.forEach((error) => {
+              this.toastService.erro(error);
+            });
+            this.loading = false;
+            return;
+          }
 
-        const createAdDto: CreateClientAdDto = {
-          name: formValue.name,
-          type: formValue.type,
-          bytes: base64Data,
-        };
+          const reader = new FileReader();
+          reader.onload = () => {
+            const base64String = reader.result as string;
+            const base64Data = base64String.split(",")[1];
 
-        this.loading = true;
-        this.adService
-          .createClientAd(this.authenticatedClient!.id, createAdDto)
-          .subscribe({
-            next: () => {
-              console.log("chamou createClientAd");
-              this.toastService.sucesso("Ad sent for admin review");
-              this.selectedAdFile = null;
-              if (this.fileUploadComponent) {
-                this.fileUploadComponent.clear();
-              }
-              this.loadAuthenticatedClient();
-              this.loading = false;
-            },
-            error: (error) => {
-              console.error("Error uploading ad:", error);
-              this.toastService.erro("Error uploading ad");
-              this.loading = false;
-            },
-          });
-      };
+            const createAdDto: CreateClientAdDto = {
+              name: formValue.name,
+              type: formValue.type,
+              bytes: base64Data,
+            };
 
-      reader.readAsDataURL(file);
+            this.adService
+              .createClientAd(this.authenticatedClient!.id, createAdDto)
+              .subscribe({
+                next: () => {
+                  this.toastService.sucesso("Ad sent for admin review");
+                  this.selectedAdFile = null;
+                  if (this.fileUploadComponent) {
+                    this.fileUploadComponent.clear();
+                  }
+                  this.loadAuthenticatedClient();
+                  this.loading = false;
+                },
+                error: (error) => {
+                  console.error("Error uploading ad:", error);
+                  this.toastService.erro("Error uploading ad");
+                  this.loading = false;
+                },
+              });
+          };
+
+          reader.readAsDataURL(file);
+        })
+        .catch((error) => {
+          console.error("Error validating image:", error);
+          this.toastService.erro("Error validating image file");
+          this.loading = false;
+        });
     }
   }
 
@@ -640,7 +679,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    // Se tem ads, só pode criar se tiver exatamente 1 ad com status REJECTED
     if (this.ads.length > 0) {
       return this.ads.some((ad) => ad.validation === "REJECTED");
     }
@@ -652,9 +690,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     return ad.validation === "PENDING" && ad.canBeValidatedByOwner;
   }
 
-  // Verifica se pode fazer upload direto
   canUploadDirectAd(): boolean {
-    // Retornar false se os dados ainda não foram carregados
     if (!this.isClientDataLoaded) {
       return false;
     }
@@ -670,9 +706,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  // Verifica se deve mostrar mensagem para criar AdRequest após rejeição
   shouldShowCreateAdRequestMessage(): boolean {
-    // Retornar false se os dados ainda não foram carregados
     if (!this.isClientDataLoaded) {
       return false;
     }

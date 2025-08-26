@@ -10,7 +10,7 @@ import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
 import { AdRequestResponseDto } from "@app/model/dto/response/ad-request-response.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { MessageService } from "primeng/api";
+import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 
 @Component({
   selector: "app-ad-request-management",
@@ -33,12 +33,10 @@ export class AdRequestManagementComponent implements OnInit {
   currentPage = 1;
   pageSize = 10;
 
-  // Dialog states
   showViewDetailsDialog = false;
   showUploadAdDialog = false;
   selectedAdRequest: AdRequestResponseDto | null = null;
 
-  // Upload states
   selectedFile: File | null = null;
   filePreview: string | null = null;
   loadingUpload = false;
@@ -49,8 +47,7 @@ export class AdRequestManagementComponent implements OnInit {
   constructor(
     private readonly clientService: ClientService,
     private readonly adService: AdService,
-    private readonly toastService: ToastService,
-    private readonly messageService: MessageService
+    private readonly toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -118,77 +115,56 @@ export class AdRequestManagementComponent implements OnInit {
   onFileInputChange(event: any, adRequest: AdRequestResponseDto): void {
     const file = event.target.files[0];
     if (file) {
-      // Definir o adRequest selecionado
       this.selectedAdRequest = adRequest;
 
-      // Validar tipo de arquivo
-      if (!this.isValidFileType(file)) {
-        this.toastService.erro(
-          `File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`
-        );
-        return;
-      }
+      ImageValidationUtil.validateImageFile(file)
+        .then((validationResult) => {
+          if (!validationResult.isValid) {
+            validationResult.errors.forEach((error) => {
+              this.toastService.erro(error);
+            });
+            return;
+          }
 
-      // Validar tamanho
-      if (file.size > this.maxFileSize) {
-        this.toastService.erro(`File "${file.name}" must be at most 10MB.`);
-        return;
-      }
-
-      // Validar tamanho do nome do arquivo
-      if (file.name.length > 255) {
-        this.toastService.erro(
-          `File name "${file.name}" is too long. Maximum of 255 characters allowed.`
-        );
-        return;
-      }
-
-      this.selectedFile = file;
-
-      // Criar preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.filePreview = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-      this.showUploadAdDialog = true;
+          this.selectedFile = file;
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.filePreview = reader.result as string;
+          };
+          reader.readAsDataURL(file);
+          this.showUploadAdDialog = true;
+        })
+        .catch((error) => {
+          console.error("Error validating image:", error);
+          this.toastService.erro("Error validating image file");
+        });
     }
   }
 
   onFileSelect(event: any): void {
     const file = event.files[0];
     if (file) {
-      // Validar tipo de arquivo
-      if (!this.isValidFileType(file)) {
-        this.toastService.erro(
-          `File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`
-        );
-        return;
-      }
+      ImageValidationUtil.validateImageFile(file)
+        .then((validationResult) => {
+          if (!validationResult.isValid) {
+            validationResult.errors.forEach((error) => {
+              this.toastService.erro(error);
+            });
+            return;
+          }
 
-      // Validar tamanho
-      if (file.size > this.maxFileSize) {
-        this.toastService.erro(`File "${file.name}" must be at most 10MB.`);
-        return;
-      }
-
-      // Validar tamanho do nome do arquivo
-      if (file.name.length > 255) {
-        this.toastService.erro(
-          `File name "${file.name}" is too long. Maximum of 255 characters allowed.`
-        );
-        return;
-      }
-
-      this.selectedFile = file;
-
-      // Criar preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.filePreview = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-      this.showUploadAdDialog = true;
+          this.selectedFile = file;
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.filePreview = reader.result as string;
+          };
+          reader.readAsDataURL(file);
+          this.showUploadAdDialog = true;
+        })
+        .catch((error) => {
+          console.error("Error validating image:", error);
+          this.toastService.erro("Error validating image file");
+        });
     }
   }
 
@@ -204,7 +180,6 @@ export class AdRequestManagementComponent implements OnInit {
     ];
     const isValidType = validTypes.includes(file.type);
 
-    // Validar também o nome do arquivo
     const nameRegex = /.*\.(jpg|jpeg|png|gif|svg|bmp|tiff)$/i;
     const isValidName = nameRegex.test(file.name);
 
@@ -240,11 +215,10 @@ export class AdRequestManagementComponent implements OnInit {
 
     this.loadingUpload = true;
 
-    // Converter arquivo para base64
     const reader = new FileReader();
     reader.onload = () => {
       const base64String = reader.result as string;
-      const base64Data = base64String.split(",")[1]; // Remove o prefixo data:image/...;base64,
+      const base64Data = base64String.split(",")[1];
 
       const payload: CreateClientAdDto = {
         adRequestId: this.selectedAdRequest!.id,
