@@ -1,4 +1,25 @@
-/* ===== COMPONENTES BÁSICOS ===== */
+.badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background-color: var(--cor-erro);
+  color: white;
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  font-size: 12px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+
+  @media screen and (min-width: 769px) {
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+  }
+}
 
 /* Logo */
 .logo-container {
@@ -177,22 +198,6 @@ header {
             font-size: 24px;
             color: white;
           }
-
-          .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--cor-primaria);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-          }
         }
       }
     }
@@ -263,22 +268,6 @@ header {
   .search-container {
     width: 100%;
     max-width: 250px;
-  }
-
-  .badge {
-    background: var(--cor-branca);
-    color: var(--cor-primaria);
-    border-radius: 50%;
-    width: 23px;
-    height: 23px;
-    font-weight: 600;
-    font-size: 16px;
-    top: -10px;
-    right: -10px;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 !important;
   }
 
   .box-actions {
@@ -356,19 +345,6 @@ header {
 /* Botões com ícones */
 .icon-button {
   position: relative;
-
-  .badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background-color: var(--cor-primaria);
-    color: white;
-    font-size: 10px;
-    font-weight: bold;
-  }
 
   &:disabled {
     opacity: 0.5 !important;
@@ -619,113 +595,8 @@ textarea::placeholder,
         background: rgba(0, 0, 0, 0.04);
       }
 
-      .badge {
-        position: absolute;
-        top: 0;
-        right: 0;
-      }
-
       .icon {
         font-size: 24px;
-        color: var(--cor-primaria);
-      }
-    }
-  }
-
-  /* Angular deep styles for desktop */
-  ::ng-deep {
-    .container-header-content {
-      position: fixed;
-      display: flex;
-      flex-direction: column;
-      z-index: 1000;
-      width: 100%;
-      background: #fff;
-    }
-
-    .badge {
-      background: var(--cor-primaria);
-      color: var(--cor-branca);
-      border-radius: 50%;
-      width: 23px;
-      height: 23px;
-      font-weight: 600;
-      font-size: 16px;
-      top: -10px;
-      right: -10px;
-      display: flex !important;
-      justify-content: center !important;
-      align-items: center !important;
-      padding: 0 !important;
-    }
-
-    .header-container {
-      background: #fff;
-      padding: 30px 33px;
-      max-height: 87px;
-      height: 87px;
-      border-bottom: 1px solid #eee;
-      margin-bottom: 0;
-
-      .p-button {
-        border: none;
-        overflow: visible;
-        padding: 0;
-      }
-
-      .p-button.p-button-text:not(:disabled):hover {
-        background-color: transparent;
-      }
-
-      .p-button:not(:disabled):focus {
-        border: none;
-        box-shadow: none;
-      }
-    }
-
-    .search-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex: 1;
-      max-width: 500px;
-      margin: 0 48px;
-    }
-
-    .box-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      .p-button {
-        font-weight: 500;
-        font-size: 16px;
-      }
-
-      .botao-cadastro {
-        padding: 14px;
-        border-radius: 8px;
-        font-family: var(--font-family);
-        font-size: 12px;
-        font-weight: 500;
-        line-height: 20px;
-        background: var(--cor-primaria);
-        min-height: 48px;
-        color: #fff;
-        border: none;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        &:hover {
-          background: var(--text-color);
-          opacity: 1;
-        }
-      }
-
-      .icon {
-        font-size: 32px;
         color: var(--cor-primaria);
       }
     }
@@ -778,31 +649,6 @@ textarea::placeholder,
     justify-content: center;
     margin: 0 auto;
     padding: 0 16px;
-  }
-
-  /* Badges */
-  .badge {
-    background-color: var(--cor-primaria) !important;
-    color: var(--cor-branca);
-    font-size: 12px !important;
-    width: 20px !important;
-    height: 20px !important;
-    line-height: 12px;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 !important;
-  }
-
-  .icon-button {
-    .badge {
-      width: 16px;
-      height: 16px;
-      font-size: 9px;
-      top: -3px;
-      right: -3px;
-      background-color: var(--cor-primaria);
-    }
   }
 
   /* Specific badge overrides */
@@ -913,42 +759,10 @@ textarea::placeholder,
           font-size: 24px;
           color: white;
         }
-
-        .badge {
-          position: absolute;
-          top: -5px;
-          right: -5px;
-          background-color: var(--cor-primaria);
-          color: white;
-          border-radius: 50%;
-          width: 18px;
-          height: 18px;
-          font-size: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 600;
-        }
       }
 
       .carrinho {
         position: relative;
-
-        .badge {
-          position: absolute;
-          top: -5px;
-          right: -5px;
-          background-color: var(--cor-primaria);
-          color: white;
-          border-radius: 50%;
-          width: 18px;
-          height: 18px;
-          font-size: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 600;
-        }
       }
     }
   }

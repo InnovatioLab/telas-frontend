@@ -1,7 +1,14 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { IconWarningComponent } from '../../icons/warning.icon';
+import { CommonModule } from "@angular/common";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  signal,
+} from "@angular/core";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { IconWarningComponent } from "../../icons/warning.icon";
 
 interface AlertCountEvent {
   count: number;
@@ -9,11 +16,11 @@ interface AlertCountEvent {
 }
 
 @Component({
-  selector: 'app-alert-counter',
+  selector: "app-alert-counter",
   standalone: true,
   imports: [CommonModule, IconWarningComponent, PrimengModule],
-  templateUrl: './alert-counter.component.html',
-  styleUrls: ['./alert-counter.component.scss']
+  templateUrl: "./alert-counter.component.html",
+  styleUrls: ["./alert-counter.component.scss"],
 })
 export class AlertCounterComponent implements OnInit, OnDestroy {
   @Input() isDesktop = true;
@@ -21,8 +28,10 @@ export class AlertCounterComponent implements OnInit, OnDestroy {
 
   adminAlertCount = signal<number>(0);
   hasAdminCriticalAlert = signal<boolean>(false);
-  
-  private readonly alertCountListener: (e: CustomEvent<AlertCountEvent>) => void;
+
+  private readonly alertCountListener: (
+    e: CustomEvent<AlertCountEvent>
+  ) => void;
 
   constructor(private readonly cdr: ChangeDetectorRef) {
     this.alertCountListener = (e: CustomEvent<AlertCountEvent>) => {
@@ -35,27 +44,33 @@ export class AlertCounterComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const savedAlertCount = localStorage.getItem('admin_alert_count');
+    const savedAlertCount = localStorage.getItem("admin_alert_count");
     if (savedAlertCount) {
       this.adminAlertCount.set(parseInt(savedAlertCount, 10));
     }
-    
-    const savedHasCritical = localStorage.getItem('admin_has_critical_alert');
+
+    const savedHasCritical = localStorage.getItem("admin_has_critical_alert");
     if (savedHasCritical) {
-      this.hasAdminCriticalAlert.set(savedHasCritical === 'true');
+      this.hasAdminCriticalAlert.set(savedHasCritical === "true");
     }
-    
-    window.addEventListener('admin-alert-count-changed', this.alertCountListener as EventListener);
+
+    window.addEventListener(
+      "admin-alert-count-changed",
+      this.alertCountListener as EventListener
+    );
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('admin-alert-count-changed', this.alertCountListener as EventListener);
+    window.removeEventListener(
+      "admin-alert-count-changed",
+      this.alertCountListener as EventListener
+    );
   }
 
   onToggleSidebar(): void {
     this.toggleSidebar();
-    
+
     this.hasAdminCriticalAlert.set(false);
-    localStorage.setItem('admin_has_critical_alert', 'false');
+    localStorage.setItem("admin_has_critical_alert", "false");
   }
 }
