@@ -4,23 +4,18 @@
     position="right"
     [dismissible]="true"
     (onHide)="closeSidebar()"
-    [blockScroll]="true"
+    [blockScroll]="false"
   >
     <div class="ponto-detalhes" *ngIf="pontoSelecionado || getMonitorData()">
       <h4 class="ponto-titulo">
         {{ getMonitorData()?.addressLocationName | sliceString: 50 }}
       </h4>
 
-      <div class="street-view-container">
+      <div class="street-view-container" *ngIf="getMonitorData()?.photoUrl">
         <img
-          *ngIf="
-            getMonitorData()?.photoUrl ||
-            (!loadingImage && !imageError && streetViewUrl)
-          "
-          [src]="getMonitorData()?.photoUrl || streetViewUrl"
-          alt="Street View"
+          [src]="getMonitorData()?.photoUrl"
+          alt="location Photo"
           class="street-view-image"
-          (error)="handleImageError()"
         />
       </div>
 

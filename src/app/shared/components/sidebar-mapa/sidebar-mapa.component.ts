@@ -16,7 +16,6 @@ import { ToastService } from "@app/core/service/state/toast.service";
 import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
 import { CartResponseDto } from "@app/model/dto/response/cart-response.dto";
 import { Recurrence } from "@app/model/enums/recurrence.enum";
-import { IconBackComponent } from "@app/shared/icons/back.icon";
 import { IconBoltComponent } from "@app/shared/icons/bolt.icon";
 import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconClockComponent } from "@app/shared/icons/clock.icon";
@@ -51,11 +50,7 @@ import { PrimengModule } from "../../primeng/primeng.module";
 export class SidebarMapaComponent implements OnInit, OnDestroy {
   visibilidadeSidebar = false;
   pontoSelecionado: MapPoint | null = null;
-  streetViewUrl: string | null = null;
-  loadingImage = false;
-  imageError = false;
 
-  // New properties for location information
   localInfo: {
     name?: string;
     description?: string;
@@ -111,7 +106,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     console.log("chamou fechar sidebar");
     this.visibilidadeSidebar = false;
     this.mapsService.selectPoint(null);
-    this.streetViewUrl = null;
     this.localInfo = null;
     this.pontoSelecionado = null;
   }
@@ -119,47 +113,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   voltar(): void {
     this.closeSidebar();
   }
-
-  // private loadStreetViewImage(): void {
-  //   if (!this.pontoSelecionado) return;
-
-  //   this.loadingImage = true;
-  //   this.imageError = false;
-
-  //   const { latitude, longitude } = this.pontoSelecionado;
-  //   const tamanho = "800x350";
-  //   const fov = "80";
-  //   const pitch = "0";
-  //   const heading = "70";
-
-  //   const apiKeyParam = this.env.googleMapsApiKey
-  //     ? `&key=${this.env.googleMapsApiKey}`
-  //     : "";
-
-  //   this.streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=${tamanho}&location=${latitude},${longitude}&fov=${fov}&heading=${heading}&pitch=${pitch}${apiKeyParam}`;
-
-  //   setTimeout(() => {
-  //     this.loadingImage = false;
-  //   }, 800);
-  // }
-
-  handleImageError(): void {
-    this.imageError = true;
-    this.loadingImage = false;
-  }
-
-  // openGoogleMaps(): void {
-  //   if (!this.pontoSelecionado) return;
-
-  //   const { latitude, longitude } = this.pontoSelecionado;
-  //   const title = encodeURIComponent(
-  //     this.pontoSelecionado.title || "Selected Location"
-  //   );
-
-  //   const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&query_place_id=${title}`;
-
-  //   window.open(url, "_blank");
-  // }
 
   getMonitorData(): any {
     if (this.pontoSelecionado?.data) {
