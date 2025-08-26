@@ -22,8 +22,7 @@ import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
-import { NotificacaoState } from "@app/modules/notificacao/models";
+import { NotificationState } from "@app/modules/notificacao/models";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { filter, Subject, Subscription, takeUntil, timer } from "rxjs";
@@ -90,7 +89,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       : "Your cart is empty";
   }
 
-  // Getter para verificar se o menu está aberto em mobile com largura <= 600px
   get isMenuOpenInSmallMobile(): boolean {
     const isSmallMobile = window.innerWidth <= 600;
     const isMenuOpen = this.menuAberto;
@@ -111,12 +109,11 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     public router: Router,
     private readonly authentication: Authentication,
-    private readonly notificacaoState: NotificacaoState,
+    private readonly notificationState: NotificationState,
     private readonly googleMapsService: GoogleMapsService,
     private readonly searchMonitorsService: SearchMonitorsService,
     private readonly sidebarService: SidebarService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly toggleModeService: ToggleModeService,
     private readonly toastService: ToastService,
     private readonly loadingService: LoadingService,
     private readonly zipcodeService: ZipCodeService,
@@ -126,7 +123,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.isLoggedIn = this.authentication.isTokenValido();
 
-    this.itensNotificacao = this.notificacaoState._quantidadeNotificacoes;
+    this.itensNotificacao = this.notificationState._quantidadeNotificacoes;
     this.checkScreenSize();
     this.resizeListener = () => this.checkScreenSize();
     window.addEventListener("resize", this.resizeListener);
@@ -545,7 +542,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   abrirNotificacoes() {
-    this.notificacaoState.exibirSidebar();
+    this.notificationState.exibirSidebar();
   }
 
   abrirCheckout() {

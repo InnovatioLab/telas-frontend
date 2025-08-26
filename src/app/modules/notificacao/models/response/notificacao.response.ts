@@ -1,28 +1,30 @@
-import { Notificacao } from '../notificacao';
+import { Notification } from "../notification";
 
-export class NotificacaoResponse {
+export class NotificationResponse {
   id: string;
-  referencia: string;
-  mensagem: string;
-  visualizada: boolean;
+  message: string;
+  actionUrl?: string;
+  visualized: boolean;
 
-  constructor(dados: INotificacaoResponse) {
-    this.id = dados.id;
-    this.referencia = dados.referencia;
-    this.mensagem = dados.mensagem;
-    this.visualizada = dados.visualizada;
+  constructor(data: INotificationResponse) {
+    this.id = data.id;
+    this.message = data.message;
+    this.actionUrl = data.actionUrl;
+    this.visualized = data.visualized;
   }
 
-  static filtrarListaLidas(notificacoes: NotificacaoResponse[]): Notificacao[] {
-    const lista: Notificacao[] = [];
-    notificacoes.forEach(notificacao => {
-      if (notificacao.visualizada) {
+  static filtrarListaLidas(
+    notificacoes: NotificationResponse[]
+  ): Notification[] {
+    const lista: Notification[] = [];
+    notificacoes.forEach((notificacao) => {
+      if (notificacao.visualized) {
         lista.push(
-          new Notificacao({
+          new Notification({
             id: notificacao.id,
-            referencia: notificacao.referencia,
-            mensagem: notificacao.mensagem,
-            visualizada: notificacao.visualizada
+            message: notificacao.message,
+            actionUrl: notificacao.actionUrl,
+            visualized: notificacao.visualized,
           })
         );
       }
@@ -31,16 +33,18 @@ export class NotificacaoResponse {
     return lista;
   }
 
-  static filtrarListaNaoLidas(notificacoes: NotificacaoResponse[]): Notificacao[] {
-    const lista: Notificacao[] = [];
-    notificacoes.forEach(notificacao => {
-      if (!notificacao.visualizada) {
+  static filtrarListaNaoLidas(
+    notificacoes: NotificationResponse[]
+  ): Notification[] {
+    const lista: Notification[] = [];
+    notificacoes.forEach((notificacao) => {
+      if (!notificacao.visualized) {
         lista.push(
-          new Notificacao({
+          new Notification({
             id: notificacao.id,
-            referencia: notificacao.referencia,
-            mensagem: notificacao.mensagem,
-            visualizada: notificacao.visualizada
+            actionUrl: notificacao.actionUrl,
+            message: notificacao.message,
+            visualized: notificacao.visualized,
           })
         );
       }
@@ -50,10 +54,9 @@ export class NotificacaoResponse {
   }
 }
 
-export interface INotificacaoResponse {
+export interface INotificationResponse {
   id: string;
-  referencia: string;
-  mensagem: string;
-  visualizada: boolean;
-  link: string;
+  message: string;
+  visualized: boolean;
+  actionUrl?: string;
 }
