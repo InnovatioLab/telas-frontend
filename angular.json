@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "chatbot-ematerce-painel-front": {
+    "telas-front": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -18,7 +18,7 @@
           "builder": "@ngx-env/builder:application",
           "options": {
             "outputPath": {
-              "base": "dist/chatbot-ematerce-painel-front"
+              "base": "dist/telas-front"
             },
             "index": "src/index.html",
             "polyfills": ["zone.js"],
@@ -145,10 +145,10 @@
           "builder": "@ngx-env/builder:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "chatbot-ematerce-painel-front:build:production"
+              "buildTarget": "telas-front:build:production"
             },
             "development": {
-              "buildTarget": "chatbot-ematerce-painel-front:build:development"
+              "buildTarget": "telas-front:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -156,7 +156,7 @@
         "extract-i18n": {
           "builder": "@ngx-env/builder:extract-i18n",
           "options": {
-            "buildTarget": "chatbot-ematerce-painel-front:build"
+            "buildTarget": "telas-front:build"
           }
         },
         "test": {
@@ -180,9 +180,7 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   }
 }
