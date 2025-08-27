@@ -40,7 +40,7 @@
       font-size: var(--fonte-tamanho-padrao);
       opacity: 0.9;
     }
-    
+
     .header-actions {
       display: flex;
       align-items: center;
@@ -49,7 +49,7 @@
       width: 100%;
       margin-bottom: 10px;
     }
-    
+
     .pin-btn {
       background: transparent;
       border: none;
@@ -58,20 +58,20 @@
       padding: 5px;
       border-radius: 50%;
       transition: all 0.2s ease;
-      
+
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);
       }
-      
+
       &.pinned {
         color: var(--cor-sucesso);
-        
+
         &:hover {
           opacity: 0.8;
         }
       }
     }
-    
+
     .close-btn {
       background: transparent;
       border: none;
@@ -80,7 +80,7 @@
       padding: 5px;
       border-radius: 50%;
       transition: all 0.2s ease;
-      
+
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);
       }
@@ -185,13 +185,13 @@
       margin-bottom: 15px;
       border-bottom: 1px solid var(--cor-cinza-medio);
       padding-bottom: 10px;
-      
+
       h3 {
         margin: 0;
         border-bottom: none;
         padding-bottom: 0;
       }
-      
+
       .test-alert-btn {
         color: var(--cor-branca);
         font-size: 1.2rem;
@@ -278,7 +278,6 @@
   }
 }
 
-
 .status-badge {
   padding: 0.25rem 0.5rem;
   border-radius: 3px;
@@ -320,7 +319,7 @@
       background-color: transparent;
 
       .p-button {
-        flex: 1; 
+        flex: 1;
         min-width: 0;
         background: transparent;
         border: 1px solid var(--cor-primaria);
@@ -378,7 +377,7 @@
       background-color: var(--cor-primaria) !important;
       border-color: var(--cor-primaria);
       color: var(--cor-branca);
-      
+
       .p-togglebutton-content {
         background-color: transparent !important;
       }
@@ -401,7 +400,7 @@
   }
 }
 
-:host ::ng-deep+app-maps {
+:host ::ng-deep + app-maps {
   margin-right: 350px;
   width: calc(100% - 350px);
 }
@@ -429,11 +428,11 @@
   .desktop-only {
     display: none !important;
   }
-  
+
   .mobile-only {
     display: block !important;
   }
-  
+
   .admin-alert-sidebar {
     width: 320px;
     right: -320px;

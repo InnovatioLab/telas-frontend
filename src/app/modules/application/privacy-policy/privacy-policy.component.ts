@@ -4,7 +4,6 @@ import { RouterModule } from "@angular/router";
 import { PoliticaPrivacidadeService } from "@app/core/service/api/politica-privacidade.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { PoliticaPrivacidade } from "@app/model/politica-privacidade";
-import { HeaderComponent } from "@app/shared/components/header/header.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { GuestHeaderComponent } from "../components/guest-header/guest-header.component";
@@ -16,7 +15,6 @@ import { GuestHeaderComponent } from "../components/guest-header/guest-header.co
     CommonModule,
     RouterModule,
     PrimengModule,
-    HeaderComponent,
     GuestHeaderComponent,
     ProgressSpinnerModule,
   ],
