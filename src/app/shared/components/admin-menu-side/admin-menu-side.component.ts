@@ -258,14 +258,14 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     const config = DialogoUtils.exibirAlerta(
       "Are you sure you want to logout?",
       {
-        acaoPrimaria: "Logout",
+        acaoPrimaria: "Stay",
         acaoPrimariaCallback: () => {
           this.refDialogo.close();
-          this.desconectar();
         },
-        acaoSecundaria: "Stay",
+        acaoSecundaria: "Logout",
         acaoSecundariaCallback: () => {
           this.refDialogo.close();
+          this.desconectar();
         },
       }
     );

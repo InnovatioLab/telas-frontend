@@ -2,7 +2,7 @@
   <h5 class="titulo">Identification Data</h5>
   <form [formGroup]="cadastroForm">
     <div class="grid form-group">
-      <div class="col-12 md:col-6 lg:col-3" *ngIf="exibirCampo('businessName')">
+      <div class="col-12 md:col-6 lg:col-8" *ngIf="exibirCampo('businessName')">
         <label
           htmlFor="businessName"
           id="lb-business-name"
@@ -25,7 +25,7 @@
       </div>
 
       <div
-        class="col-12 md:col-6 lg:col-3"
+        class="col-6 md:col-6 lg:col-4"
         *ngIf="exibirCampo('identificationNumber')"
       >
         <label
@@ -50,7 +50,7 @@
         ></app-error>
       </div>
 
-      <div class="col-12 md:col-6 lg:col-3" *ngIf="exibirCampo('industry')">
+      <div class="col-6 md:col-6 lg:col-5" *ngIf="exibirCampo('industry')">
         <label
           htmlFor="industry"
           id="lb-business-field"
@@ -74,7 +74,7 @@
         ></app-error>
       </div>
 
-      <div class="col-12 md:col-6 lg:col-3" *ngIf="exibirCampo('websiteUrl')">
+      <div class="col-12 md:col-6 lg:col-7" *ngIf="exibirCampo('websiteUrl')">
         <label
           htmlFor="websiteUrl"
           id="lb-website-url"
@@ -99,7 +99,7 @@
 
       <div class="col-12">
         <div class="flex align-items-center gap-2">
-          <label id="lb-social-media" for="social-media-input" class="ml-0 mb-0"
+          <label id="lb-social-media" for="social-media-input" class="mb-0"
             >Social Media</label
           >
           <button
@@ -125,14 +125,14 @@
       <div
         formArrayName="socialMedia"
         *ngFor="let socialMedia of socialMediaArray.controls; let i = index"
-        class="col-12 md:col-6 lg:col-3"
+        class="col-12 social-media"
       >
         <div [formGroupName]="i" class="grid">
-          <div class="col-12 md:col-6 lg:col-3">
+          <div class="col-4 md:col-4 lg:col-3">
             <p-dropdown
               [options]="socialMediaOptions"
               formControlName="platform"
-              placeholder="Select Social Media"
+              placeholder="Choose"
               class="w-full"
             ></p-dropdown>
             <app-error
@@ -143,7 +143,7 @@
               [control]="socialMedia.get('platform')"
             ></app-error>
           </div>
-          <div class="col-12 md:col-6 lg:col-3">
+          <div class="col-8 md:col-8 lg:col-9">
             <input
               type="url"
               pInputText

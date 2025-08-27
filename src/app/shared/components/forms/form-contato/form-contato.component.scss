@@ -10,12 +10,6 @@
     margin-top: var(--espacamento-padrao);
     margin-bottom: var(--espacamento-grande);
   }
-
-  @media (min-width: 768px) {
-    .lg\:col-3 {
-      min-width: 209.5px;
-    }
-  }
 }
 
 .label-left {

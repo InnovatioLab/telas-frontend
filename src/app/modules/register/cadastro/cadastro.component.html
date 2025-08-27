@@ -1,43 +1,56 @@
-<p-card id="one-state" class="cadastro-container">
-  <ng-template pTemplate="header">
-    <div class="stap-header-container">
-      <h1 class="text-header">{{ headerText }}</h1>
-      <button class="botao-cancelar ml-auto" aria-label="Cancelar" id="btn-cancelar" (click)="mensagemCancelarDialog()">
-        <app-icon-fechar class="botao-icon" id="icon-cancelar"></app-icon-fechar>
-      </button>
+<div class="cadastro-container">
+  <p-card id="one-state">
+    <ng-template pTemplate="header">
+      <div class="stap-header-container">
+        <h1 class="text-header">{{ headerText }}</h1>
+        <button
+          class="botao-cancelar ml-auto"
+          aria-label="Cancelar"
+          id="btn-cancelar"
+          (click)="mensagemCancelarDialog()"
+        >
+          <app-icon-fechar
+            class="botao-icon"
+            id="icon-cancelar"
+          ></app-icon-fechar>
+        </button>
+      </div>
+    </ng-template>
+
+    <div>
+      <ui-form-dados-pessoais
+        [cadastroForm]="dadosPessoaisForm"
+        [habilitarFormDados]="habilitarFormDados"
+        (tipoUsuarioSelecionado)="atualizarTipoUsuarioSelecionado($event)"
+        [listaCampos]="listaCampos"
+        id="lib-form-dados-pessoais"
+      ></ui-form-dados-pessoais>
+
+      <ui-form-endereco
+        [enderecoForm]="enderecoForm"
+        (latitudeChange)="latitude = $event"
+        (longitudeChange)="longitude = $event"
+      ></ui-form-endereco>
+
+      <ui-form-contato [contatoForm]="contatoForm"></ui-form-contato>
     </div>
-  </ng-template>
 
-  <div>
-    <ui-form-dados-pessoais
-      [cadastroForm]="dadosPessoaisForm"
-      [habilitarFormDados]="habilitarFormDados"
-      (tipoUsuarioSelecionado)="atualizarTipoUsuarioSelecionado($event)"
-      [listaCampos]="listaCampos"
-      id="lib-form-dados-pessoais"
-    ></ui-form-dados-pessoais>
+    <p class="descricao-campos-obrigatorios mb-0" *ngIf="mostrarAviso()">
+      Fields with<span class="required"> ( </span> ) are mandatory.
+    </p>
 
-    <ui-form-endereco
-      [enderecoForm]="enderecoForm"
-      (latitudeChange)="latitude = $event"
-      (longitudeChange)="longitude = $event"
-    ></ui-form-endereco>
-
-    <ui-form-contato [contatoForm]="contatoForm"></ui-form-contato>
-  </div>
-
-  <p class="descricao-campos-obrigatorios" *ngIf="mostrarAviso()">
-    Fields with<span class="required"> ( </span> ) are mandatory.
-  </p>
-
-  <ng-template pTemplate="footer" class="container-sm flex flex-column justify-content-between">
-    <app-button-footer
-      (proximo)="proximoStap()"
-      (anterior)="anteriorStap()"
-      [txtBtnProximo]="txtBtnProximo"
-      [txtBtnAnterior]="''"
-      [habilitarConcluir]="habilitarBotaoSalvar"
-      id="lib-button-footer"
-    ></app-button-footer>
-  </ng-template>
-</p-card>
+    <ng-template
+      pTemplate="footer"
+      class="container-sm flex flex-column justify-content-between"
+    >
+      <app-button-footer
+        (proximo)="proximoStap()"
+        (anterior)="anteriorStap()"
+        [txtBtnProximo]="txtBtnProximo"
+        [txtBtnAnterior]="''"
+        [habilitarConcluir]="habilitarBotaoSalvar"
+        id="lib-button-footer"
+      ></app-button-footer>
+    </ng-template>
+  </p-card>
+</div>

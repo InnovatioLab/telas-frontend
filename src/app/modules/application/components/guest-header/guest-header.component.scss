@@ -50,18 +50,18 @@ header {
 }
 
 .btn-outline {
-  border: 1px solid var(--cor-primaria-clara);
+  border: 1px solid var(--cor-primaria);
   background: var(--cor-branca);
-  color: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
 
   app-icon-logout {
-    color: var(--cor-primaria-clara);
+    color: var(--cor-primaria);
     transition: color 0.2s;
   }
 }
 
 .btn-outline:hover {
-  background: var(--cor-primaria-clara);
+  background: var(--cor-primaria);
   color: var(--cor-branca);
 
   app-icon-logout {

@@ -98,20 +98,20 @@ body {
   box-sizing: border-box;
 }
 
-// Scrollbar personalizada
+Scrollbar personalizada
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--cor-cinza-fundo);
+  background: var(--cor-cinza-fundo) !important;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--cor-cinza-medio);
+  background: var(--cor-cinza-medio) !important;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--cor-cinza-escuro);
+  background: var(--cor-cinza-escuro) !important;
 }

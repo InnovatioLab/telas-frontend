@@ -40,7 +40,7 @@
         @supports not (overflow-y: overlay) {
           overflow-y: auto;
 
-          // Esconder scrollbar no WebKit quando não necessário
+          Esconder scrollbar no WebKit quando não necessário
           &::-webkit-scrollbar {
             width: 6px;
           }

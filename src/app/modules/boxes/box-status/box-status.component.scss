@@ -149,7 +149,10 @@
           align-items: center;
           gap: 10px;
           border-bottom: 2px solid transparent;
-          transition: background 0.2s, color 0.2s, border-bottom 0.2s;
+          transition:
+            background 0.2s,
+            color 0.2s,
+            border-bottom 0.2s;
 
           .menu-icon {
             font-size: 1.1rem;
@@ -160,7 +163,7 @@
           &.active {
             background: var(--cor-branca);
             color: var(--cor-primaria);
-            border-bottom: 2px solid var(--cor-primaria);
+            border-bottom: 2px solid var(--cor-cinza-medio);
           }
         }
       }
@@ -307,7 +310,9 @@
           border-radius: var(--borda-raio-pequeno);
           color: var(--cor-cinza-escuro);
           font-size: var(--fonte-tamanho-padrao);
-          transition: background 0.2s, color 0.2s;
+          transition:
+            background 0.2s,
+            color 0.2s;
           display: flex;
           align-items: center;
           gap: 10px;

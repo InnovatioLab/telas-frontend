@@ -6,8 +6,12 @@
   padding: 6px 10px !important;
 }
 
+.alert-btn {
+  background-color: var(--cor-primaria-escura);
+}
+
 .alert-badge {
-  background-color: var(--cor-primaria-clara);
+  background-color: var(--cor-primaria-escura);
   color: var(--cor-branca);
   position: absolute;
   top: -3px;

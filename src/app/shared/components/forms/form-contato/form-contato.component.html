@@ -2,7 +2,7 @@
   <h5>Contact Details</h5>
   <form [formGroup]="contatoForm">
     <div class="grid form-group">
-      <div class="col-12 md:col-6 lg:col-3">
+      <div class="col-4 md:col-4 lg:col-3">
         <label id="ld-numero" for="numeroContato" class="required">Phone</label>
         <p-inputMask
           mask="+1 999 999 9999"
@@ -16,7 +16,7 @@
           [control]="contatoForm.get('numeroContato')"
         ></app-error>
       </div>
-      <div class="col-12 lg:col-6">
+      <div class="col-8 md:col-8 lg:col-9">
         <label id="ld-email" for="txt-email" class="required">E-mail</label>
         <input
           type="email"

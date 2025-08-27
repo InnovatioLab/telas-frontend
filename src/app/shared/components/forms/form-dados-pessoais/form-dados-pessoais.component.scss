@@ -9,8 +9,8 @@
   #social-media-input {
     padding: 6px 8px;
     border-radius: var(--borda-raio-pequeno);
-    background-color: var(--cor-primaria-clara);
-    border-color: var(--cor-primaria-clara);
+    background-color: var(--cor-primaria-escura);
+    border-color: var(--cor-primaria-escura);
     transition: var(--transicao-padrao);
 
     &:hover {
@@ -22,6 +22,15 @@
     .p-button {
       padding: 6px 8px !important;
       border-radius: var(--borda-raio-pequeno);
+    }
+  }
+}
+
+.social-media {
+  ::ng-deep {
+    .p-select,
+    .p-dropdown {
+      background-color: transparent !important;
     }
   }
 }
@@ -38,10 +47,6 @@
     color: var(--color-disabled-text-input);
     border: 1px solid var(--color-disabled-borda-input);
   }
-}
-
-.md\:col-3 {
-  min-width: 166px;
 }
 
 @media screen and (max-width: 768px) {
