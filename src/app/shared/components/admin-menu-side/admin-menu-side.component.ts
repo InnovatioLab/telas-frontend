@@ -290,23 +290,21 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   getMenuItemTooltip(item: MenuItem): string {
     switch (item.id) {
       case "home":
-        return "Go to dashboard";
+        return "View maps";
       case "users":
-        return "Manage system users";
-      case "monitors":
-        return "View system monitors";
+        return "Manage users";
+      case "screens":
+        return "Manage screens";
       case "boxes":
-        return "Manage system boxes";
-      case "advertisements":
-        return "Manage advertisements";
+        return "Manage boxes";
+      case "ads":
+        return "Manage ads and requests";
       case "clients":
-        return "Manage system clients";
+        return "Manage clients";
       case "alerts":
         return "View system alerts";
       case "settings":
         return "Configure system settings";
-      case "help":
-        return "Get help and support";
       case "logout":
         return "Sign out from your account";
       default:

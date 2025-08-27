@@ -90,7 +90,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     { id: "myTelas", label: "My telas", icon: "pi-map-marker" },
     { id: "subscriptions", label: "Subscriptions", icon: "pi-desktop" },
     { id: "settings", label: "Settings", icon: "pi-cog" },
-    { id: "help", label: "Help", icon: "pi-question-circle" },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
 
@@ -100,7 +99,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     { id: "myTelas", label: "My telas", icon: "pi-map-marker" },
     { id: "subscriptions", label: "Subscriptions", icon: "pi-desktop" },
     { id: "settings", label: "Settings", icon: "pi-cog" },
-    { id: "help", label: "Help", icon: "pi-question-circle" },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
 
@@ -376,8 +374,10 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
         return "View your ad campaigns";
       case "settings":
         return "Change your account settings";
-      case "help":
-        return "Get help and support";
+      case "myTelas":
+        return "View your ads";
+      case "subscriptions":
+        return "Manage your subscriptions";
       case "logout":
         return "Sign out from your account";
       default:

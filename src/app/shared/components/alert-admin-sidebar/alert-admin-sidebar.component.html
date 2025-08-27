@@ -1,14 +1,29 @@
-<div class="admin-alert-sidebar" [ngClass]="{'visible': isVisible, 'pinned': isPinned}">
+<div
+  class="admin-alert-sidebar"
+  [ngClass]="{ visible: isVisible, pinned: isPinned }"
+>
   <div class="sidebar-header">
-      <div class="header-actions">
-      <button class="pin-btn desktop-only" (click)="togglePin($event)" [ngClass]="{'pinned': isPinned}"
-        aria-label="Pin/Unpin sidebar" pTooltip="{{isPinned ? 'Unpin sidebar' : 'Pin sidebar'}}" tooltipPosition="left">
+    <div class="header-actions">
+      <button
+        class="pin-btn desktop-only"
+        (click)="togglePin($event)"
+        [ngClass]="{ pinned: isPinned }"
+        aria-label="Pin/Unpin sidebar"
+        pTooltip="{{ isPinned ? 'Unpin sidebar' : 'Pin sidebar' }}"
+        tooltipPosition="left"
+      >
         <app-icon-lock *ngIf="isPinned"></app-icon-lock>
         <app-icon-lock-open *ngIf="!isPinned"></app-icon-lock-open>
       </button>
 
-      <button *ngIf="!isPinned" class="close-btn" (click)="toggleSidebar()" aria-label="Close sidebar"
-        pTooltip="Close" tooltipPosition="left">
+      <button
+        *ngIf="!isPinned"
+        class="close-btn"
+        (click)="toggleSidebar()"
+        aria-label="Close sidebar"
+        pTooltip="Close"
+        tooltipPosition="left"
+      >
         <app-icon-close></app-icon-close>
       </button>
     </div>
@@ -16,7 +31,7 @@
     <h2 class="text-center">Monitoring Alerts</h2>
     <p class="text-center">Welcome, {{ userName }}</p>
   </div>
-  
+
   <div class="sidebar-content">
     <div class="search-container">
       <div class="address-search-container">
@@ -25,7 +40,7 @@
             type="text"
             pInputText
             [(ngModel)]="searchTerm"
-            [ngModelOptions]="{standalone: true}"
+            [ngModelOptions]="{ standalone: true }"
             (ngModelChange)="applyFilters()"
             placeholder="Search alerts..."
             maxlength="50"
@@ -43,52 +58,67 @@
           </button>
         </div>
       </div>
-    </div>    
+    </div>
     <div class="filter-container">
-      <p-selectButton 
-        [options]="filterOptions" 
-        [(ngModel)]="statusFilter" 
-        [ngModelOptions]="{standalone: true}"
-        (onChange)="applyFilters()" 
-        styleClass="full-width-select">
+      <p-selectButton
+        [options]="filterOptions"
+        [(ngModel)]="statusFilter"
+        [ngModelOptions]="{ standalone: true }"
+        (onChange)="applyFilters()"
+        styleClass="full-width-select"
+      >
       </p-selectButton>
     </div>
-    
+
     <div class="alerts-container">
       <div class="alerts-header">
         <h3>System Alerts</h3>
-        <button pButton pRipple type="button" 
-                icon="pi pi-plus" 
-                class="p-button-rounded p-button-warning p-button-text test-alert-btn"
-                (click)="addTestAlert()" 
-                pTooltip="Add test alert" 
-                tooltipPosition="left">
-        </button>
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-plus"
+          class="test-alert-btn icon-only"
+          (click)="addTestAlert()"
+          pTooltip="Add test alert"
+          tooltipPosition="left"
+        ></button>
       </div>
-      
+
       <div *ngIf="isLoading" class="loading-container">
-        <p-progressSpinner strokeWidth="4" [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
+        <p-progressSpinner
+          strokeWidth="4"
+          [style]="{ width: '50px', height: '50px' }"
+        ></p-progressSpinner>
         <p>Loading alerts...</p>
       </div>
-      
+
       <div *ngIf="!isLoading && filteredAlerts.length === 0" class="no-alerts">
         <p>No alerts found.</p>
-        <button pButton pRipple type="button" 
-                label="Create Test Alert" 
-                icon="pi pi-plus" 
-                class="p-button-sm p-button-warning" 
-                (click)="addTestAlert()">
-        </button>
+        <button
+          pButton
+          pRipple
+          type="button"
+          label="Create Test Alert"
+          icon="pi pi-plus"
+          class="p-button-sm p-button-warning"
+          (click)="addTestAlert()"
+        ></button>
       </div>
-      
-      <app-card-alert 
-        *ngFor="let alert of filteredAlerts" 
+
+      <app-card-alert
+        *ngFor="let alert of filteredAlerts"
         [alert]="alert"
         (resolve)="resolveAlert($event)"
-        (acknowledge)="acknowledgeAlert($event)">
+        (acknowledge)="acknowledgeAlert($event)"
+      >
       </app-card-alert>
     </div>
   </div>
 </div>
 
-<div class="admin-overlay" *ngIf="isVisible && !isPinned" (click)="closeOverlay()"></div>
+<div
+  class="admin-overlay"
+  *ngIf="isVisible && !isPinned"
+  (click)="closeOverlay()"
+></div>

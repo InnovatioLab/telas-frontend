@@ -193,12 +193,9 @@
       }
       
       .test-alert-btn {
-        color: var(--cor-primaria);
+        color: var(--cor-branca);
         font-size: 1.2rem;
-        
-        &:hover {
-          background-color: rgba(var(--cor-primaria-rgb), 0.1);
-        }
+        max-width: 30px !important;
       }
     }
 

@@ -85,7 +85,11 @@
 
 .feature-cta-section {
   margin-top: var(--espacamento-extra-grande);
-  background: linear-gradient(90deg, var(--cor-primaria), var(--cor-primaria-escura));
+  background: linear-gradient(
+    90deg,
+    var(--cor-primaria),
+    var(--cor-primaria-escura)
+  );
   border-radius: 1.5rem;
   padding: 3rem;
   text-align: center;
@@ -96,7 +100,7 @@
   font-size: 1.875rem;
   font-weight: var(--fonte-peso-negrito);
   margin-bottom: 1rem;
-  color: var(--cor-branca)
+  color: var(--cor-branca);
 }
 
 .feature-cta-description {
@@ -128,10 +132,10 @@
   font-weight: 600;
   border: none;
   font-size: var(--fonte-tamanho-grande);
-  transition: background-color 0.2s, color 0.2s;
+  transition: all 0.2s;
 
   &:hover {
-    background: #f3f4f6;
+    transform: scale(1.05);
   }
 }
 
@@ -143,7 +147,7 @@
   border-radius: 9999px;
   font-weight: 600;
   font-size: var(--fonte-tamanho-grande);
-  transition: background-color 0.2s, color 0.2s;
+  transition: all 0.2s;
 
   &:hover {
     background: var(--cor-branca);

@@ -2084,6 +2084,10 @@ label.required::after {
     background-color: var(--cor-primaria-escura);
     background: var(--cor-primaria-escura);
     opacity: 0.8;
+
+    &.btn-outline {
+      opacity: 1;
+    }
   }
 
   &.p-button-icon-only {

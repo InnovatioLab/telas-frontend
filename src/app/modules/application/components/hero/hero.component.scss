@@ -91,12 +91,6 @@
   transition: var(--transicao-padrao);
 }
 
-.hero-btn-outline:hover,
-.hero-btn-outline:focus {
-  background: var(--cor-primaria);
-  color: var(--cor-branca);
-}
-
 .hero-features {
   display: grid;
   grid-template-columns: 1fr;
@@ -140,14 +134,14 @@
 }
 
 .btn-outline {
-  border: 1px solid var(--cor-primaria);
-  background: var(--cor-branca);
+  border: 1px solid var(--cor-primaria) !important;
+  background: var(--cor-branca) !important;
   color: var(--cor-primaria);
-}
 
-.btn-outline:hover {
-  background: var(--cor-primaria);
-  color: var(--cor-branca);
+  &:hover {
+    background: var(--cor-preto-claro) !important;
+    color: var(--cor-branca) !important;
+  }
 }
 
 .px-8 {

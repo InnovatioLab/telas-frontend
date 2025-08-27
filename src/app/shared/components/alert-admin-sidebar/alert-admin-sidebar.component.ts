@@ -1,19 +1,19 @@
-import { Component, Input, OnInit, Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SidebarService } from '@app/core/service/state/sidebar.service';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Authentication } from '@app/core/service/auth/autenthication';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { CardAlertComponent } from '../card-alert/card-alert.component';
-import { IconSearchComponent } from '@app/shared/icons/search.icon';
-import { IconCloseComponent } from '@app/shared/icons/close.icon';
-import { IconLockComponent } from '@app/shared/icons/lock.icon';
-import { IconLockOpenComponent } from '@app/shared/icons/lock-open.icon';
-import { MonitorService } from '@app/core/service/api/monitor.service';
-import { LoadingService } from '@app/core/service/state/loading.service';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { IMonitorAlert } from '@app/core/service/api/interfaces/monitor';
+import { MonitorService } from '@app/core/service/api/monitor.service';
+import { Authentication } from '@app/core/service/auth/autenthication';
+import { LoadingService } from '@app/core/service/state/loading.service';
+import { SidebarService } from '@app/core/service/state/sidebar.service';
+import { ToastService } from '@app/core/service/state/toast.service';
+import { IconCloseComponent } from '@app/shared/icons/close.icon';
+import { IconLockOpenComponent } from '@app/shared/icons/lock-open.icon';
+import { IconLockComponent } from '@app/shared/icons/lock.icon';
+import { IconSearchComponent } from '@app/shared/icons/search.icon';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CardAlertComponent } from '../card-alert/card-alert.component';
 
 interface FilterOption {
   label: string;
