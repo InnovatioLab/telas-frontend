@@ -124,7 +124,7 @@ export class SubscriptionService {
     return this.http
       .patch<
         ResponseDto<string>
-      >(`${this.apiUrl}/upgrade/${id}`, { id, recurrence }, this.headers)
+      >(`${this.apiUrl}/upgrade/${id}&recurrence=${recurrence}`, {}, this.headers)
       .pipe(
         map((response: ResponseDto<string>) => {
           return response.data;
