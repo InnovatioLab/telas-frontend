@@ -68,8 +68,10 @@ export class TermsOfServiceComponent implements OnInit {
 
   private async verificarCliente(): Promise<void> {
     if (this.isLoggedIn) {
+      console.log("Tá logado");
       this.client = this.authentication._clientSignal();
     }
+    console.log("Tá deslogado");
   }
 
   aceitarTermos() {
@@ -102,19 +104,22 @@ export class TermsOfServiceComponent implements OnInit {
     });
   }
 
-  get isLoggedIn(): boolean {
+  isLoggedIn(): boolean {
     return this.authentication.isTokenValido();
   }
 
-  get shouldShowLoggedInHeader(): boolean {
+  shouldShowLoggedInHeader(): boolean {
     return this.isLoggedIn && !this.precisaAceitarTermos;
   }
 
-  get shouldShowGuestHeader(): boolean {
+  shouldShowGuestHeader(): boolean {
     return !this.isLoggedIn;
   }
 
-  get precisaAceitarTermos(): boolean {
+  precisaAceitarTermos(): boolean {
+    console.log("isLoggedIn:", this.isLoggedIn);
+    console.log("client:", this.client);
+    console.log("termAccepted:", this.client?.termAccepted);
     return this.isLoggedIn && this.client && !this.client.termAccepted;
   }
 

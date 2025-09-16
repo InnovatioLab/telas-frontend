@@ -109,8 +109,12 @@ export class ValidacaoCadastroComponent implements OnInit {
         username: this.clientLogin,
         password: senha,
       })
-      .subscribe(() => {
-        this.router.navigate(["/terms-of-service"]);
+      .subscribe({
+        next: (response: any) => {
+          if (response) {
+            this.router.navigate(["/terms-of-service"]);
+          }
+        },
       });
   }
 
