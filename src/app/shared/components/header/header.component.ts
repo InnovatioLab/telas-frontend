@@ -22,11 +22,9 @@ import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { NotificationState } from "@app/modules/notificacao/models";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { filter, Subject, Subscription, takeUntil, timer } from "rxjs";
-import { AlertCounterComponent } from "../alert-counter/alert-counter.component";
 import { CheckoutListSideBarComponent } from "../checkout-list-side-bar/checkout-list-side-bar.component";
 
 interface ToggleAdminSidebarEvent {
@@ -48,7 +46,6 @@ interface AdminSidebarPinChangedEvent {
     CheckoutListSideBarComponent,
     FormsModule,
     IconsModule,
-    AlertCounterComponent,
     ShowInRoutesDirective,
   ],
   templateUrl: "./header.component.html",
@@ -67,13 +64,11 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     cadastrar: "Sign Up",
   };
   itensCarrinho = signal<number>(0);
-  itensNotificacao = signal<number>(0);
   itensSalvos = signal<number>(0);
   isLoggedIn = false;
   isMobile = false;
   menuAberto = false;
   isDarkMode = false;
-  isAdminSidebarVisible = false;
 
   headerAllowedRoutes = ["/client", "/admin"];
 
@@ -109,7 +104,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     public router: Router,
     private readonly authentication: Authentication,
-    private readonly notificationState: NotificationState,
     private readonly googleMapsService: GoogleMapsService,
     private readonly searchMonitorsService: SearchMonitorsService,
     private readonly sidebarService: SidebarService,
@@ -123,7 +117,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.isLoggedIn = this.authentication.isTokenValido();
 
-    this.itensNotificacao = this.notificationState._quantidadeNotificacoes;
     this.checkScreenSize();
     this.resizeListener = () => this.checkScreenSize();
     window.addEventListener("resize", this.resizeListener);
@@ -175,30 +168,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cdr.detectChanges();
       });
 
-    if (this.isAdministrador()) {
-      const savedVisibility = localStorage.getItem("admin_sidebar_visible");
-      this.isAdminSidebarVisible = savedVisibility === "true";
-    }
-
-    window.addEventListener(
-      "admin-sidebar-visibility-changed",
-      (e: CustomEvent<ToggleAdminSidebarEvent>) => {
-        if (e.detail?.visible !== undefined) {
-          this.isAdminSidebarVisible = e.detail.visible;
-          this.cdr.detectChanges();
-        }
-      }
-    );
-
-    window.addEventListener(
-      "admin-sidebar-pin-changed",
-      (e: CustomEvent<AdminSidebarPinChangedEvent>) => {
-        if (e.detail) {
-          this.isAdminSidebarVisible = e.detail.visible;
-          this.cdr.detectChanges();
-        }
-      }
-    );
+    // 
 
     // Inicializar subscription para mudanças do carrinho
     this.subscribeToCartChanges();
@@ -541,9 +511,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(["/register"]);
   }
 
-  abrirNotificacoes() {
-    this.notificationState.exibirSidebar();
-  }
+  
 
   abrirCheckout() {
     // Verificar se há itens no carrinho antes de abrir
@@ -648,25 +616,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.router.url.includes("/management-profile");
   }
 
-  toggleAdminSidebar(): void {
-    this.isAdminSidebarVisible = !this.isAdminSidebarVisible;
-    localStorage.setItem(
-      "admin_sidebar_visible",
-      this.isAdminSidebarVisible.toString()
-    );
-
-    const toggleEvent = new CustomEvent<ToggleAdminSidebarEvent>(
-      "toggle-admin-sidebar",
-      {
-        detail: { visible: this.isAdminSidebarVisible },
-      }
-    );
-    window.dispatchEvent(toggleEvent);
-  }
-
-  updateAdminSidebarVisibility(isVisible: boolean): void {
-    this.isAdminSidebarVisible = isVisible;
-  }
+  
 
   get isSearching(): boolean {
     return this.loadingService.loadingSub.getValue();

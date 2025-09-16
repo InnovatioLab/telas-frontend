@@ -106,22 +106,7 @@
                 >
               </button>
 
-              <button
-                pButton
-                (click)="abrirNotificacoes()"
-                class="icon-button"
-                id="test-btn-notification"
-                pTooltip="View notifications"
-                tooltipPosition="bottom"
-              >
-                <app-icon-notifications></app-icon-notifications>
-                <span
-                  *ngIf="itensNotificacao()"
-                  class="badge flex justify-content-center align-items-center absolute"
-                >
-                  {{ itensNotificacao() }}</span
-                >
-              </button>
+              
             </div>
           </div>
         </div>
@@ -148,40 +133,7 @@
             >
           </button>
 
-          <button
-            class="icon-button"
-            id="test-btn-notification"
-            (click)="abrirNotificacoes()"
-            *ngIf="isAdministrador()"
-            pButton
-            [rounded]="true"
-            [text]="true"
-          >
-            <app-icon-notifications></app-icon-notifications>
-            <span
-              *ngIf="itensNotificacao()"
-              class="badge flex justify-content-center align-items-center absolute"
-            >
-              {{ itensNotificacao() }}</span
-            >
-          </button>
-
-          <button
-            class="icon-button"
-            id="test-btn-notification"
-            (click)="abrirNotificacoes()"
-            pButton
-            [rounded]="true"
-            [text]="true"
-          >
-            <app-icon-notifications></app-icon-notifications>
-            <span
-              *ngIf="itensNotificacao()"
-              class="badge flex justify-content-center align-items-center absolute"
-            >
-              {{ itensNotificacao() }}</span
-            >
-          </button>
+          
         </section>
       </div>
     </div>
@@ -262,11 +214,7 @@
 
           <div class="right-container">
             <div class="icons-container">
-              <app-alert-counter
-                *ngIf="isAdministrador()"
-                [toggleSidebar]="toggleAdminSidebar.bind(this)"
-              >
-              </app-alert-counter>
+              
 
               <button
                 pButton
@@ -381,11 +329,7 @@
             >
           </button>
 
-          <app-alert-counter
-            *ngIf="isAdministrador() && !isAdminSidebarVisible"
-            [toggleSidebar]="toggleAdminSidebar.bind(this)"
-          >
-          </app-alert-counter>
+          
 
           <button
             class="icon-button"
@@ -403,28 +347,7 @@
             ></app-icon-settings>
           </button>
 
-          <ng-container *ngIf="!isAdministrador()">
-            <button
-              id="test-btn-notification"
-              (click)="abrirNotificacoes()"
-              pButton
-              [rounded]="true"
-              [text]="true"
-              pTooltip="View notifications"
-              tooltipPosition="bottom"
-              class="icon-button"
-            >
-              <app-icon-notifications
-                class="icon cursor-pointer"
-              ></app-icon-notifications>
-              <span
-                *ngIf="itensNotificacao()"
-                class="badge flex justify-content-center align-items-center absolute"
-              >
-                {{ itensNotificacao() }}</span
-              >
-            </button>
-          </ng-container>
+          
         </section>
       </div>
     </div>

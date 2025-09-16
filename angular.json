@@ -30,7 +30,8 @@
               "src/styles.scss",
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeflex/primeflex.css",
-              "src/assets/css/material-icons.css"
+              "src/assets/css/material-icons.css",
+              "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [],
             "browser": "src/main.ts"
