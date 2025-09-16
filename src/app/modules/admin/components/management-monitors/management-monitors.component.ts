@@ -219,13 +219,13 @@ export class ManagementMonitorsComponent implements OnInit {
   createMonitor(monitorRequest: CreateMonitorRequestDto): void {
     this.monitorService.createMonitor(monitorRequest).subscribe({
       next: (newMonitor) => {
-        this.closeModal();
-        this.messageService.add({
-          severity: "success",
-          summary: "Success",
-          detail: "Monitor created successfully!",
-        });
-        this.loadMonitors();
+        if (newMonitor) {
+          this.messageService.add({
+            severity: "success",
+            summary: "Success",
+            detail: "Monitor created successfully!",
+          });
+        }
       },
       error: (error) => {
         this.closeModal();
@@ -233,8 +233,12 @@ export class ManagementMonitorsComponent implements OnInit {
           severity: "warn",
           summary: "Warning",
           detail:
-            "Monitor created, but API response did not return the monitor. Reloading table.",
+            "An error occurred while creating the monitor. Please check the data and try again.",
         });
+        this.loadMonitors();
+      },
+      complete: () => {
+        this.closeModal();
         this.loadMonitors();
       },
     });
@@ -307,18 +311,6 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   deleteMonitor(monitor: Monitor): void {
-    if (!this.monitorService.canDeleteMonitor(monitor)) {
-      const restrictionReason =
-        this.monitorService.getDeleteRestrictionReason(monitor);
-      this.messageService.add({
-        severity: "warn",
-        summary: "Warning",
-        detail:
-          restrictionReason || "This monitor cannot be deleted at this time.",
-      });
-      return;
-    }
-
     this.selectedMonitorForDelete = { ...monitor };
     this.deleteConfirmModalVisible = true;
   }
@@ -345,7 +337,7 @@ export class ManagementMonitorsComponent implements OnInit {
             this.messageService.add({
               severity: "error",
               summary: "Error",
-              detail: "Error deleting monitor. Please try again.",
+              detail: "Error deleting monitor.",
             });
           }
           this.loading = false;
@@ -355,9 +347,10 @@ export class ManagementMonitorsComponent implements OnInit {
           this.messageService.add({
             severity: "error",
             summary: "Error",
-            detail:
-              "Error deleting monitor. Please check your connection and try again.",
+            detail: "Error deleting monitor.",
           });
+        },
+        complete: () => {
           this.loading = false;
           this.closeDeleteConfirmModal();
         },
@@ -547,23 +540,9 @@ export class ManagementMonitorsComponent implements OnInit {
     return details.join(" • ");
   }
 
-  canDeleteMonitor(monitor: Monitor): boolean {
-    return this.monitorService.canDeleteMonitor(monitor);
-  }
-
-  getDeleteTooltip(monitor: Monitor): string {
-    if (this.canDeleteMonitor(monitor)) {
-      return "Delete Screen";
-    }
-
-    const restrictionReason =
-      this.monitorService.getDeleteRestrictionReason(monitor);
-    return restrictionReason || "This screen cannot be deleted";
-  }
-
   getDeleteButtonClass(monitor: Monitor): string {
     const baseClass = "p-button-rounded p-button-danger p-button-text";
-    if (!this.canDeleteMonitor(monitor)) {
+    if (!monitor.canBeDeleted) {
       return baseClass + " p-button-disabled";
     }
     return baseClass;
@@ -628,7 +607,6 @@ export class ManagementMonitorsComponent implements OnInit {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Validar arquivo usando a utility
       ImageValidationUtil.validateImageFile(file)
         .then((validationResult) => {
           if (!validationResult.isValid) {

@@ -147,8 +147,10 @@
               pRipple
               class="p-button-rounded p-button-danger p-button-text"
               (click)="deleteMonitor(monitor)"
-              [disabled]="!canDeleteMonitor(monitor)"
-              [pTooltip]="getDeleteTooltip(monitor)"
+              [disabled]="!monitor.canBeDeleted"
+              [pTooltip]="
+                'This Screen has an active subscription and cannot be deleted.'
+              "
               tooltipPosition="top"
               style="background: rgba(244, 63, 94, 0.12)"
             >

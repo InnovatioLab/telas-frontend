@@ -130,23 +130,18 @@ export class MonitorService {
       );
   }
 
-  createMonitor(monitorRequest: CreateMonitorRequestDto): Observable<Monitor> {
+  createMonitor(monitorRequest: CreateMonitorRequestDto): Observable<boolean> {
     return this.http
-      .post<
-        ResponseDto<MonitorResponseDto>
-      >(this.apiUrl, monitorRequest, this.headers)
+      .post<ResponseDto<void>>(this.apiUrl, monitorRequest, this.headers)
       .pipe(
-        map((response: ResponseDto<MonitorResponseDto>) => {
-          if (response?.data) {
-            const mappedMonitor = this.mapMonitorResponseToMonitor(
-              response.data
-            );
-            return mappedMonitor;
+        map((response: ResponseDto<any>) => {
+          if (response) {
+            return true;
           }
-          throw new Error("API não retornou dados do monitor criado");
+          return false;
         }),
         catchError((error) => {
-          throw error;
+          return of(false);
         })
       );
   }
@@ -177,20 +172,15 @@ export class MonitorService {
       .delete<ResponseDto<any>>(`${this.apiUrl}/${id}`, this.headers)
       .pipe(
         map((response: ResponseDto<any>) => {
-          return true;
+          if (response) {
+            return true;
+          }
+          return false;
         }),
         catchError((error) => {
           return of(false);
         })
       );
-  }
-
-  canDeleteMonitor(monitor: Monitor): boolean {
-    return true;
-  }
-
-  getDeleteRestrictionReason(monitor: Monitor): string | null {
-    return null;
   }
 
   private mapMonitorResponseToMonitor(
@@ -212,6 +202,7 @@ export class MonitorService {
         zipCode: "",
       },
       adLinks: monitorResponse.adLinks || [],
+      canBeDeleted: monitorResponse.canBeDeleted,
       createdAt: monitorResponse.createdAt,
       updatedAt: monitorResponse.updatedAt,
     };

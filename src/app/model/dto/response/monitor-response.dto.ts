@@ -28,6 +28,7 @@ export interface MonitorResponseDto {
   adLinks?: MonitorAdResponseDto[];
   createdAt?: Date;
   updatedAt?: Date;
+  canBeDeleted: boolean;
 }
 
 export interface MonitorAdResponseDto {

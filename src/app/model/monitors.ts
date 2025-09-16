@@ -27,6 +27,7 @@ export interface Monitor {
   validAds?: any[];
   hasAvailableSlots?: boolean;
   fullAddress?: string;
+  canBeDeleted?: boolean;
 }
 
 export interface MonitorAd {
