@@ -271,7 +271,6 @@
                 [src]="ad.link"
                 [alt]="'Ad ' + (ad.name || ad.id)"
                 class="ad-image w-full"
-                (error)="onImageError($event)"
               />
             </div>
             <div class="ad-fallback w-full" *ngIf="!ad.link">
