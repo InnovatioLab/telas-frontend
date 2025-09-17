@@ -17,11 +17,30 @@ export class LeafletMapService {
     if (this.map) {
       this.map.remove();
     }
-    this.map = L.map(mapContainerId).setView(center, zoom);
+    this.map = L.map(mapContainerId, {
+      center: center,
+      zoom: zoom,
+      zoomControl: true,
+      attributionControl: true,
+      fadeAnimation: false,
+      zoomAnimation: false,
+      markerZoomAnimation: false
+    });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      minZoom: 1,
+      maxZoom: 19,
+      tileSize: 256,
+      crossOrigin: true,
+      subdomains: ['a', 'b', 'c'],
+      detectRetina: true
     }).addTo(this.map);
+    
+    // Força uma atualização do mapa após um breve delay
+    setTimeout(() => {
+      this.map?.invalidateSize();
+    }, 100);
 
     this._mapInitialized.next(true);
   }

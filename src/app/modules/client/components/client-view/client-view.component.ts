@@ -15,6 +15,7 @@ import { MapsComponent } from "@app/shared/components/maps/maps.component";
 import { PopUpStepAddListComponent } from "@app/shared/components/pop-up-add-list/pop-up-add-list.component";
 import { SidebarMapaComponent } from "@app/shared/components/sidebar-mapa/sidebar-mapa.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { LeafletMapsComponent } from "@app/shared/components/leaflet-maps/leaflet-maps.component";
 
 @Component({
   selector: "feat-client-view",
@@ -26,7 +27,8 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
     MapsComponent,
     SidebarMapaComponent,
     PopUpStepAddListComponent,
-  ],
+    LeafletMapsComponent
+],
   templateUrl: "./client-view.component.html",
   styleUrls: ["./client-view.component.scss"],
 })
