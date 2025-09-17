@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, ViewEncapsulation, inject, NgZone, OnChanges, EventEmitter, Input, Output, SimpleChanges, OnInit } from '@angular/core';
 import { LeafletMapService, MapMarker } from '@app/core/service/state/leaflet-map.service';
+import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 
@@ -22,7 +23,6 @@ export class LeafletMapsComponent implements OnChanges, OnDestroy, OnInit {
   @Input() center!: L.LatLngExpression;
   @Input() zoom!: number;
   @Input() markers: MapMarker[] = [];
-  @Input() markerIcon!: L.Icon;
 
   @Output() mapReady = new EventEmitter<L.Map>();
   @Output() markerClick = new EventEmitter<MapMarker>();
@@ -32,7 +32,6 @@ export class LeafletMapsComponent implements OnChanges, OnDestroy, OnInit {
   ngOnInit(): void {
     this.center = this.center ?? this.leafletMapService.getDefaultCenter();
     this.zoom = this.zoom ?? this.leafletMapService.getDefaultZoom();
-    this.markerIcon = this.markerIcon ?? this.leafletMapService.getCustomMarkerIcon();
 
     this.options = {
       layers: [
@@ -43,13 +42,16 @@ export class LeafletMapsComponent implements OnChanges, OnDestroy, OnInit {
         this.markersLayer
       ],
     };
+
+    // Listen for custom event to update markers
+    window.addEventListener('monitors-found', this.handleMonitorsFoundEvent.bind(this) as EventListener);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!this.mapInstance) return;
 
     if (changes['markers']) {
-      this.updateMarkers();
+      this.leafletMapService.plotMarkers(this.markers, (point) => this.markerClick.emit(point));
     }
     if (changes['center']) {
       this.mapInstance.panTo(this.center);
@@ -62,32 +64,32 @@ export class LeafletMapsComponent implements OnChanges, OnDestroy, OnInit {
   onMapReady(map: L.Map): void {
     this.mapInstance = map;
     this.mapInstance.setView(this.center, this.zoom);
-    this.updateMarkers();
+    this.leafletMapService.initializeMap(map.getContainer().id, this.center, this.zoom); // Initialize map in service
+    this.leafletMapService.plotMarkers(this.markers, (point) => this.markerClick.emit(point)); // Plot markers using service
     this.mapReady.emit(map);
   }
 
-  private updateMarkers(): void {
-    if (!this.mapInstance) return;
-    this.markersLayer.clearLayers();
+  private handleMonitorsFoundEvent(event: CustomEvent): void {
+    console.log('LeafletMapsComponent: Received monitors-found event with detail:', event.detail);
+    const monitors: MapPoint[] = event.detail.monitors;
+    this.markers = monitors.map(point => ({
+      position: [point.latitude, point.longitude],
+      title: point.title,
+      data: point
+    }));
+    this.leafletMapService.plotMarkers(this.markers, (point) => this.markerClick.emit(point)); // Plot markers using service
 
-    this.markers.forEach(markerData => {
-      const marker = L.marker(markerData.position, {
-        title: markerData.title,
-        icon: this.markerIcon
-      });
-
-      marker.on('click', () => {
-        this.ngZone.run(() => {
-          this.markerClick.emit(markerData);
-        });
-      });
-
-      this.markersLayer.addLayer(marker);
-    });
+    // Optionally, adjust map view to fit all markers
+    if (this.mapInstance && this.markers.length > 0) {
+      const latLngs = this.markers.map(marker => L.latLng(marker.position as L.LatLngTuple));
+      const bounds = L.latLngBounds(latLngs);
+      this.mapInstance.fitBounds(bounds, { padding: [50, 50] });
+    }
   }
 
   ngOnDestroy(): void {
     this.mapInstance?.remove();
     this.mapInstance = undefined;
+    window.removeEventListener('monitors-found', this.handleMonitorsFoundEvent.bind(this) as EventListener);
   }
 }

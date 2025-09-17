@@ -4,11 +4,12 @@ import { Component, Input } from '@angular/core';
   selector: 'app-icon-map-marker',
   standalone: true,
   template: `
-  <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="size" [attr.height]="size" viewBox="0 0 24 24" fill="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" [attr.width]="size" [attr.height]="size" viewBox="0 0 24 24" [attr.fill]="color">
     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
   </svg>
   `
 })
 export class IconMapMarkerComponent {
   @Input() size: number | string = 24;
+  @Input() color: string = 'currentColor';
 }

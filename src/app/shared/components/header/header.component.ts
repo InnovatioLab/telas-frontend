@@ -18,6 +18,7 @@ import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
+import { LeafletMapService } from "@app/core/service/state/leaflet-map.service";
 import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
@@ -111,7 +112,8 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly toastService: ToastService,
     private readonly loadingService: LoadingService,
     private readonly zipcodeService: ZipCodeService,
-    private readonly cartService: CartService
+    private readonly cartService: CartService,
+    private readonly leafletMapService: LeafletMapService
   ) {}
 
   ngOnInit() {
@@ -204,7 +206,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
           if (monitors && monitors.length > 0) {
             const mapPoints = this.convertMonitorsToMapPoints(monitors);
-            this.emitMonitorsFoundEvent(mapPoints);
+            this.leafletMapService.plotNewMonitors(mapPoints);
             this.toastService.sucesso(
               `Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`
             );
@@ -275,7 +277,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
               )
               .then((monitors) => {
                 if (monitors && monitors.length > 0) {
-                  this.emitMonitorsFoundEvent(monitors);
+                  this.monitorsFound.emit(monitors);
                   this.toastService.sucesso(
                     `Found ${monitors.length} monitors near this address`
                   );
@@ -339,13 +341,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     return parts.join(" | ") || "Monitor Information";
-  }
-
-  private emitMonitorsFoundEvent(monitors: MapPoint[]): void {
-    const event = new CustomEvent("monitors-found", {
-      detail: { monitors },
-    });
-    window.dispatchEvent(event);
   }
 
   private searchMultipleZipCodes(searchTextCopy: string): void {
@@ -421,7 +416,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // Mostrar resultados
         if (allMonitors.length > 0) {
-          this.emitMonitorsFoundEvent(allMonitors);
+          this.monitorsFound.emit(allMonitors);
 
           let message = `Found ${allMonitors.length} monitors near ${successfulZipCodes.length} ZIP code(s): ${successfulZipCodes.join(", ")}`;
 
@@ -655,12 +650,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
               .findByZipCode(searchTextCopy)
               .then((monitors: any) => {
                 if (monitors && monitors.length > 0) {
-                  this.monitorsFound.emit(monitors);
+                  this.leafletMapService.plotNewMonitors(monitors);
                   this.toastService.sucesso(
                     `Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`
                   );
                 } else {
-                  this.monitorsFound.emit([]);
+                  this.leafletMapService.plotNewMonitors([]);
                   this.toastService.aviso("No monitors found in this region");
                 }
               })

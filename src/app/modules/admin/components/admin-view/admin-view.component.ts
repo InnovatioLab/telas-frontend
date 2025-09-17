@@ -6,6 +6,8 @@ import { MapPoint } from "../../../../core/service/state/map-point.interface";
 import { PopUpStepAddListComponent } from "../../../../shared/components/pop-up-add-list/pop-up-add-list.component";
 import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa/sidebar-mapa.component";
 import * as L from 'leaflet';
+import { Subscription } from "rxjs";
+import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { LeafletMapService, MapMarker } from "@app/core/service/state/leaflet-map.service";
 
 @Component({
@@ -21,36 +23,30 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   showPointMenu = false;
   menuPosition = { x: 0, y: 0 };
   selectedPoint: MapPoint | null = null;
+  private monitorSubscription: Subscription;
 
   constructor(
     private readonly loadingService: LoadingService,
-    private readonly leafletMapService: LeafletMapService
+    private readonly leafletMapService: LeafletMapService,
+    private readonly searchMonitorsService: SearchMonitorsService 
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.monitorSubscription = this.leafletMapService.monitorsFound$.subscribe(monitors => {
+      this.monitors = monitors;
+      this.updateMapMarkers();
+    });
+  }
 
   ngAfterViewInit(): void {
     this.leafletMapService.initializeMap('map-container', this.mapCenter, 12);
-    this.loadNearbyPoints();
   }
 
   ngOnDestroy(): void {
     this.leafletMapService.destroyMap();
-  }
-
-  private loadNearbyPoints(): void {
-    const center = L.latLng(this.mapCenter);
-    this.loadingService.setLoading(true, "load-nearby-points");
-
-    this.leafletMapService
-      .findNearbyMonitors(center.lat, center.lng)
-      .then((monitors) => {
-        this.monitors = monitors;
-        this.updateMapMarkers();
-      })
-      .finally(() => {
-        this.loadingService.setLoading(false, "load-nearby-points");
-      });
+    if (this.monitorSubscription) {
+      this.monitorSubscription.unsubscribe();
+    }
   }
 
   private updateMapMarkers(): void {
@@ -67,7 +63,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showPointMenu = true;
     this.menuPosition = { x: 100, y: 100 };
   }
-  
+
   showPointDetails(point: MapPoint): void {}
   addPointToList(point: MapPoint): void {}
 }
