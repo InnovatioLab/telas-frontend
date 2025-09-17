@@ -14,9 +14,16 @@ export class LeafletMapService {
   constructor() { }
 
   public initMap(mapContainerId: string, center: L.LatLngExpression, zoom: number): void {
+    console.log('Iniciando mapa com:', { mapContainerId, center, zoom });
+    
     if (this.map) {
+      console.log('Removendo mapa existente');
       this.map.remove();
     }
+    
+    const container = document.getElementById(mapContainerId);
+    console.log('Container do mapa:', container);
+    
     this.map = L.map(mapContainerId, {
       center: center,
       zoom: zoom,
@@ -27,15 +34,34 @@ export class LeafletMapService {
       markerZoomAnimation: false
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    this.map.on('load', () => {
+      console.log('Mapa carregado');
+    });
+
+    this.map.on('error', (error) => {
+      console.error('Erro no mapa:', error);
+    });
+
+    const tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      minZoom: 1,
       maxZoom: 19,
+      minZoom: 1,
       tileSize: 256,
-      crossOrigin: true,
-      subdomains: ['a', 'b', 'c'],
-      detectRetina: true
-    }).addTo(this.map);
+      updateWhenIdle: true,
+      updateWhenZooming: true,
+      keepBuffer: 2,
+      className: 'map-tiles'
+    });
+
+    tileLayer.on('tileerror', (error) => {
+      console.error('Erro ao carregar tile:', error);
+    });
+
+    tileLayer.on('tileload', (event) => {
+      console.log('Tile carregado:', event);
+    });
+
+    tileLayer.addTo(this.map);
     
     // Força uma atualização do mapa após um breve delay
     setTimeout(() => {

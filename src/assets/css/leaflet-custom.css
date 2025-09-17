@@ -1,0 +1,77 @@
+/* Reset básico para garantir que o mapa funcione corretamente */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  background: #ddd !important;
+  mix-blend-mode: normal !important;
+  isolation: isolate !important;
+}
+
+/* Garantir que os tiles sejam visíveis */
+.leaflet-tile-container {
+  visibility: visible !important;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  transform-style: preserve-3d !important;
+  backface-visibility: visible !important;
+  perspective: none !important;
+}
+
+.leaflet-tile {
+  visibility: visible !important;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  position: absolute !important;
+  transform-style: preserve-3d !important;
+  backface-visibility: visible !important;
+  perspective: none !important;
+  image-rendering: auto !important;
+}
+
+/* Garantir que os painéis do mapa estejam visíveis */
+.leaflet-map-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-pane,
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-popup-pane,
+.leaflet-overlay-pane svg,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: visible !important;
+}
+
+/* Configurar z-index corretamente */
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+  z-index: auto !important;
+}
+
+/* Forçar tiles a serem visíveis */
+.leaflet-container img.leaflet-tile {
+  visibility: visible !important;
+  opacity: 1 !important;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  height: 256px !important;
+  width: 256px !important;
+}

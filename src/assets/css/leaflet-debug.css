@@ -1,0 +1,13 @@
+/* Garantir que o mapa Leaflet não seja afetado por outros estilos */
+.leaflet-container,
+.leaflet-container * {
+  box-sizing: content-box !important;
+}
+
+.leaflet-tile-container {
+  border: 1px solid blue; /* Para debug - remover depois */
+}
+
+.leaflet-tile {
+  border: 1px solid green; /* Para debug - remover depois */
+}
