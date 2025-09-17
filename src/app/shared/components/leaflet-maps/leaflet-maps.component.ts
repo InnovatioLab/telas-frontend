@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation, inject, NgZone } from '@angular/core';
+import { Component, OnDestroy, ViewEncapsulation, inject, NgZone } from '@angular/core';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 
@@ -7,33 +7,13 @@ import * as L from 'leaflet';
   selector: 'app-leaflet-maps',
   standalone: true,
   imports: [CommonModule, LeafletModule],
-  template: `
-    <div class="map-container"
-         leaflet
-         [leafletOptions]="options"
-         (leafletMapReady)="onMapReady($event)">
-    </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-    
-    .map-container {
-      width: 100%;
-      height: 100%;
-      min-height: 400px;
-      background: #ddd;
-    }
-  `],
+  templateUrl: './leaflet-maps.component.html',
+  styleUrls: ['./leaflet-maps.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class LeafletMapsComponent implements AfterViewInit, OnDestroy {
+export class LeafletMapsComponent implements OnDestroy {
   readonly ngZone = inject(NgZone);
 
-  @ViewChild('map') mapContainer!: ElementRef<HTMLElement>;
   private mapInstance?: L.Map;
 
   options: L.MapOptions = {
@@ -47,141 +27,39 @@ export class LeafletMapsComponent implements AfterViewInit, OnDestroy {
     center: [-15.7801, -47.9292] as L.LatLngExpression
   };
 
-  onMapReady(map: L.Map) {
+  onMapReady(map: L.Map): void {
     this.mapInstance = map;
+    this.addTestMarker(map);
   }
 
-  private initialized = false;
+  addTestMarker(map: L.Map): void {
+    const marker = L.marker([-15.7801, -47.9292], {
+      icon: L.icon({
+        iconUrl: '/assets/leaflet/marker-icon.png',
+        iconRetinaUrl: '/assets/leaflet/marker-icon-2x.png',
+        shadowUrl: '/assets/leaflet/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      })
+    }).addTo(map);
 
-  ngAfterViewInit(): void {
-    if (!this.initialized) {
-      this.initialized = true;
-
-
-      if (this.mapContainer) {
-        const container = this.mapContainer.nativeElement;
-        container.style.cssText = `
-          width: 100%;
-          height: 100%;
-          position: relative;
-          display: block;
-          isolation: isolate;
-          background: #ddd;
-        `;
-
-
-        setTimeout(() => {
-          this.ngZone.run(() => {
-            this.initMap();
-
-
-            if (this.mapInstance) {
-              this.mapInstance.invalidateSize({ animate: false });
-              const center = this.mapInstance.getCenter();
-              this.mapInstance.setView(center, this.mapInstance.getZoom(), { animate: false });
-            }
-          });
-        });
-      }
-    }
-  }
-
-  private initMap(): void {
-
-
-    // Limpa instância anterior se existir
-    if (this.mapInstance) {
-
-      this.mapInstance.remove();
-      this.mapInstance = undefined;
-    }
-
-    try {
-      if (!this.mapContainer) {
-
-        return;
-      }
-
-      const container = this.mapContainer.nativeElement;
-
-
-
-      // Força as dimensões do container
-      container.style.width = '100%';
-      container.style.height = '100%';
-      container.style.display = 'block';
-
-
-      this.mapInstance = L.map('mapa', {
-        center: [-15.7801, -47.9292],
-        zoom: 13,
-        zoomControl: true,
-        attributionControl: true
-      });
-
-
-      // Força uma atualização inicial do tamanho
-
-      this.mapInstance.invalidateSize(true);
-
-      // Adiciona a camada de tiles do OpenStreetMap
-
-      const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        subdomains: ['a', 'b', 'c'],
-        attribution: '© OpenStreetMap contributors'
-      });
-
-
-      tileLayer.addTo(this.mapInstance);
-
-      // Força nova atualização após os tiles serem adicionados
-
-      setTimeout(() => this.mapInstance?.invalidateSize(true), 0);
-
-      // Registra eventos para debug
-
-
-      // Registra eventos adicionais
-      tileLayer.on('load', () => {
-        // Força a re-renderização APÓS os tiles carregarem
-        setTimeout(() => this.mapInstance?.invalidateSize(true), 0);
-      });
-
-      // Adiciona um marcador de teste com um pequeno delay para garantir que o mapa esteja estável
-      setTimeout(() => {
-        if (this.mapInstance) {
-          const marker = L.marker([-15.7801, -47.9292], {
-            icon: L.icon({
-              iconUrl: '/assets/leaflet/marker-icon.png',
-              iconRetinaUrl: '/assets/leaflet/marker-icon-2x.png',
-              shadowUrl: '/assets/leaflet/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-              shadowSize: [41, 41]
-            })
-          }).addTo(this.mapInstance);
-
-          this.ngZone.run(() => {
-            marker.bindPopup("<b>Olá!</b><br>Eu sou um popup.", {
-              closeButton: true,
-              closeOnClick: false,
-              autoClose: false
-            }).openPopup();
-          });
-        }
-      }, 1000);
-    } catch (error) {
-
-    }
+    this.ngZone.run(() => {
+      marker.bindPopup("<b>Olá!</b><br>Eu sou um popup.", {
+        closeButton: true,
+        closeOnClick: false,
+        autoClose: false
+      }).openPopup();
+    });
   }
 
   ngOnDestroy(): void {
-    if (this.mapInstance) {
-      this.mapInstance.remove();
-      this.mapInstance = undefined;
-    }
+    // O ngx-leaflet gerencia o ciclo de vida do mapa, incluindo a sua destruição.
+    // A chamada explícita a map.remove() aqui é a causa provável do erro
+    // "Map container is being reused", pois o mapa seria destruído duas vezes.
+    // Apenas limpamos a referência.
+    this.mapInstance = undefined;
   }
 
   public getMapInstance(): L.Map | undefined {
