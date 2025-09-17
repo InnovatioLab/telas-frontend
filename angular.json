@@ -33,7 +33,9 @@
               "src/assets/css/material-icons.css",
               "node_modules/leaflet/dist/leaflet.css",
               "src/assets/css/leaflet-custom.css",
-              "src/assets/css/leaflet-debug.css"
+              "src/assets/css/leaflet-debug.css",
+              "node_modules/leaflet.markercluster/dist/MarkerCluster.css",
+              "node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
             ],
             "scripts": [],
             "browser": "src/main.ts"
