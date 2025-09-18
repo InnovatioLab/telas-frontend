@@ -231,25 +231,22 @@
       <div class="ads-list w-full" *ngIf="ads.length > 0">
         @for (ad of ads; track ad.id) {
           <div class="ad-item w-full">
-            &nbsp;
             <div class="ad-header w-full flex gap-2">
-              &nbsp;
               <div class="ad-info w-full">
-                <h5>&nbsp;Ad - {{ ad.name }}</h5>
+                <h5>Ad - {{ ad.name }}&nbsp;</h5>
                 <p class="ad-date">
-                  &nbsp;Submission date:
-                  {{ ad.submissionDate | date: "dd/MM/yyyy" }}
+                  Submission date:
+                  {{ ad.submissionDate | date: "dd/MM/yyyy" }}&nbsp;
                 </p>
               </div>
               <div
                 class="ad-status flex flex-column justify-content-center align-items-center gap-2"
               >
-              &nbsp;
                 <span
                   class="badge w-full text-center"
                   [ngClass]="getValidationBadgeClass(ad.validation)"
                 >
-                  {{ getValidationLabel(ad.validation) }}
+                  {{ getValidationLabel(ad.validation) }}&nbsp;
                 </span>
                 <small
                   class="validation-count"

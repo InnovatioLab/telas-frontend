@@ -779,4 +779,17 @@ small {
       }
     }
   }
+
+  .ad-item > .ad-header {
+    display: flex !important;
+    min-height: 50px;
+  }
+
+  .ad-status {
+    .badge {
+      display: inline-block !important;
+      min-width: 60px;
+      min-height: 20px;
+    }
+  }
 }
