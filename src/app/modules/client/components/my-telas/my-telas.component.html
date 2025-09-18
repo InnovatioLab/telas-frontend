@@ -225,12 +225,12 @@
         edited by the admin and will return to pending status.
       </p>
     </div>
-    <div class="ads-content w-full">
+    <div class="ads-content w-full" *ngIf="!loading">
       <div class="ads-list w-full" *ngIf="ads.length > 0">
         @for (ad of ads; track ad.id) {
-          <div class="ad-item w-full">
-            <div class="ad-header flex gap-2">
-              <div class="ad-info">
+          <div class="ad-item w-full" *ngIf="ad">
+            <div class="ad-header w-full flex gap-2">
+              <div class="ad-info w-full">
                 <h5>Ad - {{ ad.name }}</h5>
                 <p class="ad-date">
                   Submission date:
@@ -266,9 +266,7 @@
             </div>
 
             <div class="ad-content w-full">
-              <div class="ad-preview w-full">
-                <img [src]="ad.link" [alt]="ad.name" class="ad-image w-full" />
-              </div>
+                <img src="{{ ad?.link }}" alt="{{ ad?.name }}" class="ad-image w-full" />
             </div>
 
             <div class="ad-actions">
