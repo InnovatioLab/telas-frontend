@@ -227,21 +227,24 @@
         edited by the admin and will return to pending status.
       </p>
     </div>
-    <div class="ads-content w-full" *ngIf="!loading">
+    <div class="ads-content w-full">
       <div class="ads-list w-full" *ngIf="ads.length > 0">
         @for (ad of ads; track ad.id) {
-          <div class="ad-item w-full" *ngIf="ad">
+          <div class="ad-item w-full">
+            &nbsp;
             <div class="ad-header w-full flex gap-2">
+              &nbsp;
               <div class="ad-info w-full">
-                <h5>Ad - {{ ad.name }}</h5>
+                <h5>&nbsp;Ad - {{ ad.name }}</h5>
                 <p class="ad-date">
-                  Submission date:
+                  &nbsp;Submission date:
                   {{ ad.submissionDate | date: "dd/MM/yyyy" }}
                 </p>
               </div>
               <div
                 class="ad-status flex flex-column justify-content-center align-items-center gap-2"
               >
+              &nbsp;
                 <span
                   class="badge w-full text-center"
                   [ngClass]="getValidationBadgeClass(ad.validation)"
