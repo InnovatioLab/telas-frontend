@@ -2369,3 +2369,7 @@ a {
     }
   }
 }
+
+.ad-content:not(:empty) {
+  display: block !important;
+}

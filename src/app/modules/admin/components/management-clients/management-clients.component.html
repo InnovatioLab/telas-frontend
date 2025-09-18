@@ -46,8 +46,8 @@
 >
   <ng-template pTemplate="header">
     <tr>
-      <th scope="col" pSortableColumn="name">
-        Name <p-sortIcon field="name"></p-sortIcon>
+      <th scope="col" pSortableColumn="businessName">
+        Name <p-sortIcon field="businessName"></p-sortIcon>
       </th>
       <th scope="col" pSortableColumn="email">
         Email <p-sortIcon field="email"></p-sortIcon>
@@ -62,7 +62,9 @@
       <th scope="col" pSortableColumn="status">
         Status <p-sortIcon field="status"></p-sortIcon>
       </th>
-      <th scope="col">Partner Status</th>
+      <th scope="col" pSortableColumn="role">
+        Role <p-sortIcon field="role"></p-sortIcon>
+      </th>
       <th scope="col" pSortableColumn="createdAt">
         Created At <p-sortIcon field="createdAt"></p-sortIcon>
       </th>
