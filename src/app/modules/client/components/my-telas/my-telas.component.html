@@ -87,9 +87,11 @@
             </div>
             <div class="attachment-preview">
               <img
-                [src]="attachment.attachmentLink"
-                [alt]="'Attachment ' + attachment.attachmentId"
+                [ngSrc]="attachment.attachmentLink"
+                [alt]="attachment.attachmentName"
                 class="attachment-image"
+                width="600"
+                height="400"
                 (error)="onImageError($event)"
               />
               <div
@@ -266,7 +268,14 @@
             </div>
 
             <div class="ad-content w-full">
-                <img src="{{ ad?.link }}" alt="{{ ad?.name }}" class="ad-image w-full" />
+              &nbsp;
+              <img
+                [ngSrc]="ad.link"
+                alt="{{ ad?.name }}"
+                class="ad-image w-full"
+                width="600"
+                height="400"
+              />
             </div>
 
             <div class="ad-actions">

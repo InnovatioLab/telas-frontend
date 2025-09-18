@@ -23,6 +23,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
+import { NgOptimizedImage } from "@angular/common";
 
 @Component({
   selector: "app-my-telas",
@@ -35,6 +36,7 @@ import { Subscription } from "rxjs";
     ReactiveFormsModule,
     FormsModule,
     ErrorComponent,
+    NgOptimizedImage,
   ],
 })
 export class MyTelasComponent implements OnInit, OnDestroy {
