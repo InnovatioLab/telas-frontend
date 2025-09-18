@@ -780,16 +780,29 @@ small {
     }
   }
 
-  .ad-item > .ad-header {
-    display: flex !important;
-    min-height: 50px;
-  }
+  .ad-item {
+    .ad-header {
+      // Força o elemento a ocupar espaço e ser um container flexível visível.
+      display: flex !important;
+      min-height: 60px; // Garante uma altura mínima para o elemento.
+      width: 100%;
+      opacity: 1 !important; // Garante que não está transparente.
+      visibility: visible !important; // Garante que está visível.
+      position: relative; // Necessário para z-index funcionar.
+      z-index: 1; // Coloca-o acima de qualquer outro elemento que o possa estar a sobrepor.
 
-  .ad-status {
-    .badge {
-      display: inline-block !important;
-      min-width: 60px;
-      min-height: 20px;
+      // Garante que os filhos diretos também sejam visíveis.
+      .ad-info,
+      .ad-status {
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+
+      // Força a cor e o tamanho do texto do título.
+      .ad-info h5 {
+        color: var(--cor-primaria) !important;
+        font-size: 1.1rem !important; // Tamanho de fonte explícito.
+      }
     }
   }
 }
