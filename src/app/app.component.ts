@@ -9,7 +9,7 @@ import packageJson from "../../package.json";
 import { ClientService } from "./core/service/api/client.service";
 import { Authentication } from "./core/service/auth/autenthication";
 import { AuthenticationStorage } from "./core/service/auth/authentication-storage";
-import { Client, Role } from "./model/client";
+import { Client } from "./model/client";
 import { DotsLoadingComponent } from "./shared/components/dots-loading/dots-loading.component";
 import { ToastComponent } from "./shared/components/toast/toast.component";
 import { PrimengModule } from "./shared/primeng/primeng.module";
@@ -77,17 +77,7 @@ export class AppComponent implements OnInit {
             this.router.navigate(["/terms-of-service"]);
             return;
           }
-
-          this.redirecionarConformeRole(authenticatedClient as Client);
         },
       });
-  }
-
-  private redirecionarConformeRole(client: Client): void {
-    if (client.role === Role.ADMIN) {
-      this.router.navigate(["/admin"]);
-    } else {
-      this.router.navigate(["/client"]);
-    }
   }
 }

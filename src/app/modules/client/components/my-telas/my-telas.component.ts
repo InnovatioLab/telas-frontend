@@ -130,7 +130,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   checkRouteParams(): void {
     this.routeParamsSubscription = this.route.queryParams.subscribe(
       (params) => {
-        if (params["ads"] === "true") {
+        if (params["ads"] && params["ads"] === "true") {
           this.activeTabIndex = 1;
         }
       }
