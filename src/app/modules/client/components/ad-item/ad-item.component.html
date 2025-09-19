@@ -1,0 +1,76 @@
+<div class="ad-item w-full">
+  <div class="ad-header w-full flex gap-2">
+    <div class="ad-info w-full">
+      <h5>{{ ad?.name ? 'Ad - ' + ad.name : 'Ad sem nome' }}&nbsp;</h5>
+      <p class="ad-date">
+        Submission date:
+        {{ ad?.submissionDate ? (ad.submissionDate | date: 'dd/MM/yyyy') : 'Data não disponível' }}&nbsp;
+      </p>
+    </div>
+    <div
+      class="ad-status flex flex-column justify-content-center align-items-center gap-2"
+    >
+      <span
+        class="badge w-full text-center"
+        [ngClass]="getValidationBadgeClass(ad?.validation)"
+      >
+        {{ getValidationLabel(ad?.validation) }}&nbsp;
+      </span>
+      <ng-container *ngIf="ad?.validation === 'PENDING'">
+        <small class="validation-count">
+          {{ ad?.canBeValidatedByOwner ? 'Available for validation' : 'Waiting for admin approval' }}
+        </small>
+      </ng-container>
+      <ng-container *ngIf="ad?.validation === 'REJECTED'">
+        <small class="validation-count">Waiting for admin edition</small>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="ad-content w-full">
+    &nbsp;
+    <img
+      [ngSrc]="ad.link"
+      alt="{{ ad?.name }}"
+      class="ad-image w-full"
+      width="600"
+      height="400"
+    />
+  </div>
+
+  <div class="ad-actions">
+    <p-button
+      icon="pi pi-eye"
+      (onClick)="onView()"
+      [disabled]="loading"
+      severity="info"
+      [text]="true"
+      pTooltip="View"
+      tooltipPosition="top"
+    >
+    </p-button>
+    <p-button
+      icon="pi pi-download"
+      (onClick)="onDownload()"
+      [disabled]="loading"
+      severity="success"
+      [text]="true"
+      pTooltip="Download"
+      tooltipPosition="top"
+    >
+    </p-button>
+    <p-button
+      icon="pi pi-check-circle"
+      (click)="onValidate()"
+      *ngIf="canValidateAd()"
+      [disabled]="loading"
+      severity="success"
+      [text]="true"
+      pTooltip="Validate Ad"
+      tooltipPosition="top"
+    >
+    </p-button>
+  </div>
+</div>
+
+
