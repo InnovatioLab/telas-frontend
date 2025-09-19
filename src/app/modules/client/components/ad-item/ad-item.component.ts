@@ -1,8 +1,8 @@
 import { CommonModule } from "@angular/common";
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output, Renderer2, ViewEncapsulation } from "@angular/core";
-import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AdValidationType } from "@app/model/client";
 import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
 
 @Component({
   selector: "app-ad-item",
@@ -108,9 +108,9 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
         
         // Garantir que os filhos também sejam visíveis
         const children = header.querySelectorAll("*");
-        children.forEach((child: HTMLElement) => {
-          this.renderer.setStyle(child, "visibility", "visible");
-          this.renderer.setStyle(child, "opacity", "1");
+        children.forEach((child) => {
+          this.renderer.setStyle(child as HTMLElement, "visibility", "visible");
+          this.renderer.setStyle(child as HTMLElement, "opacity", "1");
         });
       }
       
