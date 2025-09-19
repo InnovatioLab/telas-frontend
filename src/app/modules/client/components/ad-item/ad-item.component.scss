@@ -6,6 +6,12 @@
   flex-wrap: wrap;
 }
 
+// Diagnóstico/forçar visibilidade e evitar sobreposição
+.ad-item {
+  position: relative !important;
+  overflow: visible !important;
+}
+
 // Garantir visibilidade do header
 .ad-item .ad-header,
 .ad-item .ad-header * {
@@ -13,7 +19,8 @@
   visibility: visible !important;
   opacity: 1 !important;
   position: relative !important;
-  z-index: 1 !important;
+  z-index: 2 !important;
+  pointer-events: auto !important;
 }
 
 .ad-item .ad-header {
@@ -24,6 +31,9 @@
   min-height: 60px !important;
   width: 100% !important;
   margin-bottom: 1rem !important;
+  background: rgba(255, 255, 0, 0.15) !important; // debug: destacar header
+  z-index: 1002 !important;
+  pointer-events: auto !important;
 }
 
 .ad-item .ad-header .ad-info {
@@ -70,6 +80,8 @@
 
 .ad-content {
   margin: 1rem 0rem;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 .ad-preview .ad-image {
@@ -77,6 +89,8 @@
   max-height: 600px !important;
   object-fit: contain;
   border-radius: 4px;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 
