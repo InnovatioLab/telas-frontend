@@ -1,5 +1,16 @@
 import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, Output, Renderer2, ViewEncapsulation } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnDestroy,
+  Output,
+  Renderer2,
+  ViewEncapsulation
+} from "@angular/core";
 import { AdValidationType } from "@app/model/client";
 import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -78,51 +89,99 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
   }
 
   onImageLoad(): void {
-    // Nada especial necessário agora; mantemos estilo padrão
+    const host = this.hostRef.nativeElement;
+    const header = host.querySelector(".ad-header") as HTMLElement | null;
+    const image = host.querySelector(".ad-content img") as HTMLElement | null;
+    if (header) {
+      this.renderer.setStyle(header, "z-index", 1002);
+      this.renderer.setStyle(header, "position", "relative");
+    }
+    if (image) {
+      this.renderer.setStyle(image, "z-index", 1);
+      this.renderer.setStyle(image, "position", "relative");
+    }
   }
 
   onImageError(): void {
-    // Em erro, não esconderemos mais a imagem via estilo para não afetar layout
+    const host = this.hostRef.nativeElement;
+    const image = host.querySelector(".ad-content img") as HTMLElement | null;
+    if (image) {
+      this.renderer.setStyle(image, "display", "none");
+    }
   }
 
   ngAfterViewInit(): void {
     this.ngZone.runOutsideAngular(() => {
       const host = this.hostRef.nativeElement;
       const header = host.querySelector(".ad-header") as HTMLElement | null;
-      
+      const image = host.querySelector(".ad-content img") as HTMLElement | null;
+
+      // Estilos de reforço imediatos
       if (host) {
         this.renderer.setStyle(host, "position", "relative");
+        this.renderer.setStyle(host, "overflow", "visible");
       }
-      
       if (header) {
-        // Forçar estilos críticos via Renderer2
-        this.renderer.setStyle(header, "display", "flex");
-        this.renderer.setStyle(header, "visibility", "visible");
-        this.renderer.setStyle(header, "opacity", "1");
         this.renderer.setStyle(header, "position", "relative");
-        this.renderer.setStyle(header, "z-index", "10");
-        this.renderer.setStyle(header, "min-height", "60px");
-        this.renderer.setStyle(header, "width", "100%");
-        this.renderer.setStyle(header, "margin-bottom", "1rem");
-        this.renderer.setStyle(header, "background", "rgba(255, 255, 0, 0.2)"); // debug temporário
-        
-        // Garantir que os filhos também sejam visíveis
-        const children = header.querySelectorAll("*");
-        children.forEach((child) => {
-          this.renderer.setStyle(child as HTMLElement, "visibility", "visible");
-          this.renderer.setStyle(child as HTMLElement, "opacity", "1");
+        this.renderer.setStyle(header, "z-index", 1002);
+        this.renderer.setStyle(header, "visibility", "visible");
+        this.renderer.setStyle(header, "opacity", 1);
+        this.renderer.setStyle(header, "pointer-events", "auto");
+        // Garantir filhos visíveis
+        header.querySelectorAll<HTMLElement>("*").forEach((el) => {
+          this.renderer.setStyle(el, "visibility", "visible");
+          this.renderer.setStyle(el, "opacity", 1);
         });
       }
-      
-      // Reforçar após um delay para garantir que estilos externos não sobrescrevam
+      if (image) {
+        this.renderer.setStyle(image, "position", "relative");
+        this.renderer.setStyle(image, "z-index", 1);
+        this.renderer.setStyle(image, "pointer-events", "none");
+      }
+
+      // Observador para reimpor estilos se algo externo alterar o DOM
+      this.mutationObserver = new MutationObserver(() => {
+        if (header) {
+          this.renderer.setStyle(header, "position", "relative");
+          this.renderer.setStyle(header, "z-index", 1002);
+          this.renderer.setStyle(header, "visibility", "visible");
+          this.renderer.setStyle(header, "opacity", 1);
+          this.renderer.setStyle(header, "pointer-events", "auto");
+        }
+        if (image) {
+          this.renderer.setStyle(image, "position", "relative");
+          this.renderer.setStyle(image, "z-index", 1);
+          this.renderer.setStyle(image, "pointer-events", "none");
+        }
+      });
+      if (host && this.mutationObserver) {
+        this.mutationObserver.observe(host, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+        });
+      }
+
+      if (header && "ResizeObserver" in window) {
+        this.resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const rect = entry.contentRect;
+            if (rect.height < 1) {
+              // Forçar altura mínima
+              this.renderer.setStyle(header, "min-height", "50px");
+            }
+          }
+        });
+        this.resizeObserver.observe(header);
+      }
+
       setTimeout(() => {
         if (header) {
-          this.renderer.setStyle(header, "display", "flex");
+          this.renderer.setStyle(header, "z-index", 1002);
           this.renderer.setStyle(header, "visibility", "visible");
-          this.renderer.setStyle(header, "opacity", "1");
-          this.renderer.setStyle(header, "z-index", "10");
+          this.renderer.setStyle(header, "opacity", 1);
         }
-      }, 100);
+      }, 150);
     });
   }
 
@@ -135,5 +194,3 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
     }
   }
 }
-
-
