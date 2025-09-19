@@ -9,7 +9,7 @@ import {
   OnDestroy,
   Output,
   Renderer2,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from "@angular/core";
 import { AdValidationType } from "@app/model/client";
 import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
@@ -21,7 +21,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
   imports: [CommonModule, PrimengModule],
   templateUrl: "./ad-item.component.html",
   styleUrls: ["./ad-item.component.scss"],
-  encapsulation: ViewEncapsulation.Emulated,
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class AdItemComponent implements AfterViewInit, OnDestroy {
   @Input() ad!: AdResponseDto;
