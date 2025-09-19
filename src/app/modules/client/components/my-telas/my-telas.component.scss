@@ -769,6 +769,68 @@ small {
   }
 }
 
+// Forçar renderização do conteúdo da ad-header
+.ad-item .ad-header,
+.ad-item .ad-header * {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 999 !important;
+}
+
+.ad-item .ad-header {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  min-height: 60px !important;
+  width: 100% !important;
+  margin-bottom: 1rem !important;
+}
+
+.ad-item .ad-header .ad-info {
+  display: block !important;
+  flex: 1 !important;
+}
+
+.ad-item .ad-header .ad-info h5 {
+  display: block !important;
+  color: var(--cor-primaria) !important;
+  font-size: 1.1rem !important;
+  margin: 0 !important;
+  font-weight: 600 !important;
+}
+
+.ad-item .ad-header .ad-info .ad-date {
+  display: block !important;
+  color: var(--cor-cinza) !important;
+  font-size: 14px !important;
+  margin: 0 !important;
+}
+
+.ad-item .ad-header .ad-status {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 4px !important;
+}
+
+.ad-item .ad-header .ad-status .badge {
+  display: inline-block !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+}
+
+.ad-item .ad-header .ad-status .validation-count {
+  display: block !important;
+  font-size: 11px !important;
+  font-style: italic !important;
+}
+
 ::ng-deep {
   .ads-content {
     .ads-list {
@@ -782,26 +844,93 @@ small {
 
   .ad-item {
     .ad-header {
-      // Força o elemento a ocupar espaço e ser um container flexível visível.
       display: flex !important;
-      min-height: 60px; // Garante uma altura mínima para o elemento.
+      min-height: 60px; 
       width: 100%;
-      opacity: 1 !important; // Garante que não está transparente.
-      visibility: visible !important; // Garante que está visível.
-      position: relative; // Necessário para z-index funcionar.
-      z-index: 1; // Coloca-o acima de qualquer outro elemento que o possa estar a sobrepor.
+      opacity: 1 !important; 
+      visibility: visible !important; 
+      position: relative;
+      z-index: 1;
+      flex-direction: row !important;
+      justify-content: space-between !important;
+      align-items: flex-start !important;
+      margin-bottom: 1rem !important;
 
-      // Garante que os filhos diretos também sejam visíveis.
-      .ad-info,
+      .ad-info {
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: block !important;
+        flex: 1 !important;
+        
+        h5 {
+          color: var(--cor-primaria) !important;
+          font-size: 1.1rem !important;
+          margin: 0 !important;
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+
+        .ad-date {
+          margin: 0 !important;
+          color: var(--cor-cinza) !important;
+          font-size: 14px !important;
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+      }
+
       .ad-status {
         opacity: 1 !important;
         visibility: visible !important;
-      }
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        gap: 4px !important;
 
-      // Força a cor e o tamanho do texto do título.
-      .ad-info h5 {
-        color: var(--cor-primaria) !important;
-        font-size: 1.1rem !important; // Tamanho de fonte explícito.
+        .badge {
+          padding: 4px 12px !important;
+          border-radius: 20px !important;
+          font-size: 12px !important;
+          font-weight: 500 !important;
+          text-transform: uppercase !important;
+          display: inline-block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+
+          &.badge-warning {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+            border: 1px solid #ffeaa7 !important;
+          }
+
+          &.badge-success {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+            border: 1px solid #c3e6cb !important;
+          }
+
+          &.badge-danger {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            border: 1px solid #f5c6cb !important;
+          }
+
+          &.badge-secondary {
+            background-color: #e2e3e5 !important;
+            color: #383d41 !important;
+            border: 1px solid #d6d8db !important;
+          }
+        }
+
+        .validation-count {
+          font-size: 11px !important;
+          font-style: italic !important;
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
       }
     }
   }

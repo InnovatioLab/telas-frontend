@@ -1,5 +1,5 @@
 import { CommonModule, NgOptimizedImage } from "@angular/common";
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -93,7 +93,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly adService: AdService,
     private readonly toastService: ToastService,
     private readonly fb: FormBuilder,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.requestAdForm = this.fb.group({
       message: ["", [Validators.required]],
@@ -148,9 +149,30 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.ads = client.ads || [];
         this.hasAds = true;
         this.isClientDataLoaded = true;
+        
+        // Debug log para verificar os dados dos ads
+        console.log('Ads carregados:', this.ads);
+        this.ads.forEach((ad, index) => {
+          console.log(`Ad ${index}:`, {
+            id: ad.id,
+            name: ad.name,
+            validation: ad.validation,
+            submissionDate: ad.submissionDate
+          });
+        });
+        
+        // Forçar detecção de mudanças para garantir renderização
+        this.cdr.detectChanges();
+        
+        // Timeout adicional para garantir que a renderização aconteça
+        setTimeout(() => {
+          this.cdr.detectChanges();
+        }, 100);
+        
         this.loading = false;
       },
       error: (error) => {
+        console.error('Erro ao carregar dados do cliente:', error);
         this.toastService.erro("Error loading client data");
         this.isClientDataLoaded = false;
         this.loading = false;
