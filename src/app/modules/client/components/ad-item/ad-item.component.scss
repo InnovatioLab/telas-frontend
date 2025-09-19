@@ -10,6 +10,7 @@
 .ad-item {
   position: relative !important;
   overflow: visible !important;
+  isolation: isolate !important; // cria novo contexto de empilhamento
 }
 
 // Garantir visibilidade do header
@@ -92,5 +93,9 @@
   position: relative !important;
   z-index: 1 !important;
 }
+
+// Garante que o header sempre fique acima da imagem
+.ad-header { z-index: 2 !important; }
+.ad-content img { z-index: 1 !important; }
 
 

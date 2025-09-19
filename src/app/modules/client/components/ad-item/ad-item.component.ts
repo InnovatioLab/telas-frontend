@@ -76,6 +76,29 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
     return this.ad?.validation === "PENDING" && this.ad?.canBeValidatedByOwner;
   }
 
+  onImageLoad(): void {
+    // Reforçar pilha após a imagem carregar
+    const host = this.hostRef.nativeElement;
+    const header = host.querySelector(".ad-header") as HTMLElement | null;
+    const image = host.querySelector(".ad-content img") as HTMLElement | null;
+    if (header) {
+      this.renderer.setStyle(header, "z-index", 1002);
+      this.renderer.setStyle(header, "position", "relative");
+    }
+    if (image) {
+      this.renderer.setStyle(image, "z-index", 1);
+      this.renderer.setStyle(image, "position", "relative");
+    }
+  }
+
+  onImageError(): void {
+    const host = this.hostRef.nativeElement;
+    const image = host.querySelector(".ad-content img") as HTMLElement | null;
+    if (image) {
+      this.renderer.setStyle(image, "display", "none");
+    }
+  }
+
   ngAfterViewInit(): void {
     this.ngZone.runOutsideAngular(() => {
       const host = this.hostRef.nativeElement;
