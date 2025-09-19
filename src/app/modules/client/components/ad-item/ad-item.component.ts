@@ -86,12 +86,43 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // Mantemos apenas um ajuste leve para o host
     this.ngZone.runOutsideAngular(() => {
       const host = this.hostRef.nativeElement;
+      const header = host.querySelector(".ad-header") as HTMLElement | null;
+      
       if (host) {
         this.renderer.setStyle(host, "position", "relative");
       }
+      
+      if (header) {
+        // Forçar estilos críticos via Renderer2
+        this.renderer.setStyle(header, "display", "flex");
+        this.renderer.setStyle(header, "visibility", "visible");
+        this.renderer.setStyle(header, "opacity", "1");
+        this.renderer.setStyle(header, "position", "relative");
+        this.renderer.setStyle(header, "z-index", "10");
+        this.renderer.setStyle(header, "min-height", "60px");
+        this.renderer.setStyle(header, "width", "100%");
+        this.renderer.setStyle(header, "margin-bottom", "1rem");
+        this.renderer.setStyle(header, "background", "rgba(255, 255, 0, 0.2)"); // debug temporário
+        
+        // Garantir que os filhos também sejam visíveis
+        const children = header.querySelectorAll("*");
+        children.forEach((child: HTMLElement) => {
+          this.renderer.setStyle(child, "visibility", "visible");
+          this.renderer.setStyle(child, "opacity", "1");
+        });
+      }
+      
+      // Reforçar após um delay para garantir que estilos externos não sobrescrevam
+      setTimeout(() => {
+        if (header) {
+          this.renderer.setStyle(header, "display", "flex");
+          this.renderer.setStyle(header, "visibility", "visible");
+          this.renderer.setStyle(header, "opacity", "1");
+          this.renderer.setStyle(header, "z-index", "10");
+        }
+      }, 100);
     });
   }
 

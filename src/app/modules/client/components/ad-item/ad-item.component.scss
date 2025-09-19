@@ -12,16 +12,24 @@
 }
 
 .ad-item .ad-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  min-height: 60px;
-  width: 100%;
-  margin-bottom: 1rem;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  min-height: 60px !important;
+  width: 100% !important;
+  margin-bottom: 1rem !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 10 !important;
 }
 
-.ad-item .ad-header * { display: revert; }
+.ad-item .ad-header * { 
+  display: revert !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
 
 .ad-item .ad-header .ad-info { flex: 1; }
 
