@@ -112,6 +112,34 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.ngZone.runOutsideAngular(() => {
+      // Injeta CSS global necessário no Shadow DOM para restaurar estilos de PrimeNG/primeicons/primeflex
+      try {
+        const shadow = (this.hostRef.nativeElement as any).shadowRoot as ShadowRoot | undefined;
+        if (shadow) {
+          const styleEl = this.renderer.createElement("style");
+          let cssText = "";
+          Array.from(document.styleSheets).forEach((sheet: StyleSheet) => {
+            const cssSheet = sheet as CSSStyleSheet;
+            const href = (cssSheet as any).href as string | null | undefined;
+            // Seleciona folhas que, em geral, contêm estilos relevantes
+            if (!href || /(prime|material|styles|theme)/i.test(href)) {
+              try {
+                const rules = cssSheet.cssRules;
+                if (rules) {
+                  Array.from(rules).forEach((rule) => (cssText += rule.cssText + "\n"));
+                }
+              } catch (err) {
+                // Ignora CORS/CSS não acessível
+              }
+            }
+          });
+          if (cssText) {
+            (styleEl as HTMLStyleElement).textContent = cssText;
+            shadow.appendChild(styleEl);
+          }
+        }
+      } catch {}
+
       const host = this.hostRef.nativeElement;
       const header = host.querySelector(".ad-header") as HTMLElement | null;
       const image = host.querySelector(".ad-content img") as HTMLElement | null;
