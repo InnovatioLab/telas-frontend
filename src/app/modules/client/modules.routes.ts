@@ -74,12 +74,7 @@ export const ROUTES: Route[] = [
         path: "change-password",
         component: AlterarSenhaComponent,
         title: "Change Password",
-      },
-      {
-        path: "progress-ad",
-        component: ViewEditProfileComponent,
-        title: "Ad Progress",
-      },
+      }
     ],
   },
 ];

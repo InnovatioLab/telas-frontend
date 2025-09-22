@@ -2,15 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ClientService } from '@app/core/service/api/client.service';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
-import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
-import { RedefinirSenhaComponent } from '../redefinir-senha/redefinir-senha.component';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { ClientService } from '@app/core/service/api/client.service';
+import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
 import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
+import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { RedefinirSenhaComponent } from '../redefinir-senha/redefinir-senha.component';
 
 @Component({
   selector: 'feat-validacao-recuperar-senha',

@@ -1,16 +1,16 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
+import { ClientService } from '@app/core/service/api/client.service';
 import { CardCentralizadoComponent, ErrorComponent } from '@app/shared';
+import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
+import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
-import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
-import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
-import { ClientService } from '@app/core/service/api/client.service';
-import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'feat-recuperar-senha',
