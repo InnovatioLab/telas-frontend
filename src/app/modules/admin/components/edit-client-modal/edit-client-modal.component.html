@@ -77,7 +77,7 @@
             <input
               type="email"
               pInputText
-              formControlName="email"
+              formControlName="contactEmail"
               class="w-full input-form"
               id="inp-email"
               maxLength="255"
@@ -85,7 +85,7 @@
             />
             <app-error
               id="error-msg-email"
-              [control]="editForm.get('email')"
+              [control]="editForm.get('contactEmail')"
             ></app-error>
           </div>
           <div class="form-field">
@@ -195,10 +195,14 @@
 
       <div class="form-section">
         <h4>Addresses</h4>
-        <div class="addresses-container">
+        <div formArrayName="addresses">
           <div
             class="address-item"
-            *ngFor="let address of addresses; let i = index"
+            *ngFor="
+              let addressGroup of addressesFormArray.controls;
+              let i = index
+            "
+            [formGroupName]="i"
           >
             <div class="address-header">
               <h5>Address {{ i + 1 }}</h5>
@@ -206,89 +210,140 @@
                 type="button"
                 class="remove-address-btn"
                 (click)="removeAddress(i)"
-                *ngIf="addresses.length > 1"
+                *ngIf="addressesFormArray.length > 1"
               >
                 <app-icon-close></app-icon-close>
               </button>
             </div>
             <div class="form-row">
               <div class="form-field">
-                <label class="required">Street</label>
+                <label htmlFor="street" class="required">Street</label>
                 <input
                   type="text"
                   pInputText
-                  [(ngModel)]="address.street"
-                  [ngModelOptions]="{ standalone: true }"
+                  formControlName="street"
                   placeholder="Enter street"
                   maxlength="100"
+                  id="inp-street"
                 />
+                <app-error
+                  *ngIf="
+                    addressGroup.get('street')?.touched &&
+                    addressGroup.get('street')?.invalid
+                  "
+                  id="error-msg-street"
+                  [control]="addressGroup.get('street')"
+                ></app-error>
               </div>
-
               <div class="form-field">
-                <label class="required">City</label>
+                <label htmlFor="zipCode" class="required">ZipCode</label>
+                <p-inputMask
+                  mask="99999"
+                  formControlName="zipCode"
+                  id="inp-zip-code"
+                  placeholder="Enter ZIP code"
+                  (onComplete)="
+                    onZipCodeChange(
+                      getAddressGroup(i),
+                      getAddressGroup(i).get('zipCode')?.value
+                    )
+                  "
+                ></p-inputMask>
+                <app-error
+                  *ngIf="
+                    addressGroup.get('zipCode')?.touched &&
+                    addressGroup.get('zipCode')?.invalid
+                  "
+                  id="error-msg-zip-code"
+                  [control]="addressGroup.get('zipCode')"
+                ></app-error>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label htmlFor="city" id="lb-city" class="required">City</label>
                 <input
                   type="text"
+                  id="inp-city"
                   pInputText
-                  [(ngModel)]="address.city"
-                  [ngModelOptions]="{ standalone: true }"
+                  formControlName="city"
                   placeholder="Enter city"
                   maxlength="50"
                 />
+                <app-error
+                  *ngIf="
+                    addressGroup.get('city')?.touched &&
+                    addressGroup.get('city')?.invalid
+                  "
+                  id="error-msg-city"
+                  [control]="addressGroup.get('city')"
+                ></app-error>
               </div>
-            </div>
-
-            <div class="form-row">
               <div class="form-field">
-                <label class="required">State</label>
+                <label htmlFor="state" id="lb-state" class="required"
+                  >State</label
+                >
                 <input
                   type="text"
                   pInputText
-                  [(ngModel)]="address.state"
-                  [ngModelOptions]="{ standalone: true }"
+                  formControlName="state"
                   placeholder="Enter state"
-                  minlingth="2"
+                  minlength="2"
                   maxlength="2"
+                  uiTextOnly
+                  id="inp-state"
                 />
-              </div>
-              <div class="form-field">
-                <label class="required">Zipcode</label>
-                <p-inputMask
-                  mask="99999"
-                  [(ngModel)]="address.zipCode"
-                  [ngModelOptions]="{ standalone: true }"
-                  placeholder="Enter ZIP code"
-                  (ngModelChange)="onZipCodeChange(address, $event)"
-                />
+                <app-error
+                  *ngIf="
+                    addressGroup.get('state')?.touched &&
+                    addressGroup.get('state')?.invalid
+                  "
+                  [control]="addressGroup.get('state')"
+                ></app-error>
               </div>
             </div>
             <div class="form-row">
               <div class="form-field">
-                <label>Country</label>
+                <label htmlFor="country" id="lb-country">Country</label>
                 <input
                   type="text"
                   pInputText
-                  [(ngModel)]="address.country"
-                  [ngModelOptions]="{ standalone: true }"
+                  formControlName="country"
                   placeholder="Enter country"
                   maxlength="100"
                   uiTextOnly
+                  id="inp-country"
                 />
+                <app-error
+                  *ngIf="
+                    addressGroup.get('country')?.touched &&
+                    addressGroup.get('country')?.invalid
+                  "
+                  id="error-msg-country"
+                  [control]="addressGroup.get('country')"
+                ></app-error>
               </div>
               <div class="form-field">
                 <label>Complement</label>
                 <input
                   type="text"
                   pInputText
-                  [(ngModel)]="address.complement"
-                  [ngModelOptions]="{ standalone: true }"
+                  formControlName="complement"
                   placeholder="Enter complement"
                   maxlength="100"
+                  id="inp-complement"
                 />
+                <app-error
+                  *ngIf="
+                    addressGroup.get('complement')?.touched &&
+                    addressGroup.get('complement')?.invalid
+                  "
+                  id="error-msg-complement"
+                  [control]="addressGroup.get('complement')"
+                ></app-error>
               </div>
             </div>
-            <div class="form-row"></div>
           </div>
-
           <div class="add-address-btn">
             <button
               type="button"

@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
+  FormArray,
   FormBuilder,
   FormGroup,
   FormsModule,
@@ -11,7 +12,7 @@ import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
 import { ClientService } from "@app/core/service/api/client.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { Address, Client, DefaultStatus } from "@app/model/client";
+import { Client, DefaultStatus } from "@app/model/client";
 import {
   AddressRequestDTO,
   ClientRequestDTO,
@@ -52,7 +53,14 @@ export class EditClientModalComponent implements OnInit {
   editForm: FormGroup;
   loading = false;
   client: Client;
-  addresses: Address[] = [];
+
+  get addressesFormArray(): FormArray {
+    return this.editForm.get("addresses") as FormArray;
+  }
+
+  getAddressGroup(index: number): FormGroup {
+    return this.addressesFormArray.at(index) as FormGroup;
+  }
 
   statusOptions = [
     { label: "Active", value: DefaultStatus.ACTIVE },
@@ -118,6 +126,7 @@ export class EditClientModalComponent implements OnInit {
           Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
         ],
       ],
+      addresses: this.fb.array([]),
     });
   }
 
@@ -151,67 +160,86 @@ export class EditClientModalComponent implements OnInit {
   }
 
   private populateAddresses(): void {
+    const addressesArray = this.editForm.get("addresses") as FormArray;
+    addressesArray.clear();
     if (
       this.client &&
       this.client.addresses &&
       this.client.addresses.length > 0
     ) {
-      this.addresses = this.client.addresses.map((addr, index) => {
-        const mappedAddr = {
-          id: addr.id,
-          street: addr.street || "",
-          number: addr.number || "",
-          complement: addr.complement || "",
-          city: addr.city || "",
-          state: addr.state || "",
-          country: addr.country || "",
-          zipCode: addr.zipCode || "",
-          latitude: addr.latitude,
-          longitude: addr.longitude,
-          coordinatesParams: addr.coordinatesParams,
-        };
-        return mappedAddr;
+      this.client.addresses.forEach((addr) => {
+        addressesArray.push(
+          this.fb.group({
+            street: [
+              addr.street || "",
+              [Validators.required, Validators.maxLength(100)],
+            ],
+            zipCode: [addr.zipCode || "", Validators.required],
+            city: [
+              addr.city || "",
+              [Validators.required, Validators.maxLength(50)],
+            ],
+            state: [
+              addr.state || "",
+              [
+                Validators.required,
+                Validators.maxLength(2),
+                Validators.minLength(2),
+              ],
+            ],
+            country: [
+              addr.country || "",
+              [Validators.required, Validators.maxLength(100)],
+            ],
+            complement: [addr.complement || "", Validators.maxLength(100)],
+          })
+        );
       });
     } else {
       this.addAddress();
     }
-
     this.cdr.detectChanges();
   }
 
   addAddress(): void {
-    const newAddress: Address = {
-      street: "",
-      number: "",
-      complement: "",
-      city: "",
-      state: "",
-      country: "",
-      zipCode: "",
-    };
-    this.addresses.push(newAddress);
+    const addressesArray = this.editForm.get("addresses") as FormArray;
+
+    addressesArray.push(
+      this.fb.group({
+        street: ["", [Validators.required, Validators.maxLength(100)]],
+        zipCode: ["", Validators.required],
+        city: ["", [Validators.required, Validators.maxLength(50)]],
+        state: [
+          "",
+          [
+            Validators.required,
+            Validators.maxLength(2),
+            Validators.minLength(2),
+          ],
+        ],
+        country: ["", [Validators.required, Validators.maxLength(100)]],
+        complement: ["", Validators.maxLength(100)],
+      })
+    );
   }
 
   removeAddress(index: number): void {
-    if (this.addresses.length > 1) {
-      this.addresses.splice(index, 1);
+    const addressesArray = this.editForm.get("addresses") as FormArray;
+    if (addressesArray.length > 1) {
+      addressesArray.removeAt(index);
     }
   }
 
-  onZipCodeChange(address: Address, zipCode: string): void {
+  onZipCodeChange(addressGroup: FormGroup, zipCode: string): void {
     if (zipCode && zipCode.length >= 5) {
       this.zipCodeService.findLocationByZipCode(zipCode).subscribe({
         next: (addressData) => {
           if (addressData) {
-            address.city = addressData.city || "";
-            address.state = addressData.state || "";
-            address.country = addressData.country || "";
-            address.latitude = addressData.latitude
-              ? parseFloat(addressData.latitude)
-              : null;
-            address.longitude = addressData.longitude
-              ? parseFloat(addressData.longitude)
-              : null;
+            addressGroup.patchValue({
+              city: addressData.city || "",
+              state: addressData.state || "",
+              country: addressData.country || "",
+            });
           }
         },
         error: (error) => {
@@ -222,25 +250,19 @@ export class EditClientModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.editForm.valid && this.addresses.length > 0) {
+    if (this.editForm.valid && this.addressesFormArray.length > 0) {
       this.loading = true;
-
       const formValue = this.editForm.value;
-
-      const addressesDTO: AddressRequestDTO[] = this.addresses
-        .filter((addr) => addr.street && addr.city)
-        .map((addr) => ({
-          id: addr.id,
-          street: addr.street!,
-          zipCode: addr.zipCode || "",
-          city: addr.city!,
-          state: addr.state || "",
-          country: addr.country || "",
+      const addressesDTO: AddressRequestDTO[] = formValue.addresses.map(
+        (addr: any) => ({
+          street: addr.street,
+          zipCode: addr.zipCode,
+          city: addr.city,
+          state: addr.state,
+          country: addr.country,
           complement: addr.complement,
-          latitude: addr.latitude ? Number(addr.latitude) : undefined,
-          longitude: addr.longitude ? Number(addr.longitude) : undefined,
-        }));
-
+        })
+      );
       const clientRequest: ClientRequestDTO = {
         businessName: formValue.businessName,
         identificationNumber: formValue.identificationNumber,
@@ -260,7 +282,6 @@ export class EditClientModalComponent implements OnInit {
         },
         addresses: addressesDTO,
       };
-
       this.clientService.editar(this.client.id!, clientRequest).subscribe({
         next: (response) => {
           this.toastService.sucesso("Client updated successfully");
