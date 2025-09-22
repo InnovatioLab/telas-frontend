@@ -82,39 +82,10 @@
   }
 
   .btn-add-social,
-  .btn-remove-social {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    i {
-      font-size: 16px;
-    }
-  }
-
-  .btn-add-social {
-    color: var(--cor-primaria);
-    background-color: transparent;
-    border: 1px solid var(--cor-primaria);
-    padding: var(--espacamento-pequeno) var(--espacamento-padrao);
-    border-radius: var(--borda-raio-pequeno);
-    font-size: var(--fonte-tamanho-padrao);
-    font-weight: var(--fonte-peso-medio);
-    transition: var(--transicao-padrao);
-
-    &:hover {
-      background-color: var(--cor-primaria);
-      color: var(--cor-branca);
-    }
-
-    i {
-      margin-right: var(--espacamento-pequeno);
-    }
+  .btn-add-address {
+    font-size: var(--fonte-tamanho-padrao) !important;
+    font-weight: var(--fonte-peso-medio) !important;
+    max-width: 150px !important;
   }
 
   .btn-remove-social {
@@ -134,20 +105,6 @@
       margin-bottom: 0;
 
       input {
-        &.ng-invalid.ng-touched {
-          border-color: var(--cor-erro);
-          box-shadow: 0 0 0 0.2rem rgba(var(--cor-erro-rgb), 0.25);
-        }
-
-        &.ng-invalid.ng-dirty {
-          border-color: var(--cor-erro);
-          box-shadow: 0 0 0 0.2rem rgba(var(--cor-erro-rgb), 0.25);
-        }
-
-        &.ng-valid.ng-touched {
-          border-color: var(--cor-sucesso);
-        }
-
         &[readonly] {
           background-color: var(--cor-cinza-fundo);
           border-color: var(--cor-cinza-medio);

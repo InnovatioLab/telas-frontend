@@ -177,118 +177,132 @@
         </div>
       </div>
 
-      <div class="section-title">Address</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label htmlFor="street" id="lb-street" class="required">Street</label>
-          <input
-            type="text"
-            pInputText
-            formControlName="street"
-            class="w-full input-form"
-            maxlength="100"
-            id="inp-street"
-            [readonly]="!isEditMode"
-          />
-          <app-error
-            id="error-msg-street"
-            [control]="profileForm.get('street')"
-          ></app-error>
-        </div>
-
-        <div class="form-group">
-          <label htmlFor="zipCode" id="lb-zip-code" class="required"
-            >ZipCode</label
+      <div
+        class="section-title flex align-items-center justify-content-between"
+      >
+        Addresses
+        <div *ngIf="isEditMode" class="add-address-btn">
+          <button
+            pButton
+            icon="pi pi-plus"
+            type="button"
+            class="btn-add-address"
+            (click)="addAddress()"
           >
-          <p-inputMask
-            mask="99999"
-            formControlName="zipCode"
-            id="inp-zip-code"
-            class="w-full input-form"
-            [readonly]="!isEditMode"
-          ></p-inputMask>
-          <app-error
-            id="error-msg-zip-code"
-            [control]="profileForm.get('zipCode')"
-          ></app-error>
+            Address
+          </button>
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label htmlFor="city" id="lb-city" class="required">City</label>
-          <input
-            type="text"
-            pInputText
-            formControlName="city"
-            placeholder="City"
-            class="w-full input-form"
-            maxlength="50"
-            id="inp-city"
-            [readonly]="!isEditMode"
-          />
-          <app-error
-            id="error-msg-city"
-            [control]="profileForm.get('city')"
-          ></app-error>
-        </div>
+      <div formArrayName="addresses">
+        <div
+          *ngFor="
+            let addressGroup of addressesFormArray.controls;
+            let i = index
+          "
+          [formGroupName]="i"
+          class="address-item"
+        >
+          <div
+            class="address-header flex align-items-center justify-content-between"
+          >
+            <h5>Address {{ i + 1 }}</h5>
+            <button
+              pButton
+              icon="pi pi-trash"
+              *ngIf="isEditMode && addressesFormArray.length > 1"
+              type="button"
+              class="btn-remover-social p-button-danger ml-2 icon-button btn-danger mt-0"
+              (click)="removeAddress(i)"
+            ></button>
+          </div>
 
-        <div class="form-group">
-          <label htmlFor="state" id="lb-state" class="required">State</label>
-          <input
-            type="text"
-            pInputText
-            formControlName="state"
-            class="w-full input-form"
-            minlength="2"
-            maxlength="2"
-            id="inp-state"
-            uiTextOnly
-            [readonly]="!isEditMode"
-          />
-          <app-error
-            id="error-msg-state"
-            [control]="profileForm.get('state')"
-          ></app-error>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label htmlFor="country" id="lb-country">Country</label>
-          <input
-            type="text"
-            pInputText
-            formControlName="country"
-            placeholder="Country"
-            class="w-full input-form"
-            maxlength="100"
-            uiTextOnly
-            id="inp-country"
-            [readonly]="!isEditMode"
-          />
-          <app-error
-            id="error-msg-country"
-            [control]="profileForm.get('country')"
-          ></app-error>
-        </div>
-
-        <div class="form-group">
-          <label htmlFor="complement" id="lb-complement">Complement</label>
-          <input
-            type="text"
-            pInputText
-            formControlName="complement"
-            placeholder="Complement"
-            class="w-full input-form"
-            maxlength="100"
-            id="inp-complement"
-            [readonly]="!isEditMode"
-          />
-          <app-error
-            id="error-msg-complement"
-            [control]="profileForm.get('complement')"
-          ></app-error>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="required">Street</label>
+              <input
+                type="text"
+                pInputText
+                formControlName="street"
+                placeholder="Street"
+                class="w-full input-form"
+                maxlength="100"
+                [readonly]="!isEditMode"
+              />
+              <app-error [control]="addressGroup.get('street')"></app-error>
+            </div>
+            <div class="form-group">
+              <label class="required">ZipCode</label>
+              <p-inputMask
+                mask="99999"
+                formControlName="zipCode"
+                placeholder="Zipcode"
+                class="w-full input-form"
+                [readonly]="!isEditMode"
+              ></p-inputMask>
+              <app-error [control]="addressGroup.get('zipCode')"></app-error>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="required">City</label>
+              <input
+                type="text"
+                pInputText
+                formControlName="city"
+                placeholder="City"
+                class="w-full input-form"
+                maxlength="50"
+                [readonly]="!isEditMode"
+                placeholder="City"
+              />
+              <app-error [control]="addressGroup.get('city')"></app-error>
+            </div>
+            <div class="form-group">
+              <label class="required">State</label>
+              <input
+                type="text"
+                pInputText
+                formControlName="state"
+                class="w-full input-form"
+                minlength="2"
+                maxlength="2"
+                uiTextOnly
+                [readonly]="!isEditMode"
+                placeholder="State"
+              />
+              <app-error [control]="addressGroup.get('state')"></app-error>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Country</label>
+              <input
+                type="text"
+                pInputText
+                formControlName="country"
+                placeholder="Country"
+                class="w-full input-form"
+                maxlength="100"
+                uiTextOnly
+                [readonly]="!isEditMode"
+              />
+              <app-error [control]="addressGroup.get('country')"></app-error>
+            </div>
+            <div class="form-group">
+              <label>Complement</label>
+              <input
+                type="text"
+                pInputText
+                formControlName="complement"
+                placeholder="Complement"
+                class="w-full input-form"
+                maxlength="100"
+                [readonly]="!isEditMode"
+              />
+              <app-error [control]="addressGroup.get('complement')"></app-error>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -298,13 +312,14 @@
         <div class="social-media-header">
           <label>Social Media Links</label>
           <button
+            pButton
             *ngIf="isEditMode"
+            icon="pi pi-plus"
             type="button"
             class="btn-add-social"
             (click)="addSocialMedia()"
           >
-            <icon-plus></icon-plus>
-            Add Social Media
+            Social Media
           </button>
         </div>
 
@@ -369,9 +384,7 @@
             type="button"
             class="btn-remover-social p-button-danger ml-2 icon-button btn-danger"
             (click)="removeSocialMedia(i)"
-          >
-            <!-- <i class="pi pi-trash"></i> -->
-          </button>
+          ></button>
         </div>
       </div>
 

@@ -90,17 +90,76 @@ export class ViewEditProfileComponent implements OnInit {
       ownerLastName: ["", Validators.maxLength(150)],
       ownerEmail: ["", [Validators.email]],
       ownerPhone: [""],
-      street: ["", [Validators.required, Validators.maxLength(100)]],
-      zipCode: ["", Validators.required],
-      city: ["", [Validators.required, Validators.maxLength(50)]],
-      state: [
-        "",
-        [Validators.required, Validators.maxLength(2), Validators.minLength(2)],
-      ],
-      country: ["", [Validators.required, Validators.maxLength(100)]],
-      complement: ["", Validators.maxLength(100)],
+      addresses: this.fb.array([]),
       socialMedia: this.fb.array([]),
     });
+  }
+
+  get addressesFormArray(): FormArray {
+    return this.profileForm.get("addresses") as FormArray;
+  }
+
+  addAddress(): void {
+    this.addressesFormArray.push(
+      this.fb.group({
+        street: ["", [Validators.required, Validators.maxLength(100)]],
+        zipCode: ["", Validators.required],
+        city: ["", [Validators.required, Validators.maxLength(50)]],
+        state: [
+          "",
+          [
+            Validators.required,
+            Validators.maxLength(2),
+            Validators.minLength(2),
+          ],
+        ],
+        country: ["", [Validators.required, Validators.maxLength(100)]],
+        complement: ["", Validators.maxLength(100)],
+      })
+    );
+  }
+
+  removeAddress(index: number): void {
+    if (this.addressesFormArray.length > 1) {
+      this.addressesFormArray.removeAt(index);
+    }
+  }
+
+  private populateAddresses(addresses: any[]): void {
+    const addressesArray = this.addressesFormArray;
+    addressesArray.clear();
+    if (addresses && addresses.length > 0) {
+      addresses.forEach((addr) => {
+        addressesArray.push(
+          this.fb.group({
+            street: [
+              addr.street || "",
+              [Validators.required, Validators.maxLength(100)],
+            ],
+            zipCode: [addr.zipCode || "", Validators.required],
+            city: [
+              addr.city || "",
+              [Validators.required, Validators.maxLength(50)],
+            ],
+            state: [
+              addr.state || "",
+              [
+                Validators.required,
+                Validators.maxLength(2),
+                Validators.minLength(2),
+              ],
+            ],
+            country: [
+              addr.country || "",
+              [Validators.required, Validators.maxLength(100)],
+            ],
+            complement: [addr.complement || "", Validators.maxLength(100)],
+          })
+        );
+      });
+    } else {
+      this.addAddress();
+    }
   }
 
   get socialMediaArray(): FormArray {
@@ -196,10 +255,9 @@ export class ViewEditProfileComponent implements OnInit {
     if (!client) {
       return;
     }
-
     const formData = this.buildFormData(client);
     this.profileForm.patchValue(formData, { emitEvent: false });
-
+    this.populateAddresses(client.addresses || []);
     this.clearSocialMediaArray();
     this.populateSocialMedia(client.socialMedia);
     this.disableForm();
@@ -365,17 +423,15 @@ export class ViewEditProfileComponent implements OnInit {
         phone: normalizedPhone,
       },
 
-      addresses: [
-        {
-          id: addressId,
-          street: formValues.street,
-          zipCode: formValues.zipCode,
-          city: formValues.city,
-          state: formValues.state,
-          country: formValues.country,
-          complement: formValues.complement || "",
-        },
-      ],
+      addresses: formValues.addresses.map((addr: any, idx: number) => ({
+        id: idx === 0 ? addressId : undefined,
+        street: addr.street,
+        zipCode: addr.zipCode,
+        city: addr.city,
+        state: addr.state,
+        country: addr.country,
+        complement: addr.complement || "",
+      })),
     };
 
     if (Object.keys(socialMedia).length > 0) {
