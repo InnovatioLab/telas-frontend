@@ -7,22 +7,17 @@
           <div class="form-field">
             <label for="businessName" class="required">Business Name</label>
             <input
-              id="businessName"
-              type="text"
               pInputText
-              maxlength="100"
+              type="text"
+              maxlength="255"
+              id="businessName"
               formControlName="businessName"
               placeholder="Enter business name"
             />
-            <small
-              class="error-message"
-              *ngIf="
-                editForm.get('businessName')?.invalid &&
-                editForm.get('businessName')?.touched
-              "
-            >
-              Business name is required
-            </small>
+            <app-error
+              id="error-msg-business-name"
+              [control]="editForm.get('businessName')"
+            ></app-error>
           </div>
           <div class="form-field">
             <label for="identificationNumber" class="required"
@@ -35,48 +30,41 @@
               formControlName="identificationNumber"
               placeholder="Enter identification number"
             />
-            <small
-              class="error-message"
-              *ngIf="
-                editForm.get('identificationNumber')?.invalid &&
-                editForm.get('identificationNumber')?.touched
-              "
-            >
-              Identification number is required
-            </small>
+            <app-error
+              id="error-msg-identification-number"
+              [control]="editForm.get('identificationNumber')"
+            ></app-error>
           </div>
         </div>
         <div class="form-row">
           <div class="form-field">
             <label for="industry" class="required">Industry</label>
             <input
-              id="industry"
-              type="text"
               pInputText
+              type="text"
+              id="industry"
               formControlName="industry"
-              maxlength="50"
+              uiTextOnly
               placeholder="Enter industry"
             />
-            <small
-              class="error-message"
-              *ngIf="
-                editForm.get('industry')?.invalid &&
-                editForm.get('industry')?.touched
-              "
-            >
-              Industry is required
-            </small>
+            <app-error
+              id="error-msg-industry"
+              [control]="editForm.get('industry')"
+            ></app-error>
           </div>
           <div class="form-field">
             <label for="websiteUrl">Website URL</label>
             <input
-              id="websiteUrl"
-              type="url"
-              maxlength="200"
               pInputText
+              type="text"
+              id="websiteUrl"
               formControlName="websiteUrl"
               placeholder="Enter website URL"
             />
+            <app-error
+              id="error-msg-website"
+              [control]="editForm.get('websiteUrl')"
+            ></app-error>
           </div>
         </div>
       </div>
@@ -87,22 +75,18 @@
           <div class="form-field">
             <label for="contactEmail" class="required">Email</label>
             <input
-              id="contactEmail"
               type="email"
               pInputText
-              formControlName="contactEmail"
-              placeholder="Enter contact email"
+              formControlName="email"
+              class="w-full input-form"
+              id="inp-email"
               maxLength="255"
+              placeholder="Enter contact email"
             />
-            <small
-              class="error-message"
-              *ngIf="
-                editForm.get('contactEmail')?.invalid &&
-                editForm.get('contactEmail')?.touched
-              "
-            >
-              Valid contact email is required
-            </small>
+            <app-error
+              id="error-msg-email"
+              [control]="editForm.get('email')"
+            ></app-error>
           </div>
           <div class="form-field">
             <label for="contactPhone" class="required">Phone</label>
@@ -113,15 +97,10 @@
               formControlName="contactPhone"
               placeholder="Enter contact phone"
             />
-            <small
-              class="error-message"
-              *ngIf="
-                editForm.get('contactPhone')?.invalid &&
-                editForm.get('contactPhone')?.touched
-              "
-            >
-              Contact phone is required
-            </small>
+            <app-error
+              id="error-msg-phone"
+              [control]="editForm.get('contactPhone')"
+            ></app-error>
           </div>
         </div>
       </div>
@@ -132,21 +111,18 @@
           <div class="form-field">
             <label for="ownerFirstName" class="required">First Name</label>
             <input
+              pInputText
               id="ownerFirstName"
               type="text"
-              pInputText
               formControlName="ownerFirstName"
               placeholder="Enter first name"
+              maxlength="50"
+              uiTextOnly
             />
-            <small
-              class="error-message"
-              *ngIf="
-                editForm.get('ownerFirstName')?.invalid &&
-                editForm.get('ownerFirstName')?.touched
-              "
-            >
-              First name is required
-            </small>
+            <app-error
+              id="error-msg-owner-first-name"
+              [control]="editForm.get('ownerFirstName')"
+            ></app-error>
           </div>
           <div class="form-field">
             <label for="ownerLastName">Last Name</label>
@@ -156,7 +132,13 @@
               pInputText
               formControlName="ownerLastName"
               placeholder="Enter last name"
+              uiTextOnly
+              maxlength="150"
             />
+            <app-error
+              id="error-msg-owner-last-name"
+              [control]="editForm.get('ownerLastName')"
+            ></app-error>
           </div>
         </div>
         <div class="form-row">
@@ -170,15 +152,10 @@
               placeholder="Enter email"
               maxLength="255"
             />
-            <small
-              class="error-message"
-              *ngIf="
-                editForm.get('ownerEmail')?.invalid &&
-                editForm.get('ownerEmail')?.touched
-              "
-            >
-              Valid email is required
-            </small>
+            <app-error
+              id="error-msg-owner-email"
+              [control]="editForm.get('ownerEmail')"
+            ></app-error>
           </div>
           <div class="form-field">
             <label for="ownerPhone" class="required">Phone</label>
@@ -189,15 +166,10 @@
               formControlName="ownerPhone"
               placeholder="Enter phone number"
             />
-            <small
-              class="error-message"
-              *ngIf="
-                editForm.get('ownerPhone')?.invalid &&
-                editForm.get('ownerPhone')?.touched
-              "
-            >
-              Phone number is required
-            </small>
+            <app-error
+              id="error-msg-owner-email"
+              [control]="editForm.get('ownerPhone')"
+            ></app-error>
           </div>
         </div>
       </div>

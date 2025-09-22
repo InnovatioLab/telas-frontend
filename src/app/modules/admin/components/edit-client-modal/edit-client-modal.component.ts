@@ -16,6 +16,7 @@ import {
   AddressRequestDTO,
   ClientRequestDTO,
 } from "@app/model/dto/request/client-request.dto";
+import { ErrorComponent } from "@app/shared";
 import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconCloseComponent } from "@app/shared/icons/close.icon";
 import { IconUploadComponent } from "@app/shared/icons/upload.icon";
@@ -31,6 +32,7 @@ import { InputTextModule } from "primeng/inputtext";
   standalone: true,
   imports: [
     CommonModule,
+    ErrorComponent,
     PrimengModule,
     ReactiveFormsModule,
     FormsModule,
@@ -81,17 +83,41 @@ export class EditClientModalComponent implements OnInit {
 
   private initForm(): void {
     this.editForm = this.fb.group({
-      businessName: ["", [Validators.required]],
-      identificationNumber: ["", [Validators.required]],
-      industry: ["", [Validators.required]],
-      websiteUrl: [""],
+      businessName: ["", [Validators.required, Validators.maxLength(255)]],
+      identificationNumber: [
+        "",
+        [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9),
+          Validators.pattern("^[0-9]{9}$"),
+        ],
+      ],
+      industry: [
+        "",
+        [
+          Validators.maxLength(50),
+          Validators.pattern("^[a-zA-ZÀ-ÖØ-öø-ÿ\\s]*$"),
+          Validators.required,
+        ],
+      ],
+      websiteUrl: [
+        "",
+        [Validators.maxLength(200), Validators.pattern("https?://.+")],
+      ],
       status: [DefaultStatus.ACTIVE],
-      ownerFirstName: ["", [Validators.required]],
-      ownerLastName: [""],
-      ownerEmail: ["", [Validators.required, Validators.email]],
-      ownerPhone: ["", [Validators.required]],
+      ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
+      ownerLastName: ["", [Validators.maxLength(150)]],
+      ownerEmail: ["", [Validators.email]],
+      ownerPhone: [""],
       contactEmail: ["", [Validators.required, Validators.email]],
-      contactPhone: ["", [Validators.required]],
+      contactPhone: [
+        "",
+        [
+          Validators.required,
+          Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
+        ],
+      ],
     });
   }
 
