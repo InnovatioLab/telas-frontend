@@ -1,29 +1,33 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ClientService } from '@app/core/service/api/client.service';
-import { LoadingService } from '@app/core/service/state/loading.service';
-import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
-import { ButtonFooterComponent } from '@app/shared/components/button-footer/button-footer.component';
-import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.component';
-import { FormContatoComponent } from '@app/shared/components/forms/form-contato/form-contato.component';
-import { FormDadosPessoaisComponent } from '@app/shared/components/forms/form-dados-pessoais/form-dados-pessoais.component';
-import { FormEnderecoComponent } from '@app/shared/components/forms/form-endereco/form-endereco.component';
-import { CLIENT_FORM } from '@app/shared/constants/campos-cadastro.constants';
-import { ALL_STEPS, USER_TYPE_STEPS, userFriendlyNames } from '@app/shared/constants/etapas-cadastro.constants';
-import { IconsModule } from '@app/shared/icons/icons.module';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { MENSAGENS } from '@app/utility/src';
-import { normalizePhoneNumber } from '@app/utility/src/lib/utils/normalize-inputs.utils';
-import { MenuItem } from 'primeng/api';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { FormCadastro } from './utils/form-cadastro';
+import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
+import { ClientService } from "@app/core/service/api/client.service";
+import { LoadingService } from "@app/core/service/state/loading.service";
+import { ClientRequestDTO } from "@app/model/dto/request/client-request.dto";
+import { ButtonFooterComponent } from "@app/shared/components/button-footer/button-footer.component";
+import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
+import { FormContatoComponent } from "@app/shared/components/forms/form-contato/form-contato.component";
+import { FormDadosPessoaisComponent } from "@app/shared/components/forms/form-dados-pessoais/form-dados-pessoais.component";
+import { FormEnderecoComponent } from "@app/shared/components/forms/form-endereco/form-endereco.component";
+import { CLIENT_FORM } from "@app/shared/constants/campos-cadastro.constants";
+import {
+  ALL_STEPS,
+  USER_TYPE_STEPS,
+  userFriendlyNames,
+} from "@app/shared/constants/etapas-cadastro.constants";
+import { IconsModule } from "@app/shared/icons/icons.module";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
+import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { MENSAGENS } from "@app/utility/src";
+import { normalizePhoneNumber } from "@app/utility/src/lib/utils/normalize-inputs.utils";
+import { MenuItem } from "primeng/api";
+import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { FormCadastro } from "./utils/form-cadastro";
 
 @Component({
-  selector: 'feat-cadastro',
+  selector: "feat-cadastro",
   standalone: true,
   imports: [
     CommonModule,
@@ -32,23 +36,23 @@ import { FormCadastro } from './utils/form-cadastro';
     FormDadosPessoaisComponent,
     ButtonFooterComponent,
     FormContatoComponent,
-    IconsModule
+    IconsModule,
   ],
   providers: [DialogService, DialogoUtils],
-  templateUrl: './cadastro.component.html',
-  styleUrl: './cadastro.component.scss'
+  templateUrl: "./cadastro.component.html",
+  styleUrl: "./cadastro.component.scss",
 })
 export class CadastroComponent implements OnInit {
   ref: DynamicDialogRef | undefined;
   formCadastro: FormCadastro;
   items: MenuItem[] = [];
   headerText: string;
-  listaCampos: string[] = CLIENT_FORM['CLIENT'];
+  listaCampos: string[] = CLIENT_FORM["CLIENT"];
   habilitarFormDados: boolean;
   tipoUsuarioSelecionado: string | undefined;
 
   habilitarBotaoSalvar = true;
-  txtBtnProximo = 'Finish';
+  txtBtnProximo = "Finish";
 
   latitude: string | null = null;
   longitude: string | null = null;
@@ -62,8 +66,8 @@ export class CadastroComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.items = this.getStepsForUserType('CLIENT');
-    this.headerText = userFriendlyNames['CLIENT']; 
+    this.items = this.getStepsForUserType("CLIENT");
+    this.headerText = userFriendlyNames["CLIENT"];
     this.iniciarForm();
     this.controleTipoUsuarioInicio();
   }
@@ -75,84 +79,111 @@ export class CadastroComponent implements OnInit {
   iniciarForm() {
     this.formCadastro = new FormCadastro(this.fb);
 
-    if (!this.formCadastro.cadastroForm.get('dadosCliente')) {
-      this.formCadastro.cadastroForm.addControl('dadosCliente', this.fb.group({
-        businessName: [''],
-        identificationNumber: [''],
-        industry: [''],
-        websiteUrl: [''],
-        socialMedia: this.fb.array([])
-      }));
+    if (!this.formCadastro.cadastroForm.get("dadosCliente")) {
+      this.formCadastro.cadastroForm.addControl(
+        "dadosCliente",
+        this.fb.group({
+          businessName: [""],
+          identificationNumber: [""],
+          industry: [""],
+          websiteUrl: [""],
+          socialMedia: this.fb.array([]),
+        })
+      );
     }
-    if (!this.formCadastro.cadastroForm.get('enderecoCliente')) {
-      this.formCadastro.cadastroForm.addControl('enderecoCliente', this.fb.group({
-        zipCode: [''],
-        street: [''],
-        city: [''],
-        state: [''],
-        country: [''],
-        complement: ['']
-      }));
+    if (!this.formCadastro.cadastroForm.get("enderecoCliente")) {
+      this.formCadastro.cadastroForm.addControl(
+        "enderecoCliente",
+        this.fb.group({
+          zipCode: ["", [Validators.required]],
+          street: ["", [Validators.required, Validators.maxLength(100)]],
+          city: ["", [Validators.required, Validators.maxLength(50)]],
+          state: [
+            "",
+            [
+              Validators.required,
+              Validators.maxLength(2),
+              Validators.minLength(2),
+            ],
+          ],
+          country: ["", [Validators.required, Validators.maxLength(100)]],
+          complement: ["", Validators.maxLength(100)],
+        })
+      );
     }
-    if (!this.formCadastro.cadastroForm.get('contato')) {
-      this.formCadastro.cadastroForm.addControl('contato', this.fb.group({
-        numeroContato: [''],
-        email: ['']
-      }));
+    if (!this.formCadastro.cadastroForm.get("contato")) {
+      this.formCadastro.cadastroForm.addControl(
+        "contato",
+        this.fb.group({
+          numeroContato: [""],
+          email: [""],
+        })
+      );
     }
   }
 
   get dadosPessoaisForm(): FormGroup {
-    return this.formCadastro.cadastroForm.get('dadosCliente') as FormGroup;
+    return this.formCadastro.cadastroForm.get("dadosCliente") as FormGroup;
   }
 
   get enderecoForm(): FormGroup {
-    return this.formCadastro.cadastroForm.get('enderecoCliente') as FormGroup;
+    return this.formCadastro.cadastroForm.get("enderecoCliente") as FormGroup;
   }
 
   get contatoForm(): FormGroup {
-    return this.formCadastro.cadastroForm.get('contato') as FormGroup;
+    return this.formCadastro.cadastroForm.get("contato") as FormGroup;
   }
 
   getStepsForUserType(userType: string): MenuItem[] {
     const stepKeys = USER_TYPE_STEPS[userType] || [];
-    return ALL_STEPS.filter((step: any) => stepKeys.includes(step.key)).map((step: any) => ({
-      label: step.label,
-      command: step.command
-    }));
+    return ALL_STEPS.filter((step: any) => stepKeys.includes(step.key)).map(
+      (step: any) => ({
+        label: step.label,
+        command: step.command,
+      })
+    );
   }
 
   atualizarTipoUsuarioSelecionado(novoTipo: string) {
     this.tipoUsuarioSelecionado = novoTipo;
-    AbstractControlUtils.resetFormExcludingField(this.dadosPessoaisForm, 'tipoUsuario');
+    AbstractControlUtils.resetFormExcludingField(
+      this.dadosPessoaisForm,
+      "tipoUsuario"
+    );
 
     this.enderecoForm.reset();
     this.contatoForm.reset();
 
-    this.listaCampos = CLIENT_FORM['CLIENT'];
-    this.items = this.getStepsForUserType('CLIENT');
+    this.listaCampos = CLIENT_FORM["CLIENT"];
+    this.items = this.getStepsForUserType("CLIENT");
   }
 
   salvar(form: FormGroup) {
     if (form.valid) {
       this.habilitarBotaoSalvar = false;
-      this.loadingService.setLoading(true, 'salvarCadastro');
+      this.loadingService.setLoading(true, "salvarCadastro");
       const IGNORAR_LOADING = true;
 
-      const dadosCliente = form.get('dadosCliente')?.value ?? {};
-      const enderecoCliente = form.get('enderecoCliente')?.value ?? {};
-      const contato = form.get('contato')?.value ?? {};
+      const dadosCliente = form.get("dadosCliente")?.value ?? {};
+      const enderecoCliente = form.get("enderecoCliente")?.value ?? {};
+      const contato = form.get("contato")?.value ?? {};
 
-      const rawPhone = contato.numeroContato ?? '';
+      const rawPhone = contato.numeroContato ?? "";
       const normalizedPhone = normalizePhoneNumber(rawPhone);
-      
+
       const socialMedia: Record<string, string> = {};
-      if (dadosCliente.socialMedia && Array.isArray(dadosCliente.socialMedia) && dadosCliente.socialMedia.length > 0) {
-        dadosCliente.socialMedia.forEach((item: { platform: string; url: string }) => {
-          if (item.platform && item.url) {
-            socialMedia[`${item.platform}Url`] = item.url;
+      if (
+        dadosCliente.socialMedia &&
+        Array.isArray(dadosCliente.socialMedia) &&
+        dadosCliente.socialMedia.length > 0
+      ) {
+        dadosCliente.socialMedia.forEach(
+          (item: { platform: string; url: string }) => {
+            if (item.platform && item.url) {
+              socialMedia[`${item.platform}Url`] = item.url;
+            }
           }
-        });
+        );
       }
 
       const clientRequest: ClientRequestDTO = {
@@ -185,19 +216,18 @@ export class CadastroComponent implements OnInit {
         ],
       };
 
-
       this.clientService.save(clientRequest, IGNORAR_LOADING).subscribe({
         next: (response: unknown) => {
           if (response) {
             this.habilitarBotaoSalvar = true;
-            this.loadingService.setLoading(false, 'salvarCadastro');
+            this.loadingService.setLoading(false, "salvarCadastro");
             this.navegarValidacao(clientRequest.identificationNumber);
           }
         },
         error: () => {
           this.habilitarBotaoSalvar = true;
-          this.loadingService.setLoading(false, 'salvarCadastro');
-        }
+          this.loadingService.setLoading(false, "salvarCadastro");
+        },
       });
     } else {
       this.markFormGroupTouched(form);
@@ -222,12 +252,12 @@ export class CadastroComponent implements OnInit {
       this.contatoForm.markAsDirty();
       return;
     }
-    
+
     this.salvar(this.formCadastro.cadastroForm);
   }
 
   anteriorStap() {
-    this.router.navigate(['/register']);
+    this.router.navigate(["/register"]);
   }
 
   mostrarAviso() {
@@ -235,47 +265,50 @@ export class CadastroComponent implements OnInit {
   }
 
   voltarHome() {
-    this.router.navigate(['/']);
+    this.router.navigate(["/"]);
   }
 
   navegarValidacao(documento: string) {
-    this.router.navigate(['register/validate/' + documento]);
+    this.router.navigate(["register/validate/" + documento]);
   }
 
   formaDeContatoPrincipal(): string {
-    return this.contatoForm.get('email')?.value ?? '';
+    return this.contatoForm.get("email")?.value ?? "";
   }
 
   mensagemSalvarDialog() {
     const email = this.formaDeContatoPrincipal();
 
-    let descricao = '';
-    descricao = MENSAGENS.dialogo.envioCodigoValidacaoEmail.replace('{var}', email);
+    let descricao = "";
+    descricao = MENSAGENS.dialogo.envioCodigoValidacaoEmail.replace(
+      "{var}",
+      email
+    );
 
     const config = DialogoUtils.criarConfig({
-      titulo: 'Success!',
+      titulo: "Success!",
       descricao: descricao,
-      icon: 'check_circle',
-      acaoPrimaria: 'Ok',
+      icon: "check_circle",
+      acaoPrimaria: "Ok",
       acaoPrimariaCallback: () => {
         this.ref.close();
-      }
+      },
     });
     this.ref = this.dialogService.open(DialogoComponent, config);
   }
 
   mensagemCancelarDialog() {
     const config = DialogoUtils.exibirAlerta(MENSAGENS.dialogo.cancelar, {
-      acaoPrimaria: 'Yes, leave',
+      acaoPrimaria: "Yes, leave",
       acaoPrimariaCallback: () => {
         this.cancelarForm();
         this.ref.close();
         this.voltarHome();
       },
-      acaoSecundaria: 'No, stay',
+      acaoSecundaria: "No, stay",
       acaoSecundariaCallback: () => {
         this.ref.close();
-      }
+      },
     });
     this.ref = this.dialogService.open(DialogoComponent, config);
   }
@@ -287,7 +320,7 @@ export class CadastroComponent implements OnInit {
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);

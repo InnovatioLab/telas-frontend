@@ -1,21 +1,35 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ClientService } from '@app/core/service/api/client.service';
-import { ToastService } from '@app/core/service/state/toast.service';
-import { Client } from '@app/model/client';
-import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
-import { ErrorComponent } from '@app/shared/components/error/error.component';
-import { IconsModule } from '@app/shared/icons/icons.module';
-import { IconPlusComponent } from '@app/shared/icons/plus.icon';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { CommonModule } from "@angular/common";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
+import { ClientService } from "@app/core/service/api/client.service";
+import { ToastService } from "@app/core/service/state/toast.service";
+import { Client } from "@app/model/client";
+import { ClientRequestDTO } from "@app/model/dto/request/client-request.dto";
+import { ErrorComponent } from "@app/shared/components/error/error.component";
+import { IconPlusComponent } from "@app/shared/icons/plus.icon";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 
 @Component({
-  selector: 'app-view-edit-profile',
-  templateUrl: './view-edit-profile.component.html',
-  styleUrls: ['./view-edit-profile.component.scss'],
+  selector: "app-view-edit-profile",
+  templateUrl: "./view-edit-profile.component.html",
+  styleUrls: ["./view-edit-profile.component.scss"],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PrimengModule, ErrorComponent, IconPlusComponent, IconsModule]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    PrimengModule,
+    ErrorComponent,
+    IconPlusComponent,
+    TextOnlyDirective,
+  ],
 })
 export class ViewEditProfileComponent implements OnInit {
   profileForm: FormGroup;
@@ -24,11 +38,11 @@ export class ViewEditProfileComponent implements OnInit {
   clientData: Client | null = null;
 
   socialMediaOptions = [
-    { label: 'Instagram', value: 'instagram' },
-    { label: 'Facebook', value: 'facebook' },
-    { label: 'LinkedIn', value: 'linkedin' },
-    { label: 'X (Twitter)', value: 'x' },
-    { label: 'TikTok', value: 'tiktok' },
+    { label: "Instagram", value: "instagram" },
+    { label: "Facebook", value: "facebook" },
+    { label: "LinkedIn", value: "linkedin" },
+    { label: "X (Twitter)", value: "x" },
+    { label: "TikTok", value: "tiktok" },
   ];
 
   constructor(
@@ -42,50 +56,71 @@ export class ViewEditProfileComponent implements OnInit {
 
   createForm(): void {
     this.profileForm = this.fb.group({
-      businessName: ['', Validators.required],
-      identificationNumber: ['', Validators.required],
-      industry: ['', Validators.required],
-      websiteUrl: [''],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, this.phoneNumberValidator]],
-      ownerFirstName: ['', Validators.required],
-      ownerLastName: [''],
-      ownerEmail: ['', [Validators.required, Validators.email]],
-      ownerPhone: ['', Validators.required],
-      street: ['', Validators.required],
-      zipCode: ['', Validators.required],
-      city: ['', Validators.required],
-      state: ['', Validators.required],
-      country: ['', Validators.required],
-      complement: [''],
-      socialMedia: this.fb.array([])
+      businessName: ["", [Validators.required, Validators.maxLength(255)]],
+      identificationNumber: [
+        "",
+        [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9),
+          Validators.pattern("^[0-9]{9}$"),
+        ],
+      ],
+      industry: [
+        "",
+        [
+          Validators.maxLength(50),
+          Validators.pattern("^[a-zA-ZÀ-ÖØ-öø-ÿ\\s]*$"),
+          Validators.required,
+        ],
+      ],
+      websiteUrl: [
+        "",
+        [Validators.maxLength(200), Validators.pattern("https?://.+")],
+      ],
+      email: ["", [Validators.required, Validators.email]],
+      phone: [
+        "",
+        [
+          Validators.required,
+          Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
+        ],
+      ],
+      ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
+      ownerLastName: ["", Validators.maxLength(150)],
+      ownerEmail: ["", [Validators.email]],
+      ownerPhone: [""],
+      street: ["", [Validators.required, Validators.maxLength(100)]],
+      zipCode: ["", Validators.required],
+      city: ["", [Validators.required, Validators.maxLength(50)]],
+      state: [
+        "",
+        [Validators.required, Validators.maxLength(2), Validators.minLength(2)],
+      ],
+      country: ["", [Validators.required, Validators.maxLength(100)]],
+      complement: ["", Validators.maxLength(100)],
+      socialMedia: this.fb.array([]),
     });
   }
 
-  phoneNumberValidator(control: AbstractControl) {
-    const value = control.value ? String(control.value).replace(/\D/g, '') : '';
-    if (!value) {
-      return { required: true };
-    }
-    if (value.length !== 10 && value.length !== 11) {
-      return { pattern: true };
-    }
-    return null;
-  }
-
   get socialMediaArray(): FormArray {
-    return this.profileForm.get('socialMedia') as FormArray;
+    return this.profileForm.get("socialMedia") as FormArray;
   }
 
   addSocialMedia(): void {
     this.socialMediaArray.push(
       this.fb.group({
-        platform: [null, Validators.required], 
-        url: [null, [
-          Validators.required,
-          Validators.maxLength(200), 
-          Validators.pattern(/^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/)
-        ]],
+        platform: [null, Validators.required],
+        url: [
+          null,
+          [
+            Validators.required,
+            Validators.maxLength(200),
+            Validators.pattern(
+              /^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/
+            ),
+          ],
+        ],
       })
     );
   }
@@ -96,7 +131,7 @@ export class ViewEditProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
-    
+
     this.clientService.clientAtual$.subscribe((client) => {
       if (client && !this.loading) {
         this.clientData = { ...client };
@@ -108,37 +143,37 @@ export class ViewEditProfileComponent implements OnInit {
 
   loadUserProfile(): void {
     this.loading = true;
-    
+
     const userId = this.getUserIdFromStorage();
-    
+
     if (!userId) {
       this.loading = false;
       return;
     }
-    
+
     this.fetchClientProfile(userId);
   }
 
   private getUserIdFromStorage(): string | null {
-    const userDataStr = localStorage.getItem('telas_token_user');
-    
+    const userDataStr = localStorage.getItem("telas_token_user");
+
     if (!userDataStr) {
-      this.toastService.erro('User data not found');
+      this.toastService.erro("User data not found");
       return null;
     }
-    
+
     try {
       const userData = JSON.parse(userDataStr);
       const userId = userData.id;
-      
+
       if (!userId) {
-        this.toastService.erro('User ID not found');
+        this.toastService.erro("User ID not found");
         return null;
       }
-      
+
       return userId;
     } catch (error) {
-      this.toastService.erro('Error loading profile data');
+      this.toastService.erro("Error loading profile data");
       return null;
     }
   }
@@ -152,8 +187,8 @@ export class ViewEditProfileComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.toastService.erro('Could not load profile data');
-      }
+        this.toastService.erro("Could not load profile data");
+      },
     });
   }
 
@@ -164,53 +199,41 @@ export class ViewEditProfileComponent implements OnInit {
 
     const formData = this.buildFormData(client);
     this.profileForm.patchValue(formData, { emitEvent: false });
-    
+
     this.clearSocialMediaArray();
     this.populateSocialMedia(client.socialMedia);
     this.disableForm();
   }
 
   private buildFormData(client: Client): any {
-    const phoneNumber = this.formatPhoneNumber(client.contact?.phone || '');
+    const phoneNumber = client.contact?.phone || "";
     const address = this.getFirstAddress(client);
 
     return {
-      businessName: client.businessName || '',
-      identificationNumber: client.identificationNumber || '',
-      industry: client.industry || '',
-      websiteUrl: client.websiteUrl || '',
-      email: client.contact?.email || '',
+      businessName: client.businessName || "",
+      identificationNumber: client.identificationNumber || "",
+      industry: client.industry || "",
+      websiteUrl: client.websiteUrl || "",
+      email: client.contact?.email || "",
       phone: phoneNumber,
-      ownerFirstName: client.owner?.firstName || '',
-      ownerLastName: client.owner?.lastName || '',
-      ownerEmail: client.owner?.email || '',
-      ownerPhone: client.owner?.phone || '',
-      ...address
+      ownerFirstName: client.owner?.firstName || "",
+      ownerLastName: client.owner?.lastName || "",
+      ownerEmail: client.owner?.email || "",
+      ownerPhone: client.owner?.phone || "",
+      ...address,
     };
-  }
-
-  private formatPhoneNumber(phoneNumber: string): string {
-    if (!phoneNumber || phoneNumber.includes('+')) {
-      return phoneNumber;
-    }
-    
-    if (phoneNumber.length >= 10) {
-      return `+1 ${phoneNumber.substring(0, 3)} ${phoneNumber.substring(3, 6)} ${phoneNumber.substring(6)}`;
-    }
-    
-    return phoneNumber;
   }
 
   private getFirstAddress(client: Client): any {
     const address = client.addresses?.[0];
-    
+
     return {
-      street: address?.street || '',
-      zipCode: address?.zipCode || '',
-      city: address?.city || '',
-      state: address?.state || '',
-      country: address?.country || '',
-      complement: address?.complement || ''
+      street: address?.street || "",
+      zipCode: address?.zipCode || "",
+      city: address?.city || "",
+      state: address?.state || "",
+      country: address?.country || "",
+      complement: address?.complement || "",
     };
   }
 
@@ -226,11 +249,11 @@ export class ViewEditProfileComponent implements OnInit {
     }
 
     const socialPlatforms = [
-      { key: 'instagramUrl', platform: 'instagram' },
-      { key: 'facebookUrl', platform: 'facebook' },
-      { key: 'linkedinUrl', platform: 'linkedin' },
-      { key: 'xUrl', platform: 'x' },
-      { key: 'tiktokUrl', platform: 'tiktok' }
+      { key: "instagramUrl", platform: "instagram" },
+      { key: "facebookUrl", platform: "facebook" },
+      { key: "linkedinUrl", platform: "linkedin" },
+      { key: "xUrl", platform: "x" },
+      { key: "tiktokUrl", platform: "tiktok" },
     ];
 
     socialPlatforms.forEach(({ key, platform }) => {
@@ -242,24 +265,29 @@ export class ViewEditProfileComponent implements OnInit {
 
   addSocialMediaWithValues(platform: string, url: string): void {
     const socialMediaGroup = this.fb.group({
-      platform: [platform, Validators.required], 
-      url: [url, [
-        Validators.required,
-        Validators.maxLength(200), 
-        Validators.pattern(/^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/)
-      ]],
+      platform: [platform, Validators.required],
+      url: [
+        url,
+        [
+          Validators.required,
+          Validators.maxLength(200),
+          Validators.pattern(
+            /^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/
+          ),
+        ],
+      ],
     });
-    
+
     this.socialMediaArray.push(socialMediaGroup, { emitEvent: false });
   }
 
   disableForm(): void {
-    Object.keys(this.profileForm.controls).forEach(key => {
-      if (key !== 'socialMedia') {
+    Object.keys(this.profileForm.controls).forEach((key) => {
+      if (key !== "socialMedia") {
         this.profileForm.get(key)?.disable();
       } else {
         const socialMediaControls = this.socialMediaArray.controls;
-        socialMediaControls.forEach(control => {
+        socialMediaControls.forEach((control) => {
           control.disable();
         });
       }
@@ -267,22 +295,22 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   enableForm(): void {
-    Object.keys(this.profileForm.controls).forEach(key => {
-      if (key !== 'socialMedia') {
+    Object.keys(this.profileForm.controls).forEach((key) => {
+      if (key !== "socialMedia") {
         this.profileForm.get(key)?.enable();
       } else {
         const socialMediaControls = this.socialMediaArray.controls;
-        socialMediaControls.forEach(control => {
+        socialMediaControls.forEach((control) => {
           control.enable();
         });
       }
     });
-    this.profileForm.get('identificationNumber')?.disable();
+    this.profileForm.get("identificationNumber")?.disable();
   }
 
   toggleEditMode(): void {
     this.isEditMode = !this.isEditMode;
-    
+
     if (this.isEditMode) {
       this.enableForm();
     } else {
@@ -293,35 +321,27 @@ export class ViewEditProfileComponent implements OnInit {
 
   saveProfile(): void {
     this.loading = true;
-    
     const formValues = this.profileForm.getRawValue();
     const normalizedPhone = this.validateAndNormalizePhone(formValues.phone);
-    
-    if (!normalizedPhone) {
-      this.loading = false;
-      return;
-    }
-    
+    console.log("normalizedPhone:", normalizedPhone);
     const clientRequest = this.buildClientRequest(formValues, normalizedPhone);
     this.updateClient(clientRequest);
   }
 
   private validateAndNormalizePhone(phone: string): string | null {
-    let normalizedPhone = phone?.replace(/\D/g, '') || '';
-    
+    let normalizedPhone = phone?.replace(/\D/g, "") || "";
+
     if (normalizedPhone.length > 11) {
       normalizedPhone = normalizedPhone.slice(-11);
     }
-    
-    if (normalizedPhone.length < 10) {
-      this.toastService.erro('Phone number must be between 10 and 11 digits');
-      return null;
-    }
-    
+
     return normalizedPhone;
   }
 
-  private buildClientRequest(formValues: any, normalizedPhone: string): ClientRequestDTO {
+  private buildClientRequest(
+    formValues: any,
+    normalizedPhone: string
+  ): ClientRequestDTO {
     const socialMedia = this.buildSocialMediaObject(formValues.socialMedia);
     const addressId = this.getExistingAddressId();
 
@@ -329,22 +349,22 @@ export class ViewEditProfileComponent implements OnInit {
       businessName: formValues.businessName,
       identificationNumber: formValues.identificationNumber,
       industry: formValues.industry,
-      websiteUrl: formValues.websiteUrl || '',
+      websiteUrl: formValues.websiteUrl || "",
       status: this.clientData?.status,
-      
+
       contact: {
         email: formValues.email,
-        phone: normalizedPhone
+        phone: normalizedPhone,
       },
-      
+
       owner: {
         identificationNumber: formValues.identificationNumber,
         firstName: formValues.ownerFirstName,
-        lastName: formValues.ownerLastName || '',
+        lastName: formValues.ownerLastName || "",
         email: formValues.ownerEmail || formValues.email,
-        phone: normalizedPhone
+        phone: normalizedPhone,
       },
-      
+
       addresses: [
         {
           id: addressId,
@@ -353,9 +373,9 @@ export class ViewEditProfileComponent implements OnInit {
           city: formValues.city,
           state: formValues.state,
           country: formValues.country,
-          complement: formValues.complement || ''
-        }
-      ]
+          complement: formValues.complement || "",
+        },
+      ],
     };
 
     if (Object.keys(socialMedia).length > 0) {
@@ -365,17 +385,23 @@ export class ViewEditProfileComponent implements OnInit {
     return clientRequest;
   }
 
-  private buildSocialMediaObject(socialMediaArray: any[]): Record<string, string> {
+  private buildSocialMediaObject(
+    socialMediaArray: any[]
+  ): Record<string, string> {
     const socialMedia: Record<string, string> = {};
-    
-    if (socialMediaArray && Array.isArray(socialMediaArray) && socialMediaArray.length > 0) {
+
+    if (
+      socialMediaArray &&
+      Array.isArray(socialMediaArray) &&
+      socialMediaArray.length > 0
+    ) {
       socialMediaArray.forEach((item: { platform: string; url: string }) => {
         if (item.platform && item.url) {
           socialMedia[`${item.platform}Url`] = item.url;
         }
       });
     }
-    
+
     return socialMedia;
   }
 
@@ -393,13 +419,13 @@ export class ViewEditProfileComponent implements OnInit {
 
     this.clientService.editar(this.clientData.id, clientRequest).subscribe({
       next: () => {
-        this.toastService.sucesso('Profile updated successfully');
+        this.toastService.sucesso("Profile updated successfully");
         this.reloadUpdatedProfile();
       },
       error: () => {
-        this.toastService.erro('Error updating profile');
+        this.toastService.erro("Error updating profile");
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -409,16 +435,16 @@ export class ViewEditProfileComponent implements OnInit {
         this.handleUpdatedClient(updatedClient);
       },
       error: () => {
-        this.toastService.erro('Error loading updated profile data');
+        this.toastService.erro("Error loading updated profile data");
         this.loading = false;
-      }
+      },
     });
   }
 
   private handleUpdatedClient(updatedClient: Client): void {
     this.clientService.setClientAtual(updatedClient);
-    localStorage.setItem('telas_token_user', JSON.stringify(updatedClient));
-    
+    localStorage.setItem("telas_token_user", JSON.stringify(updatedClient));
+
     this.clientData = updatedClient;
     this.isEditMode = false;
     this.disableForm();
@@ -430,5 +456,16 @@ export class ViewEditProfileComponent implements OnInit {
     this.isEditMode = false;
     this.disableForm();
     this.populateForm(this.clientData);
+  }
+
+  mostrarErro(campo: string): boolean {
+    return AbstractControlUtils.verificarCampoInvalidoTocado(
+      this.profileForm,
+      campo
+    );
+  }
+
+  campoObrigatorio(campo: string): boolean {
+    return AbstractControlUtils.verificarCampoRequired(this.profileForm, campo);
   }
 }

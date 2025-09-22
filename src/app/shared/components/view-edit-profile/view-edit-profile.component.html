@@ -8,18 +8,27 @@
       <div class="section-title">Company Information</div>
       <div class="form-row">
         <div class="form-group">
-          <label for="businessName">Business Name</label>
+          <label for="businessName" class="required">Business Name</label>
           <input
+            pInputText
             type="text"
+            maxlength="255"
             id="businessName"
             formControlName="businessName"
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-business-name"
+            [control]="profileForm.get('businessName')"
+          ></app-error>
         </div>
 
         <div class="form-group">
-          <label for="identificationNumber">Identification Number</label>
+          <label for="identificationNumber" class="required"
+            >Identification Number</label
+          >
           <input
+            pInputText
             type="text"
             id="identificationNumber"
             formControlName="identificationNumber"
@@ -30,92 +39,107 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="industry">Industry</label>
+          <label for="industry" class="required">Industry</label>
           <input
+            pInputText
             type="text"
             id="industry"
             formControlName="industry"
             [readonly]="!isEditMode"
+            uiTextOnly
           />
+          <app-error
+            id="error-msg-industry"
+            [control]="profileForm.get('industry')"
+          ></app-error>
         </div>
 
         <div class="form-group">
           <label for="websiteUrl">Website</label>
           <input
+            pInputText
             type="text"
             id="websiteUrl"
             formControlName="websiteUrl"
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-website"
+            [control]="profileForm.get('websiteUrl')"
+          ></app-error>
         </div>
       </div>
 
       <div class="section-title">Contact</div>
       <div class="form-row">
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email" class="required">Email</label>
           <input
             type="email"
-            id="email"
+            pInputText
             formControlName="email"
+            class="w-full input-form"
+            id="inp-email"
+            maxLength="255"
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-email"
+            [control]="profileForm.get('email')"
+          ></app-error>
         </div>
 
         <div class="form-group">
-          <label for="phone">Phone</label>
+          <label for="phone" class="required">Phone</label>
           <p-inputMask
             mask="+1 999 999 9999"
             formControlName="phone"
-            placeholder="+1 508 215 8681"
             id="phone"
             [readonly]="!isEditMode"
             class="w-full"
           >
           </p-inputMask>
-          <div
-            *ngIf="
-              profileForm.get('phone')?.invalid &&
-              (profileForm.get('phone')?.dirty ||
-                profileForm.get('phone')?.touched)
-            "
-          >
-            <small
-              class="error-message"
-              *ngIf="profileForm.get('phone')?.errors?.['required']"
-            >
-              Phone is required.
-            </small>
-            <small
-              class="error-message"
-              *ngIf="profileForm.get('phone')?.errors?.['pattern']"
-            >
-              Phone must have 11 digits (numbers only).
-            </small>
-          </div>
+          <app-error
+            id="error-msg-phone"
+            [control]="profileForm.get('phone')"
+          ></app-error>
         </div>
       </div>
 
       <div class="section-title">Owner Information</div>
       <div class="form-row">
         <div class="form-group">
-          <label for="ownerFirstName">Owner First Name</label>
+          <label for="ownerFirstName" class="required">Owner First Name</label>
           <input
+            pInputText
             type="text"
             id="ownerFirstName"
             formControlName="ownerFirstName"
             [readonly]="!isEditMode"
+            maxlength="50"
+            uiTextOnly
           />
+          <app-error
+            id="error-msg-owner-first-name"
+            [control]="profileForm.get('ownerFirstName')"
+          ></app-error>
         </div>
 
         <div class="form-group">
           <label for="ownerLastName">Owner Last Name</label>
           <input
+            pInputText
             type="text"
             id="ownerLastName"
             formControlName="ownerLastName"
             [readonly]="!isEditMode"
+            uiTextOnly
+            maxlength="150"
           />
+          <app-error
+            id="error-msg-owner-last-name"
+            [control]="profileForm.get('ownerLastName')"
+          ></app-error>
         </div>
       </div>
 
@@ -123,11 +147,17 @@
         <div class="form-group">
           <label for="ownerEmail">Owner Email</label>
           <input
+            pInputText
             type="email"
             id="ownerEmail"
             formControlName="ownerEmail"
+            maxLength="255"
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-owner-email"
+            [control]="profileForm.get('ownerEmail')"
+          ></app-error>
         </div>
 
         <div class="form-group">
@@ -135,79 +165,130 @@
           <p-inputMask
             mask="+1 999 999 9999"
             formControlName="ownerPhone"
-            placeholder="+1 508 215 8681"
             id="ownerPhone"
             [readonly]="!isEditMode"
             class="w-full"
           >
           </p-inputMask>
+          <app-error
+            id="error-msg-owner-email"
+            [control]="profileForm.get('ownerPhone')"
+          ></app-error>
         </div>
       </div>
 
       <div class="section-title">Address</div>
       <div class="form-row">
         <div class="form-group">
-          <label for="street">Street</label>
+          <label htmlFor="street" id="lb-street" class="required">Street</label>
           <input
             type="text"
-            id="street"
+            pInputText
             formControlName="street"
+            class="w-full input-form"
+            maxlength="100"
+            id="inp-street"
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-street"
+            [control]="profileForm.get('street')"
+          ></app-error>
         </div>
 
         <div class="form-group">
-          <label for="zipCode">ZIP Code</label>
-          <input
-            type="text"
-            id="zipCode"
+          <label htmlFor="zipCode" id="lb-zip-code" class="required"
+            >ZipCode</label
+          >
+          <p-inputMask
+            mask="99999"
             formControlName="zipCode"
+            id="inp-zip-code"
+            class="w-full input-form"
             [readonly]="!isEditMode"
-          />
+          ></p-inputMask>
+          <app-error
+            id="error-msg-zip-code"
+            [control]="profileForm.get('zipCode')"
+          ></app-error>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="city">City</label>
+          <label htmlFor="city" id="lb-city" class="required">City</label>
           <input
             type="text"
-            id="city"
+            pInputText
             formControlName="city"
+            placeholder="City"
+            class="w-full input-form"
+            maxlength="50"
+            id="inp-city"
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-city"
+            [control]="profileForm.get('city')"
+          ></app-error>
         </div>
 
         <div class="form-group">
-          <label for="state">State</label>
+          <label htmlFor="state" id="lb-state" class="required">State</label>
           <input
             type="text"
-            id="state"
+            pInputText
             formControlName="state"
+            class="w-full input-form"
+            minlength="2"
+            maxlength="2"
+            id="inp-state"
+            uiTextOnly
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-state"
+            [control]="profileForm.get('state')"
+          ></app-error>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="country">Country</label>
+          <label htmlFor="country" id="lb-country">Country</label>
           <input
             type="text"
-            id="country"
+            pInputText
             formControlName="country"
+            placeholder="Country"
+            class="w-full input-form"
+            maxlength="100"
+            uiTextOnly
+            id="inp-country"
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-country"
+            [control]="profileForm.get('country')"
+          ></app-error>
         </div>
 
         <div class="form-group">
-          <label for="complement">Complement</label>
+          <label htmlFor="complement" id="lb-complement">Complement</label>
           <input
             type="text"
-            id="complement"
+            pInputText
             formControlName="complement"
+            placeholder="Complement"
+            class="w-full input-form"
+            maxlength="100"
+            id="inp-complement"
             [readonly]="!isEditMode"
           />
+          <app-error
+            id="error-msg-complement"
+            [control]="profileForm.get('complement')"
+          ></app-error>
         </div>
       </div>
 
