@@ -19,11 +19,11 @@ import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { AttachmentResponseDto } from "@app/model/dto/response/attachment-response.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { ErrorComponent } from "@app/shared/components";
-import { AdItemComponent } from "../ad-item/ad-item.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
+import { AdItemComponent } from "../ad-item/ad-item.component";
 
 @Component({
   selector: "app-my-telas",

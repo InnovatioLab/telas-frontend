@@ -1,9 +1,18 @@
-<div class="settings-sidebar">
+<div
+  class="settings-sidebar"
+  [ngClass]="{
+    active: isMenuOpen(),
+    mobile: isMobile(),
+    'mobile-compact': isMobileCompact()
+  }"
+>
   <div class="sidebar-header">
     <h2 class="sidebar-title">Settings</h2>
-    <button class="back-button" (click)="goBack()">
-      <app-icon-back></app-icon-back>
-    </button>
+    <div class="header-actions">
+      <button class="back-button" (click)="goBack()" aria-label="Back">
+        <app-icon-back></app-icon-back>
+      </button>
+    </div>
   </div>
   
   <ul class="sidebar-menu">
@@ -23,3 +32,11 @@
     </li>
   </ul>
 </div>
+
+<div
+  class="settings-overlay"
+  *ngIf="isMenuOpen() && isMobileCompact()"
+  (click)="toggleMenu()"
+  tabindex="-1"
+  role="presentation"
+></div>

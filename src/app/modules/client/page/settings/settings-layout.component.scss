@@ -7,5 +7,18 @@
     flex-grow: 1;
     padding: 20px;
     overflow-y: auto;
+    transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-container .settings-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-container .settings-content {
+    padding: 12px;
   }
 }

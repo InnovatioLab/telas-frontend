@@ -1,7 +1,11 @@
 <div class="settings-container">
   <app-settings-side-bar></app-settings-side-bar>
   
-  <main class="settings-content">
+  <main
+    class="settings-content"
+    [style.padding-left.px]="contentPadding()"
+    [ngClass]="{ 'menu-active': isMenuOpen(), mobile: isMobile(), 'mobile-compact': isMobileCompact() }"
+  >
     <router-outlet></router-outlet>
   </main>
 </div>
