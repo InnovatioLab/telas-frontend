@@ -59,14 +59,12 @@
           <div class="form-field">
             <label for="zipCode" class="required">ZipCode</label>
             <div class="zipcode-input-container">
-              <input
-                pInputText
-                id="zipCode"
+              <p-inputMask
+                mask="99999"
                 formControlName="zipCode"
-                placeholder="Enter 5-digit zip code"
-                maxlength="5"
-                pKeyFilter="int"
-              />
+                placeholder="00000"
+                id="zipCode"
+              ></p-inputMask>
               <i
                 *ngIf="loadingZipCode"
                 class="pi pi-spin pi-spinner loading-icon"

@@ -90,6 +90,12 @@
 
 :host ::ng-deep {
   .formulario-login {
+    a {
+      &:hover {
+        text-decoration: underline !important;
+      }
+    }
+    
     .input-form {
       height: 45px;
       border-radius: 15px;
@@ -135,7 +141,7 @@
 #test-link-cadastre-se,
 #test-link-retomar-cadastro,
 #test-link-clique-aqui {
-  color: var(--cor-principal);
+  color: var(--cor-primaria-escura);
 }
 
 @media screen and (max-height: 800px) {
