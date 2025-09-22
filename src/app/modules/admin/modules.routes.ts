@@ -1,8 +1,9 @@
 import { Route } from "@angular/router";
 import { AdminAuthenticatedGuard } from "@app/core/service/guard/admin-authenticated.guard";
+import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
+import { ViewEditProfileComponent } from "../../shared/components/view-edit-profile/view-edit-profile.component";
 import { PrivacyPolicyComponent } from "../application/privacy-policy/privacy-policy.component";
 import { TermsOfServiceComponent } from "../application/terms-of-service/terms-of-service.component";
-import { AdminManagementProfileComponent } from "./components/admin-managemnt-profile/admin-managemnt-profile.component";
 import { AdminViewComponent } from "./components/admin-view/admin-view.component";
 import { ManagementAdvertisementsComponent } from "./components/management-advertisements/management-advertisements.component";
 import { ManagementBoxesComponent } from "./components/management-boxes/management-boxes.component";
@@ -28,8 +29,13 @@ export const ROUTES: Route[] = [
       },
       {
         path: "profile",
-        component: AdminManagementProfileComponent,
-        title: "Profile Management",
+        component: ViewEditProfileComponent,
+        title: "Personal Data",
+      },
+      {
+        path: "change-password",
+        component: AlterarSenhaComponent,
+        title: "Change Password",
       },
       {
         path: "boxes",

@@ -1,7 +1,6 @@
 import { CommonModule } from "@angular/common";
 import {
   Component,
-  ElementRef,
   HostListener,
   OnDestroy,
   OnInit,
@@ -51,7 +50,6 @@ interface MenuItem {
 export class AdminMenuSideComponent implements OnInit, OnDestroy {
   private readonly layoutService = inject(LayoutService);
   private readonly sidebarService = inject(SidebarService);
-  private readonly elementRef = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
   private readonly router = inject(Router);
   private readonly authentication = inject(Authentication);
@@ -72,10 +70,17 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   menuItems: MenuItem[] = [
     { id: "home", label: "Maps", icon: "dashboard" },
+    { id: "profile", label: "Profile", icon: "pi-cog" },
+
     { id: "screens", label: "Screens", icon: "tv-display" },
     { id: "boxes", label: "Boxes", icon: "box" },
     { id: "ads", label: "Ads", icon: "etiqueta" },
     { id: "clients", label: "Clients", icon: "user" },
+    {
+      id: "changePassword",
+      label: "Change Password",
+      icon: "pi-question-circle",
+    },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
 
@@ -181,11 +186,11 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "alerts":
         this.toggleAdminSidebar();
         break;
-      case "settings":
-        this.navegarParaConfiguracoes();
+      case "profile":
+        this.navegarParaPerfil();
         break;
-      case "help":
-        this.abrirHelp();
+      case "changePassword":
+        this.navegarParaAlterarSenha();
         break;
       case "logout":
         this.logout();
@@ -202,8 +207,15 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
-  navegarParaConfiguracoes(): void {
-    this.router.navigate(["/admin/settings"]);
+  navegarParaPerfil(): void {
+    this.router.navigate(["/admin/profile"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaAlterarSenha(): void {
+    this.router.navigate(["/admin/change-password"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
@@ -303,8 +315,10 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return "Manage clients";
       case "alerts":
         return "View system alerts";
-      case "settings":
-        return "Configure system settings";
+      case "profile":
+        return "Edit your profile";
+      case "changePassword":
+        return "Change your account password";
       case "logout":
         return "Sign out from your account";
       default:

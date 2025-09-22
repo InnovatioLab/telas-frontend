@@ -5,15 +5,14 @@ import {
 } from "@app/core/service/guard";
 import { SubscriptionsGuard } from "@app/core/service/guard/subscriptions.guard";
 import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
+import { ViewEditProfileComponent } from "../../shared/components/view-edit-profile/view-edit-profile.component";
 import { PrivacyPolicyComponent } from "../application/privacy-policy/privacy-policy.component";
 import { TermsOfServiceComponent } from "../application/terms-of-service/terms-of-service.component";
 import { ClientViewComponent } from "./components/client-view/client-view.component";
 import { ManagementSubscriptionsComponent } from "./components/management-subscriptions/management-subscriptions.component";
 import { MyTelasComponent } from "./components/my-telas/my-telas.component";
-import { ViewEditProfileComponent } from "./components/view-edit-profile/view-edit-profile.component";
 import { WishListComponent } from "./components/wish-list/wish-list.component";
 import { ClientViewLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
-import { SettingsLayoutComponent } from "./page/settings/settings-layout.component";
 
 export const ROUTES: Route[] = [
   {
@@ -53,18 +52,6 @@ export const ROUTES: Route[] = [
         component: TermsOfServiceComponent,
         title: "Terms of Service",
       },
-    ],
-  },
-  {
-    path: "settings",
-    component: SettingsLayoutComponent,
-    canActivate: [ClientAuthenticatedGuard],
-    children: [
-      {
-        path: "",
-        redirectTo: "profile",
-        pathMatch: "full",
-      },
       {
         path: "profile",
         component: ViewEditProfileComponent,
@@ -74,7 +61,7 @@ export const ROUTES: Route[] = [
         path: "change-password",
         component: AlterarSenhaComponent,
         title: "Change Password",
-      }
+      },
     ],
   },
 ];

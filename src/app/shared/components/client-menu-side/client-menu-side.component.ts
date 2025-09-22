@@ -1,7 +1,6 @@
 import { CommonModule } from "@angular/common";
 import {
   Component,
-  ElementRef,
   HostListener,
   OnDestroy,
   OnInit,
@@ -14,8 +13,8 @@ import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { LayoutService } from "@app/core/service/state/layout.service";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
-import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
+import { IconHelpComponent } from "@app/shared/icons/help.icon";
 import { IconPlaceComponent } from "@app/shared/icons/place.icon";
 import { SubscriptionsIconComponent } from "@app/shared/icons/subscriptions.icon";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
@@ -24,8 +23,8 @@ import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { Subscription } from "rxjs";
 import { IconCloseComponent } from "../../icons/close.icon";
 import { IconFavoriteComponent } from "../../icons/favorite.icon";
-import { IconHelpComponent } from "../../icons/help.icon";
 import { IconHomeComponent } from "../../icons/home.icon";
+import { IconLockComponent } from "../../icons/lock.icon";
 import { IconLogoutComponent } from "../../icons/logout.icon";
 import { IconSettingsComponent } from "../../icons/settings.icon";
 import { PrimengModule } from "../../primeng/primeng.module";
@@ -50,7 +49,7 @@ interface MenuItem {
     IconHomeComponent,
     IconFavoriteComponent,
     IconSettingsComponent,
-    IconHelpComponent,
+    IconLockComponent,
     IconLogoutComponent,
     IconCloseComponent,
     IconPlaceComponent,
@@ -63,13 +62,11 @@ interface MenuItem {
 export class ClientMenuSideComponent implements OnInit, OnDestroy {
   private readonly layoutService = inject(LayoutService);
   private readonly sidebarService = inject(SidebarService);
-  private readonly elementRef = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
   private readonly router = inject(Router);
   private readonly authentication = inject(Authentication);
   private readonly authenticationService = inject(AutenticacaoService);
   private readonly dialogService = inject(DialogService);
-  private readonly toggleModeService = inject(ToggleModeService);
   private readonly clientService = inject(ClientService);
 
   showPaymentModal = false;
@@ -86,19 +83,31 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   private allMenuItems: MenuItem[] = [
     { id: "home", label: "Home", icon: "pi-home" },
+    { id: "profile", label: "Profile", icon: "pi-cog" },
     { id: "wishList", label: "Wish list", icon: "pi-heart" },
     { id: "myTelas", label: "My telas", icon: "pi-map-marker" },
     { id: "subscriptions", label: "Subscriptions", icon: "pi-desktop" },
-    { id: "settings", label: "Settings", icon: "pi-cog" },
+    { id: "profile", label: "Profile", icon: "pi-cog" },
+    {
+      id: "changePassword",
+      label: "Change Password",
+      icon: "pi-question-circle",
+    },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
 
   menuItems: MenuItem[] = [
     { id: "home", label: "Home", icon: "pi-home" },
+    { id: "profile", label: "Profile", icon: "pi-cog" },
+
     { id: "wishList", label: "Wish list", icon: "pi-heart" },
     { id: "myTelas", label: "My telas", icon: "pi-map-marker" },
     { id: "subscriptions", label: "Subscriptions", icon: "pi-desktop" },
-    { id: "settings", label: "Settings", icon: "pi-cog" },
+    {
+      id: "changePassword",
+      label: "Change Password",
+      icon: "pi-question-circle",
+    },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
 
@@ -228,8 +237,11 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       case "logout":
         this.logout();
         break;
-      case "settings":
-        this.navegarParaConfiguracoes();
+      case "profile":
+        this.navegarParaPerfil();
+        break;
+      case "changePassword":
+        this.navegarParaAlterarSenha();
         break;
       case "wishList":
         this.navegarParaWishList();
@@ -351,9 +363,20 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     return this.authentication?._clientSignal()?.role === "ADMIN";
   }
 
-  navegarParaConfiguracoes(): void {
+  navegarParaPerfil(): void {
     if (this.isLogado()) {
-      this.router.navigate(["/client/settings"]);
+      this.router.navigate(["/client/profile"]);
+      if (this.isMenuOpen()) {
+        this.toggleMenu();
+      }
+    } else {
+      this.router.navigate(["/login"]);
+    }
+  }
+
+  navegarParaAlterarSenha(): void {
+    if (this.isLogado()) {
+      this.router.navigate(["/client/change-password"]);
       if (this.isMenuOpen()) {
         this.toggleMenu();
       }
@@ -372,8 +395,10 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
         return "View your saved items";
       case "map":
         return "View your ad campaigns";
-      case "settings":
-        return "Change your account settings";
+      case "profile":
+        return "Edit your profile";
+      case "changePassword":
+        return "Change your account password";
       case "myTelas":
         return "View your ads";
       case "subscriptions":
