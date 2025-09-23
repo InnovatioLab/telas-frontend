@@ -35,14 +35,13 @@
           >Identification Number</label
         >
 
-        <!-- Substituindo o p-inputMask por um input normal -->
         <p-inputMask
           mask="999999999"
+          autoClear="false"
           formControlName="identificationNumber"
           placeholder="000000000"
           id="inp-identification-number"
           class="w-full input-form"
-          autoClear="false"
         ></p-inputMask>
         <app-error
           id="error-msg-identification-number"

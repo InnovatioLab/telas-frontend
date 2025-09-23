@@ -2,16 +2,12 @@
   color: var(--cor-primaria);
 }
 
-.resume {
-  color: var(--cor-primaria);
+.recover-text {
+  font-size: var(--fonte-tamanho-padrao) !important;
 }
 
-label,
-.label {
-  margin-left: 10px;
-  &.required::after {
-    content: ' *';
-  }
+.resume {
+  color: var(--cor-primaria);
 }
 
 :host ::ng-deep {
@@ -21,7 +17,7 @@ label,
   }
 
   .formulario-pequeno .card .p-card-body {
-    min-height: 600px;
+    min-height: 350px;
   }
 
   #error-msg-login {

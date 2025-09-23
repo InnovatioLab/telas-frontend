@@ -1,13 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextOnlyDirective } from '@app/core/directives/text-only.directive';
-import { ClientService } from '@app/core/service/api/client.service';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ENVIRONMENT } from 'src/environments/environment-token';
 import { DialogoComponent } from '../../dialogo/dialogo.component';
 import { ErrorComponent } from '../../error/error.component';
 
@@ -31,8 +29,6 @@ export class FormDadosPessoaisComponent implements OnInit {
   @Input() habilitarFormDados: boolean;
   @Output() tipoUsuarioSelecionado = new EventEmitter<string>();
   @Input() listaCampos: string[];
-  private readonly clientService = inject(ClientService);
-  private readonly env = inject(ENVIRONMENT);
 
   dataMaxima: Date;
   dataMinima: Date;

@@ -217,7 +217,7 @@ export class EditClientModalComponent implements OnInit {
             Validators.minLength(2),
           ],
         ],
-        country: ["", [Validators.required, Validators.maxLength(100)]],
+        country: ["US", [Validators.required, Validators.maxLength(100)]],
         complement: ["", Validators.maxLength(100)],
       })
     );

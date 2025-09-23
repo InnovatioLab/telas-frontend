@@ -1,33 +1,49 @@
 <app-card-centralizado type="formulario-pequeno">
   <ng-template pTemplate="content">
     <ng-container>
-      <h5 id="titulo" class="text-center text-xlarge-bold mt-0 title">Resume Registration</h5>
+      <h5 id="titulo" class="text-center text-xlarge-bold mt-0 title">
+        Resume Registration
+      </h5>
     </ng-container>
 
-    <form [formGroup]="form" class="mt-6 flex flex-column justify-content-center sm:justify-content-between">
-      <div class="col-12 mb-5">
-        <span id="descricao" class="mb-3 text-medium resume">To resume your registration, fill in the field below.</span>
-        <br />
-      </div>
+    <form
+      [formGroup]="form"
+      class="my-4 flex flex-column justify-content-center sm:justify-content-between"
+    >
       <div class="col-12">
-        <label htmlFor="login" id="lb-login">Indetification Number</label>
-        <br />
-        <input
-          pInputText
-          mask="000.000.000"
-          formControlName="login"
-          id="login"
+        <span id="descricao" class="font-normal recover-text"
+          >To resume your registration, fill in the field below.</span
+        >
+      </div>
+      <div class="col-12 mt-2">
+        <label
+          for="identificationNumber"
+          id="lb-identificationNumber"
+          class="required"
+          >Identification Number</label
+        >
+        <p-inputMask
+          mask="999999999"
+          autoClear="false"
+          formControlName="identificationNumber"
+          id="identificationNumber"
           class="w-full input-form"
           minlength="9"
-          placeholder="Information"
+          maxlength="9"
+          placeholder="Identification Number"
         />
-        <app-error id="error-msg-login" [control]="form.get('login')"></app-error>
+        <app-error
+          id="error-msg-identificationNumber"
+          [control]="form.get('identificationNumber')"
+        ></app-error>
       </div>
 
-      <div class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 px-2">
+      <div
+        class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 px-2"
+      >
         <button
           pButton
-          id="botao-voltar"
+          id="btnSecundario"
           class="w-full md:w-4 btn-outline my-2 justify-content-center"
           (click)="voltar()"
         >
@@ -38,7 +54,7 @@
           pButton
           class="w-full md:w-4 btn-fill my-2 justify-content-center"
           (click)="salvar()"
-          [disabled]="invalidarBotao"
+          [disabled]="invalidarBotao || form.invalid"
         >
           {{ TEXTO_ACAO.proximo }}
         </button>

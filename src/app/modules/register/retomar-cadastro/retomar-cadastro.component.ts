@@ -1,21 +1,25 @@
-import { CommonModule, Location } from '@angular/common';
-import { Component, inject, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ClientService } from '@app/core/service/api/client.service';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { MENSAGENS, TEXTO_ACAO } from '@app/utility/src';
-import { MensagensUtils } from '@app/utility/src/lib/utils/mensagens-utils.utils';
-import { NgxMaskDirective } from 'ngx-mask';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ENVIRONMENT } from 'src/environments/environment-token';
-import { CardCentralizadoComponent } from '../../../shared/components/card-centralizado/card-centralizado.component';
-import { DialogoComponent } from '../../../shared/components/dialogo/dialogo.component';
-import { ErrorComponent } from '../../../shared/components/error/error.component';
+import { CommonModule, Location } from "@angular/common";
+import { Component, inject, OnDestroy } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { Router } from "@angular/router";
+import { ClientService } from "@app/core/service/api/client.service";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { MENSAGENS, TEXTO_ACAO } from "@app/utility/src";
+import { MensagensUtils } from "@app/utility/src/lib/utils/mensagens-utils.utils";
+import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { ENVIRONMENT } from "src/environments/environment-token";
+import { CardCentralizadoComponent } from "../../../shared/components/card-centralizado/card-centralizado.component";
+import { DialogoComponent } from "../../../shared/components/dialogo/dialogo.component";
+import { ErrorComponent } from "../../../shared/components/error/error.component";
 
 @Component({
-  selector: 'feat-retomar-cadastro',
+  selector: "feat-retomar-cadastro",
   standalone: true,
   imports: [
     CommonModule,
@@ -23,11 +27,10 @@ import { ErrorComponent } from '../../../shared/components/error/error.component
     CardCentralizadoComponent,
     ErrorComponent,
     ReactiveFormsModule,
-    NgxMaskDirective
   ],
   providers: [DialogService],
-  templateUrl: './retomar-cadastro.component.html',
-  styleUrl: './retomar-cadastro.component.scss'
+  templateUrl: "./retomar-cadastro.component.html",
+  styleUrl: "./retomar-cadastro.component.scss",
 })
 export class RetomarCadastroComponent implements OnDestroy {
   private readonly env = inject(ENVIRONMENT);
@@ -44,10 +47,18 @@ export class RetomarCadastroComponent implements OnDestroy {
     private readonly location: Location,
     private readonly router: Router,
     private readonly clientService: ClientService,
-    public dialogService: DialogService,
+    public dialogService: DialogService
   ) {
     this.form = this.fb.group({
-      login: [null, [Validators.required]]
+      identificationNumber: [
+        null,
+        [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9),
+          Validators.pattern("^[0-9]{9}$"),
+        ],
+      ],
     });
   }
 
@@ -64,45 +75,46 @@ export class RetomarCadastroComponent implements OnDestroy {
       return;
     }
 
-    const usuarioLogin = this.form.get('login')?.value;
+    const usuarioLogin = this.form.get("identificationNumber")?.value;
 
     this.buscarUsuario(usuarioLogin);
   }
 
-  buscarUsuario(login: string) {
+  buscarUsuario(identificationNumber: string) {
     this.invalidarBotao = true;
 
-    this.clientService.clientExistente(login).subscribe({
+    this.clientService.clientExistente(identificationNumber).subscribe({
       next: (resposta) => {
         if (!resposta?.owner?.email) {
-          this.exibirErroLoginNaoEncontrado(); 
+          this.exibirErroLoginNaoEncontrado();
           this.invalidarBotao = false;
         } else {
-          const status = resposta.status; 
-          if (status === 'ACTIVE') {
+          const status = resposta.status;
+          if (status === "ACTIVE") {
             this.exibirAlertaEtapaSenhaConcluida();
           } else {
-            this.reenviarCodigo(); 
+            this.reenviarCodigo();
           }
           this.invalidarBotao = false;
         }
       },
       error: () => {
-        this.exibirErroLoginNaoEncontrado(); 
+        this.exibirErroLoginNaoEncontrado();
         this.invalidarBotao = false;
-      }
+      },
     });
   }
 
   exibirAlertaEtapaSenhaConcluida() {
-    const mensagem = MensagensUtils.substituirVariavelNoTexto(MENSAGENS.dialogo.jaPossuiContaRetomarCadastro, [
-      this.env.emailSuporte
-    ]);
+    const mensagem = MensagensUtils.substituirVariavelNoTexto(
+      MENSAGENS.dialogo.jaPossuiContaRetomarCadastro,
+      [this.env.emailSuporte]
+    );
 
     const config = DialogoUtils.exibirAlerta(mensagem, {
       acaoPrimariaCallback: () => {
         this.refDialogo.close();
-      }
+      },
     });
 
     this.refDialogo = this.dialogService.open(DialogoComponent, config);
@@ -112,7 +124,7 @@ export class RetomarCadastroComponent implements OnDestroy {
     const config = DialogoUtils.exibirAlerta(mensagem, {
       acaoPrimariaCallback: () => {
         this.refDialogo.close();
-      }
+      },
     });
 
     this.refDialogo = this.dialogService.open(DialogoComponent, config);
@@ -127,14 +139,19 @@ export class RetomarCadastroComponent implements OnDestroy {
   }
 
   redirecionarValidacaoCadastro() {
-    this.router.navigate(['/register/validate', this.form.get('login')?.value]);
+    this.router.navigate([
+      "/register/validate",
+      this.form.get("identificationNumber")?.value,
+    ]);
   }
 
   reenviarCodigo() {
-    this.clientService.reenvioCodigo(this.form.get('login')?.value).subscribe((res: any) => {
-      if (res) {
-        this.redirecionarValidacaoCadastro();
-      }
-    });
+    this.clientService
+      .reenvioCodigo(this.form.get("identificationNumber")?.value)
+      .subscribe((res: any) => {
+        if (res) {
+          this.redirecionarValidacaoCadastro();
+        }
+      });
   }
 }
