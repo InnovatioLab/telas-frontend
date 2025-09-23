@@ -42,78 +42,13 @@
 }
 
 .btn-senha-salvar {
-  margin-top: var(--espacamento-padrao);
+  margin-top: 2rem;
   display: flex;
   justify-content: center;
-  
-  button {
-    width: 200px;
-    background-color: var(--cor-primaria);
-    color: var(--cor-branca);
-    border: none;
-    border-radius: var(--borda-raio-padrao);
-    height: var(--altura-botao);
-    font-weight: var(--fonte-peso-medio);
-    transition: var(--transicao-padrao);
-    
-    &:hover {
-      background-color: var(--cor-primaria-escura);
-    }
-    
-    &:disabled {
-      background-color: var(--cor-desabilitado);
-    }
-  }
 }
 
 .password-field {
-  position: relative;
-  margin-bottom: var(--espacamento-padrao);
-  
-  .password-container {
-    position: relative;
-    width: 100%;
-  }
-  
-  .password-input {
-    width: 100%;
-    height: var(--altura-input);
-    border-radius: var(--borda-raio-padrao);
-    border: var(--borda-padrao);
-    padding: 0 40px 0 var(--espacamento-padrao);
-    font-size: var(--fonte-tamanho-padrao);
-    box-sizing: border-box;
-    
-    &:focus {
-      outline: none;
-      border-color: var(--cor-primaria);
-    }
-    
-    &.is-invalid {
-      border-color: var(--cor-erro);
-    }
-  }
-  
-  .password-toggle {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--cor-primaria);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 24px;
-    width: 24px;
-    padding: 0;
-    
-    &:focus {
-      outline: none;
-    }
-  }
+  margin-bottom: 1.5rem !important;
 }
 
 .password-requirements {
@@ -140,7 +75,7 @@
   .form {
     padding: 0 var(--espacamento-padrao);
   }
-  
+
   .btn-senha-salvar button {
     width: 100%;
   }
@@ -150,7 +85,7 @@
   .form {
     padding: 0 var(--espacamento-pequeno);
   }
-  
+
   .titulo {
     font-size: var(--fonte-tamanho-medio);
   }
@@ -161,12 +96,42 @@
     box-shadow: none;
     border-radius: 0;
   }
-  
+
   .card-content {
     padding: 20px 15px;
   }
-  
+
   .btn-senha-salvar button {
     width: 100%;
   }
+}
+
+.p-password {
+  position: relative;
+  width: 100%;
+}
+.icone-olho {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0;
+  height: 100%;
+  width: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+.icone-olho svg {
+  height: 1.5rem;
+  width: 1.5rem;
+  display: block;
+  margin: 0 auto;
+}
+.p-password-input {
+  padding-right: 2.5rem !important;
+  box-sizing: border-box;
 }

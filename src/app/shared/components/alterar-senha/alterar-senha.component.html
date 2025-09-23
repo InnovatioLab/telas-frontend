@@ -2,81 +2,167 @@
   <div class="card">
     <div class="card-content">
       <h1 class="titulo">Change Password</h1>
-      
-      <form [formGroup]="formSenha" (ngSubmit)="alterarSenha()">
+
+      <form [formGroup]="formSenha" (ngSubmit)="alterarSenha()" class="mt-5">
         <div class="password-field">
-          <label for="senhaAtual" class="margin-label">Current Password</label>
+          <label for="senhaAtual" class="required">Current Password</label>
           <div class="password-container">
-            <input 
-              [type]="senhaAtualVisivel ? 'text' : 'password'" 
-              id="senhaAtual" 
-              formControlName="senhaAtual" 
-              class="password-input" 
-              [ngClass]="{'is-invalid': formSenha.get('senhaAtual')?.invalid && formSenha.get('senhaAtual')?.touched}"
-              placeholder="Enter your current password">
-            <button type="button" class="password-toggle" (click)="toggleSenha('senhaAtual')">
-              <app-icon-olho *ngIf="!senhaAtualVisivel"></app-icon-olho>
-              <app-icon-olho-fechado *ngIf="senhaAtualVisivel"></app-icon-olho-fechado>
-            </button>
+            <p-password
+              [toggleMask]="true"
+              [feedback]="false"
+              id="senhaAtual"
+              formControlName="senhaAtual"
+              class="password-input w-full input-form password"
+              minlength="8"
+              maxLength="32"
+              uiSenha
+              [permitirColar]="false"
+              placeholder="Enter your current password"
+            >
+            </p-password>
+
+            <ng-template pTemplate="hideicon">
+              <div
+                class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+                id="icone-olho-off"
+              >
+                <span class="material-symbols-outlined small text-primary">
+                  visibility_off
+                </span>
+                <small class="text-icon">Hide</small>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="showicon">
+              <div
+                class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+                id="icone-olho"
+              >
+                <span
+                  class="material-symbols-outlined text-caption-small text-primary"
+                >
+                  visibility
+                </span>
+                <small class="text-caption-small">Show</small>
+              </div>
+            </ng-template>
           </div>
-          <div *ngIf="formSenha.get('senhaAtual')?.invalid && formSenha.get('senhaAtual')?.touched" class="invalid-feedback">
-            Current password is required
-          </div>
+          <app-error
+            *ngIf="formSenha.get('senhaAtual').errors"
+            id="error-msg-senha-atual"
+            [control]="formSenha.get('senhaAtual')"
+          ></app-error>
         </div>
-        
+
         <div class="password-field">
-          <label for="novaSenha" class="margin-label">New Password</label>
+          <label for="novaSenha" class="required">New Password</label>
           <div class="password-container">
-            <input 
-              [type]="senhaVisivel ? 'text' : 'password'" 
-              id="novaSenha" 
-              formControlName="novaSenha" 
-              class="password-input" 
-              [ngClass]="{'is-invalid': formSenha.get('novaSenha')?.invalid && formSenha.get('novaSenha')?.touched}"
-              placeholder="Enter your new password">
-            <button type="button" class="password-toggle" (click)="toggleSenha('novaSenha')">
-              <app-icon-olho *ngIf="!senhaVisivel"></app-icon-olho>
-              <app-icon-olho-fechado *ngIf="senhaVisivel"></app-icon-olho-fechado>
-            </button>
+            <p-password
+              [toggleMask]="true"
+              [feedback]="false"
+              [permitirColar]="false"
+              minlength="8"
+              maxLength="32"
+              uiSenha
+              id="novaSenha"
+              formControlName="novaSenha"
+              class="password-input w-full input-form password"
+              placeholder="Enter your new password"
+            />
+
+            <ng-template pTemplate="hideicon">
+              <div
+                class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+                id="icone-olho-off"
+              >
+                <span class="material-symbols-outlined small text-primary">
+                  visibility_off
+                </span>
+                <small class="text-icon">Hide</small>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="showicon">
+              <div
+                class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+                id="icone-olho"
+              >
+                <span
+                  class="material-symbols-outlined text-caption-small text-primary"
+                >
+                  visibility
+                </span>
+                <small class="text-caption-small">Show</small>
+              </div>
+            </ng-template>
           </div>
-          <div *ngIf="formSenha.get('novaSenha')?.invalid && formSenha.get('novaSenha')?.touched" class="invalid-feedback">
-            <span *ngIf="formSenha.get('novaSenha')?.errors?.['required']">New password is required</span>
-            <span *ngIf="formSenha.get('novaSenha')?.errors?.['minlength']">Password must be at least 8 characters</span>
-          </div>
-          <div class="password-requirements">
-            Password must contain at least 8 characters
-          </div>
+
+          <app-error
+            *ngIf="formSenha.get('novaSenha').errors"
+            id="error-msg-nova-senha"
+            [control]="formSenha.get('novaSenha')"
+          ></app-error>
         </div>
-        
+
         <div class="password-field">
-          <label for="confirmacaoSenha" class="margin-label">Confirm New Password</label>
-          <div class="password-container">
-            <input 
-              [type]="confirmacaoVisivel ? 'text' : 'password'" 
-              id="confirmacaoSenha" 
-              formControlName="confirmacaoSenha" 
-              class="password-input" 
-              [ngClass]="{'is-invalid': formSenha.get('confirmacaoSenha')?.invalid && formSenha.get('confirmacaoSenha')?.touched}"
-              placeholder="Confirm your new password">
-            <button type="button" class="password-toggle" (click)="toggleSenha('confirmacaoSenha')">
-              <app-icon-olho *ngIf="!confirmacaoVisivel"></app-icon-olho>
-              <app-icon-olho-fechado *ngIf="confirmacaoVisivel"></app-icon-olho-fechado>
-            </button>
-          </div>
-          <div *ngIf="formSenha.get('confirmacaoSenha')?.invalid && formSenha.get('confirmacaoSenha')?.touched" class="invalid-feedback">
-            <span *ngIf="formSenha.get('confirmacaoSenha')?.errors?.['required']">Password confirmation is required</span>
-            <span *ngIf="formSenha.get('confirmacaoSenha')?.errors?.['senhasDiferentes']">Passwords do not match</span>
-          </div>
+          <label for="confirmacaoSenha" class="required"
+            >Confirm New Password</label
+          >
+
+          <p-password
+            [toggleMask]="true"
+            [feedback]="false"
+            [permitirColar]="false"
+            formControlName="confirmacaoSenha"
+            minlength="8"
+            maxLength="32"
+            uiSenha
+            id="confirmacaoSenha"
+            class="password-input w-full input-form password"
+            placeholder="Confirm your new password"
+          />
+
+          <ng-template pTemplate="hideicon">
+            <div
+              class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+              id="icone-olho-off"
+            >
+              <span class="material-symbols-outlined small text-primary">
+                visibility_off
+              </span>
+              <small class="text-icon">Hide</small>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="showicon">
+            <div
+              class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
+              id="icone-olho"
+            >
+              <span
+                class="material-symbols-outlined text-caption-small text-primary"
+              >
+                visibility
+              </span>
+              <small class="text-caption-small">Show</small>
+            </div>
+          </ng-template>
+
+          <app-error
+            *ngIf="formSenha.get('confirmacaoSenha').errors"
+            id="error-msg-confirm-nova-senha"
+            [control]="formSenha.get('confirmacaoSenha')"
+          ></app-error>
         </div>
-        
+
         <div class="btn-senha-salvar">
-          <button type="submit" [disabled]="formSenha.invalid || loading">
-            {{ loading ? 'Updating...' : 'Update Password' }}
+          <button
+            pButton
+            type="submit"
+            [disabled]="formSenha.invalid || loading"
+          >
+            {{ loading ? "Updating..." : "Update" }}
           </button>
         </div>
       </form>
-      
-      <p-toast position="top-right"></p-toast>
     </div>
   </div>
 </div>
+<p-toast position="top-right"></p-toast>
