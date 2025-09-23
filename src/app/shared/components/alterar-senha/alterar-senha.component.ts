@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IconOlhoComponent } from '@app/shared/icons/olho.icon';
-import { IconOlhoFechadoComponent } from '@app/shared/icons/olho-fechado.icon';
-import { ButtonModule } from 'primeng/button';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { SenhaUpdate } from '@app/model/dto/request/senha-update.request';
-import { finalize } from 'rxjs';
+import { IconOlhoFechadoComponent } from '@app/shared/icons/olho-fechado.icon';
+import { IconOlhoComponent } from '@app/shared/icons/olho.icon';
 import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-alterar-senha',

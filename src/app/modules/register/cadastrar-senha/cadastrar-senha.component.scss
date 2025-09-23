@@ -1,15 +1,3 @@
-label,
-.margin-label {
-  margin-left: 10px;
-  &.required::after {
-    content: ' *';
-  }
-}
-
-.text-caption {
-  color: var(--placeholder-color);
-}
-
 :host ::ng-deep {
   .input-form {
     height: 48px;

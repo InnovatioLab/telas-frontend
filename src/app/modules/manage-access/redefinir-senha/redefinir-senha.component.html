@@ -1,27 +1,24 @@
 <app-card-centralizado type="formulario-pequeno">
   <ng-template pTemplate="content">
     <ng-container>
-      <h5 class="text-center text-xlarge-bold mt-0">Redefinir senha</h5>
+      <h5 class="text-center text-xlarge-bold mt-0">Reset password</h5>
     </ng-container>
 
-    <form [formGroup]="redefinirForm" class="mt-6 flex flex-column justify-content-center sm:justify-content-between">
-      <div class="col-12 mb-3">
-        <label htmlFor="login" id="lb-login">Login</label>
-        <br />
-        <input type="text" pInputText formControlName="login" class="w-full input-form" id="login" />
-        <app-error id="error-msg-login" [control]="redefinirForm.get('login')"></app-error>
-      </div>
-
+    <form
+      [formGroup]="redefinirForm"
+      class="mt-6 flex flex-column justify-content-center sm:justify-content-between"
+    >
       <div class="col-12">
-        <label htmlFor="senha" id="lb-senha" class="required">Nova Senha</label>
-        <br />
+        <label htmlFor="password" id="lb-password" class="required"
+          >New Password</label
+        >
         <p-password
           [toggleMask]="true"
           [feedback]="false"
-          formControlName="senha"
-          placeholder="Crie sua senha"
+          formControlName="password"
+          placeholder="Create your password"
           class="w-full input-form password"
-          id="senha"
+          id="password"
           minlength="8"
           maxLength="32"
           uiSenha
@@ -31,8 +28,10 @@
               class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
               id="icone-olho-off"
             >
-              <span class="material-symbols-outlined small text-primary"> visibility_off </span>
-              <small class="text-icon">Ocultar senha</small>
+              <span class="material-symbols-outlined small text-primary">
+                visibility_off
+              </span>
+              <small class="text-icon">Hide</small>
             </div>
           </ng-template>
           <ng-template pTemplate="showicon">
@@ -40,35 +39,46 @@
               class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
               id="icone-olho"
             >
-              <span class="material-symbols-outlined text-caption-small text-primary"> visibility </span>
-              <small class="text-caption-small">Mostrar senha</small>
+              <span
+                class="material-symbols-outlined text-caption-small text-primary"
+              >
+                visibility
+              </span>
+              <small class="text-caption-small">Show</small>
             </div>
           </ng-template>
         </p-password>
         <app-error
-          *ngIf="redefinirForm.get('senha').errors"
+          *ngIf="redefinirForm.get('password').errors"
           id="error-msg-login"
-          [control]="redefinirForm.get('senha')"
+          [control]="redefinirForm.get('password')"
         ></app-error>
 
-        <div class="text-caption margin-label" *ngIf="redefinirForm.get('senha').errors">
-          Sua senha deve conter:
+        <div
+          class="text-caption margin-label mt-2"
+          *ngIf="redefinirForm.get('password').errors"
+        >
+          Your password must contain:
           <ul class="m-0">
-            <li>8 a 32 caracteres</li>
+            <li>8 to 32 characters</li>
           </ul>
         </div>
       </div>
 
       <div class="col-12 mt-2">
-        <label htmlFor="confirmarSenha" id="lb-confirmarSenha" class="required">Confirmar Senha</label>
-        <br />
+        <label
+          htmlFor="confirmPassword"
+          id="lb-confirmPassword"
+          class="required"
+          >Confirm Password</label
+        >
         <p-password
           [toggleMask]="true"
           [feedback]="false"
-          formControlName="confirmarSenha"
-          placeholder="Confirmar senha"
+          formControlName="confirmPassword"
+          placeholder="Confirm Password"
           class="w-full input-form password"
-          id="confirmarSenha"
+          id="confirmPassword"
           minlength="8"
           maxLength="32"
           uiSenha
@@ -79,8 +89,10 @@
               class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
               id="icone-olho-off"
             >
-              <span class="material-symbols-outlined small text-primary"> visibility_off </span>
-              <small class="text-icon">Ocultar senha</small>
+              <span class="material-symbols-outlined small text-primary">
+                visibility_off
+              </span>
+              <small class="text-icon">Hide</small>
             </div>
           </ng-template>
           <ng-template pTemplate="showicon">
@@ -88,27 +100,44 @@
               class="icone-olho flex justify-content-center flex-column align-items-center cursor-pointer"
               id="icone-olho"
             >
-              <span class="material-symbols-outlined text-caption-small text-primary"> visibility </span>
-              <small class="text-caption-small">Mostrar senha</small>
+              <span
+                class="material-symbols-outlined text-caption-small text-primary"
+              >
+                visibility
+              </span>
+              <small class="text-caption-small">Show</small>
             </div>
           </ng-template>
         </p-password>
-        <app-error id="error-msg-login" [control]="redefinirForm.get('confirmarSenha')"></app-error>
-        <small *ngIf="exibirErroSenhaDiferente()" class="text-danger text-error margin-label">
+        <app-error
+          id="error-msg-login"
+          [control]="redefinirForm.get('confirmPassword')"
+        ></app-error>
+        <small
+          *ngIf="exibirErroSenhaDiferente()"
+          class="text-danger text-error font-normal"
+        >
           {{ MENSAGENS.validacao.senhasNaoCorrespondem }}
         </small>
       </div>
 
-      <div class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 botoes-card-pequeno">
+      <div
+        class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 botoes-card-pequeno"
+      >
         <button
           pButton
-          id="botao-cancelar"
+          id="btnSecundario"
           class="w-full md:w-4 btn-outline my-2 justify-content-center"
           (click)="cancelar()"
         >
           {{ TEXTO_ACAO.cancelar }}
         </button>
-        <button pButton id="botao-salvar" class="w-full md:w-4 btn-fill my-2 justify-content-center" (click)="salvar()">
+        <button
+          pButton
+          id="botao-salvar"
+          class="w-full md:w-4 btn-fill my-2 justify-content-center"
+          (click)="salvar()"
+        >
           {{ TEXTO_ACAO.salvar }}
         </button>
       </div>

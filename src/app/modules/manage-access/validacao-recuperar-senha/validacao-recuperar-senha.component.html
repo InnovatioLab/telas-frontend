@@ -2,14 +2,16 @@
   <ng-template pTemplate="content">
     <ng-container>
       <h5 class="text-center text-xlarge-bold mt-0">Validation Code</h5>
-      <p class="text-center text-medium-medium">
-        To recover your password, check your main contact and enter the code you received.
+      <p class="text-center font-normal mt-3 recover-text">
+        To recover your password, check your main contact and enter the code you
+        received.
       </p>
     </ng-container>
-    <form [formGroup]="validacaoForm" class="mt-6">
+    <form [formGroup]="validacaoForm" class="mt-4">
       <div class="col-12">
-        <label htmlFor="codigo" id="lb-codigo" class="required">Password Recovery Code</label>
-        <br />
+        <label htmlFor="codigo" id="lb-codigo" class="required"
+          >Password Recovery Code</label
+        >
         <input
           type="text"
           pInputText
@@ -21,13 +23,18 @@
           id="codigo"
           (input)="onInput($event)"
         />
-        <app-error id="error-msg-login" [control]="validacaoForm.get('codigo')"></app-error>
+        <app-error
+          id="error-msg-login"
+          [control]="validacaoForm.get('codigo')"
+        ></app-error>
       </div>
 
-      <div class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 botoes-card-pequeno">
+      <div
+        class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 botoes-card-pequeno"
+      >
         <button
           pButton
-          id="botao-voltar"
+          id="btnSecundario"
           class="w-full md:w-4 btn-outline my-2 justify-content-center"
           (click)="voltar()"
         >
@@ -44,13 +51,15 @@
       </div>
     </form>
 
-    <div class="flex flex-column gap-3 text-normal text-center">
-      <div class="flex flex-row gap-1 justify-content-center text-normal text-center btn-reenviar-codigo">
+    <div class="flex flex-column gap-3 text-normal text-center mt-3">
+      <div
+        class="flex flex-row gap-1 justify-content-center text-normal text-center btn-reenviar-codigo"
+      >
         Didn't receive it?
         <button
           pButton
           (click)="enviarCodigo()"
-          class="link-text p-0 bg-transparent border-0 justify-content-center cursor-pointer resend-button"
+          class="bg-transparent border-0 cursor-pointer resend-button"
           [disabled]="inativarBotaoReenviarCodigo"
         >
           Resend Code
@@ -59,4 +68,7 @@
     </div>
   </ng-template>
 </app-card-centralizado>
-<feat-redefinir-senha *ngIf="codigoValido" class="fadein animation-duration-500" />
+<feat-redefinir-senha
+  *ngIf="codigoValido"
+  class="fadein animation-duration-500"
+/>

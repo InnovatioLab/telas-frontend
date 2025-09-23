@@ -1,17 +1,24 @@
 <app-card-centralizado type="formulario-pequeno">
   <ng-template pTemplate="content">
     <ng-container>
-      <h5 id="titulo" class="text-center text-large-bold mt-0 pass-title">Password Recovery</h5>
+      <h5 id="titulo" class="text-center text-large-bold mt-0 pass-title">
+        Password Recovery
+      </h5>
     </ng-container>
 
-    <form [formGroup]="form" class="mt-6 flex flex-column justify-content-center sm:justify-content-between">
-      <div class="col-12 mb-5">
-        <span id="descricao" class="mb-3 text-medium label pass-title">Enter your information to recover your password.</span>
-        <br />
+    <form
+      [formGroup]="form"
+      class="mt-6 flex flex-column justify-content-center sm:justify-content-between"
+    >
+      <div class="col-12 mb-3">
+        <span id="descricao" class="mb-3 label pass-title font-normal"
+          >Enter your information to recover your password.</span
+        >
       </div>
       <div class="col-12">
-        <label htmlFor="login" id="lb-login" class="required">Identification Number</label>
-        <br />
+        <label htmlFor="login" id="lb-login" class="required"
+          >Identification Number</label
+        >
         <input
           pInputText
           formControlName="login"
@@ -21,13 +28,19 @@
           maxlength="9"
           (input)="onlyNumbersInput($event)"
         />
-        <app-error id="error-msg-login" [control]="form.get('login')" *ngIf="mostrarErro('login')"></app-error>
+        <app-error
+          id="error-msg-login"
+          [control]="form.get('login')"
+          *ngIf="mostrarErro('login')"
+        ></app-error>
       </div>
 
-      <div class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 botoes">
+      <div
+        class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 botoes"
+      >
         <button
           pButton
-          id="botao-voltar"
+          id="btnSecundario"
           class="w-full md:w-4 btn-outline my-2 justify-content-center"
           (click)="voltar()"
         >
@@ -37,7 +50,7 @@
           id="botao-proximo"
           pButton
           class="w-full md:w-4 btn-fill my-2 justify-content-center"
-          (click)="proximo()"
+          (click)="recuperarSenha()"
         >
           {{ TEXTO_ACAO.proximo }}
         </button>

@@ -2373,3 +2373,12 @@ a {
 .ad-content:not(:empty) {
   display: block !important;
 }
+
+.text-caption {
+  color: var(--placeholder-color);
+  font-size: var(--fonte-tamanho-pequeno);
+
+  li {
+    font-size: var(--fonte-tamanho-pequeno) !important;
+  }
+}

@@ -1,7 +1,7 @@
 label {
   margin-left: 10px;
   &.required::after {
-    content: ' *';
+    content: " *";
   }
 }
 
@@ -27,9 +27,19 @@ label {
     align-items: center;
     justify-content: center;
   }
+}
 
-  .resend-button {
-    background-color: var(--cor-primaria) !important;
-    padding: 4px 16px !important;
+.resend-button {
+  background-color: var(--cor-primaria) !important;
+  max-width: 150px !important;
+  padding: 8px !important;
+  margin-left: 0.5rem;
+
+  &:hover {
+    opacity: 0.9 !important;
   }
+}
+
+.recover-text {
+  font-size: var(--fonte-tamanho-padrao) !important;
 }

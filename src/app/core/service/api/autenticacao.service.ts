@@ -100,7 +100,7 @@ export class AutenticacaoService {
   }
 
   redefinirSenha(login: string, request: SenhaRequestDto) {
-    return this.httpClient.patch<SenhaRequestDto>(`${this.url}/reset-password/${login}`, request);
+    return this.httpClient.patch<SenhaRequestDto>(`${this.url}reset-password/${login}`, request);
   }
 
   alterarSenha(request: SenhaUpdate): Observable<SenhaUpdate> {
