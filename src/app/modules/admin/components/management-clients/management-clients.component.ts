@@ -185,9 +185,12 @@ export class ManagementClientsComponent implements OnInit {
           {
             data: { client: fullClient },
             header: "Edit Client",
+            closable: true,
+            closeOnEscape: true,
+            draggable: false,
+            resizable: false,
 
             contentStyle: {
-              "max-height": "90vh",
               overflow: "auto",
               padding: "0",
               display: "flex",
