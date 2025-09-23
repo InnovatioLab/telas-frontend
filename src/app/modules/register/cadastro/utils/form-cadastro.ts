@@ -1,4 +1,5 @@
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 
 export class FormCadastro {
   cadastroForm: FormGroup;
@@ -24,8 +25,15 @@ export class FormCadastro {
         socialMedia: this.fb.array([]),
       }),
       enderecoCliente: this.fb.group({
-        zipCode: ["", [Validators.required]],
-        street: ["", [Validators.required, Validators.maxLength(100)]],
+        zipCode: ["", [Validators.required, Validators.pattern(/^\d{5}$/)]],
+        street: [
+          "",
+          [
+            Validators.required,
+            Validators.maxLength(100),
+            AbstractControlUtils.validateAddress(),
+          ],
+        ],
         city: ["", [Validators.required, Validators.maxLength(50)]],
         state: [
           "",
@@ -35,7 +43,7 @@ export class FormCadastro {
             Validators.maxLength(2),
           ],
         ],
-        country: ["", [Validators.maxLength(100)]],
+        country: ["US", [Validators.maxLength(100)]],
         complement: ["", [Validators.maxLength(100)]],
       }),
       contato: this.fb.group({

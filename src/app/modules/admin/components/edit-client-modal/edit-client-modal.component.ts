@@ -22,6 +22,7 @@ import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconCloseComponent } from "@app/shared/icons/close.icon";
 import { IconUploadComponent } from "@app/shared/icons/upload.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 import { DropdownModule } from "primeng/dropdown";
@@ -206,7 +207,14 @@ export class EditClientModalComponent implements OnInit {
 
     addressesArray.push(
       this.fb.group({
-        street: ["", [Validators.required, Validators.maxLength(100)]],
+        street: [
+          "",
+          [
+            Validators.required,
+            Validators.maxLength(100),
+            AbstractControlUtils.validateAddress(),
+          ],
+        ],
         zipCode: ["", Validators.required],
         city: ["", [Validators.required, Validators.maxLength(50)]],
         state: [

@@ -100,7 +100,14 @@ export class ViewEditProfileComponent implements OnInit {
   addAddress(): void {
     this.addressesFormArray.push(
       this.fb.group({
-        street: ["", [Validators.required, Validators.maxLength(100)]],
+        street: [
+          "",
+          [
+            Validators.required,
+            Validators.maxLength(100),
+            AbstractControlUtils.validateAddress(),
+          ],
+        ],
         zipCode: ["", Validators.required],
         city: ["", [Validators.required, Validators.maxLength(50)]],
         state: [
