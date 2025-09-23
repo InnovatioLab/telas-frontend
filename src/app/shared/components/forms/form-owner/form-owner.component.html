@@ -2,7 +2,29 @@
   <h5>Owner Data</h5>
   <form [formGroup]="ownerForm">
     <div class="grid form-group">
-      <div class="col-12 md:col-6 lg:col-6">
+      <div class="col-12 md:col-6 lg:col-4">
+        <label
+          id="lb-owner-identification-number"
+          for="owner-identification-number"
+          class="required"
+          >Identification Number</label
+        >
+        <p-inputMask
+          mask="999999999"
+          autoClear="false"
+          formControlName="ownerIdentificationNumber"
+          placeholder="000000000"
+          class="w-full input-form"
+          id="owner-identification-number"
+        />
+        <app-error
+          id="error-msg-owner-identification-number"
+          [control]="ownerForm.get('ownerIdentificationNumber')"
+          *ngIf="mostrarErro(ownerForm, 'ownerIdentificationNumber')"
+        ></app-error>
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-4">
         <label id="lb-owner-first-name" for="owner-first-name" class="required"
           >First Name</label
         >
@@ -14,6 +36,7 @@
           class="w-full input-form"
           id="owner-first-name"
           maxLength="50"
+          uiTextOnly
         />
         <app-error
           id="error-msg-owner-first-name"
@@ -22,7 +45,7 @@
         ></app-error>
       </div>
 
-      <div class="col-12 md:col-6 lg:col-6">
+      <div class="col-12 md:col-6 lg:col-4">
         <label id="lb-owner-last-name" for="owner-last-name">Last Name</label>
         <input
           type="text"
@@ -32,6 +55,7 @@
           class="w-full input-form"
           id="owner-last-name"
           maxLength="150"
+          uiTextOnly
         />
         <app-error
           id="error-msg-owner-last-name"
@@ -40,7 +64,7 @@
         ></app-error>
       </div>
 
-      <div class="col-4 md:col-4 lg:col-3">
+      <div class="col-4 md:col-6 lg:col-3">
         <label id="lb-owner-phone" for="owner-phone">Phone</label>
         <p-inputMask
           mask="+1 999 999 9999"
@@ -54,7 +78,7 @@
           [control]="ownerForm.get('phone')"
         ></app-error>
       </div>
-      <div class="col-8 md:col-8 lg:col-9">
+      <div class="col-8 md:col-12 lg:col-9">
         <label id="lb-owner-email" for="owner-email">E-mail</label>
         <input
           type="email"

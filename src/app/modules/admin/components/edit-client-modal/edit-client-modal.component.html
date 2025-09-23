@@ -28,7 +28,7 @@
               mask="999999999"
               autoClear="false"
               formControlName="identificationNumber"
-              placeholder="Enter identification number"
+              [disabled]="true"
             />
             <app-error
               id="error-msg-identification-number"
@@ -108,6 +108,22 @@
       <div class="form-section">
         <h4>Owner Information</h4>
         <div class="form-row">
+          <div class="form-field">
+            <label
+              id="lb-owner-identification-number"
+              for="owner-identification-number"
+              class="required"
+              >Identification Number</label
+            >
+            <p-inputMask
+              mask="999999999"
+              autoClear="false"
+              formControlName="ownerIdentificationNumber"
+              class="w-full input-form"
+              id="owner-identification-number"
+              [disabled]="true"
+            />
+          </div>
           <div class="form-field">
             <label for="ownerFirstName" class="required">First Name</label>
             <input

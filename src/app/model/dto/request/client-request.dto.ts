@@ -18,6 +18,7 @@ export interface ContactRequestDTO {
 }
 
 export interface OwnerRequestDTO {
+  identificationNumber: string;
   firstName: string;
   lastName?: string;
   email?: string;

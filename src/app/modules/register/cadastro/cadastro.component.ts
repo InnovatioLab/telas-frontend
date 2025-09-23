@@ -232,6 +232,7 @@ export class CadastroComponent implements OnInit {
           phone: normalizedPhone,
         },
         owner: {
+          identificationNumber: ownerData.ownerIdentificationNumber,
           firstName: ownerData.firstName,
           lastName: ownerData.lastName ?? null,
           email: ownerData.email ?? null,

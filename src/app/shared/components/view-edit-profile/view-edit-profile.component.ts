@@ -87,6 +87,15 @@ export class ViewEditProfileComponent implements OnInit {
           Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
         ],
       ],
+      ownerIdentificationNumber: [
+        "",
+        [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9),
+          Validators.pattern(/^\d{9}$/),
+        ],
+      ],
       ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
       ownerLastName: ["", Validators.maxLength(150)],
       ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
@@ -279,6 +288,7 @@ export class ViewEditProfileComponent implements OnInit {
       websiteUrl: client.websiteUrl || "",
       email: client.contact?.email || "",
       phone: phoneNumber,
+      ownerIdentificationNumber: client.owner.identificationNumber || "",
       ownerFirstName: client.owner?.firstName || "",
       ownerLastName: client.owner?.lastName || "",
       ownerEmail: client.owner?.email || "",
@@ -425,6 +435,7 @@ export class ViewEditProfileComponent implements OnInit {
       },
 
       owner: {
+        identificationNumber: formValues.ownerIdentificationNumber,
         firstName: formValues.ownerFirstName,
         lastName: formValues.ownerLastName ?? null,
         email: formValues.ownerEmail ?? null,

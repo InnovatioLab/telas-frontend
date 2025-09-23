@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
+import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
@@ -17,7 +18,13 @@ import { ErrorComponent } from "../../error/error.component";
 @Component({
   selector: "ui-form-owner",
   standalone: true,
-  imports: [CommonModule, PrimengModule, ReactiveFormsModule, ErrorComponent],
+  imports: [
+    CommonModule,
+    PrimengModule,
+    ReactiveFormsModule,
+    ErrorComponent,
+    TextOnlyDirective,
+  ],
   templateUrl: "./form-owner.component.html",
   styleUrl: "./form-owner.component.scss",
 })
@@ -31,6 +38,28 @@ export class FormOwnerComponent implements OnInit {
     if (!this.ownerForm) {
       console.error("ownerForm não foi inicializado.");
       return;
+    }
+
+    if (!this.ownerForm.get("ownerIdentificationNumber")) {
+      this.ownerForm.addControl(
+        "ownerIdentificationNumber",
+        new FormControl("", [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9),
+          Validators.pattern(/^\d{9}$/),
+        ])
+      );
+    } else {
+      this.ownerForm
+        .get("ownerIdentificationNumber")
+        .setValidators([
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9),
+          Validators.pattern(/^\d{9}$/),
+        ]);
+      this.ownerForm.get("ownerIdentificationNumber").updateValueAndValidity();
     }
 
     if (!this.ownerForm.get("firstName")) {

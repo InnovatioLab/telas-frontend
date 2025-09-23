@@ -109,7 +109,23 @@
       <div class="section-title">Owner Information</div>
       <div class="form-row">
         <div class="form-group">
-          <label for="ownerFirstName" class="required">Owner First Name</label>
+          <label
+            id="lb-owner-identification-number"
+            for="owner-identification-number"
+            class="required"
+            >Identification Number</label
+          >
+          <p-inputMask
+            mask="999999999"
+            autoClear="false"
+            formControlName="ownerIdentificationNumber"
+            class="w-full input-form"
+            id="owner-identification-number"
+            [disabled]="true"
+          />
+        </div>
+        <div class="form-group">
+          <label for="ownerFirstName" class="required">First Name</label>
           <input
             pInputText
             type="text"
@@ -124,9 +140,11 @@
             [control]="profileForm.get('ownerFirstName')"
           ></app-error>
         </div>
+      </div>
 
+      <div class="form-row">
         <div class="form-group">
-          <label for="ownerLastName">Owner Last Name</label>
+          <label for="ownerLastName">Last Name</label>
           <input
             pInputText
             type="text"
@@ -141,27 +159,9 @@
             [control]="profileForm.get('ownerLastName')"
           ></app-error>
         </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="ownerEmail">Owner Email</label>
-          <input
-            pInputText
-            type="email"
-            id="ownerEmail"
-            formControlName="ownerEmail"
-            maxLength="255"
-            [readonly]="!isEditMode"
-          />
-          <app-error
-            id="error-msg-owner-email"
-            [control]="profileForm.get('ownerEmail')"
-          ></app-error>
-        </div>
 
         <div class="form-group">
-          <label for="ownerPhone">Owner Phone</label>
+          <label for="ownerPhone">Phone</label>
           <p-inputMask
             mask="+1 999 999 9999"
             formControlName="ownerPhone"
@@ -173,6 +173,24 @@
           <app-error
             id="error-msg-owner-email"
             [control]="profileForm.get('ownerPhone')"
+          ></app-error>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ownerEmail">Email</label>
+          <input
+            pInputText
+            type="email"
+            id="ownerEmail"
+            formControlName="ownerEmail"
+            maxLength="255"
+            [readonly]="!isEditMode"
+          />
+          <app-error
+            id="error-msg-owner-email"
+            [control]="profileForm.get('ownerEmail')"
           ></app-error>
         </div>
       </div>

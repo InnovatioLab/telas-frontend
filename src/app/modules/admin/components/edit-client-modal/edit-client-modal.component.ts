@@ -115,6 +115,15 @@ export class EditClientModalComponent implements OnInit {
         [Validators.maxLength(200), Validators.pattern("https?://.+")],
       ],
       status: [DefaultStatus.ACTIVE],
+      ownerIdentificationNumber: [
+        "",
+        [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9),
+          Validators.pattern(/^\d{9}$/),
+        ],
+      ],
       ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
       ownerLastName: ["", [Validators.maxLength(150)]],
       ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
@@ -288,6 +297,7 @@ export class EditClientModalComponent implements OnInit {
           phone: formValue.contactPhone,
         },
         owner: {
+          identificationNumber: formValue.ownerIdentificationNumber,
           firstName: formValue.ownerFirstName,
           lastName: formValue.ownerLastName ?? null,
           email: formValue.ownerEmail ?? null,

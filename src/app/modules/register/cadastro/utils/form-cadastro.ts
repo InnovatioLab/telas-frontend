@@ -25,6 +25,15 @@ export class FormCadastro {
         socialMedia: this.fb.array([]),
       }),
       owner: this.fb.group({
+        ownerIdentificationNumber: [
+          "",
+          [
+            Validators.required,
+            Validators.minLength(9),
+            Validators.maxLength(9),
+            Validators.pattern(/^\d{9}$/),
+          ],
+        ],
         firstName: ["", [Validators.required, Validators.maxLength(50)]],
         lastName: ["", [Validators.maxLength(150)]],
         ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
