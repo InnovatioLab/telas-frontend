@@ -105,6 +105,7 @@ export class RecuperarSenhaComponent {
   }
 
   redirecionarValidacaoCadastro(login: string) {
+    this.clientService.reenvioCodigo(login).subscribe();
     this.router.navigate(['/register/validate-code-recover-password', login]);
   }
 

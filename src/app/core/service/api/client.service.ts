@@ -92,7 +92,7 @@ export class ClientService extends BaseHttpService<Client> {
 
   validarCodigo(login: string, code: string) {
     const params = new HttpParams().set("code", code);
-    return this.http.patch(`${this.baseUrl}/validate-code/${login}`, null, {
+    return this.http.patch(`${this.baseUrl}/validate-code/${login}`, {}, {
       params,
     });
   }
