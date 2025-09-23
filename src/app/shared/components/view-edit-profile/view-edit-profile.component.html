@@ -115,12 +115,11 @@
             class="required"
             >Identification Number</label
           >
-          <p-inputMask
-            mask="999999999"
-            autoClear="false"
-            formControlName="ownerIdentificationNumber"
-            class="w-full input-form"
+          <input
+            pInputText
+            type="text"
             id="owner-identification-number"
+            formControlName="ownerIdentificationNumber"
             [disabled]="true"
           />
         </div>

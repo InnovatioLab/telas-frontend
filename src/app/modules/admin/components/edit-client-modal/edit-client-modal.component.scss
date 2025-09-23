@@ -167,14 +167,15 @@
   gap: 0.5rem;
   cursor: pointer;
   transition: var(--transicao-rapida);
-  border: 1px solid var(--cor-cinza-medio);
+  border: 2px solid var(--cor-cinza-medio) !important;
   background-color: var(--cor-branca);
   color: var(--cor-cinza-escuro);
 }
 
 .add-address-btn button:hover {
-  background-color: var(--cor-cinza-fundo);
-  border-color: var(--cor-cinza-escuro);
+  transform: scale(1.05);
+  opacity: 1 !important;
+  color: var(--cor-cinza-escuro);
 }
 
 @media (max-width: 500px) {

@@ -29,6 +29,7 @@
               autoClear="false"
               formControlName="identificationNumber"
               [disabled]="true"
+              [readonly]="true"
             />
             <app-error
               id="error-msg-identification-number"
@@ -140,6 +141,9 @@
               [control]="editForm.get('ownerFirstName')"
             ></app-error>
           </div>
+        </div>
+
+        <div class="form-row">
           <div class="form-field">
             <label for="ownerLastName">Last Name</label>
             <input
@@ -156,23 +160,7 @@
               [control]="editForm.get('ownerLastName')"
             ></app-error>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="form-field">
-            <label for="ownerEmail" class="required">Email</label>
-            <input
-              id="ownerEmail"
-              type="email"
-              pInputText
-              formControlName="ownerEmail"
-              placeholder="Enter email"
-              maxLength="255"
-            />
-            <app-error
-              id="error-msg-owner-email"
-              [control]="editForm.get('ownerEmail')"
-            ></app-error>
-          </div>
+
           <div class="form-field">
             <label for="ownerPhone" class="required">Phone</label>
             <p-inputMask
@@ -187,6 +175,23 @@
               [control]="editForm.get('ownerPhone')"
             ></app-error>
           </div>
+        </div>
+
+        <div class="w-full">
+          <label for="ownerEmail" class="required">Email</label>
+          <input
+            id="ownerEmail"
+            type="email"
+            pInputText
+            formControlName="ownerEmail"
+            placeholder="Enter email"
+            maxLength="255"
+            class="w-full input-form"
+          />
+          <app-error
+            id="error-msg-owner-email"
+            [control]="editForm.get('ownerEmail')"
+          ></app-error>
         </div>
       </div>
 

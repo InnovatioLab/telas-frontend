@@ -127,21 +127,12 @@ export class EditClientModalComponent implements OnInit {
       ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
       ownerLastName: ["", [Validators.maxLength(150)]],
       ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-      ownerPhone: [
-        "",
-        [Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)],
-      ],
+      ownerPhone: [""],
       contactEmail: [
         "",
         [Validators.required, Validators.email, Validators.maxLength(255)],
       ],
-      contactPhone: [
-        "",
-        [
-          Validators.required,
-          Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
-        ],
-      ],
+      contactPhone: ["", [Validators.required]],
       addresses: this.fb.array([]),
     });
   }
@@ -150,28 +141,22 @@ export class EditClientModalComponent implements OnInit {
     if (this.client) {
       this.editForm.patchValue({
         businessName: this.client.businessName || "",
-        identificationNumber:
-          this.client.identificationNumber ||
-          this.client.owner?.identificationNumber ||
-          "",
+        identificationNumber: this.client.identificationNumber || "",
         industry: this.client.industry || "",
         websiteUrl: this.client.websiteUrl || "",
         status: this.client.status || DefaultStatus.ACTIVE,
-        ownerFirstName:
-          this.client.owner?.firstName ||
-          this.client.owner?.name?.split(" ")[0] ||
-          "",
-        ownerLastName:
-          this.client.owner?.lastName ||
-          this.client.owner?.name?.split(" ").slice(1).join(" ") ||
-          "",
+        ownerIdentificationNumber:
+          this.client.owner?.identificationNumber || "",
+        ownerFirstName: this.client.owner?.firstName || "",
+        ownerLastName: this.client.owner?.lastName || "",
         ownerEmail: this.client.owner?.email || "",
         ownerPhone: this.client.owner?.phone || "",
-        contactEmail:
-          this.client.contact?.email || this.client.owner?.email || "",
-        contactPhone:
-          this.client.contact?.phone || this.client.owner?.phone || "",
+        contactEmail: this.client.contact.email,
+        contactPhone: this.client.contact.phone,
       });
+
+      this.editForm.get("identificationNumber")?.disable();
+      this.editForm.get("ownerIdentificationNumber")?.disable();
     }
   }
 
@@ -186,17 +171,15 @@ export class EditClientModalComponent implements OnInit {
       this.client.addresses.forEach((addr) => {
         addressesArray.push(
           this.fb.group({
+            id: [addr.id],
             street: [
-              addr.street || "",
+              addr.street,
               [Validators.required, Validators.maxLength(100)],
             ],
-            zipCode: [addr.zipCode || "", Validators.required],
-            city: [
-              addr.city || "",
-              [Validators.required, Validators.maxLength(50)],
-            ],
+            zipCode: [addr.zipCode, Validators.required],
+            city: [addr.city, [Validators.required, Validators.maxLength(50)]],
             state: [
-              addr.state || "",
+              addr.state,
               [
                 Validators.required,
                 Validators.maxLength(2),
@@ -204,10 +187,10 @@ export class EditClientModalComponent implements OnInit {
               ],
             ],
             country: [
-              addr.country || "",
+              addr.country,
               [Validators.required, Validators.maxLength(100)],
             ],
-            complement: [addr.complement || "", Validators.maxLength(100)],
+            complement: [addr.complement ?? null, Validators.maxLength(100)],
           })
         );
       });
@@ -222,6 +205,7 @@ export class EditClientModalComponent implements OnInit {
 
     addressesArray.push(
       this.fb.group({
+        id: [null],
         street: [
           "",
           [
@@ -275,15 +259,16 @@ export class EditClientModalComponent implements OnInit {
   onSubmit(): void {
     if (this.editForm.valid && this.addressesFormArray.length > 0) {
       this.loading = true;
-      const formValue = this.editForm.value;
+      const formValue = this.editForm.getRawValue();
       const addressesDTO: AddressRequestDTO[] = formValue.addresses.map(
         (addr: any) => ({
+          id: addr.id ?? null,
           street: addr.street,
           zipCode: addr.zipCode,
           city: addr.city,
           state: addr.state,
           country: addr.country,
-          complement: addr.complement,
+          complement: addr.complement ?? null,
         })
       );
       const clientRequest: ClientRequestDTO = {

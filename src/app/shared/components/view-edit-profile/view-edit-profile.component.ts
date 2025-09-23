@@ -301,6 +301,7 @@ export class ViewEditProfileComponent implements OnInit {
     const address = client.addresses?.[0];
 
     return {
+      id: address?.id ?? null,
       street: address?.street || "",
       zipCode: address?.zipCode || "",
       city: address?.city || "",
@@ -379,6 +380,7 @@ export class ViewEditProfileComponent implements OnInit {
       }
     });
     this.profileForm.get("identificationNumber")?.disable();
+    this.profileForm.get("ownerIdentificationNumber")?.disable();
   }
 
   toggleEditMode(): void {
