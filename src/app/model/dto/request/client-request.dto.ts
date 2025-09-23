@@ -18,11 +18,10 @@ export interface ContactRequestDTO {
 }
 
 export interface OwnerRequestDTO {
-  identificationNumber: string;
   firstName: string;
   lastName?: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
 }
 
 export interface AddressRequestDTO {

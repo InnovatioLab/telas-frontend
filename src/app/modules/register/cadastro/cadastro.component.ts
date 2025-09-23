@@ -10,6 +10,7 @@ import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.compone
 import { FormContatoComponent } from "@app/shared/components/forms/form-contato/form-contato.component";
 import { FormDadosPessoaisComponent } from "@app/shared/components/forms/form-dados-pessoais/form-dados-pessoais.component";
 import { FormEnderecoComponent } from "@app/shared/components/forms/form-endereco/form-endereco.component";
+import { FormOwnerComponent } from "@app/shared/components/forms/form-owner/form-owner.component";
 import { CLIENT_FORM } from "@app/shared/constants/campos-cadastro.constants";
 import {
   ALL_STEPS,
@@ -36,6 +37,7 @@ import { FormCadastro } from "./utils/form-cadastro";
     FormDadosPessoaisComponent,
     ButtonFooterComponent,
     FormContatoComponent,
+    FormOwnerComponent,
     IconsModule,
   ],
   providers: [DialogService, DialogoUtils],
@@ -91,12 +93,37 @@ export class CadastroComponent implements OnInit {
         })
       );
     }
+    if (!this.formCadastro.cadastroForm.get("owner")) {
+      this.formCadastro.cadastroForm.addControl(
+        "owner",
+        this.fb.group({
+          firstName: ["", [Validators.required, Validators.maxLength(50)]],
+          lastName: ["", [Validators.maxLength(150)]],
+          ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
+          phone: [
+            "",
+            [
+              Validators.pattern(
+                /^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/
+              ),
+            ],
+          ],
+        })
+      );
+    }
     if (!this.formCadastro.cadastroForm.get("enderecoCliente")) {
       this.formCadastro.cadastroForm.addControl(
         "enderecoCliente",
         this.fb.group({
           zipCode: ["", [Validators.required]],
-          street: ["", [Validators.required, Validators.maxLength(100)]],
+          street: [
+            "",
+            [
+              Validators.required,
+              Validators.maxLength(100),
+              AbstractControlUtils.validateStreet(),
+            ],
+          ],
           city: ["", [Validators.required, Validators.maxLength(50)]],
           state: [
             "",
@@ -124,6 +151,10 @@ export class CadastroComponent implements OnInit {
 
   get dadosPessoaisForm(): FormGroup {
     return this.formCadastro.cadastroForm.get("dadosCliente") as FormGroup;
+  }
+
+  get ownerForm(): FormGroup {
+    return this.formCadastro.cadastroForm.get("owner") as FormGroup;
   }
 
   get enderecoForm(): FormGroup {
@@ -165,11 +196,15 @@ export class CadastroComponent implements OnInit {
       const IGNORAR_LOADING = true;
 
       const dadosCliente = form.get("dadosCliente")?.value ?? {};
+      const ownerData = form.get("owner")?.value ?? {};
       const enderecoCliente = form.get("enderecoCliente")?.value ?? {};
       const contato = form.get("contato")?.value ?? {};
 
       const rawPhone = contato.numeroContato ?? "";
       const normalizedPhone = normalizePhoneNumber(rawPhone);
+
+      const rawOwnerPhone = ownerData.phone ?? "";
+      const normalizedOwnerPhone = normalizePhoneNumber(rawOwnerPhone);
 
       const socialMedia: Record<string, string> = {};
       if (
@@ -197,12 +232,10 @@ export class CadastroComponent implements OnInit {
           phone: normalizedPhone,
         },
         owner: {
-          identificationNumber: dadosCliente.identificationNumber,
-          firstName: dadosCliente.businessName?.split(" ")[0] ?? "",
-          lastName:
-            dadosCliente.businessName?.split(" ").slice(1).join(" ") ?? "",
-          email: contato.email,
-          phone: normalizedPhone,
+          firstName: ownerData.firstName,
+          lastName: ownerData.lastName ?? null,
+          email: ownerData.email ?? null,
+          phone: normalizedOwnerPhone.length > 0 ? normalizedOwnerPhone : null,
         },
         addresses: [
           {

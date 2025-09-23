@@ -228,14 +228,14 @@ export class AbstractControlUtils {
     form.updateValueAndValidity();
   }
 
-  static validateAddress(): ValidatorFn {
+  static validateStreet(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
       if (typeof value !== "string" || value.trim() === "") {
         return { invalidAddress: true };
       }
       const regex = /^\d{1,}\s+[a-zA-Z0-9\s]+$/;
-      return regex.test(value.trim()) ? null : { invalidAddress: true };
+      return regex.test(value.trim()) ? null : { invalidStreet: true };
     };
   }
 }

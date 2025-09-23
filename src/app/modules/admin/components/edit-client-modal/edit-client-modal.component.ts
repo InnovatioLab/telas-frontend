@@ -117,9 +117,15 @@ export class EditClientModalComponent implements OnInit {
       status: [DefaultStatus.ACTIVE],
       ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
       ownerLastName: ["", [Validators.maxLength(150)]],
-      ownerEmail: ["", [Validators.email]],
-      ownerPhone: [""],
-      contactEmail: ["", [Validators.required, Validators.email]],
+      ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
+      ownerPhone: [
+        "",
+        [Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)],
+      ],
+      contactEmail: [
+        "",
+        [Validators.required, Validators.email, Validators.maxLength(255)],
+      ],
       contactPhone: [
         "",
         [
@@ -212,7 +218,7 @@ export class EditClientModalComponent implements OnInit {
           [
             Validators.required,
             Validators.maxLength(100),
-            AbstractControlUtils.validateAddress(),
+            AbstractControlUtils.validateStreet(),
           ],
         ],
         zipCode: ["", Validators.required],
@@ -282,11 +288,10 @@ export class EditClientModalComponent implements OnInit {
           phone: formValue.contactPhone,
         },
         owner: {
-          identificationNumber: formValue.identificationNumber,
           firstName: formValue.ownerFirstName,
-          lastName: formValue.ownerLastName,
-          email: formValue.ownerEmail,
-          phone: formValue.ownerPhone,
+          lastName: formValue.ownerLastName ?? null,
+          email: formValue.ownerEmail ?? null,
+          phone: formValue.ownerPhone ?? null,
         },
         addresses: addressesDTO,
       };

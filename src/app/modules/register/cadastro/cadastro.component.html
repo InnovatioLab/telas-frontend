@@ -26,6 +26,11 @@
         id="lib-form-dados-pessoais"
       ></ui-form-dados-pessoais>
 
+      <ui-form-owner
+        [ownerForm]="ownerForm"
+        id="lib-form-owner"
+      ></ui-form-owner>
+
       <ui-form-endereco
         [enderecoForm]="enderecoForm"
         (latitudeChange)="latitude = $event"

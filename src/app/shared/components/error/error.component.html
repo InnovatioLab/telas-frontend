@@ -7,7 +7,7 @@
   <small  *ngIf="control.errors.minDate"><small>{{control.errors.minDate.message}}</small></small>
   <small  *ngIf="control.errors.maxDate"><small>{{control.errors.maxDate.message}}</small></small>
   <small  *ngIf="control.errors.lessThanEqualTo"><small>{{control.errors.lessThanEqualTo.message}}</small></small>
-  <small  *ngIf="control.errors.invalidAddress && !control.errors.required"><small>Invalid address format</small></small>
+  <small  *ngIf="control.errors.invalidStreet && !control.errors.required"><small>Invalid street format</small></small>
 </div>
 
 

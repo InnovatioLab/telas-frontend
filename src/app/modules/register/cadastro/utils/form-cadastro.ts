@@ -24,6 +24,15 @@ export class FormCadastro {
         ],
         socialMedia: this.fb.array([]),
       }),
+      owner: this.fb.group({
+        firstName: ["", [Validators.required, Validators.maxLength(50)]],
+        lastName: ["", [Validators.maxLength(150)]],
+        ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
+        phone: [
+          "",
+          [Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)],
+        ],
+      }),
       enderecoCliente: this.fb.group({
         zipCode: ["", [Validators.required, Validators.pattern(/^\d{5}$/)]],
         street: [
@@ -31,7 +40,7 @@ export class FormCadastro {
           [
             Validators.required,
             Validators.maxLength(100),
-            AbstractControlUtils.validateAddress(),
+            AbstractControlUtils.validateStreet(),
           ],
         ],
         city: ["", [Validators.required, Validators.maxLength(50)]],
@@ -51,8 +60,7 @@ export class FormCadastro {
           "",
           [
             Validators.required,
-            Validators.minLength(11),
-            Validators.maxLength(11),
+            Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
           ],
         ],
         email: [

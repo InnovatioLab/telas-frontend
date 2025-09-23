@@ -76,7 +76,10 @@ export class ViewEditProfileComponent implements OnInit {
         "",
         [Validators.maxLength(200), Validators.pattern("https?://.+")],
       ],
-      email: ["", [Validators.required, Validators.email]],
+      email: [
+        "",
+        [Validators.required, Validators.email, Validators.maxLength(255)],
+      ],
       phone: [
         "",
         [
@@ -86,8 +89,11 @@ export class ViewEditProfileComponent implements OnInit {
       ],
       ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
       ownerLastName: ["", Validators.maxLength(150)],
-      ownerEmail: ["", [Validators.email]],
-      ownerPhone: [""],
+      ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
+      ownerPhone: [
+        "",
+        [Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)],
+      ],
       addresses: this.fb.array([]),
       socialMedia: this.fb.array([]),
     });
@@ -100,14 +106,7 @@ export class ViewEditProfileComponent implements OnInit {
   addAddress(): void {
     this.addressesFormArray.push(
       this.fb.group({
-        street: [
-          "",
-          [
-            Validators.required,
-            Validators.maxLength(100),
-            AbstractControlUtils.validateAddress(),
-          ],
-        ],
+        street: ["", [Validators.required, Validators.maxLength(100)]],
         zipCode: ["", Validators.required],
         city: ["", [Validators.required, Validators.maxLength(50)]],
         state: [
@@ -118,7 +117,7 @@ export class ViewEditProfileComponent implements OnInit {
             Validators.minLength(2),
           ],
         ],
-        country: ["US", [Validators.required, Validators.maxLength(100)]],
+        country: ["", [Validators.required, Validators.maxLength(100)]],
         complement: ["", Validators.maxLength(100)],
       })
     );
@@ -270,6 +269,7 @@ export class ViewEditProfileComponent implements OnInit {
 
   private buildFormData(client: Client): any {
     const phoneNumber = client.contact?.phone || "";
+    const ownerNumber = client.owner?.phone || "";
     const address = this.getFirstAddress(client);
 
     return {
@@ -282,7 +282,7 @@ export class ViewEditProfileComponent implements OnInit {
       ownerFirstName: client.owner?.firstName || "",
       ownerLastName: client.owner?.lastName || "",
       ownerEmail: client.owner?.email || "",
-      ownerPhone: client.owner?.phone || "",
+      ownerPhone: ownerNumber,
       ...address,
     };
   }
@@ -408,6 +408,10 @@ export class ViewEditProfileComponent implements OnInit {
     const socialMedia = this.buildSocialMediaObject(formValues.socialMedia);
     const addressId = this.getExistingAddressId();
 
+    const ownerPhone = formValues.ownerPhone
+      ? this.validateAndNormalizePhone(formValues.ownerPhone)
+      : null;
+
     const clientRequest: ClientRequestDTO = {
       businessName: formValues.businessName,
       identificationNumber: formValues.identificationNumber,
@@ -421,11 +425,10 @@ export class ViewEditProfileComponent implements OnInit {
       },
 
       owner: {
-        identificationNumber: formValues.identificationNumber,
         firstName: formValues.ownerFirstName,
-        lastName: formValues.ownerLastName || "",
-        email: formValues.ownerEmail || formValues.email,
-        phone: normalizedPhone,
+        lastName: formValues.ownerLastName ?? null,
+        email: formValues.ownerEmail ?? null,
+        phone: ownerPhone,
       },
 
       addresses: formValues.addresses.map((addr: any, idx: number) => ({
