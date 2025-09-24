@@ -115,7 +115,15 @@ export class ViewEditProfileComponent implements OnInit {
   addAddress(): void {
     this.addressesFormArray.push(
       this.fb.group({
-        street: ["", [Validators.required, Validators.maxLength(100)]],
+        id: [null],
+        street: [
+          "",
+          [
+            Validators.required,
+            Validators.maxLength(100),
+            AbstractControlUtils.validateStreet(),
+          ],
+        ],
         zipCode: ["", Validators.required],
         city: ["", [Validators.required, Validators.maxLength(50)]],
         state: [
@@ -126,8 +134,8 @@ export class ViewEditProfileComponent implements OnInit {
             Validators.minLength(2),
           ],
         ],
-        country: ["", [Validators.required, Validators.maxLength(100)]],
-        complement: ["", Validators.maxLength(100)],
+        country: ["US", [Validators.required, Validators.maxLength(100)]],
+        complement: [null, Validators.maxLength(100)],
       })
     );
   }
@@ -145,17 +153,22 @@ export class ViewEditProfileComponent implements OnInit {
       addresses.forEach((addr) => {
         addressesArray.push(
           this.fb.group({
+            id: [addr.id ?? null],
             street: [
-              addr.street || "",
-              [Validators.required, Validators.maxLength(100)],
+              addr.street ?? null,
+              [
+                Validators.required,
+                Validators.maxLength(100),
+                AbstractControlUtils.validateStreet(),
+              ],
             ],
-            zipCode: [addr.zipCode || "", Validators.required],
+            zipCode: [addr.zipCode ?? null, Validators.required],
             city: [
-              addr.city || "",
+              addr.city ?? null,
               [Validators.required, Validators.maxLength(50)],
             ],
             state: [
-              addr.state || "",
+              addr.state ?? null,
               [
                 Validators.required,
                 Validators.maxLength(2),
@@ -163,10 +176,10 @@ export class ViewEditProfileComponent implements OnInit {
               ],
             ],
             country: [
-              addr.country || "",
+              addr.country ?? "US",
               [Validators.required, Validators.maxLength(100)],
             ],
-            complement: [addr.complement || "", Validators.maxLength(100)],
+            complement: [addr.complement ?? null, Validators.maxLength(100)],
           })
         );
       });
@@ -418,8 +431,6 @@ export class ViewEditProfileComponent implements OnInit {
     normalizedPhone: string
   ): ClientRequestDTO {
     const socialMedia = this.buildSocialMediaObject(formValues.socialMedia);
-    const addressId = this.getExistingAddressId();
-
     const ownerPhone = formValues.ownerPhone
       ? this.validateAndNormalizePhone(formValues.ownerPhone)
       : null;
@@ -444,15 +455,20 @@ export class ViewEditProfileComponent implements OnInit {
         phone: ownerPhone,
       },
 
-      addresses: formValues.addresses.map((addr: any, idx: number) => ({
-        id: idx === 0 ? addressId : undefined,
-        street: addr.street,
-        zipCode: addr.zipCode,
-        city: addr.city,
-        state: addr.state,
-        country: addr.country,
-        complement: addr.complement || "",
-      })),
+      addresses: formValues.addresses.map((addr: any) => {
+        const addressPayload: any = {
+          street: addr.street,
+          zipCode: addr.zipCode,
+          city: addr.city,
+          state: addr.state,
+          country: addr.country,
+          complement: addr.complement || "",
+        };
+        if (addr.id) {
+          addressPayload.id = addr.id;
+        }
+        return addressPayload;
+      }),
     };
 
     if (Object.keys(socialMedia).length > 0) {

@@ -235,7 +235,7 @@ export class CadastroComponent implements OnInit {
           identificationNumber: ownerData.ownerIdentificationNumber,
           firstName: ownerData.firstName,
           lastName: ownerData.lastName ?? null,
-          email: ownerData.email ?? null,
+          email: ownerData.ownerEmail ?? null,
           phone: normalizedOwnerPhone.length > 0 ? normalizedOwnerPhone : null,
         },
         addresses: [

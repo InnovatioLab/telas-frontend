@@ -2382,3 +2382,28 @@ a {
     font-size: var(--fonte-tamanho-pequeno) !important;
   }
 }
+
+.p-dialog-header {
+  background-color: var(--cor-primaria) !important;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--cor-branca);
+  }
+}
+
+.p-dialog-close-button {
+  color: var(--cor-branca) !important;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.p-dialog-title {
+  color: var(--cor-branca) !important;
+}

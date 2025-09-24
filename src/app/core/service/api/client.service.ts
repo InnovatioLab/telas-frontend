@@ -34,13 +34,6 @@ export class ClientService extends BaseHttpService<Client> {
   storageName = "telas_token";
   token = localStorage.getItem(this.storageName);
   httpBackend = new HttpClient(inject(HttpBackend));
-  private readonly autenticado = { Authorization: `Bearer ${this.token}` };
-  private readonly ignorarLoadingInterceptor = {
-    "Ignorar-Loading-Interceptor": "true",
-  };
-  private readonly ignorarErrorInterceptor = {
-    "Ignorar-Error-Interceptor": "true",
-  };
 
   cancelarEdicao$: Subject<boolean> = new Subject<boolean>();
 
@@ -92,9 +85,13 @@ export class ClientService extends BaseHttpService<Client> {
 
   validarCodigo(login: string, code: string) {
     const params = new HttpParams().set("code", code);
-    return this.http.patch(`${this.baseUrl}/validate-code/${login}`, {}, {
-      params,
-    });
+    return this.http.patch(
+      `${this.baseUrl}/validate-code/${login}`,
+      {},
+      {
+        params,
+      }
+    );
   }
 
   aceitarTermosDeCondicao() {
@@ -355,7 +352,6 @@ export class ClientService extends BaseHttpService<Client> {
     return this.http.patch(url, {});
   }
 
-  // Buscar cliente autenticado
   getAuthenticatedClient(): Observable<AuthenticatedClientResponseDto> {
     return this.http
       .get<

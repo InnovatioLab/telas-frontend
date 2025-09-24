@@ -1,4 +1,4 @@
-<app-guest-header *ngIf="shouldShowGuestHeader"></app-guest-header>
+<app-guest-header *ngIf="shouldShowGuestHeader()"></app-guest-header>
 
 <div class="terms-of-service-container">
   <div class="mx-auto py-4 px-3 lg:px-6">
@@ -46,7 +46,7 @@
             ></div>
           </ng-template>
 
-          <ng-template pTemplate="footer" *ngIf="precisaAceitarTermos()">
+          <ng-template pTemplate="footer" *ngIf="precisaAceitarTermos">
             <div
               class="bg-blue-50 border border-blue-200 rounded-lg p-2 flex flex-column align-items-center"
             >
@@ -58,7 +58,6 @@
                 pButton
                 label="Accept"
                 (click)="aceitarTermos()"
-                [disabled]="!podeAceitarTermos"
                 [loading]="aceitandoTermos"
                 class="p-button-primary w-2"
               ></button>

@@ -1,11 +1,11 @@
-import { computed, Injectable, signal } from '@angular/core';
-import { Client, Role } from '@app/model/client';
-import { JwtHelperService } from '@auth0/angular-jwt';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
-import { ClientService } from '../api/client.service';
-import { AuthenticationStorage } from './authentication-storage';
+import { computed, Injectable, signal } from "@angular/core";
+import { Client, Role } from "@app/model/client";
+import { JwtHelperService } from "@auth0/angular-jwt";
+import { BehaviorSubject, firstValueFrom } from "rxjs";
+import { ClientService } from "../api/client.service";
+import { AuthenticationStorage } from "./authentication-storage";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class Authentication extends AuthenticationStorage {
   _clientSignal = signal<Client | null>(null);
 
@@ -19,7 +19,7 @@ export class Authentication extends AuthenticationStorage {
     const helper = this._helperJwt
       ? this._helperJwt
       : new JwtHelperService({
-          tokenGetter: AuthenticationStorage.getToken()
+          tokenGetter: AuthenticationStorage.getToken(),
         });
 
     this._helperJwt = helper;
@@ -29,7 +29,9 @@ export class Authentication extends AuthenticationStorage {
   clientId: string;
 
   loggedIn = computed(() => !!this.client());
-  private readonly loggedInSubject = new BehaviorSubject<boolean>(this.isTokenValido());
+  private readonly loggedInSubject = new BehaviorSubject<boolean>(
+    this.isTokenValido()
+  );
   private readonly authStateSubject = new BehaviorSubject<void>(null);
   authState$ = this.loggedInSubject.asObservable();
 
@@ -59,7 +61,7 @@ export class Authentication extends AuthenticationStorage {
     try {
       const token: string = AuthenticationStorage.getToken();
       const tokenExpirado = this.helperJwt.isTokenExpired(token);
-      if (!token || token == 'null' || tokenExpirado) return false;
+      if (!token || token == "null" || tokenExpirado) return false;
       return true;
     } catch {
       return false;
@@ -82,12 +84,12 @@ export class Authentication extends AuthenticationStorage {
 
     const client = await firstValueFrom(login$);
     if (!client.role) {
-      console.error('Role do cliente não encontrada no retorno da API.');
+      console.error("Role do cliente não encontrada no retorno da API.");
     }
-    this._clientSignal.update(data => ({ ...data, ...client }));
+    this._clientSignal.update((data) => ({ ...data, ...client }));
     AuthenticationStorage.setDataUser(JSON.stringify(this._clientSignal()));
-    this.loggedInSubject.next(true); 
-    this.authStateSubject.next(); 
+    this.loggedInSubject.next(true);
+    this.authStateSubject.next();
 
     return client;
   }
@@ -96,12 +98,12 @@ export class Authentication extends AuthenticationStorage {
     this.removerIndicadorDeAcesso();
     this._clientSignal.update(() => null);
     AuthenticationStorage.clearToken();
-    this.loggedInSubject.next(false); 
+    this.loggedInSubject.next(false);
     this.authStateSubject.next();
   }
 
   removerIndicadorDeAcesso() {
-    localStorage.setItem('FEZ_ACESSO', 'false');
+    localStorage.setItem("FEZ_ACESSO", "false");
   }
 
   loginExpirado() {
@@ -111,7 +113,7 @@ export class Authentication extends AuthenticationStorage {
   }
 
   atualizarFavoritosStorage(lista: string[]) {
-    this._clientSignal.update(data => ({ ...data, ofertasFavoritas: lista }));
+    this._clientSignal.update((data) => ({ ...data, ofertasFavoritas: lista }));
     AuthenticationStorage.setDataUser(JSON.stringify(this._clientSignal()));
   }
 
