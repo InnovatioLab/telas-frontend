@@ -26,9 +26,9 @@ export const ROUTES: Route[] = [
         title: "Home",
       },
       {
-        path: "wish-list",
+        path: "wishlist",
         component: WishListComponent,
-        title: "Wish List",
+        title: "Wishlist",
       },
       {
         path: "my-telas",

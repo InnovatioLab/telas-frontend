@@ -60,6 +60,7 @@ export function errorInterceptor(
 
       if (configDialogo) {
         refDialog = dialogService.open(DialogoComponent, configDialogo);
+        return throwError(() => new Error(errorMessage));
       }
 
       let errorMessage = "An error occurred";
