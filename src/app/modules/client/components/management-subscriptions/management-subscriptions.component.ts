@@ -1,9 +1,8 @@
-import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
-import { FormsModule } from "@angular/forms";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { PrimengModule } from "@app/shared/primeng/primeng.module";
 
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 import {
   FilterSubscriptionRequestDto,
   SubscriptionService,
@@ -12,6 +11,7 @@ import { SubscriptionMinResponseDto } from "@app/model/dto/response/subscription
 import { Recurrence } from "@app/model/enums/recurrence.enum";
 import { SubscriptionStatus } from "@app/model/enums/subscription-status.enum";
 import { IconsModule } from "@app/shared/icons/icons.module";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
 
 @Component({
@@ -280,6 +280,27 @@ export class ManagementSubscriptionsComponent implements OnInit {
           this.toastService.erro(error);
         },
       });
+  }
+
+  initiateRenewCheckout(subscription: SubscriptionMinResponseDto): void {
+    this.loading = true;
+
+    this.subscriptionService.renew(subscription.id).subscribe({
+      next: (checkoutUrl) => {
+        this.loading = false;
+
+        if (!checkoutUrl) {
+          this.toastService.aviso("No checkout URL returned for renewal.");
+          return;
+        }
+
+        window.location.href = checkoutUrl;
+      },
+      error: (error) => {
+        this.loading = false;
+        this.toastService.erro(error);
+      },
+    });
   }
 
   hideUpgradeDialog(): void {

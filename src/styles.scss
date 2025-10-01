@@ -2130,6 +2130,10 @@ label.required::after {
         &:enabled:hover {
           background-color: rgba(40, 167, 69, 0.1) !important;
         }
+
+        &:disabled {
+          cursor: not-allowed;
+        }
       }
 
       &.p-button-danger {
@@ -2137,6 +2141,10 @@ label.required::after {
 
         &:enabled:hover {
           background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+
+        &:disabled {
+          cursor: not-allowed;
         }
       }
 
@@ -2149,6 +2157,30 @@ label.required::after {
 
         &:disabled {
           color: #ffc10779 !important;
+          cursor: not-allowed;
+        }
+      }
+
+      &.renew-button {
+        padding: 8px !important;
+        color: var(--cor-primaria) !important;
+
+        span {
+          font-size: 1rem !important;
+        }
+
+        &:enabled:hover {
+          background-color: var(--cor-cinza) !important;
+          color: var(--cor-branca) !important;
+
+          span {
+            transform: scale(1.1);
+          }
+        }
+
+        &:disabled {
+          color: rgb(60, 65, 70) !important;
+          cursor: not-allowed;
         }
       }
     }

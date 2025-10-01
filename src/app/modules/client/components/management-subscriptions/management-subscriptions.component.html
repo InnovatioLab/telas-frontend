@@ -111,12 +111,25 @@
       <td>
         <div class="action-buttons">
           <button
+            [disabled]="!subscription.ableToRenew"
+            pButton
+            pRipple
+            class="p-button-rounded p-button-text p-button-icon-only renew-button"
+            (click)="initiateRenewCheckout(subscription)"
+            pTooltip="Renew"
+            tooltipPosition="top"
+          >
+            <span class="material-symbols-outlined"> autoplay </span>
+          </button>
+
+          <button
             [disabled]="!subscription.ableToUpgrade"
             pButton
+            pRipple
             icon="pi pi-star-fill"
             class="p-button-rounded p-button-text upgrade-button"
             (click)="onUpgradeMode(subscription)"
-            pTooltip="Upgrade Subscription"
+            pTooltip="Upgrade"
             tooltipPosition="top"
           ></button>
 
@@ -127,9 +140,7 @@
             class="p-button-rounded p-button-danger p-button-text"
             (click)="cancelSubscription(subscription)"
             [disabled]="subscription.status !== 'ACTIVE'"
-            [pTooltip]="
-              subscription.status === 'ACTIVE' ? 'Cancel Subscription' : null
-            "
+            [pTooltip]="subscription.status === 'ACTIVE' ? 'Cancel' : null"
             tooltipPosition="top"
           ></button>
         </div>

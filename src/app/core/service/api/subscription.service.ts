@@ -132,6 +132,18 @@ export class SubscriptionService {
       );
   }
 
+  renew(id: string): Observable<string> {
+    return this.http
+      .patch<
+        ResponseDto<string>
+      >(`${this.apiUrl}/renew/${id}`, {}, this.headers)
+      .pipe(
+        map((response: ResponseDto<string>) => {
+          return response.data;
+        })
+      );
+  }
+
   delete(id: string): Observable<boolean> {
     return this.http
       .delete<ResponseDto<any>>(`${this.apiUrl}/${id}`, this.headers)
