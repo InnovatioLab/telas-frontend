@@ -6,6 +6,7 @@
         <label id="ld-numero" for="numeroContato" class="required">Phone</label>
         <p-inputMask
           mask="+1 999 999 9999"
+          [unmask]="true"
           formControlName="numeroContato"
           placeholder="+1 508 215 8681"
           class="w-full"

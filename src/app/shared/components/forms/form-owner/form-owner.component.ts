@@ -85,19 +85,7 @@ export class FormOwnerComponent implements OnInit {
     }
 
     if (!this.ownerForm.get("phone")) {
-      this.ownerForm.addControl(
-        "phone",
-        new FormControl("", [
-          Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
-        ])
-      );
-    } else {
-      this.ownerForm
-        .get("phone")
-        .setValidators([
-          Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
-        ]);
-      this.ownerForm.get("phone").updateValueAndValidity();
+      this.ownerForm.addControl("phone", new FormControl("", []));
     }
 
     if (!this.ownerForm.get("ownerEmail")) {

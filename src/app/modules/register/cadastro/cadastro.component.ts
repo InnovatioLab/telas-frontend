@@ -22,7 +22,6 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { MENSAGENS } from "@app/utility/src";
-import { normalizePhoneNumber } from "@app/utility/src/lib/utils/normalize-inputs.utils";
 import { MenuItem } from "primeng/api";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { FormCadastro } from "./utils/form-cadastro";
@@ -201,10 +200,7 @@ export class CadastroComponent implements OnInit {
       const contato = form.get("contato")?.value ?? {};
 
       const rawPhone = contato.numeroContato ?? "";
-      const normalizedPhone = normalizePhoneNumber(rawPhone);
-
       const rawOwnerPhone = ownerData.phone ?? "";
-      const normalizedOwnerPhone = normalizePhoneNumber(rawOwnerPhone);
 
       const socialMedia: Record<string, string> = {};
       if (
@@ -229,14 +225,14 @@ export class CadastroComponent implements OnInit {
         socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : null,
         contact: {
           email: contato.email,
-          phone: normalizedPhone,
+          phone: rawPhone,
         },
         owner: {
           identificationNumber: ownerData.ownerIdentificationNumber,
           firstName: ownerData.firstName,
           lastName: ownerData.lastName ?? null,
           email: ownerData.ownerEmail ?? null,
-          phone: normalizedOwnerPhone.length > 0 ? normalizedOwnerPhone : null,
+          phone: rawOwnerPhone.length > 0 ? rawOwnerPhone : null,
         },
         addresses: [
           {

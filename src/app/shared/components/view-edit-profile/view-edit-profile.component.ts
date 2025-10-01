@@ -80,13 +80,7 @@ export class ViewEditProfileComponent implements OnInit {
         "",
         [Validators.required, Validators.email, Validators.maxLength(255)],
       ],
-      phone: [
-        "",
-        [
-          Validators.required,
-          Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
-        ],
-      ],
+      phone: ["", [Validators.required]],
       ownerIdentificationNumber: [
         "",
         [
@@ -99,10 +93,7 @@ export class ViewEditProfileComponent implements OnInit {
       ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
       ownerLastName: ["", Validators.maxLength(150)],
       ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-      ownerPhone: [
-        "",
-        [Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)],
-      ],
+      ownerPhone: [""],
       addresses: this.fb.array([]),
       socialMedia: this.fb.array([]),
     });
@@ -410,30 +401,16 @@ export class ViewEditProfileComponent implements OnInit {
   saveProfile(): void {
     this.loading = true;
     const formValues = this.profileForm.getRawValue();
-    const normalizedPhone = this.validateAndNormalizePhone(formValues.phone);
-    console.log("normalizedPhone:", normalizedPhone);
-    const clientRequest = this.buildClientRequest(formValues, normalizedPhone);
+    const clientRequest = this.buildClientRequest(formValues);
     this.updateClient(clientRequest);
   }
 
-  private validateAndNormalizePhone(phone: string): string | null {
-    let normalizedPhone = phone?.replace(/\D/g, "") || "";
-
-    if (normalizedPhone.length > 11) {
-      normalizedPhone = normalizedPhone.slice(-11);
-    }
-
-    return normalizedPhone;
-  }
-
   private buildClientRequest(
-    formValues: any,
-    normalizedPhone: string
+    formValues: any
   ): ClientRequestDTO {
     const socialMedia = this.buildSocialMediaObject(formValues.socialMedia);
-    const ownerPhone = formValues.ownerPhone
-      ? this.validateAndNormalizePhone(formValues.ownerPhone)
-      : null;
+    const ownerPhone = formValues.ownerPhone.length > 0 ? formValues.ownerPhone : null;
+      
 
     const clientRequest: ClientRequestDTO = {
       businessName: formValues.businessName,
@@ -444,7 +421,7 @@ export class ViewEditProfileComponent implements OnInit {
 
       contact: {
         email: formValues.email,
-        phone: normalizedPhone,
+        phone: formValues.phone,
       },
 
       owner: {

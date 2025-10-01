@@ -93,6 +93,7 @@
           <label for="phone" class="required">Phone</label>
           <p-inputMask
             mask="+1 999 999 9999"
+            [unmask]="true"
             formControlName="phone"
             id="phone"
             [readonly]="!isEditMode"
@@ -163,6 +164,7 @@
           <label for="ownerPhone">Phone</label>
           <p-inputMask
             mask="+1 999 999 9999"
+            [unmask]="true"
             formControlName="ownerPhone"
             id="ownerPhone"
             [readonly]="!isEditMode"
