@@ -136,14 +136,20 @@
         optionValue="id"
         placeholder="Select monitors"
         class="w-full"
-        [showHeader]="false"
         [loading]="loadingMonitors"
         [disabled]="loadingMonitors"
         [overlayOptions]="{ appendTo: 'body' }"
+        [filter]="true"
+        [virtualScroll]="true"
+        [maxSelectedLabels]="2"
+        [displaySelectedLabel]="true"
+        filterPlaceHolder="Type address to search..."
+        emptyFilterMessage="No monitors found."
+        emptyMessage="No monitors found."
+        [resetFilterOnHide]="true"
+        filterBy="fullAddress"
+        [autofocusFilter]="true"
       >
-        <ng-template pTemplate="empty">
-          <span>No monitors found.</span>
-        </ng-template>
       </p-multiSelect>
 
       <small class="help-text" *ngIf="loadingMonitors"
@@ -230,16 +236,22 @@
         optionValue="id"
         placeholder="Select monitors"
         class="w-full"
-        [showHeader]="false"
         [loading]="loadingMonitors"
         [disabled]="loadingMonitors"
         [overlayOptions]="{ appendTo: 'body' }"
         appendTo="body"
+        [filter]="true"
+        [virtualScroll]="true"
+        [maxSelectedLabels]="2"
+        [displaySelectedLabel]="true"
+        filterPlaceHolder="Type address to search..."
+        emptyFilterMessage="No monitors found."
+        emptyMessage="No monitors found."
+        [resetFilterOnHide]="true"
+        filterBy="fullAddress"
+        [autofocusFilter]="true"
       >
       </p-multiSelect>
-      <ng-template pTemplate="empty">
-        <span>No monitors found.</span>
-      </ng-template>
       <small class="help-text" *ngIf="loadingMonitors"
         >Loading monitors...</small
       >
