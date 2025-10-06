@@ -116,13 +116,16 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    align-content: center;
     gap: var(--espacamento-padrao);
+    width: 100%;
 
     .p-input-icon-left {
       flex: 1;
       display: flex;
       align-items: center;
       position: relative;
+      width: 100%;
 
       app-icon-search {
         position: absolute;
@@ -138,10 +141,16 @@
 
     @media (max-width: 480px) {
       flex-direction: column;
+      justify-content: center;
+      align-items: center;
 
       .p-input-icon-left {
         width: 100%;
         margin-bottom: var(--espacamento-pequeno);
+
+        input {
+          width: 100% !important;
+        }
       }
     }
   }
