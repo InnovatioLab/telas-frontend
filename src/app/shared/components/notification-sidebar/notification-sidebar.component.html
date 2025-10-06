@@ -24,9 +24,12 @@
         }
       </div>
     } @else {
-      <div class="empty-state">
-        <i class="pi pi-bell" style="font-size: 2rem"></i>
-        <p>Nenhuma notificação encontrada.</p>
+      <div class="empty-state flex flex-column align-items-center justify-content-center gap-3 p-5">
+        <app-icon-notifications [size]="48"></app-icon-notifications>
+        <div class="text-center">
+          <div class="empty-title">Você não tem notificações</div>
+          <div class="empty-subtitle">Quando houver novidades, avisaremos aqui.</div>
+        </div>
       </div>
     }
   </ng-template>

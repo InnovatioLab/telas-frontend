@@ -85,3 +85,16 @@
     }
   }
 }
+
+.empty-state {
+  color: var(--text-color, #6b7280);
+  .empty-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  .empty-subtitle {
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+}

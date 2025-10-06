@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { IconsModule } from '@app/shared/icons/icons.module';
 import { NotificationsService } from '@app/core/service/api/notifications.service';
 
 import { Notification } from '@app/modules/notificacao/models/notification';
@@ -8,7 +9,7 @@ import { Notification } from '@app/modules/notificacao/models/notification';
 @Component({
   selector: 'app-notification-sidebar',
   standalone: true,
-  imports: [CommonModule, PrimengModule],
+  imports: [CommonModule, PrimengModule, IconsModule],
   templateUrl: './notification-sidebar.component.html',
   styleUrls: ['./notification-sidebar.component.scss']
 })
@@ -28,5 +29,9 @@ export class NotificationSidebarComponent {
 
   markAsRead(notification: Notification): void {
     this.notificationsService.markAsRead(notification.id);
+  }
+
+  refresh(): void {
+    this.notificationsService.fetchAllNotifications().subscribe();
   }
 }
