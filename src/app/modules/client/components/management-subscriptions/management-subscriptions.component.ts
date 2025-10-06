@@ -3,6 +3,7 @@ import { ToastService } from "@app/core/service/state/toast.service";
 
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
 import {
   FilterSubscriptionRequestDto,
   SubscriptionService,
@@ -53,11 +54,20 @@ export class ManagementSubscriptionsComponent implements OnInit {
   constructor(
     private readonly toastService: ToastService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly dialogService: ConfirmationDialogService
+    private readonly dialogService: ConfirmationDialogService,
+    private readonly route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.loadInitialData();
+    this.route.paramMap.subscribe((params) => {
+      const uuid = params.get("uuid");
+      if (uuid) {
+        this.searchTerm = uuid;
+        this.loadSubscriptions();
+      } else {
+        this.loadInitialData();
+      }
+    });
   }
 
   loadInitialData(): void {
@@ -287,14 +297,31 @@ export class ManagementSubscriptionsComponent implements OnInit {
 
     this.subscriptionService.renew(subscription.id).subscribe({
       next: (checkoutUrl) => {
-        this.loading = false;
-
         if (!checkoutUrl) {
           this.toastService.aviso("No checkout URL returned for renewal.");
           return;
         }
 
         window.location.href = checkoutUrl;
+      },
+      error: (error) => {
+        this.toastService.erro(error);
+      },
+    });
+  }
+
+  initiateCustomerPortalSession(): void {
+    this.loading = true;
+
+    this.subscriptionService.getCustomerPortalUrl().subscribe({
+      next: (portalUrl) => {
+        if (!portalUrl) {
+          this.toastService.aviso("No URL returned for customer portal.");
+          return;
+        }
+        this.loading = false;
+
+        window.location.href = portalUrl;
       },
       error: (error) => {
         this.loading = false;

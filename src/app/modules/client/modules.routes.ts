@@ -43,6 +43,12 @@ export const ROUTES: Route[] = [
         title: "Subscriptions",
       },
       {
+        path: "subscriptions/:uuid",
+        component: ManagementSubscriptionsComponent,
+        canActivate: [SubscriptionsGuard],
+        title: "Subscriptions",
+      },
+      {
         path: "privacy-policy",
         component: PrivacyPolicyComponent,
         title: "Privacy Policy",

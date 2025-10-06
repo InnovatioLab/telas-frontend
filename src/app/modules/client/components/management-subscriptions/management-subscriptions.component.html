@@ -22,6 +22,14 @@
           pTooltip="Search by Status, Recurrence or Screen Street."
         ></span>
       </span>
+      <button
+        pButton
+        pRipple
+        label="Manage Billing"
+        class="p-button-rounded p-button-text"
+        (click)="initiateCustomerPortalSession()"
+        pTooltip="Manage Billing"
+      ></button>
     </div>
   </div>
 </p-card>
@@ -149,7 +157,7 @@
   </ng-template>
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="4" class="text-center">No subscriptions found.</td>
+      <td colspan="8" class="text-center">No subscriptions found.</td>
     </tr>
   </ng-template>
 </p-table>

@@ -144,6 +144,18 @@ export class SubscriptionService {
       );
   }
 
+  getCustomerPortalUrl(): Observable<string> {
+    return this.http
+      .get<
+        ResponseDto<string>
+      >(`${this.apiUrl}/customer-portal`, this.headers)
+      .pipe(
+        map((response: ResponseDto<string>) => {
+          return response.data;
+        })
+      );
+  }
+
   delete(id: string): Observable<boolean> {
     return this.http
       .delete<ResponseDto<any>>(`${this.apiUrl}/${id}`, this.headers)
