@@ -39,7 +39,7 @@ export class FormCadastro {
         ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
         phone: [
           "",
-          [Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)],
+          [Validators.pattern(/^\+?\d[\d\s()+-]*$/)],
         ],
       }),
       enderecoCliente: this.fb.group({
@@ -69,7 +69,7 @@ export class FormCadastro {
           "",
           [
             Validators.required,
-            Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/),
+            Validators.pattern(/^\+?\d[\d\s()+-]*$/),
           ],
         ],
         email: [

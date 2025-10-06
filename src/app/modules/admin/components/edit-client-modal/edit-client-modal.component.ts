@@ -271,6 +271,7 @@ export class EditClientModalComponent implements OnInit {
           complement: addr.complement ?? null,
         })
       );
+      const normalizePhone = (value: string): string => (value || "").replace(/\D/g, "");
       const clientRequest: ClientRequestDTO = {
         businessName: formValue.businessName,
         identificationNumber: formValue.identificationNumber,
@@ -279,14 +280,14 @@ export class EditClientModalComponent implements OnInit {
         status: formValue.status,
         contact: {
           email: formValue.contactEmail,
-          phone: formValue.contactPhone,
+          phone: normalizePhone(formValue.contactPhone),
         },
         owner: {
           identificationNumber: formValue.ownerIdentificationNumber,
           firstName: formValue.ownerFirstName,
           lastName: formValue.ownerLastName ?? null,
           email: formValue.ownerEmail ?? null,
-          phone: formValue.ownerPhone ?? null,
+          phone: normalizePhone(formValue.ownerPhone) || null,
         },
         addresses: addressesDTO,
       };

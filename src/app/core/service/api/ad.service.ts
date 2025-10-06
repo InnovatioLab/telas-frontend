@@ -14,7 +14,7 @@ import { environment } from "src/environments/environment";
 export class AdService {
   private readonly baseUrl = `${environment.apiUrl}ads`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getPendingAds(
     page: number = 0,

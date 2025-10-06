@@ -1,3 +1,4 @@
+import { NotificationsService } from '@app/core/service/api/notifications.service';
 import { CommonModule } from "@angular/common";
 import {
   AfterViewInit,
@@ -28,6 +29,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { filter, Subject, Subscription, takeUntil, timer } from "rxjs";
 import { AlertCounterComponent } from "../alert-counter/alert-counter.component";
 import { CheckoutListSideBarComponent } from "../checkout-list-side-bar/checkout-list-side-bar.component";
+import { NotificationSidebarComponent } from "../notification-sidebar/notification-sidebar.component";
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
@@ -50,6 +52,7 @@ interface AdminSidebarPinChangedEvent {
     IconsModule,
     AlertCounterComponent,
     ShowInRoutesDirective,
+    NotificationSidebarComponent
   ],
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"],
@@ -74,6 +77,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   menuAberto = false;
   isDarkMode = false;
   isAdminSidebarVisible = false;
+    isNotificationsSidebarVisible = false;
 
   headerAllowedRoutes = ["/client", "/admin"];
 
@@ -106,6 +110,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   private _isSearching = false;
   private cartSubscription: Subscription;
 
+
   constructor(
     public router: Router,
     private readonly authentication: Authentication,
@@ -117,10 +122,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly toastService: ToastService,
     private readonly loadingService: LoadingService,
     private readonly zipcodeService: ZipCodeService,
-    private readonly cartService: CartService
+    private readonly cartService: CartService,
+    private readonly notificationsService: NotificationsService
   ) {}
 
   ngOnInit() {
+    this.notificationsService.fetchAllNotifications().subscribe();
     this.isLoggedIn = this.authentication.isTokenValido();
 
     this.itensNotificacao = this.notificationState._quantidadeNotificacoes;
@@ -239,8 +246,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
               `Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`
             );
             this.searchText = "";
-          } else {
-            this.toastService.aviso("No monitors found in this region");
           }
         },
         error: (error) => {
@@ -542,11 +547,14 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   abrirNotificacoes() {
-    this.notificationState.exibirSidebar();
+    this.isNotificationsSidebarVisible = true;
+  }
+
+  fecharNotificacoes() {
+    this.isNotificationsSidebarVisible = false;
   }
 
   abrirCheckout() {
-    // Verificar se há itens no carrinho antes de abrir
     if (!this.hasActiveCart) {
       this.toastService.info(
         "Your cart is empty. Add monitors to start shopping."
@@ -572,7 +580,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onInputChange() {
-    // Filtrar caracteres inválidos (manter apenas números)
     if (this.searchText) {
       const filteredText = this.searchText.replace(/[^0-9]/g, "");
       if (filteredText !== this.searchText) {
@@ -586,11 +593,9 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onKeyPress(event: KeyboardEvent): void {
-    // Permitir apenas números (0-9)
     const allowedKeys = /[0-9]/;
     const key = event.key;
 
-    // Permitir teclas de controle (backspace, delete, arrow keys, etc.)
     if (
       event.ctrlKey ||
       event.metaKey ||
@@ -606,22 +611,18 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Bloquear teclas que não são números
     if (!allowedKeys.test(key)) {
       event.preventDefault();
     }
   }
 
   onPaste(event: ClipboardEvent): void {
-    // Interceptar evento de colar
     event.preventDefault();
 
     const clipboardData = event.clipboardData?.getData("text") || "";
 
-    // Filtrar apenas números
     const filteredText = clipboardData.replace(/[^0-9]/g, "");
 
-    // Atualizar o searchText com o texto filtrado
     if (filteredText) {
       this.searchText = (this.searchText || "") + filteredText;
     }

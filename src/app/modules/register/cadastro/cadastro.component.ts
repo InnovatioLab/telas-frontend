@@ -99,14 +99,7 @@ export class CadastroComponent implements OnInit {
           firstName: ["", [Validators.required, Validators.maxLength(50)]],
           lastName: ["", [Validators.maxLength(150)]],
           ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-          phone: [
-            "",
-            [
-              Validators.pattern(
-                /^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/
-              ),
-            ],
-          ],
+          phone: ["", [Validators.pattern(/^\d{10}$/)]],
         })
       );
     }
@@ -202,6 +195,10 @@ export class CadastroComponent implements OnInit {
       const rawPhone = contato.numeroContato ?? "";
       const rawOwnerPhone = ownerData.phone ?? "";
 
+      const normalizePhone = (value: string): string => (value || "").replace(/\D/g, "");
+      const contactPhoneDigits = normalizePhone(rawPhone);
+      const ownerPhoneDigits = normalizePhone(rawOwnerPhone);
+
       const socialMedia: Record<string, string> = {};
       if (
         dadosCliente.socialMedia &&
@@ -225,14 +222,14 @@ export class CadastroComponent implements OnInit {
         socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : null,
         contact: {
           email: contato.email,
-          phone: rawPhone,
+          phone: contactPhoneDigits,
         },
         owner: {
           identificationNumber: ownerData.ownerIdentificationNumber,
           firstName: ownerData.firstName,
           lastName: ownerData.lastName ?? null,
           email: ownerData.ownerEmail ?? null,
-          phone: rawOwnerPhone.length > 0 ? rawOwnerPhone : null,
+          phone: ownerPhoneDigits.length > 0 ? ownerPhoneDigits : null,
         },
         addresses: [
           {

@@ -1,20 +1,17 @@
 export class Notification {
   id: string;
+  reference: string;
   message: string;
-  actionUrl?: string;
+  actionUrl: string;
   visualized: boolean;
+  createdAt?: Date;
 
-  constructor(dados: INotification) {
-    this.id = dados.id;
-    this.message = dados.message;
-    this.visualized = dados.visualized;
-    this.actionUrl = dados.actionUrl;
+  constructor(data?: Partial<Notification>) {
+    this.id = data?.id || '';
+    this.reference = data?.reference || '';
+    this.message = data?.message || '';
+    this.actionUrl = data?.actionUrl || '';
+    this.visualized = data?.visualized || false;
+    this.createdAt = data?.createdAt;
   }
-}
-
-export interface INotification {
-  id: string;
-  message: string;
-  visualized?: boolean;
-  actionUrl?: string;
 }

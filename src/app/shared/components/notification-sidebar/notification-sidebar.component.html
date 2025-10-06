@@ -1,0 +1,43 @@
+<p-sidebar
+  [(visible)]="visible"
+  (onHide)="closeSidebar()"
+  position="right"
+  styleClass="notification-sidebar"
+>
+  <ng-template pTemplate="header">
+    <h3 class="sidebar-title">Notificações</h3>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    @if (notificationsService.visibleNotifications().length > 0) {
+      <div class="notification-list">
+        @for (notification of notificationsService.visibleNotifications(); track notification.id) {
+          <div class="notification-item" (click)="markAsRead(notification)" [class.visualized]="notification.visualized">
+            <div class="notification-icon">
+              <i class="pi pi-info-circle"></i>
+            </div>
+            <div class="notification-content">
+              <p class="notification-title">{{ notification.reference }}</p>
+              <p class="notification-message">{{ notification.message }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <i class="pi pi-bell" style="font-size: 2rem"></i>
+        <p>Nenhuma notificação encontrada.</p>
+      </div>
+    }
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    @if (notificationsService.hasMoreToLoad()) {
+      <p-button
+        label="Carregar Mais"
+        (click)="loadMore()"
+        styleClass="p-button-secondary p-button-sm w-full">
+      </p-button>
+    }
+  </ng-template>
+</p-sidebar>

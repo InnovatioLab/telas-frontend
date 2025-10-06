@@ -116,7 +116,7 @@
               >
                 <app-icon-notifications></app-icon-notifications>
                 <span
-                  *ngIf="itensNotificacao()"
+                  *ngIf="itensNotificacao() > 0"
                   class="badge flex justify-content-center align-items-center absolute"
                 >
                   {{ itensNotificacao() }}</span
@@ -418,7 +418,7 @@
                 class="icon cursor-pointer"
               ></app-icon-notifications>
               <span
-                *ngIf="itensNotificacao()"
+                *ngIf="itensNotificacao() > 0"
                 class="badge flex justify-content-center align-items-center absolute"
               >
                 {{ itensNotificacao() }}</span
@@ -431,3 +431,9 @@
   </div>
 </header>
 <app-checkout-list-side-bar *ngIf="isLogado()"></app-checkout-list-side-bar>
+
+<app-notification-sidebar 
+  [visible]="isNotificationsSidebarVisible"
+  (visibleChange)="isNotificationsSidebarVisible = $event">
+</app-notification-sidebar>
+
