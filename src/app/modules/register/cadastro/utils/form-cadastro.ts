@@ -20,7 +20,7 @@ export class FormCadastro {
         industry: ["", [Validators.required, Validators.maxLength(50)]],
         websiteUrl: [
           "",
-          [Validators.maxLength(200), Validators.pattern(/^(https?:\/\/).+/)],
+          [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
         ],
         socialMedia: this.fb.array([]),
       }),
@@ -37,10 +37,7 @@ export class FormCadastro {
         firstName: ["", [Validators.required, Validators.maxLength(50)]],
         lastName: ["", [Validators.maxLength(150)]],
         ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-        phone: [
-          "",
-          [Validators.pattern(/^\+?\d[\d\s()+-]*$/)],
-        ],
+        phone: ["", [AbstractControlUtils.validatePhone()]],
       }),
       enderecoCliente: this.fb.group({
         zipCode: ["", [Validators.required, Validators.pattern(/^\d{5}$/)]],
@@ -67,10 +64,7 @@ export class FormCadastro {
       contato: this.fb.group({
         numeroContato: [
           "",
-          [
-            Validators.required,
-            Validators.pattern(/^\+?\d[\d\s()+-]*$/),
-          ],
+          [Validators.required, AbstractControlUtils.validatePhone()],
         ],
         email: [
           "",

@@ -19,11 +19,12 @@ import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { AttachmentResponseDto } from "@app/model/dto/response/attachment-response.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { ErrorComponent } from "@app/shared/components";
-import { AdItemComponent } from "../ad-item/ad-item.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
+import { AdItemComponent } from "../ad-item/ad-item.component";
 
 @Component({
   selector: "app-my-telas",
@@ -99,23 +100,23 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly cdr: ChangeDetectorRef
   ) {
     this.requestAdForm = this.fb.group({
-      message: ["", [Validators.required]],
+      message: ["", [Validators.required, Validators.maxLength(255)]],
       phone: [
         "",
-        [Validators.pattern(/^\+[0-9]{1,3}\s[0-9]{3}\s[0-9]{3}\s[0-9]{4}$/)],
+        [AbstractControlUtils.validatePhone()],
       ],
-      email: ["", [Validators.email]],
+      email: ["", [Validators.email, Validators.maxLength(255)]],
     });
 
     this.validateAdForm = this.fb.group({
       validation: ["", [Validators.required]],
-      justification: [""],
-      description: [""],
+      justification: ["", [Validators.maxLength(100)]],
+      description: ["", [Validators.maxLength(255)]],
     });
 
     this.uploadAdForm = this.fb.group({
       name: ["", [Validators.required, Validators.maxLength(255)]],
-      type: ["", [Validators.required]],
+      type: ["", [Validators.required, Validators.maxLength(15)]],
       adFile: [null, [Validators.required]],
     });
   }

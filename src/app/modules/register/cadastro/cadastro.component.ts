@@ -84,10 +84,19 @@ export class CadastroComponent implements OnInit {
       this.formCadastro.cadastroForm.addControl(
         "dadosCliente",
         this.fb.group({
-          businessName: [""],
-          identificationNumber: [""],
-          industry: [""],
-          websiteUrl: [""],
+          businessName: ["", [Validators.required, Validators.maxLength(255)]],
+          identificationNumber: [
+            "",
+            Validators.required,
+            Validators.minLength(9),
+            Validators.maxLength(9),
+            Validators.pattern(/^\d{9}$/),
+          ],
+          industry: ["", [Validators.required, Validators.maxLength(50)]],
+          websiteUrl: [
+            "",
+            [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
+          ],
           socialMedia: this.fb.array([]),
         })
       );
@@ -99,7 +108,7 @@ export class CadastroComponent implements OnInit {
           firstName: ["", [Validators.required, Validators.maxLength(50)]],
           lastName: ["", [Validators.maxLength(150)]],
           ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-          phone: ["", [Validators.pattern(/^\d{10}$/)]],
+          phone: ["", [AbstractControlUtils.validatePhone()]],
         })
       );
     }
@@ -107,7 +116,7 @@ export class CadastroComponent implements OnInit {
       this.formCadastro.cadastroForm.addControl(
         "enderecoCliente",
         this.fb.group({
-          zipCode: ["", [Validators.required]],
+          zipCode: ["", [Validators.required, Validators.pattern(/^\d{5}$/)]],
           street: [
             "",
             [
@@ -125,7 +134,7 @@ export class CadastroComponent implements OnInit {
               Validators.minLength(2),
             ],
           ],
-          country: ["", [Validators.required, Validators.maxLength(100)]],
+          country: ["US", [Validators.maxLength(100)]],
           complement: ["", Validators.maxLength(100)],
         })
       );
@@ -134,8 +143,14 @@ export class CadastroComponent implements OnInit {
       this.formCadastro.cadastroForm.addControl(
         "contato",
         this.fb.group({
-          numeroContato: [""],
-          email: [""],
+          numeroContato: [
+            "",
+            [Validators.required, AbstractControlUtils.validatePhone()],
+          ],
+          email: [
+            "",
+            [Validators.required, Validators.email, Validators.maxLength(255)],
+          ],
         })
       );
     }
@@ -195,10 +210,6 @@ export class CadastroComponent implements OnInit {
       const rawPhone = contato.numeroContato ?? "";
       const rawOwnerPhone = ownerData.phone ?? "";
 
-      const normalizePhone = (value: string): string => (value || "").replace(/\D/g, "");
-      const contactPhoneDigits = normalizePhone(rawPhone);
-      const ownerPhoneDigits = normalizePhone(rawOwnerPhone);
-
       const socialMedia: Record<string, string> = {};
       if (
         dadosCliente.socialMedia &&
@@ -222,14 +233,14 @@ export class CadastroComponent implements OnInit {
         socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : null,
         contact: {
           email: contato.email,
-          phone: contactPhoneDigits,
+          phone: rawPhone,
         },
         owner: {
           identificationNumber: ownerData.ownerIdentificationNumber,
           firstName: ownerData.firstName,
           lastName: ownerData.lastName ?? null,
           email: ownerData.ownerEmail ?? null,
-          phone: ownerPhoneDigits.length > 0 ? ownerPhoneDigits : null,
+          phone: rawOwnerPhone.length > 0 ? rawOwnerPhone : null,
         },
         addresses: [
           {
@@ -257,6 +268,7 @@ export class CadastroComponent implements OnInit {
         },
       });
     } else {
+      console.log("Form is invalid, invalid fields:", form.errors);
       this.markFormGroupTouched(form);
     }
   }

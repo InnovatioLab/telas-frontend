@@ -1,13 +1,15 @@
 <div class="text-danger mt-1" *ngIf="control && control.errors && (control.dirty || control.touched)">
   <small  *ngIf="control.errors.required"><small>Required field not filled!</small></small>
   <small  *ngIf="control.errors.email"><small>Invalid email format</small></small>
-  <small  *ngIf="control.errors.minlength"><small>{{'The field must have at least ' + control.errors.minlength.requiredLength}} characters</small></small>
+    <small  *ngIf="control.errors.min && !control.errors.required"><small>{{'The field must have at least ' + control.errors.min.requiredLength}} characters</small></small>
+  <small  *ngIf="control.errors.minlength && !control.errors.required"><small>{{'The field must have at least ' + control.errors.minlength.requiredLength}} characters</small></small>
   <small  *ngIf="control.errors.maxlength"><small>{{'The field must have at most ' + control.errors.maxlength.requiredLength}} characters</small></small>
+  <small  *ngIf="control.errors.max"><small>{{'The field must have at most ' + control.errors.max.requiredLength}} characters</small></small>
   <small  *ngIf="control.errors.cpfInvalido"><small>{{control.errors.cpfInvalido}}</small></small>
   <small  *ngIf="control.errors.minDate"><small>{{control.errors.minDate.message}}</small></small>
   <small  *ngIf="control.errors.maxDate"><small>{{control.errors.maxDate.message}}</small></small>
   <small  *ngIf="control.errors.lessThanEqualTo"><small>{{control.errors.lessThanEqualTo.message}}</small></small>
   <small  *ngIf="control.errors.invalidStreet && !control.errors.required"><small>Invalid street format</small></small>
+  <small  *ngIf="control.errors.invalidPhone && (control.value.length === 10 || control.value.length === 11)"><small>Invalid phone format, valid phone should be in the format +1 999 999 9999</small></small>
+   <small  *ngIf="control.errors.invalidUrl"><small>Invalid URL format</small></small>
 </div>
-
-

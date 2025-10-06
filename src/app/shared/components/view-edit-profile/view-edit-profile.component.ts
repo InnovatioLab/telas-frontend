@@ -64,23 +64,16 @@ export class ViewEditProfileComponent implements OnInit {
           Validators.pattern("^[0-9]{9}$"),
         ],
       ],
-      industry: [
-        "",
-        [
-          Validators.maxLength(50),
-          Validators.pattern("^[a-zA-ZÀ-ÖØ-öø-ÿ\\s]*$"),
-          Validators.required,
-        ],
-      ],
+      industry: ["", [Validators.required, Validators.maxLength(50)]],
       websiteUrl: [
         "",
-        [Validators.maxLength(200), Validators.pattern("https?://.+")],
+        [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
       ],
       email: [
         "",
         [Validators.required, Validators.email, Validators.maxLength(255)],
       ],
-      phone: ["", [Validators.required]],
+      phone: ["", [Validators.required, AbstractControlUtils.validatePhone()]],
       ownerIdentificationNumber: [
         "",
         [
@@ -93,7 +86,7 @@ export class ViewEditProfileComponent implements OnInit {
       ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
       ownerLastName: ["", Validators.maxLength(150)],
       ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-      ownerPhone: [""],
+      ownerPhone: ["", [AbstractControlUtils.validatePhone()]],
       addresses: this.fb.array([]),
       socialMedia: this.fb.array([]),
     });
@@ -125,8 +118,8 @@ export class ViewEditProfileComponent implements OnInit {
             Validators.minLength(2),
           ],
         ],
-        country: ["US", [Validators.required, Validators.maxLength(100)]],
-        complement: [null, Validators.maxLength(100)],
+        country: ["US", Validators.maxLength(100)],
+        complement: ["", Validators.maxLength(100)],
       })
     );
   }
@@ -166,10 +159,7 @@ export class ViewEditProfileComponent implements OnInit {
                 Validators.minLength(2),
               ],
             ],
-            country: [
-              addr.country ?? "US",
-              [Validators.required, Validators.maxLength(100)],
-            ],
+            country: [addr.country ?? "US", Validators.maxLength(100)],
             complement: [addr.complement ?? null, Validators.maxLength(100)],
           })
         );
@@ -186,15 +176,13 @@ export class ViewEditProfileComponent implements OnInit {
   addSocialMedia(): void {
     this.socialMediaArray.push(
       this.fb.group({
-        platform: [null, Validators.required],
+        platform: ["", Validators.required],
         url: [
-          null,
+          "",
           [
             Validators.required,
-            Validators.maxLength(200),
-            Validators.pattern(
-              /^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/
-            ),
+            Validators.maxLength(255),
+            AbstractControlUtils.validateUrl(),
           ],
         ],
       })
@@ -348,10 +336,8 @@ export class ViewEditProfileComponent implements OnInit {
         url,
         [
           Validators.required,
-          Validators.maxLength(200),
-          Validators.pattern(
-            /^(https?:\/\/)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)?(\/\S*)?$/
-          ),
+          Validators.maxLength(255),
+          AbstractControlUtils.validateUrl(),
         ],
       ],
     });
@@ -405,12 +391,10 @@ export class ViewEditProfileComponent implements OnInit {
     this.updateClient(clientRequest);
   }
 
-  private buildClientRequest(
-    formValues: any
-  ): ClientRequestDTO {
+  private buildClientRequest(formValues: any): ClientRequestDTO {
     const socialMedia = this.buildSocialMediaObject(formValues.socialMedia);
-    const ownerPhone = formValues.ownerPhone.length > 0 ? formValues.ownerPhone : null;
-      
+    const ownerPhone =
+      formValues.ownerPhone.length > 0 ? formValues.ownerPhone : null;
 
     const clientRequest: ClientRequestDTO = {
       businessName: formValues.businessName,
@@ -418,7 +402,7 @@ export class ViewEditProfileComponent implements OnInit {
       industry: formValues.industry,
       websiteUrl: formValues.websiteUrl || "",
       status: this.clientData?.status,
-
+      socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : null,
       contact: {
         email: formValues.email,
         phone: formValues.phone,
@@ -448,10 +432,6 @@ export class ViewEditProfileComponent implements OnInit {
       }),
     };
 
-    if (Object.keys(socialMedia).length > 0) {
-      clientRequest.socialMedia = socialMedia;
-    }
-
     return clientRequest;
   }
 
@@ -473,12 +453,6 @@ export class ViewEditProfileComponent implements OnInit {
     }
 
     return socialMedia;
-  }
-
-  private getExistingAddressId(): string | undefined {
-    return this.clientData?.addresses && this.clientData.addresses.length > 0
-      ? this.clientData.addresses[0].id
-      : undefined;
   }
 
   private updateClient(clientRequest: ClientRequestDTO): void {

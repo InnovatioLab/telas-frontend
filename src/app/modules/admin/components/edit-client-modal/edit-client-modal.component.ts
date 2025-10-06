@@ -102,17 +102,10 @@ export class EditClientModalComponent implements OnInit {
           Validators.pattern("^[0-9]{9}$"),
         ],
       ],
-      industry: [
-        "",
-        [
-          Validators.maxLength(50),
-          Validators.pattern("^[a-zA-ZÀ-ÖØ-öø-ÿ\\s]*$"),
-          Validators.required,
-        ],
-      ],
+      industry: ["", [Validators.required, Validators.maxLength(50)]],
       websiteUrl: [
         "",
-        [Validators.maxLength(200), Validators.pattern("https?://.+")],
+        [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
       ],
       status: [DefaultStatus.ACTIVE],
       ownerIdentificationNumber: [
@@ -127,12 +120,15 @@ export class EditClientModalComponent implements OnInit {
       ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
       ownerLastName: ["", [Validators.maxLength(150)]],
       ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-      ownerPhone: [""],
+      ownerPhone: ["", [AbstractControlUtils.validatePhone()]],
       contactEmail: [
         "",
         [Validators.required, Validators.email, Validators.maxLength(255)],
       ],
-      contactPhone: ["", [Validators.required]],
+      contactPhone: [
+        "",
+        [Validators.required, AbstractControlUtils.validatePhone()],
+      ],
       addresses: this.fb.array([]),
     });
   }
@@ -174,7 +170,7 @@ export class EditClientModalComponent implements OnInit {
             id: [addr.id],
             street: [
               addr.street,
-              [Validators.required, Validators.maxLength(100)],
+              [Validators.required, Validators.maxLength(100), AbstractControlUtils.validateStreet()],
             ],
             zipCode: [addr.zipCode, Validators.required],
             city: [addr.city, [Validators.required, Validators.maxLength(50)]],
@@ -187,7 +183,7 @@ export class EditClientModalComponent implements OnInit {
               ],
             ],
             country: [
-              addr.country,
+              addr.country ?? "US",
               [Validators.required, Validators.maxLength(100)],
             ],
             complement: [addr.complement ?? null, Validators.maxLength(100)],
@@ -224,7 +220,7 @@ export class EditClientModalComponent implements OnInit {
             Validators.minLength(2),
           ],
         ],
-        country: ["US", [Validators.required, Validators.maxLength(100)]],
+        country: ["US", Validators.maxLength(100)],
         complement: ["", Validators.maxLength(100)],
       })
     );
@@ -271,7 +267,8 @@ export class EditClientModalComponent implements OnInit {
           complement: addr.complement ?? null,
         })
       );
-      const normalizePhone = (value: string): string => (value || "").replace(/\D/g, "");
+      const normalizePhone = (value: string): string =>
+        (value || "").replace(/\D/g, "");
       const clientRequest: ClientRequestDTO = {
         businessName: formValue.businessName,
         identificationNumber: formValue.identificationNumber,

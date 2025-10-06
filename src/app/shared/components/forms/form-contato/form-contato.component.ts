@@ -38,12 +38,18 @@ export class FormContatoComponent implements OnInit {
     if (!this.contatoForm.get("numeroContato")) {
       this.contatoForm.addControl(
         "numeroContato",
-        new FormControl("", [Validators.required])
+        new FormControl("", [
+          Validators.required,
+          AbstractControlUtils.validatePhone(),
+        ])
       );
     } else {
       this.contatoForm
         .get("numeroContato")
-        .setValidators([Validators.required]);
+        .setValidators([
+          Validators.required,
+          AbstractControlUtils.validatePhone(),
+        ]);
       this.contatoForm.get("numeroContato").updateValueAndValidity();
     }
     if (!this.contatoForm.get("email")) {
@@ -52,9 +58,7 @@ export class FormContatoComponent implements OnInit {
         new FormControl("", [
           Validators.required,
           Validators.email,
-          Validators.pattern(
-            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-          ),
+          Validators.maxLength(255),
         ])
       );
     } else {
@@ -63,9 +67,7 @@ export class FormContatoComponent implements OnInit {
         .setValidators([
           Validators.required,
           Validators.email,
-          Validators.pattern(
-            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-          ),
+          Validators.maxLength(255),
         ]);
       this.contatoForm.get("email").updateValueAndValidity();
     }
@@ -88,19 +90,6 @@ export class FormContatoComponent implements OnInit {
 
   mostrarErro(form: FormGroup, campo: string): boolean {
     return form.get(campo)?.invalid && form.get(campo)?.touched;
-  }
-
-  private numeroValido(numero: string): boolean {
-    const numeroLimpo = this.normalizarContato(numero);
-    return (
-      numeroLimpo.length >= 10 &&
-      numeroLimpo.length <= 15 &&
-      /^[0-9]+$/.test(numeroLimpo)
-    );
-  }
-
-  private normalizarContato(numero: string): string {
-    return numero.replace(/[^0-9+]/g, "");
   }
 
   mensagemAlertaLimparCampo(mensagem: string, campo: string) {

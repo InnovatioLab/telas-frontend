@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
 
   iniciarFormulario(): void {
     this.form = this.formBuilder.group({
-      login: ["", [Validators.required, Validators.pattern(/^\d{1,9}$/)]],
+      login: ["", [Validators.required]],
       senha: [
         "",
         [
