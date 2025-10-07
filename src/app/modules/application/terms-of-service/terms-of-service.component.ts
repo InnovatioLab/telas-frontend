@@ -32,7 +32,7 @@ export class TermsOfServiceComponent implements OnInit {
   loading = true;
   error = false;
   aceitandoTermos = false;
-  precisaAceitarTermos = true;
+  precisaAceitarTermos = false;
 
   constructor(
     private readonly termoCondicaoService: TermoCondicaoService,
@@ -46,6 +46,7 @@ export class TermsOfServiceComponent implements OnInit {
   ngOnInit(): void {
     this.carregarTermoCondicao();
     this.client = this.autenticacaoService.loggedClient;
+    this.precisaAceitarTermos = this.client ? !this.client.termAccepted : false;
   }
 
   carregarTermoCondicao(): void {

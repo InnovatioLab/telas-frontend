@@ -1,5 +1,5 @@
 .rodape-container {
-  background-color: var(--cor-primaria);
+  background-color: #0C0E0F;
   width: 100%;
 
   span,
@@ -12,6 +12,11 @@
   a {
     color: var(--cor-branca);
   }
+}
+
+.header-logo {
+  width: 200px !important;
+  margin-bottom: 1rem;
 }
 
 .text-primary-light {

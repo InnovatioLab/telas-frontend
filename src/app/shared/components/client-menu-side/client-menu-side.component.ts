@@ -228,9 +228,6 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   selecionarOpcao(item: MenuItem): void {
     switch (item.id) {
-      case "payments":
-        this.abrirModalPagamento();
-        break;
       case "home":
         this.navegarPaginaInicial();
         break;
@@ -258,48 +255,31 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarParaWishList(): void {
-    if (this.isLogado()) {
-      this.router.navigate(["client/wish-list"]);
-      if (this.isMenuOpen()) {
-        this.toggleMenu();
-      }
-    } else {
-      this.router.navigate(["/login"]);
+    this.router.navigate(["/client/wishlist"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
     }
   }
 
   navegarParaMyTelas(): void {
-    if (this.isLogado()) {
-      this.router.navigate(["/client/my-telas"]);
-      if (this.isMenuOpen()) {
-        this.toggleMenu();
-      }
-    } else {
-      this.router.navigate(["/login"]);
+    this.router.navigate(["/client/my-telas"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
     }
   }
 
   navegarParaSubscriptions(): void {
-    if (this.isLogado()) {
-      this.router.navigate(["/client/subscriptions"]);
-      if (this.isMenuOpen()) {
-        this.toggleMenu();
-      }
-    } else {
-      this.router.navigate(["/login"]);
+    this.router.navigate(["/client/subscriptions"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
     }
   }
 
   navegarParaMyTelasAds(): void {
-    if (this.isLogado()) {
-      this.router.navigate(["/client/my-telas"], {
-        queryParams: { ads: "true" },
-      });
-      if (this.isMenuOpen()) {
-        this.toggleMenu();
-      }
-    } else {
-      this.router.navigate(["/login"]);
+    this.router.navigate(["/client/my-telas"]);
+
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
     }
   }
 
@@ -328,31 +308,8 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     window.location.href = "/";
   }
 
-  abrirModalPagamento(): void {
-    if (!this.isLogado()) {
-      this.router.navigate(["/login"]);
-      return;
-    }
-    this.showPaymentModal = true;
-  }
-
-  isLogado(): boolean {
-    const token = localStorage.getItem("telas_token");
-    const userData = localStorage.getItem("telas_token_user");
-
-    return !!token && !!userData;
-  }
-
   navegarPaginaInicial(): void {
-    if (this.isLogado()) {
-      if (this.isAdministrador()) {
-        this.router.navigate(["/administrator"]);
-      } else {
-        this.router.navigate(["/client"]);
-      }
-    } else {
-      this.router.navigate(["/"]);
-    }
+    this.router.navigate(["/client"]);
 
     if (this.isMenuOpen()) {
       this.toggleMenu();
@@ -364,24 +321,16 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarParaPerfil(): void {
-    if (this.isLogado()) {
-      this.router.navigate(["/client/profile"]);
-      if (this.isMenuOpen()) {
-        this.toggleMenu();
-      }
-    } else {
-      this.router.navigate(["/login"]);
+    this.router.navigate(["/client/profile"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
     }
   }
 
   navegarParaAlterarSenha(): void {
-    if (this.isLogado()) {
-      this.router.navigate(["/client/change-password"]);
-      if (this.isMenuOpen()) {
-        this.toggleMenu();
-      }
-    } else {
-      this.router.navigate(["/login"]);
+    this.router.navigate(["/client/change-password"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
     }
   }
 

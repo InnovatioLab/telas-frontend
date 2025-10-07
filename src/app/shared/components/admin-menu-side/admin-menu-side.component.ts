@@ -62,7 +62,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   refDialogo: DynamicDialogRef | undefined;
   isDarkMode = false;
 
-  // Layout state
   isMenuOpen = this.layoutService.isMenuOpen;
   isMobile = this.layoutService.isMobile;
   isMobileCompact = this.layoutService.isMobileCompact;
@@ -104,19 +103,16 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   private setupSubscriptions(): void {
-    // Subscription para o sidebar service (usado pelo header)
     this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(
       () => {
         const isVisible = this.sidebarService.visibilidade();
         const tipo = this.sidebarService.tipo();
 
         if (isVisible && tipo === "admin-menu") {
-          // Só atualiza o layoutService se ainda não estiver aberto
           if (!this.layoutService.isMenuOpen()) {
             this.layoutService.openMenu("admin");
           }
         } else if (!isVisible) {
-          // Só fecha o layoutService se ainda estiver aberto
           if (this.layoutService.isMenuOpen()) {
             this.layoutService.closeMenu();
           }
@@ -124,7 +120,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       }
     );
 
-    // Subscription para o layout service
     this.layoutSubscription = this.layoutService.layoutChange$.subscribe(
       (state) => {
         this.updateBodyClasses(state);
@@ -153,11 +148,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     const isCurrentlyOpen = this.isMenuOpen();
 
     if (isCurrentlyOpen) {
-      // Fechando o menu - sincronizar ambos os serviços
       this.layoutService.closeMenu();
       this.sidebarService.fechar();
     } else {
-      // Abrindo o menu - sincronizar ambos os serviços
       this.layoutService.openMenu("admin");
       this.sidebarService.abrirMenu("admin-menu");
     }
