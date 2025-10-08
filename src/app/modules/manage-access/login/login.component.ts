@@ -46,6 +46,13 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.iniciarFormulario();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    Object.values(this.form.controls).forEach((control) => {
+      control.markAsPristine();
+      control.markAsUntouched();
+      control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+    });
   }
 
   onlyNumbersInput(event: Event): void {
