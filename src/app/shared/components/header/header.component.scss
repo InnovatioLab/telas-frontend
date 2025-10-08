@@ -66,7 +66,7 @@
 .search-container-desktop,
 .search-container {
   width: 100%;
-  max-width: 250px;
+  max-width: 350px;
   transition: margin-left 0.3s ease;
 }
 
@@ -83,7 +83,7 @@ header {
 /* Busca por endereço */
 .address-search-container {
   width: 100%;
-  max-width: 300px;
+  max-width: 560px;
 
   .address-search-input {
     position: relative;
@@ -266,7 +266,7 @@ header {
 
   .search-container {
     width: 100%;
-    max-width: 250px;
+    max-width: 560px;
   }
 
   .box-actions {
@@ -642,7 +642,7 @@ textarea::placeholder,
   .search-container-desktop,
   .search-container {
     width: 100%;
-    max-width: 220px;
+    max-width: 320px;
     display: flex !important;
     align-items: center;
     justify-content: center;
