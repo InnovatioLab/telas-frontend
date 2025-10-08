@@ -11,7 +11,7 @@ import { RouterModule } from "@angular/router";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { MapsComponent } from "@app/shared/components/maps/maps.component";
+import { MapsLeafletComponent } from "@app/shared/components/maps/maps-leaflet.component";
 import { PopUpStepAddListComponent } from "@app/shared/components/pop-up-add-list/pop-up-add-list.component";
 import { SidebarMapaComponent } from "@app/shared/components/sidebar-mapa/sidebar-mapa.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -23,7 +23,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
     CommonModule,
     RouterModule,
     PrimengModule,
-    MapsComponent,
+    MapsLeafletComponent,
     SidebarMapaComponent,
     PopUpStepAddListComponent,
   ],
@@ -31,13 +31,14 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
   styleUrls: ["./client-view.component.scss"],
 })
 export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MapsComponent) mapsComponent!: MapsComponent;
+  @ViewChild(MapsLeafletComponent) mapsComponent!: MapsLeafletComponent;
 
   showPointMenu = false;
   menuPosition = { x: 0, y: 0 };
   selectedPoint: MapPoint | null = null;
   savedPoints: MapPoint[] = [];
   isLoading = false;
+  currentCenter: { lat: number; lng: number } | null = { lat: 0, lng: 0 };
 
   constructor(
     public readonly mapsService: GoogleMapsService,
@@ -56,6 +57,17 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.mapsComponent.setMapPoints(monitors);
       }
     }) as EventListener);
+
+    // Initialize center from stored coordinates if available
+    const saved = localStorage.getItem("user_coordinates");
+    if (saved) {
+      try {
+        const coords = JSON.parse(saved);
+        if (coords?.latitude != null && coords?.longitude != null) {
+          this.currentCenter = { lat: coords.latitude, lng: coords.longitude };
+        }
+      } catch {}
+    }
   }
 
   ngAfterViewInit(): void {
@@ -66,10 +78,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {}
 
-  onMapInitialized(): void {
-    this.isLoading = false;
-    this.cdr.detectChanges();
-  }
+  onMapInitialized(): void {}
 
   onMapReady(): void {
     this.isLoading = false;

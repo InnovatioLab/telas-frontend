@@ -17,7 +17,7 @@ export interface GeocodingResult {
   longitude: number;
   formattedAddress: string;
   placeId: string;
-  addressComponents: google.maps.GeocoderAddressComponent[];
+  addressComponents: any[];
 }
 
 export interface PlaceDetails {
@@ -29,7 +29,7 @@ export interface PlaceDetails {
   businessStatus?: string;
   rating?: number;
   userRatingsTotal?: number;
-  photos?: google.maps.places.PlacePhoto[];
+  photos?: any[];
   website?: string;
   phoneNumber?: string;
 }
@@ -196,33 +196,19 @@ export class GoogleMapsService {
     return this.nearestMonitorsSubject.asObservable();
   }
 
-  public convertToMarkerPositions(
-    points: MapPoint[]
-  ): google.maps.LatLngLiteral[] {
-    return points.map((point) => ({
-      lat: point.latitude,
-      lng: point.longitude,
-    }));
+  public convertToMarkerPositions(points: MapPoint[]): any[] {
+    return points.map((point) => ({ lat: point.latitude, lng: point.longitude }));
   }
 
-  public createMarkerOptions(
-    point: MapPoint
-  ): google.maps.marker.AdvancedMarkerElementOptions {
-    const options: google.maps.marker.AdvancedMarkerElementOptions = {
-      gmpDraggable: false,
-      title: point.title || "",
-    };
-
-    if (point.icon) {
-      (options as any).glyph = point.icon;
-    }
-
+  public createMarkerOptions(point: MapPoint): any {
+    const options: any = { title: point.title || "" };
+    if (point.icon) options.glyph = point.icon;
     return options;
   }
 
-  public createRedMarkerIcon(): google.maps.Symbol {
+  public createRedMarkerIcon(): any {
     return {
-      path: google.maps.SymbolPath.CIRCLE,
+      path: "CIRCLE",
       fillColor: "#FF0000",
       fillOpacity: 1,
       strokeWeight: 1,
@@ -231,9 +217,9 @@ export class GoogleMapsService {
     };
   }
 
-  public createSearchMarkerIcon(): google.maps.Symbol {
+  public createSearchMarkerIcon(): any {
     return {
-      path: google.maps.SymbolPath.CIRCLE,
+      path: "CIRCLE",
       fillColor: "#4285F4",
       fillOpacity: 1,
       strokeWeight: 2,
@@ -242,7 +228,7 @@ export class GoogleMapsService {
     };
   }
 
-  public createMonitorIcon(): google.maps.Symbol {
+  public createMonitorIcon(): any {
     return {
       path: "M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z",
       fillColor: "#232F3E",
@@ -433,14 +419,10 @@ export class GoogleMapsService {
     const geocoder = new google.maps.Geocoder();
 
     try {
-      const result = await new Promise<google.maps.GeocoderResult | null>(
+      const result = await new Promise<any | null>(
         (resolve, reject) => {
-          geocoder.geocode({ address: address.trim() }, (results, status) => {
-            if (
-              status === google.maps.GeocoderStatus.OK &&
-              results &&
-              results.length > 0
-            ) {
+          geocoder.geocode({ address: address.trim() }, (results: any, status: any) => {
+            if (status === google.maps.GeocoderStatus.OK && results && results.length > 0) {
               resolve(results[0]);
             } else {
               resolve(null);
@@ -683,7 +665,7 @@ export class GoogleMapsService {
     return new Promise((resolve, reject) => {
       const geocoder = new google.maps.Geocoder();
 
-      geocoder.geocode({ address: addressToGeocode }, (results, status) => {
+      geocoder.geocode({ address: addressToGeocode }, (results: any, status: any) => {
         if (
           status === google.maps.GeocoderStatus.OK &&
           results &&
@@ -739,7 +721,7 @@ export class GoogleMapsService {
       const latlng = { lat: latitude, lng: longitude };
 
       return new Promise((resolve, reject) => {
-        geocoder.geocode({ location: latlng }, (results, status) => {
+        geocoder.geocode({ location: latlng }, (results: any, status: any) => {
           if (
             status === google.maps.GeocoderStatus.OK &&
             results &&

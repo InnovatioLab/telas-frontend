@@ -11,19 +11,19 @@ import { Subscription } from "rxjs";
 import { GoogleMapsService } from "../../../../core/service/api/google-maps.service";
 import { LoadingService } from "../../../../core/service/state/loading.service";
 import { MapPoint } from "../../../../core/service/state/map-point.interface";
-import { MapsComponent } from "../../../../shared/components/maps/maps.component";
+import { MapsLeafletComponent } from "../../../../shared/components/maps/maps-leaflet.component";
 import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa/sidebar-mapa.component";
 
 @Component({
   selector: "app-admin-view",
   standalone: true,
-  imports: [CommonModule, FormsModule, MapsComponent, SidebarMapaComponent],
+  imports: [CommonModule, FormsModule, MapsLeafletComponent, SidebarMapaComponent],
   template: `
     <app-sidebar-mapa></app-sidebar-mapa>
 
     <div class="admin-view">
       <div class="map-container">
-        <app-maps
+        <app-maps-leaflet
           #mapsComponent
           [points]="monitors"
           [center]="mapCenter"
@@ -31,9 +31,8 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
           width="100%"
           [zoom]="15"
           (markerClicked)="onMarkerClick($event)"
-          (mapInitialized)="onMapInitialized($event)"
         >
-        </app-maps>
+        </app-maps-leaflet>
       </div>
 
       <div class="monitors-list" *ngIf="monitors.length > 0">
@@ -118,11 +117,11 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
   ],
 })
 export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild("mapsComponent") mapsComponent!: MapsComponent;
+  @ViewChild("mapsComponent") mapsComponent!: MapsLeafletComponent;
 
   monitors: MapPoint[] = [];
   mapCenter: { lat: number; lng: number } | null = null;
-  private map: google.maps.Map | null = null;
+  private map: any | null = null;
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
@@ -148,12 +147,6 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   private ensureMapInitialized(): void {
     if (this.mapsComponent) {
       this.mapsComponent.ensureMapInitialized();
-
-      setTimeout(() => {
-        if (!this.mapsComponent.isMapReady()) {
-          this.mapsComponent.forceReinitialize();
-        }
-      }, 2000);
     }
   }
 
@@ -190,9 +183,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  onMapInitialized(map: google.maps.Map): void {
-    this.map = map;
-  }
+  onMapInitialized(): void {}
 
   onMarkerClick(point: MapPoint): void {
     this.googleMapsService.selectPoint(point);
@@ -210,9 +201,5 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.onMarkerClick(monitor);
   }
 
-  private checkMapInitialization(): void {
-    if (!this.mapsComponent?.isMapReady()) {
-      this.mapsComponent?.forceReinitialize();
-    }
-  }
+  private checkMapInitialization(): void {}
 }

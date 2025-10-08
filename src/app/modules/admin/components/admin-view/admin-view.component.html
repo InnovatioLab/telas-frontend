@@ -5,13 +5,13 @@
 </app-alert-admin-sidebar>
 
 <div class="map-container">
-  <app-maps 
+  <app-maps-leaflet 
     [zoom]="15" 
     height="600px" 
     width="100%" 
     (pointClick)="handlePointClick($event)"
     (markerClicked)="handleMarkerClick($event)">
-  </app-maps>
+  </app-maps-leaflet>
 </div>
 
 <app-pop-up-add-list 

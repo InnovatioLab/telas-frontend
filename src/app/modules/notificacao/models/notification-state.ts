@@ -65,9 +65,10 @@ export class NotificationState {
   listarNaoLidas(): Observable<Notification[]> {
     return this.notificationService.listarNaoLidas().pipe(
       map((notificacoes: Notification[]) => {
-        this._quantidadeNotificacoes.set(notificacoes.length);
-        this._notificacaoState.set(notificacoes);
-        return notificacoes;
+        const safeList = Array.isArray(notificacoes) ? notificacoes : [];
+        this._quantidadeNotificacoes.set(safeList.length);
+        this._notificacaoState.set(safeList);
+        return safeList;
       })
     );
   }
