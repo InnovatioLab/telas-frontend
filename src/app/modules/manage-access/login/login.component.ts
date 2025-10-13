@@ -55,12 +55,6 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onlyNumbersInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/[^0-9]/g, "");
-    this.form.get("login").setValue(input.value);
-  }
-
   iniciarFormulario(): void {
     this.form = this.formBuilder.group({
       login: ["", [Validators.required]],
@@ -153,10 +147,6 @@ export class LoginComponent implements OnInit {
   logout(): void {
     this.autenticacaoService.logout();
     this.router.navigate(["/login"]);
-  }
-
-  validarNumeroIdentificacao(numero: string): boolean {
-    return /^\d{1,9}$/.test(numero);
   }
 
   habilitarBotao(): boolean {

@@ -16,25 +16,19 @@
         >
       </div>
       <div class="col-12 mt-2">
-        <label
-          for="identificationNumber"
-          id="lb-identificationNumber"
-          class="required"
-          >Identification Number</label
-        >
-        <p-inputMask
-          mask="999999999"
-          autoClear="false"
-          formControlName="identificationNumber"
-          id="identificationNumber"
+        <label for="email" id="lb-email" class="required">Email</label>
+        <input
+          pInputText
+          type="email"
+          formControlName="email"
+          id="email"
           class="w-full input-form"
-          minlength="9"
-          maxlength="9"
-          placeholder="Identification Number"
+          placeholder="emailexample@mail.com"
+          maxLength="255"
         />
         <app-error
-          id="error-msg-identificationNumber"
-          [control]="form.get('identificationNumber')"
+          id="error-msg-email"
+          [control]="form.get('email')"
         ></app-error>
       </div>
 

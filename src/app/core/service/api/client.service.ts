@@ -104,7 +104,7 @@ export class ClientService extends BaseHttpService<Client> {
 
   clientExistente(email: string): Observable<ClientResponseDTO> {
     return this.http
-      .get<ResponseDTO<ClientResponseDTO>>(`${this.baseUrl}/${email}`)
+      .get<ResponseDTO<ClientResponseDTO>>(`${this.baseUrl}/identification/${email}`)
       .pipe(map((data: ResponseDTO<ClientResponseDTO>) => data.data));
   }
 
@@ -130,7 +130,9 @@ export class ClientService extends BaseHttpService<Client> {
       throw new Error("Email not provided");
     }
     return this.http
-      .get<ResponseDTO<ClientResponseDTO>>(`${this.baseUrl}/${email}`)
+      .get<
+        ResponseDTO<ClientResponseDTO>
+      >(`${this.baseUrl}/identification/${email}`)
       .pipe(
         map((response: ResponseDTO<ClientResponseDTO>) => {
           if (response?.data === undefined) {

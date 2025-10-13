@@ -27,7 +27,7 @@
               width="20"
               height="20"
             ></app-icon-user>
-            Identification Number
+            Login
           </label>
         </div>
         <input
@@ -36,11 +36,7 @@
           formControlName="login"
           id="test-input-login"
           class="w-full input-form"
-          placeholder="Enter your identification number (up to 9 digits)"
-          maxlength="9"
-          pattern="[0-9]*"
-          inputmode="numeric"
-          (input)="onlyNumbersInput($event)"
+          placeholder="Email"
           (keyup.enter)="login()"
         />
         <app-error

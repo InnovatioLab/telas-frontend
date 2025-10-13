@@ -12,7 +12,7 @@ export const MENSAGENS: MensagensConstants = {
     cancelar:
       "Are you sure you want to leave? This action will discard all data filled in the form.",
     jaPossuiContaRetomarCadastro:
-      "The provided CPF or CNPJ is already registered!<br>If you are having trouble accessing your account, try recovering your password on the login screen or contact our support:<br><b>{{var}}</b>",
+      "The email is already registered!<br>If you are having trouble accessing your account, try recovering your password on the login screen or contact our support:<br><b>{{var}}</b>",
     recusarTermo:
       "By not accepting the Terms of Acceptance, you<br/> will be prevented from logging into the system.",
     recusarTermoMobile:
