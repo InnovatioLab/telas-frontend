@@ -103,16 +103,6 @@ export class FormDadosPessoaisComponent implements OnInit {
   atualizarValidacaoPessoaJuridica() {
     AbstractControlUtils.atualizatualizarValidators(
       this.cadastroForm,
-      "identificationNumber",
-      [
-        Validators.required,
-        Validators.minLength(9),
-        Validators.maxLength(9),
-        Validators.pattern("^[0-9]{9}$"),
-      ]
-    );
-    AbstractControlUtils.atualizatualizarValidators(
-      this.cadastroForm,
       "industry",
       [Validators.required, Validators.maxLength(50)]
     );

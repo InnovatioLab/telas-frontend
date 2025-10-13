@@ -1,7 +1,6 @@
 export interface Client {
   id?: string;
   businessName?: string;
-  identificationNumber?: string;
   password?: string;
   role?: Role;
   industry?: string;
@@ -11,7 +10,6 @@ export interface Client {
   termCondition?: TermCondition;
   verificationCode?: VerificationCode;
   contact?: Contact;
-  owner?: Owner;
   socialMedia?: SocialMedia;
   addresses?: Address[];
   attachments?: Attachment[];
@@ -42,16 +40,6 @@ export interface Contact {
   contactPreference?: ContactPreference;
 }
 
-export interface Owner {
-  id?: string;
-  identificationNumber?: string;
-  firstName?: string; 
-  lastName?: string;
-  name?: string;
-  email?: string;
-  phone?: string;
-}
-
 export interface SocialMedia {
   id?: string;
   instagramUrl?: string;
@@ -65,7 +53,7 @@ export interface Address {
   id?: string;
   street?: string;
   number?: string;
-  complement?: string;
+  address2?: string;
   city?: string;
   state?: string;
   country?: string;
@@ -101,23 +89,23 @@ export interface CartResponse {
 }
 
 export enum Role {
-  CLIENT = 'CLIENT',
-  PARTNER = 'PARTNER',
-  ADMIN = 'ADMIN',
+  CLIENT = "CLIENT",
+  PARTNER = "PARTNER",
+  ADMIN = "ADMIN",
 }
 
 export enum DefaultStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
 }
 
 export enum ContactPreference {
-  EMAIL = 'EMAIL',
-  PHONE = 'PHONE',
+  EMAIL = "EMAIL",
+  PHONE = "PHONE",
 }
 
 export enum AdValidationType {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
 }

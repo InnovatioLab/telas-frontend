@@ -21,7 +21,7 @@ export interface MonitorResponseDto {
     state: string;
     country: string;
     zipCode: string;
-    complement?: string;
+    address2?: string;
     latitude?: number;
     longitude?: number;
   };

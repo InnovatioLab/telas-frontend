@@ -10,7 +10,6 @@ import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.compone
 import { FormContatoComponent } from "@app/shared/components/forms/form-contato/form-contato.component";
 import { FormDadosPessoaisComponent } from "@app/shared/components/forms/form-dados-pessoais/form-dados-pessoais.component";
 import { FormEnderecoComponent } from "@app/shared/components/forms/form-endereco/form-endereco.component";
-import { FormOwnerComponent } from "@app/shared/components/forms/form-owner/form-owner.component";
 import { CLIENT_FORM } from "@app/shared/constants/campos-cadastro.constants";
 import {
   ALL_STEPS,
@@ -36,7 +35,6 @@ import { FormCadastro } from "./utils/form-cadastro";
     FormDadosPessoaisComponent,
     ButtonFooterComponent,
     FormContatoComponent,
-    FormOwnerComponent,
     IconsModule,
   ],
   providers: [DialogService, DialogoUtils],
@@ -85,30 +83,12 @@ export class CadastroComponent implements OnInit {
         "dadosCliente",
         this.fb.group({
           businessName: ["", [Validators.required, Validators.maxLength(255)]],
-          identificationNumber: [
-            "",
-            Validators.required,
-            Validators.minLength(9),
-            Validators.maxLength(9),
-            Validators.pattern(/^\d{9}$/),
-          ],
-          industry: ["", [Validators.required, Validators.maxLength(50)]],
+          industry: ["", [Validators.maxLength(50)]],
           websiteUrl: [
             "",
             [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
           ],
           socialMedia: this.fb.array([]),
-        })
-      );
-    }
-    if (!this.formCadastro.cadastroForm.get("owner")) {
-      this.formCadastro.cadastroForm.addControl(
-        "owner",
-        this.fb.group({
-          firstName: ["", [Validators.required, Validators.maxLength(50)]],
-          lastName: ["", [Validators.maxLength(150)]],
-          ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-          phone: ["", [AbstractControlUtils.validatePhone()]],
         })
       );
     }
@@ -135,7 +115,7 @@ export class CadastroComponent implements OnInit {
             ],
           ],
           country: ["US", [Validators.maxLength(100)]],
-          complement: ["", Validators.maxLength(100)],
+          address2: ["", Validators.maxLength(100)],
         })
       );
     }
@@ -158,10 +138,6 @@ export class CadastroComponent implements OnInit {
 
   get dadosPessoaisForm(): FormGroup {
     return this.formCadastro.cadastroForm.get("dadosCliente") as FormGroup;
-  }
-
-  get ownerForm(): FormGroup {
-    return this.formCadastro.cadastroForm.get("owner") as FormGroup;
   }
 
   get enderecoForm(): FormGroup {
@@ -203,12 +179,10 @@ export class CadastroComponent implements OnInit {
       const IGNORAR_LOADING = true;
 
       const dadosCliente = form.get("dadosCliente")?.value ?? {};
-      const ownerData = form.get("owner")?.value ?? {};
       const enderecoCliente = form.get("enderecoCliente")?.value ?? {};
       const contato = form.get("contato")?.value ?? {};
 
       const rawPhone = contato.numeroContato ?? "";
-      const rawOwnerPhone = ownerData.phone ?? "";
 
       const socialMedia: Record<string, string> = {};
       if (
@@ -227,7 +201,6 @@ export class CadastroComponent implements OnInit {
 
       const clientRequest: ClientRequestDTO = {
         businessName: dadosCliente.businessName,
-        identificationNumber: dadosCliente.identificationNumber,
         industry: dadosCliente.industry,
         websiteUrl: dadosCliente.websiteUrl ?? null,
         socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : null,
@@ -235,16 +208,9 @@ export class CadastroComponent implements OnInit {
           email: contato.email,
           phone: rawPhone,
         },
-        owner: {
-          identificationNumber: ownerData.ownerIdentificationNumber,
-          firstName: ownerData.firstName,
-          lastName: ownerData.lastName ?? null,
-          email: ownerData.ownerEmail ?? null,
-          phone: rawOwnerPhone.length > 0 ? rawOwnerPhone : null,
-        },
         addresses: [
           {
-            complement: enderecoCliente.complement ?? null,
+            address2: enderecoCliente.address2 ?? null,
             street: enderecoCliente.street,
             city: enderecoCliente.city,
             state: enderecoCliente.state,
@@ -259,7 +225,7 @@ export class CadastroComponent implements OnInit {
           if (response) {
             this.habilitarBotaoSalvar = true;
             this.loadingService.setLoading(false, "salvarCadastro");
-            this.navegarValidacao(clientRequest.identificationNumber);
+            this.navegarValidacao(clientRequest.contact.email);
           }
         },
         error: () => {

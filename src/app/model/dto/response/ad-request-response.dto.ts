@@ -5,7 +5,6 @@ export interface AdRequestResponseDto {
   clientId: string;
   message: string;
   clientName: string;
-  clientIdentificationNumber: string;
   clientRole: Role;
   phone?: string;
   email?: string;
@@ -22,7 +21,6 @@ export interface PendingAdAdminValidationResponseDto {
   clientId: string;
   name: string;
   clientName: string;
-  clientIdentificationNumber: string;
   clientRole: Role;
   submissionDate: string;
   validation: AdValidationType;

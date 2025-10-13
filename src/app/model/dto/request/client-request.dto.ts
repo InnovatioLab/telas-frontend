@@ -2,12 +2,10 @@ import { DefaultStatus } from "@app/model/client";
 
 export interface ClientRequestDTO {
   businessName: string;
-  identificationNumber: string;
-  industry: string;
+  industry?: string;
   websiteUrl?: string;
   status?: DefaultStatus;
   contact: ContactRequestDTO;
-  owner: OwnerRequestDTO;
   addresses: AddressRequestDTO[];
   socialMedia?: Record<string, string>;
 }
@@ -17,14 +15,6 @@ export interface ContactRequestDTO {
   phone: string;
 }
 
-export interface OwnerRequestDTO {
-  identificationNumber: string;
-  firstName: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-}
-
 export interface AddressRequestDTO {
   id?: string;
   street: string;
@@ -32,7 +22,7 @@ export interface AddressRequestDTO {
   city: string;
   state: string;
   country: string;
-  complement?: string;
+  address2?: string;
   latitude?: number;
   longitude?: number;
 }

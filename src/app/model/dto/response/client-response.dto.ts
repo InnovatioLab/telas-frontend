@@ -1,23 +1,14 @@
 export interface ClientResponseDTO {
   id: string;
   businessName: string;
-  identificationNumber: string;
-  role: string;
-  industry: string;
+  role?: string;
+  industry?: string;
   status: string;
   contact: {
     id: string;
     email: string;
     phone: string;
     contactPreference: string;
-  };
-  owner: {
-    id: string;
-    identificationNumber: string;
-    firstName: string;
-    lastName: string | null;
-    email: string;
-    phone: string | null;
   };
   socialMedia: Record<string, string> | null;
   addresses: Array<{
@@ -28,7 +19,7 @@ export interface ClientResponseDTO {
     city: string;
     state: string;
     country: string;
-    complement: string | null;
+    address2: string | null;
     latitude: string | null;
     longitude: string | null;
     partnerAddress: boolean;

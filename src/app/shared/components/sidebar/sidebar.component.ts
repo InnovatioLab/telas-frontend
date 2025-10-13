@@ -1,9 +1,8 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { Router, RouterModule } from "@angular/router";
-import { AutenticacaoService } from "@app/core/service/autenticacao.service";
-import { AutenticacaoStorage } from "@app/core/service/guard";
-import { LoadingService } from "@app/core/service/loading.service";
+import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { AutenticacaoStorage } from "@app/core/service/auth/autenticacao-storage";
 import { User } from "@app/model/dto/user";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
@@ -47,7 +46,6 @@ export class SidebarComponent implements OnInit {
   constructor(
     private readonly autenticacao: AutenticacaoService,
     public dialogService: DialogService,
-    private readonly loadingService: LoadingService,
     private readonly router: Router
   ) {}
 

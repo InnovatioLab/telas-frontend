@@ -72,7 +72,7 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
           ],
         ],
         country: ["US", [Validators.maxLength(100)]],
-        complement: ["", [Validators.maxLength(100)]],
+        address2: ["", [Validators.maxLength(100)]],
         latitude: [null],
         longitude: [null],
       }),
@@ -107,7 +107,7 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
         city: this.monitor.address?.city ?? "",
         state: this.monitor.address?.state ?? "",
         country: this.monitor.address?.country ?? "US",
-        complement: this.monitor.address?.complement ?? "",
+        address2: this.monitor.address?.address2 ?? "",
         latitude: this.monitor.address?.latitude ?? null,
         longitude: this.monitor.address?.longitude ?? null,
       },
@@ -179,7 +179,7 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
           state: addressValue.state,
           country: addressValue.country,
           zipCode: addressValue.zipCode,
-          complement: addressValue.complement ?? null,
+          address2: addressValue.address2 ?? null,
         },
       };
 

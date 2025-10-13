@@ -84,7 +84,7 @@ export class MonitorModalComponent implements OnInit, OnChanges {
           ],
         ],
         country: ["US", [Validators.maxLength(100)]],
-        complement: ["", [Validators.maxLength(100)]],
+        address2: ["", [Validators.maxLength(100)]],
       }),
     });
   }
@@ -112,7 +112,7 @@ export class MonitorModalComponent implements OnInit, OnChanges {
           city: "",
           state: "",
           country: "US",
-          complement: "",
+          address2: "",
         },
       });
     }
@@ -130,7 +130,7 @@ export class MonitorModalComponent implements OnInit, OnChanges {
         city: monitor.address?.city ?? "",
         state: monitor.address?.state ?? "",
         country: monitor.address?.country ?? "US",
-        complement: monitor.address?.complement ?? "",
+        address2: monitor.address?.address2 ?? "",
       },
     });
   }
@@ -193,7 +193,7 @@ export class MonitorModalComponent implements OnInit, OnChanges {
             state: addressValue.state,
             country: addressValue.country,
             zipCode: addressValue.zipCode,
-            complement: addressValue.complement ?? null,
+            address2: addressValue.address2 ?? null,
           },
         };
         this.monitorCreated.emit(monitorRequest);
@@ -210,7 +210,7 @@ export class MonitorModalComponent implements OnInit, OnChanges {
             state: addressValue.state,
             country: addressValue.country,
             zipCode: addressValue.zipCode,
-            complement: addressValue.complement ?? null,
+            address2: addressValue.address2 ?? null,
           },
         };
         this.monitorUpdated.emit({ id: this.monitor.id, data: updateRequest });

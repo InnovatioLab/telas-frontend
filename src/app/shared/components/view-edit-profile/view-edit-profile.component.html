@@ -22,24 +22,11 @@
             [control]="profileForm.get('businessName')"
           ></app-error>
         </div>
-
-        <div class="form-group">
-          <label for="identificationNumber" class="required"
-            >Identification Number</label
-          >
-          <input
-            pInputText
-            type="text"
-            id="identificationNumber"
-            formControlName="identificationNumber"
-            [disabled]="true"
-          />
-        </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="industry" class="required">Industry</label>
+          <label for="industry">Industry</label>
           <input
             pInputText
             type="text"
@@ -106,96 +93,6 @@
           ></app-error>
         </div>
       </div>
-
-      <div class="section-title">Owner Information</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label
-            id="lb-owner-identification-number"
-            for="owner-identification-number"
-            class="required"
-            >Identification Number</label
-          >
-          <input
-            pInputText
-            type="text"
-            id="owner-identification-number"
-            formControlName="ownerIdentificationNumber"
-            [disabled]="true"
-          />
-        </div>
-        <div class="form-group">
-          <label for="ownerFirstName" class="required">First Name</label>
-          <input
-            pInputText
-            type="text"
-            id="ownerFirstName"
-            formControlName="ownerFirstName"
-            [readonly]="!isEditMode"
-            maxlength="50"
-            uiTextOnly
-          />
-          <app-error
-            id="error-msg-owner-first-name"
-            [control]="profileForm.get('ownerFirstName')"
-          ></app-error>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="ownerLastName">Last Name</label>
-          <input
-            pInputText
-            type="text"
-            id="ownerLastName"
-            formControlName="ownerLastName"
-            [readonly]="!isEditMode"
-            uiTextOnly
-            maxlength="150"
-          />
-          <app-error
-            id="error-msg-owner-last-name"
-            [control]="profileForm.get('ownerLastName')"
-          ></app-error>
-        </div>
-
-        <div class="form-group">
-          <label for="ownerPhone">Phone</label>
-          <p-inputMask
-            mask="+1 999 999 9999"
-            [unmask]="true"
-            formControlName="ownerPhone"
-            id="ownerPhone"
-            [readonly]="!isEditMode"
-            class="w-full"
-          >
-          </p-inputMask>
-          <app-error
-            id="error-msg-owner-email"
-            [control]="profileForm.get('ownerPhone')"
-          ></app-error>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="ownerEmail">Email</label>
-          <input
-            pInputText
-            type="email"
-            id="ownerEmail"
-            formControlName="ownerEmail"
-            maxLength="255"
-            [readonly]="!isEditMode"
-          />
-          <app-error
-            id="error-msg-owner-email"
-            [control]="profileForm.get('ownerEmail')"
-          ></app-error>
-        </div>
-      </div>
-
       <div
         class="section-title flex align-items-center justify-content-between"
       >
@@ -309,17 +206,17 @@
               <app-error [control]="addressGroup.get('country')"></app-error>
             </div>
             <div class="form-group">
-              <label>Complement</label>
+              <label>Address 2</label>
               <input
                 type="text"
                 pInputText
-                formControlName="complement"
-                placeholder="Complement"
+                formControlName="address2"
+                placeholder="Address 2"
                 class="w-full input-form"
                 maxlength="100"
                 [readonly]="!isEditMode"
               />
-              <app-error [control]="addressGroup.get('complement')"></app-error>
+              <app-error [control]="addressGroup.get('address2')"></app-error>
             </div>
           </div>
         </div>

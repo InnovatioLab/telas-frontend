@@ -50,14 +50,9 @@ export class RetomarCadastroComponent implements OnDestroy {
     public dialogService: DialogService
   ) {
     this.form = this.fb.group({
-      identificationNumber: [
+      email: [
         null,
-        [
-          Validators.required,
-          Validators.minLength(9),
-          Validators.maxLength(9),
-          Validators.pattern("^[0-9]{9}$"),
-        ],
+        [Validators.required, Validators.email, Validators.maxLength(255)],
       ],
     });
   }
@@ -75,28 +70,23 @@ export class RetomarCadastroComponent implements OnDestroy {
       return;
     }
 
-    const usuarioLogin = this.form.get("identificationNumber")?.value;
+    const usuarioLogin = this.form.get("email")?.value;
 
     this.buscarUsuario(usuarioLogin);
   }
 
-  buscarUsuario(identificationNumber: string) {
+  buscarUsuario(email: string) {
     this.invalidarBotao = true;
 
-    this.clientService.clientExistente(identificationNumber).subscribe({
+    this.clientService.clientExistente(email).subscribe({
       next: (resposta) => {
-        if (!resposta?.owner?.email) {
-          this.exibirErroLoginNaoEncontrado();
-          this.invalidarBotao = false;
+        const status = resposta.status;
+        if (status === "ACTIVE") {
+          this.exibirAlertaEtapaSenhaConcluida();
         } else {
-          const status = resposta.status;
-          if (status === "ACTIVE") {
-            this.exibirAlertaEtapaSenhaConcluida();
-          } else {
-            this.reenviarCodigo();
-          }
-          this.invalidarBotao = false;
+          this.reenviarCodigo();
         }
+        this.invalidarBotao = false;
       },
       error: () => {
         this.exibirErroLoginNaoEncontrado();
@@ -135,19 +125,16 @@ export class RetomarCadastroComponent implements OnDestroy {
   }
 
   exibirErroLoginNaoEncontrado() {
-    this.exibirAlerta(MENSAGENS.dialogo.identificationNumberNotFound);
+    this.exibirAlerta(MENSAGENS.dialogo.clientNaoEncontrado);
   }
 
   redirecionarValidacaoCadastro() {
-    this.router.navigate([
-      "/register/validate",
-      this.form.get("identificationNumber")?.value,
-    ]);
+    this.router.navigate(["/register/validate", this.form.get("email")?.value]);
   }
 
   reenviarCodigo() {
     this.clientService
-      .reenvioCodigo(this.form.get("identificationNumber")?.value)
+      .reenvioCodigo(this.form.get("email")?.value)
       .subscribe((res: any) => {
         if (res) {
           this.redirecionarValidacaoCadastro();

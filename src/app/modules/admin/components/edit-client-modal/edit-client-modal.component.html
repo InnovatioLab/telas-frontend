@@ -19,27 +19,10 @@
               [control]="editForm.get('businessName')"
             ></app-error>
           </div>
-          <div class="form-field">
-            <label for="identificationNumber" class="required"
-              >Identification Number</label
-            >
-            <p-inputMask
-              id="identificationNumber"
-              mask="999999999"
-              autoClear="false"
-              formControlName="identificationNumber"
-              [disabled]="true"
-              [readonly]="true"
-            />
-            <app-error
-              id="error-msg-identification-number"
-              [control]="editForm.get('identificationNumber')"
-            ></app-error>
-          </div>
         </div>
         <div class="form-row">
           <div class="form-field">
-            <label for="industry" class="required">Industry</label>
+            <label for="industry">Industry</label>
             <input
               pInputText
               type="text"
@@ -104,96 +87,6 @@
               [control]="editForm.get('contactPhone')"
             ></app-error>
           </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h4>Owner Information</h4>
-        <div class="form-row">
-          <div class="form-field">
-            <label
-              id="lb-owner-identification-number"
-              for="owner-identification-number"
-              class="required"
-              >Identification Number</label
-            >
-            <p-inputMask
-              mask="999999999"
-              autoClear="false"
-              formControlName="ownerIdentificationNumber"
-              class="w-full input-form"
-              id="owner-identification-number"
-              [disabled]="true"
-            />
-          </div>
-          <div class="form-field">
-            <label for="ownerFirstName" class="required">First Name</label>
-            <input
-              pInputText
-              id="ownerFirstName"
-              type="text"
-              formControlName="ownerFirstName"
-              placeholder="Enter first name"
-              maxlength="50"
-              uiTextOnly
-            />
-            <app-error
-              id="error-msg-owner-first-name"
-              [control]="editForm.get('ownerFirstName')"
-            ></app-error>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-field">
-            <label for="ownerLastName">Last Name</label>
-            <input
-              id="ownerLastName"
-              type="text"
-              pInputText
-              formControlName="ownerLastName"
-              placeholder="Enter last name"
-              uiTextOnly
-              maxlength="150"
-            />
-            <app-error
-              id="error-msg-owner-last-name"
-              [control]="editForm.get('ownerLastName')"
-            ></app-error>
-          </div>
-
-          <div class="form-field">
-            <label for="ownerPhone" class="required">Phone</label>
-            <p-inputMask
-              id="ownerPhone"
-              mask="+1 999 999 9999"
-              [unmask]="true"
-              class="w-full"
-              formControlName="ownerPhone"
-              placeholder="Enter phone number"
-            />
-            <app-error
-              id="error-msg-owner-email"
-              [control]="editForm.get('ownerPhone')"
-            ></app-error>
-          </div>
-        </div>
-
-        <div class="w-full">
-          <label for="ownerEmail" class="required">Email</label>
-          <input
-            id="ownerEmail"
-            type="email"
-            pInputText
-            formControlName="ownerEmail"
-            placeholder="Enter email"
-            maxLength="255"
-            class="w-full input-form"
-          />
-          <app-error
-            id="error-msg-owner-email"
-            [control]="editForm.get('ownerEmail')"
-          ></app-error>
         </div>
       </div>
 
@@ -347,22 +240,22 @@
                 ></app-error>
               </div>
               <div class="form-field">
-                <label>Complement</label>
+                <label>Address 2</label>
                 <input
                   type="text"
                   pInputText
-                  formControlName="complement"
-                  placeholder="Enter complement"
+                  formControlName="address2"
+                  placeholder="Enter Address 2"
                   maxlength="100"
-                  id="inp-complement"
+                  id="inp-address2"
                 />
                 <app-error
                   *ngIf="
-                    addressGroup.get('complement')?.touched &&
-                    addressGroup.get('complement')?.invalid
+                    addressGroup.get('address2')?.touched &&
+                    addressGroup.get('address2')?.invalid
                   "
-                  id="error-msg-complement"
-                  [control]="addressGroup.get('complement')"
+                  id="error-msg-address2"
+                  [control]="addressGroup.get('address2')"
                 ></app-error>
               </div>
             </div>

@@ -3,20 +3,11 @@ import { AdResponseDto } from "./ad-response.dto";
 export interface AuthenticatedClientResponseDto {
   id: string;
   businessName: string;
-  identificationNumber: string;
   role: string;
-  industry: string;
+  industry?: string;
   status: string;
   contact: {
     id: string;
-    email: string;
-    phone: string;
-  };
-  owner: {
-    id: string;
-    identificationNumber: string;
-    firstName: string;
-    lastName: string;
     email: string;
     phone: string;
   };
@@ -36,7 +27,7 @@ export interface AuthenticatedClientResponseDto {
     city: string;
     state: string;
     country: string;
-    complement: string | null;
+    address2: string | null;
     latitude: string | null;
     longitude: string | null;
     partnerAddress: boolean;

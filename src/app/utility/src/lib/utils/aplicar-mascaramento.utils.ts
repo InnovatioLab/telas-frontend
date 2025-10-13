@@ -1,31 +1,28 @@
 export class AplicarMascaramentoUtils {
   static aplicarMascaraDocumento(documento: string): string {
-    if (!documento) return '';
-    
+    if (!documento) return "";
+
     const tamanhoDocumento = documento.length;
-    
-    const identificationNumberTamanho = 9;
+
     const cpfTamanho = 11;
     const cnpjTamanho = 14;
 
-    if (tamanhoDocumento === identificationNumberTamanho) {
-      return this.aplicarMascara(documento, '999-999-999');
-    } else if (tamanhoDocumento === cpfTamanho) {
-      return this.aplicarMascara(documento, '999.999.999-99');
+    if (tamanhoDocumento === cpfTamanho) {
+      return this.aplicarMascara(documento, "999.999.999-99");
     } else if (tamanhoDocumento === cnpjTamanho) {
-      return this.aplicarMascara(documento, '99.999.999/9999-99');
+      return this.aplicarMascara(documento, "99.999.999/9999-99");
     }
-    
+
     return documento;
   }
 
   private static aplicarMascara(valor: string, mascara: string): string {
-    let resultado = '';
+    let resultado = "";
     let indiceMascara = 0;
     let indiceValor = 0;
 
     while (indiceMascara < mascara.length && indiceValor < valor.length) {
-      if (mascara[indiceMascara] === '9') {
+      if (mascara[indiceMascara] === "9") {
         resultado += valor[indiceValor];
         indiceValor++;
       } else {

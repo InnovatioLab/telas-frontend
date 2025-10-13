@@ -15,7 +15,7 @@
 
   <form [formGroup]="enderecoForm">
     <div class="grid form-group">
-      <div class="col-4 md:col-4 lg:col-2">
+      <div class="col-4 md:col-2 lg:col-2">
         <label
           htmlFor="zipCode"
           id="lb-zip-code"
@@ -42,14 +42,13 @@
         ></app-error>
       </div>
 
-      <div class="col-8 md:col-8 lg:col-6">
+      <div class="col-8 md:col-6 lg:col-6">
         <label
           htmlFor="street"
           id="lb-street"
           [class.required]="campoObrigatorio('street')"
           >Street</label
         >
-
         <input
           type="text"
           pInputText
@@ -90,7 +89,7 @@
         ></app-error>
       </div>
 
-      <div class="col-8 md:col-4 lg:col-6">
+      <div class="col-8 md:col-3 lg:col-4">
         <label
           htmlFor="city"
           id="lb-city"
@@ -113,16 +112,13 @@
         ></app-error>
       </div>
 
-      <!-- Segunda linha: state, country, complement -->
-
-      <div class="col-4 md:col-4 lg:col-6">
+      <div class="col-4 md:col-2 lg:col-2">
         <label
           htmlFor="country"
           id="lb-country"
           [class.required]="campoObrigatorio('country')"
           >Country</label
         >
-
         <input
           type="text"
           pInputText
@@ -139,26 +135,25 @@
         ></app-error>
       </div>
 
-      <div class="col-8 md:col-12 lg:col-12">
+      <div class="col-8 md:col-7 lg:col-6">
         <label
-          htmlFor="complement"
-          id="lb-complement"
-          [class.required]="campoObrigatorio('complement')"
-          >Complement</label
+          htmlFor="address2"
+          id="lb-address2"
+          [class.required]="campoObrigatorio('address2')"
+          >Address 2</label
         >
-
         <input
           type="text"
           pInputText
-          formControlName="complement"
-          placeholder="Complement"
+          formControlName="address2"
+          placeholder="Address 2"
           class="w-full input-form"
           maxlength="100"
-          id="inp-complement"
+          id="inp-address2"
         />
         <app-error
-          id="error-msg-complement"
-          [control]="enderecoForm.get('complement')"
+          id="error-msg-address2"
+          [control]="enderecoForm.get('address2')"
         ></app-error>
       </div>
     </div>

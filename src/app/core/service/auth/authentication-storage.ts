@@ -32,11 +32,6 @@ export class AuthenticationStorage {
     localStorage.setItem(this.storageName + '_user', data);
   }
 
-  static getIdentificationNumber() {
-    const userData = this.getDataUser();
-    return userData ? JSON.parse(userData).identificationNumber : null;
-  }
-
   static getBusinessName() {
     const userData = this.getDataUser();
     return userData ? JSON.parse(userData).businessName : null;

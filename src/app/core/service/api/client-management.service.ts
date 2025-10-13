@@ -18,13 +18,8 @@ export interface FilterClientRequestDto {
 export interface ClientResponseDto {
   id: string;
   businessName?: string;
-  identificationNumber?: string;
   industry?: string;
   status?: DefaultStatus;
-  owner?: {
-    name?: string;
-    email?: string;
-  };
   contact?: {
     email?: string;
   };
@@ -60,10 +55,8 @@ export class ClientManagementService {
           const clients: Client[] = (response.data.list || []).map(clientDto => ({
             id: clientDto.id,
             businessName: clientDto.businessName,
-            identificationNumber: clientDto.identificationNumber,
             industry: clientDto.industry,
             status: clientDto.status,
-            owner: clientDto.owner,
             contact: clientDto.contact,
             role: clientDto.role as any,
             createdAt: clientDto.createdAt,

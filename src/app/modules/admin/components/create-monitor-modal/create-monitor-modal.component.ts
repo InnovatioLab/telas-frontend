@@ -41,7 +41,7 @@ export class CreateMonitorModalComponent implements OnInit {
     this.monitorForm = this.fb.group({
       size: [
         null,
-        [Validators.required, Validators.min(1.00), Validators.max(999.99)],
+        [Validators.required, Validators.min(1.0), Validators.max(999.99)],
       ],
       locationDescription: ["", [Validators.maxLength(200)]],
       address: this.fb.group({
@@ -64,7 +64,7 @@ export class CreateMonitorModalComponent implements OnInit {
           ],
         ],
         country: ["US", [Validators.maxLength(100)]],
-        complement: ["", [Validators.maxLength(100)]],
+        address2: ["", [Validators.maxLength(100)]],
       }),
     });
   }
@@ -133,7 +133,7 @@ export class CreateMonitorModalComponent implements OnInit {
           state: addressValue.state,
           country: addressValue.country,
           zipCode: addressValue.zipCode,
-          complement: addressValue.complement ?? null,
+          address2: addressValue.address2 ?? null,
         },
       };
 

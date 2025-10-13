@@ -102,11 +102,9 @@ export class ClientService extends BaseHttpService<Client> {
     );
   }
 
-  clientExistente(login: string): Observable<ClientResponseDTO> {
+  clientExistente(email: string): Observable<ClientResponseDTO> {
     return this.http
-      .get<
-        ResponseDTO<ClientResponseDTO>
-      >(`${this.baseUrl}/identification/${login}`)
+      .get<ResponseDTO<ClientResponseDTO>>(`${this.baseUrl}/${email}`)
       .pipe(map((data: ResponseDTO<ClientResponseDTO>) => data.data));
   }
 
@@ -126,22 +124,18 @@ export class ClientService extends BaseHttpService<Client> {
     );
   }
 
-  buscaClientPorIdentificador<T>(
-    identificador: string
-  ): Observable<ClientResponseDTO> {
-    if (!identificador) {
-      console.error("Identificador não fornecido para busca de usuário");
-      throw new Error("Identificador não fornecido");
+  buscaClientPorIdentificador<T>(email: string): Observable<ClientResponseDTO> {
+    if (!email) {
+      console.error("Email not provided for user search");
+      throw new Error("Email not provided");
     }
     return this.http
-      .get<
-        ResponseDTO<ClientResponseDTO>
-      >(`${this.baseUrl}/identification/${identificador}`)
+      .get<ResponseDTO<ClientResponseDTO>>(`${this.baseUrl}/${email}`)
       .pipe(
         map((response: ResponseDTO<ClientResponseDTO>) => {
           if (response?.data === undefined) {
-            console.error("Resposta da API inválida:", response);
-            throw new Error("Dados do usuário não encontrados");
+            console.error("Invalid API response:", response);
+            throw new Error("User data not found");
           }
           return response.data;
         })

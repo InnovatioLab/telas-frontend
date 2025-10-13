@@ -103,7 +103,7 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   async makePartner(client: Client): Promise<void> {
-    const clientName = client.businessName || client.owner?.name || "Unknown";
+    const clientName = client.businessName ?? "Unknown";
 
     const confirmed = await this.confirmationDialogService.confirm({
       title: "Make Partner",
@@ -223,7 +223,7 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   async deleteClient(client: Client): Promise<void> {
-    const clientName = client.businessName || client.owner?.name || "Unknown";
+    const clientName = client.businessName ?? "Unknown";
 
     const confirmed = await this.confirmationDialogService.confirm({
       title: "Delete Client",

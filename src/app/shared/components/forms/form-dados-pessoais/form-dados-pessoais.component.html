@@ -2,7 +2,7 @@
   <h5 class="titulo">Identification Data</h5>
   <form [formGroup]="cadastroForm">
     <div class="grid form-group">
-      <div class="col-12 md:col-6 lg:col-8" *ngIf="exibirCampo('businessName')">
+      <div class="col-6 md:col-3 lg:col-4" *ngIf="exibirCampo('businessName')">
         <label
           htmlFor="businessName"
           id="lb-business-name"
@@ -24,39 +24,12 @@
         ></app-error>
       </div>
 
-      <div
-        class="col-6 md:col-6 lg:col-4"
-        *ngIf="exibirCampo('identificationNumber')"
-      >
-        <label
-          htmlFor="identificationNumber"
-          id="lb-identification-number"
-          [class.required]="campoObrigatorio('identificationNumber')"
-          >Identification Number</label
-        >
-
-        <p-inputMask
-          mask="999999999"
-          autoClear="false"
-          formControlName="identificationNumber"
-          placeholder="000000000"
-          id="inp-identification-number"
-          class="w-full input-form"
-        ></p-inputMask>
-        <app-error
-          id="error-msg-identification-number"
-          [control]="cadastroForm.get('identificationNumber')"
-        ></app-error>
-      </div>
-
-      <div class="col-6 md:col-6 lg:col-5" *ngIf="exibirCampo('industry')">
+      <div class="col-6 md:col-3 lg:col-3" *ngIf="exibirCampo('industry')">
         <label
           htmlFor="industry"
           id="lb-business-field"
-          [class.required]="campoObrigatorio('industry')"
           >Industry</label
         >
-
         <input
           type="text"
           pInputText
@@ -73,7 +46,7 @@
         ></app-error>
       </div>
 
-      <div class="col-12 md:col-6 lg:col-7" *ngIf="exibirCampo('websiteUrl')">
+      <div class="col-12 md:col-6 lg:col-5" *ngIf="exibirCampo('websiteUrl')">
         <label
           htmlFor="websiteUrl"
           id="lb-website-url"

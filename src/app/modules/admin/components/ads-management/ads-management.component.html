@@ -19,7 +19,7 @@
         <span
           class="pi pi-info-circle ml-2"
           style="color: var(--cor-primaria)"
-          pTooltip="Search by Client BusinessName, Identification, Phone, Email or Role"
+          pTooltip="Search by Client BusinessName, Phone, Email or Role"
         ></span>
       </span>
     </div>
@@ -47,10 +47,6 @@
       <th scope="col" pSortableColumn="clientName">
         Client Name <p-sortIcon field="clientName"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="clientIdentificationNumber">
-        Identification
-        <p-sortIcon field="clientIdentificationNumber"></p-sortIcon>
-      </th>
       <th scope="col" pSortableColumn="clientRole">
         Role <p-sortIcon field="clientRole"></p-sortIcon>
       </th>
@@ -70,7 +66,6 @@
   <ng-template pTemplate="body" let-ad>
     <tr>
       <td>{{ ad.clientName }}</td>
-      <td>{{ ad.clientIdentificationNumber }}</td>
       <td>
         <p-badge
           [value]="getPartnerStatusLabel(ad.clientRole)"

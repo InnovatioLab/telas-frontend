@@ -17,7 +17,7 @@ export interface UpdateMonitorRequestDto {
     city: string;
     state: string;
     country: string;
-    complement?: string;
+    address2?: string;
   };
   locationDescription?: string;
   type: MonitorType;

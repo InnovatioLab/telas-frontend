@@ -93,34 +93,12 @@ export class EditClientModalComponent implements OnInit {
   private initForm(): void {
     this.editForm = this.fb.group({
       businessName: ["", [Validators.required, Validators.maxLength(255)]],
-      identificationNumber: [
-        "",
-        [
-          Validators.required,
-          Validators.minLength(9),
-          Validators.maxLength(9),
-          Validators.pattern("^[0-9]{9}$"),
-        ],
-      ],
-      industry: ["", [Validators.required, Validators.maxLength(50)]],
+      industry: ["", [Validators.maxLength(50)]],
       websiteUrl: [
         "",
         [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
       ],
       status: [DefaultStatus.ACTIVE],
-      ownerIdentificationNumber: [
-        "",
-        [
-          Validators.required,
-          Validators.minLength(9),
-          Validators.maxLength(9),
-          Validators.pattern(/^\d{9}$/),
-        ],
-      ],
-      ownerFirstName: ["", [Validators.required, Validators.maxLength(50)]],
-      ownerLastName: ["", [Validators.maxLength(150)]],
-      ownerEmail: ["", [Validators.email, Validators.maxLength(255)]],
-      ownerPhone: ["", [AbstractControlUtils.validatePhone()]],
       contactEmail: [
         "",
         [Validators.required, Validators.email, Validators.maxLength(255)],
@@ -137,22 +115,12 @@ export class EditClientModalComponent implements OnInit {
     if (this.client) {
       this.editForm.patchValue({
         businessName: this.client.businessName || "",
-        identificationNumber: this.client.identificationNumber || "",
-        industry: this.client.industry || "",
+        industry: this.client.industry ?? "",
         websiteUrl: this.client.websiteUrl || "",
         status: this.client.status || DefaultStatus.ACTIVE,
-        ownerIdentificationNumber:
-          this.client.owner?.identificationNumber || "",
-        ownerFirstName: this.client.owner?.firstName || "",
-        ownerLastName: this.client.owner?.lastName || "",
-        ownerEmail: this.client.owner?.email || "",
-        ownerPhone: this.client.owner?.phone || "",
         contactEmail: this.client.contact.email,
         contactPhone: this.client.contact.phone,
       });
-
-      this.editForm.get("identificationNumber")?.disable();
-      this.editForm.get("ownerIdentificationNumber")?.disable();
     }
   }
 
@@ -170,7 +138,11 @@ export class EditClientModalComponent implements OnInit {
             id: [addr.id],
             street: [
               addr.street,
-              [Validators.required, Validators.maxLength(100), AbstractControlUtils.validateStreet()],
+              [
+                Validators.required,
+                Validators.maxLength(100),
+                AbstractControlUtils.validateStreet(),
+              ],
             ],
             zipCode: [addr.zipCode, Validators.required],
             city: [addr.city, [Validators.required, Validators.maxLength(50)]],
@@ -186,7 +158,7 @@ export class EditClientModalComponent implements OnInit {
               addr.country ?? "US",
               [Validators.required, Validators.maxLength(100)],
             ],
-            complement: [addr.complement ?? null, Validators.maxLength(100)],
+            address2: [addr.address2 ?? null, Validators.maxLength(100)],
           })
         );
       });
@@ -221,7 +193,7 @@ export class EditClientModalComponent implements OnInit {
           ],
         ],
         country: ["US", Validators.maxLength(100)],
-        complement: ["", Validators.maxLength(100)],
+        address2: ["", Validators.maxLength(100)],
       })
     );
   }
@@ -264,27 +236,19 @@ export class EditClientModalComponent implements OnInit {
           city: addr.city,
           state: addr.state,
           country: addr.country,
-          complement: addr.complement ?? null,
+          address2: addr.address2 ?? null,
         })
       );
       const normalizePhone = (value: string): string =>
         (value || "").replace(/\D/g, "");
       const clientRequest: ClientRequestDTO = {
         businessName: formValue.businessName,
-        identificationNumber: formValue.identificationNumber,
         industry: formValue.industry,
         websiteUrl: formValue.websiteUrl,
         status: formValue.status,
         contact: {
           email: formValue.contactEmail,
           phone: normalizePhone(formValue.contactPhone),
-        },
-        owner: {
-          identificationNumber: formValue.ownerIdentificationNumber,
-          firstName: formValue.ownerFirstName,
-          lastName: formValue.ownerLastName ?? null,
-          email: formValue.ownerEmail ?? null,
-          phone: normalizePhone(formValue.ownerPhone) || null,
         },
         addresses: addressesDTO,
       };

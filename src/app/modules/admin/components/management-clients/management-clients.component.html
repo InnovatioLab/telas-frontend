@@ -19,7 +19,7 @@
         <span
           class="pi pi-info-circle ml-2"
           style="color: var(--cor-primaria)"
-          pTooltip="Search by BusinessName, Identification, Phone, Email, Industry or Role"
+          pTooltip="Search by BusinessName, Phone, Email, Industry or Role"
         ></span>
       </span>
     </div>
@@ -52,13 +52,6 @@
       <th scope="col" pSortableColumn="email">
         Email <p-sortIcon field="email"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="identificationNumber">
-        Identification Number
-        <p-sortIcon field="identificationNumber"></p-sortIcon>
-      </th>
-      <th scope="col" pSortableColumn="industry">
-        Industry <p-sortIcon field="industry"></p-sortIcon>
-      </th>
       <th scope="col" pSortableColumn="status">
         Status <p-sortIcon field="status"></p-sortIcon>
       </th>
@@ -75,13 +68,12 @@
   <ng-template pTemplate="body" let-client>
     <tr>
       <td class="text-center">
-        {{ client.businessName || client.owner?.name || "N/A" }}
+        {{ client.businessName ?? "N/A" }}
       </td>
       <td class="text-center">
-        {{ client.contact?.email || client.owner?.email }}
+        {{ client.contact?.email }}
       </td>
-      <td class="text-center">{{ client.identificationNumber }}</td>
-      <td class="text-center">{{ client.industry }}</td>
+
       <td class="text-center">
         {{
           client.status
