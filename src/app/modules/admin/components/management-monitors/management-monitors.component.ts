@@ -223,7 +223,7 @@ export class ManagementMonitorsComponent implements OnInit {
           this.messageService.add({
             severity: "success",
             summary: "Success",
-            detail: "Monitor created successfully!",
+            detail: "Screen created successfully!",
           });
         }
       },
@@ -233,7 +233,7 @@ export class ManagementMonitorsComponent implements OnInit {
           severity: "warn",
           summary: "Warning",
           detail:
-            "An error occurred while creating the monitor. Please check the data and try again.",
+            "An error occurred while creating the screen. Please check the data and try again.",
         });
         this.loadMonitors();
       },

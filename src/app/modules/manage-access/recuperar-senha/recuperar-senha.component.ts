@@ -46,7 +46,10 @@ export class RecuperarSenhaComponent {
     public dialogService: DialogService
   ) {
     this.form = this.fb.group({
-      login: [null, [Validators.required]],
+      login: [
+        null,
+        [Validators.required, Validators.email, Validators.maxLength(255)],
+      ],
     });
   }
 
@@ -114,11 +117,5 @@ export class RecuperarSenhaComponent {
   redirecionarValidacaoCadastro(login: string) {
     this.clientService.reenvioCodigo(login).subscribe();
     this.router.navigate(["/register/validate-code-recover-password", login]);
-  }
-
-  onlyNumbersInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/\D/g, "");
-    this.form.get("login").setValue(input.value);
   }
 }

@@ -16,17 +16,15 @@
         >
       </div>
       <div class="col-12">
-        <label htmlFor="login" id="lb-login" class="required"
-          >Identification Number</label
-        >
+        <label htmlFor="login" id="lb-login" class="required">Email</label>
         <input
           pInputText
+          type="email"
           formControlName="login"
-          id="inp-login"
+          id="login"
           class="w-full input-form"
-          placeholder="Information"
-          maxlength="9"
-          (input)="onlyNumbersInput($event)"
+          placeholder="emailexample@mail.com"
+          maxLength="255"
         />
         <app-error
           id="error-msg-login"
