@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { Router, RouterModule } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
-import { AutenticacaoStorage } from "@app/core/service/auth/autenticacao-storage";
+import { Authentication } from "@app/core/service/auth/autenthication";
 import { User } from "@app/model/dto/user";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
@@ -45,6 +45,7 @@ export class SidebarComponent implements OnInit {
 
   constructor(
     private readonly autenticacao: AutenticacaoService,
+    private readonly authentication: Authentication,
     public dialogService: DialogService,
     private readonly router: Router
   ) {}
@@ -78,8 +79,9 @@ export class SidebarComponent implements OnInit {
   }
 
   logout() {
-    AutenticacaoStorage.clearToken();
-    this.router.navigate(["/logout"]);
+    this.autenticacao.logout();
+    this.authentication.removerAutenticacao();
+    window.location.href = "/";
   }
 
   verificarLogout() {
