@@ -1,0 +1,53 @@
+<div class="search-section" *ngIf="isLogado() && isInAllowedRoutes()">
+  <div class="search-container">
+    <div class="logo-section">
+      <img
+        src="assets/img/Logo-black.png"
+        alt="Logo"
+        class="search-logo"
+        height="55"
+        width="auto"
+      />
+    </div>
+    
+    <div class="search-phrase">
+      <h2>Find Available Digital Screen Locations</h2>
+    </div>
+    
+    <div class="search-input-container">
+      <div class="address-search-input">
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="searchText"
+          [ngModelOptions]="{ standalone: true }"
+          placeholder="Enter zip code"
+          maxlength="5"
+          id="search-zipcode"
+          (keydown.enter)="onEnterKey($event)"
+          (keydown)="onKeyPress($event)"
+          (paste)="onPaste($event)"
+          (ngModelChange)="onInputChange()"
+        />
+        <button
+          type="button"
+          class="search-button"
+          [disabled]="isSearching || !searchText"
+          (click)="searchAddress()"
+          aria-label="Search"
+          pTooltip="Search by zip code"
+          tooltipPosition="top"
+          id="btn-search"
+        >
+          <span
+            *ngIf="isSearching"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          <app-icon-search *ngIf="!isSearching"></app-icon-search>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="search-container">
+  <div class="address-search-container">
+    <div class="address-search-input">
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="searchText"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Zip code"
+        maxlength="5"
+        id="inp-pesquisar"
+        (keydown.enter)="searchAddress()"
+        (keydown)="onKeyPress($event)"
+        (paste)="onPaste($event)"
+        (ngModelChange)="onInputChange()"
+      />
+      <button
+        type="button"
+        class="botao-pesquisa"
+        [disabled]="isSearching || !searchText"
+        (click)="searchAddress()"
+        aria-label="Search"
+        pTooltip="Search address"
+        tooltipPosition="left"
+        id="btn-pesquisar"
+      >
+        <span
+          *ngIf="isSearching"
+          class="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+        ></span>
+        <app-icon-search *ngIf="!isSearching"></app-icon-search>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,20 +1,37 @@
-<p-toast id="toast">
+<p-toast 
+  id="toast"
+  [showTransformOptions]="'translateX(100%)'"
+  [hideTransformOptions]="'translateX(100%)'"
+  [showTransitionOptions]="'300ms ease-out'"
+  [hideTransitionOptions]="'250ms ease-in'"
+  position="top-right">
   <ng-template let-message pTemplate="message">
-    <div class="flex flex-column" style="flex: 1">
-      <div>
-        <div class="flex align-items-center gap-3 pl-2">
-          <span class="flex align-items-center" *ngIf="message.severity === 'success'">
-            <span class="material-symbols-outlined toast-icon"> check </span>
+    <div class="toast-content">
+      <div class="toast-icon-container">
+        <span class="toast-icon" [ngClass]="'toast-icon-' + message.severity">
+          <span [ngSwitch]="message.severity" class="toast-icon-symbol">
+            <span *ngSwitchCase="'success'">✓</span>
+            <span *ngSwitchCase="'error'">✕</span>
+            <span *ngSwitchCase="'warn'">⚠</span>
+            <span *ngSwitchCase="'info'">ℹ</span>
+            <span *ngSwitchDefault>!</span>
           </span>
-          <span id="test-toast-titulo" class="p-toast-summary">
-            {{ message.summary }}
-          </span>
+        </span>
+      </div>
+      <div class="toast-text">
+        <div class="toast-title" *ngIf="message.summary">
+          {{ message.summary }}
         </div>
-        <div id="test-toast-mensagem" class="p-toast-detail">
+        <div class="toast-message" *ngIf="message.detail">
           {{ message.detail }}
         </div>
       </div>
-      <div></div>
+      <button 
+        class="toast-close-btn" 
+        (click)="message.close()"
+        aria-label="Close">
+        ✕
+      </button>
     </div>
   </ng-template>
 </p-toast>

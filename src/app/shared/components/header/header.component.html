@@ -43,47 +43,6 @@
             </div>
           </section>
 
-          <div
-            class="search-container"
-            [ngClass]="{ 'menu-open-small-mobile': isMenuOpenInSmallMobile }"
-            *ngIf="isLogado() && isInAllowedRoutes()"
-          >
-            <div class="address-search-container">
-              <div class="address-search-input">
-                <input
-                  type="text"
-                  pInputText
-                  [(ngModel)]="searchText"
-                  [ngModelOptions]="{ standalone: true }"
-                  placeholder="Find Available Digital Screen Locations"
-                  maxlength="5"
-                  id="inp-pesquisar"
-                  (keydown.enter)="searchAddress()"
-                  (keydown)="onKeyPress($event)"
-                  (paste)="onPaste($event)"
-                  (ngModelChange)="onInputChange()"
-                />
-                <button
-                  type="button"
-                  class="botao-pesquisa"
-                  [disabled]="isSearching || !searchText"
-                  (click)="searchAddress()"
-                  aria-label="Search"
-                  pTooltip="Search address"
-                  tooltipPosition="left"
-                  id="btn-pesquisar"
-                >
-                  <span
-                    *ngIf="isSearching"
-                    class="spinner-border spinner-border-sm"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
-                  <app-icon-search *ngIf="!isSearching"></app-icon-search>
-                </button>
-              </div>
-            </div>
-          </div>
 
           <div class="right-container">
             <div class="icons-container" *ngIf="isLogado()">
@@ -218,47 +177,6 @@
             </div>
           </section>
 
-          <div
-            class="search-container"
-            [ngClass]="{ 'menu-open-small-mobile': isMenuOpenInSmallMobile }"
-            *ngIf="isLogado() && isInAllowedRoutes()"
-          >
-            <div class="address-search-container">
-              <div class="address-search-input">
-                <input
-                  type="text"
-                  pInputText
-                  [(ngModel)]="searchText"
-                  [ngModelOptions]="{ standalone: true }"
-                  placeholder="Find Available Digital Screen Locations"
-                  maxlength="5"
-                  id="inp-pesquisar"
-                  (keydown.enter)="searchAddress()"
-                  (keydown)="onKeyPress($event)"
-                  (paste)="onPaste($event)"
-                  (ngModelChange)="onInputChange()"
-                />
-                <button
-                  type="button"
-                  class="botao-pesquisa"
-                  [disabled]="isSearching || !searchText"
-                  (click)="searchAddress()"
-                  aria-label="Search"
-                  pTooltip="Search address"
-                  tooltipPosition="left"
-                  id="btn-pesquisar"
-                >
-                  <span
-                    *ngIf="isSearching"
-                    class="spinner-border spinner-border-sm"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
-                  <app-icon-search *ngIf="!isSearching"></app-icon-search>
-                </button>
-              </div>
-            </div>
-          </div>
 
           <div class="right-container">
             <div class="icons-container">
@@ -317,45 +235,7 @@
           </div>
         </section>
 
-        <section
-          class="search-container-desktop"
-          [ngClass]="{ 'menu-open-small-mobile': isMenuOpenInSmallMobile }"
-          *ngIf="isLogado() && isInAllowedRoutes()"
-        >
-          <div class="address-search-container">
-            <div class="address-search-input">
-              <input
-                type="text"
-                pInputText
-                [(ngModel)]="searchText"
-                [ngModelOptions]="{ standalone: true }"
-                placeholder="Find Available Digital Screen Locations"
-                maxlength="5"
-                id="inp-pesquisar-desktop"
-                (keydown.enter)="searchAddress()"
-                (keydown)="onKeyPress($event)"
-                (paste)="onPaste($event)"
-                (ngModelChange)="onInputChange()"
-              />
-              <button
-                type="button"
-                class="botao-pesquisa"
-                [disabled]="isSearching || !searchText"
-                (click)="searchAddress()"
-                aria-label="Pesquisar"
-                id="btn-pesquisar-desktop"
-              >
-                <span
-                  *ngIf="isSearching"
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-                <app-icon-search *ngIf="!isSearching"></app-icon-search>
-              </button>
-            </div>
-          </div>
-        </section>
+
 
         <section class="box-actions main-actions desktop-only">
           <button
