@@ -121,11 +121,19 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
             `Found ${monitors.length} monitors near ZIP code ${this.searchText}`
           );
         }
+        
+        // Clear the search input after search
+        this.searchText = "";
+        
         // Error toast is handled by the service error$ observable
       })
       .catch((error) => {
         this.isSearching = false;
         this.monitorsFound.emit([]);
+        
+        // Clear the search input even on error
+        this.searchText = "";
+        
         // Error toast is handled by the service error$ observable
       });
   }

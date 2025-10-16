@@ -10,7 +10,8 @@ export class ToastService {
       severity: 'success',
       summary: 'Success',
       detail: mensagem,
-      life: tempo
+      life: tempo,
+      closable: true
     });
   }
 
@@ -19,7 +20,8 @@ export class ToastService {
       severity: 'error',
       summary: 'Error',
       detail: mensagem,
-      life: tempo
+      life: tempo,
+      closable: true
     });
   }
 
@@ -28,7 +30,8 @@ export class ToastService {
       severity: 'info',
       summary: 'Info',
       detail: mensagem,
-      life: tempo
+      life: tempo,
+      closable: true
     });
   }
 
@@ -37,7 +40,8 @@ export class ToastService {
       severity: 'warn',
       summary: 'Warning',
       detail: mensagem,
-      life: tempo
+      life: tempo,
+      closable: true
     });
   }
 
