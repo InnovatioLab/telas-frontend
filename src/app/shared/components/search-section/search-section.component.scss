@@ -1,0 +1,162 @@
+.search-section {
+  width: 100%;
+  background-color: var(--cor-branca);
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 600px;
+  width: 100%;
+}
+
+.logo-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-logo {
+  max-height: 55px;
+  width: auto;
+  object-fit: contain;
+}
+
+.search-phrase {
+  text-align: center;
+  
+  h2 {
+    color: var(--cor-primaria);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.search-input-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.address-search-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  input {
+    width: 100%;
+    padding: 12px 50px 12px 16px;
+    border: 2px solid var(--cor-primaria);
+    border-radius: 8px;
+    font-size: 16px;
+    color: var(--cor-primaria);
+    background-color: var(--cor-branca);
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--cor-primaria-clara);
+      box-shadow: 0 0 0 3px rgba(0, 118, 59, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--cor-cinza);
+    }
+  }
+
+  .search-button {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cor-cinza);
+    transition: all 0.3s ease;
+    min-width: 36px;
+    height: 36px;
+
+    &:hover:not(:disabled) {
+      color: var(--cor-primaria);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    app-icon-search {
+      color: inherit;
+      font-size: 18px;
+    }
+  }
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+  .search-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .search-container {
+    gap: 1rem;
+  }
+
+  .search-logo {
+    max-height: 45px;
+  }
+
+  .search-phrase h2 {
+    font-size: 1.25rem;
+  }
+
+  .search-input-container {
+    max-width: 100%;
+  }
+
+  .address-search-input input {
+    padding: 10px 45px 10px 14px;
+    font-size: 14px;
+  }
+
+  .address-search-input .search-button {
+    min-width: 32px;
+    height: 32px;
+    right: 6px;
+
+    app-icon-search {
+      font-size: 16px;
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .search-section {
+    padding: 1rem;
+  }
+
+  .search-phrase h2 {
+    font-size: 1.1rem;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .search-logo {
+    max-height: 35px;
+  }
+}

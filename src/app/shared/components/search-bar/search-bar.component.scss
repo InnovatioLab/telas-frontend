@@ -1,0 +1,19 @@
+.search-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.address-search-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+.address-search-input {
+  display: flex;
+  width: 100%;
+}
+
+input {
+  flex-grow: 1;
+}
