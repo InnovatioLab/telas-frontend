@@ -4,6 +4,8 @@ import { ContentWrapperComponent } from "@app/shared/components/content-wrapper/
 import { HeaderComponent } from "@app/shared/components/header/header.component";
 import { MenuComponent } from "@app/shared/components/menu/menu.component";
 import { RodapeComponent } from "@app/shared/components/rodape/rodape.component";
+import { SearchSectionComponent } from "@app/shared/components/search-section/search-section.component";
+import { MapPoint } from "@app/core/service/state/map-point.interface";
 
 @Component({
   selector: "app-client-view-layout",
@@ -12,10 +14,17 @@ import { RodapeComponent } from "@app/shared/components/rodape/rodape.component"
   standalone: true,
   imports: [
     HeaderComponent,
+    SearchSectionComponent,
     RouterModule,
     MenuComponent,
     ContentWrapperComponent,
     RodapeComponent,
   ],
 })
-export class ClientViewLayoutComponent {}
+export class ClientViewLayoutComponent {
+  onMonitorsFound(monitors: MapPoint[]): void {
+    // Emit event to child components or handle the monitors data
+    console.log('Monitors found:', monitors);
+    // You can emit this to other components or handle the data as needed
+  }
+}
