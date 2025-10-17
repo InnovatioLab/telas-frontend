@@ -1,7 +1,5 @@
-export interface MonitorBoxMinResponseDto {
-  id: string;
+export interface MonitorsBoxMinResponseDto {
+  monitorIds: string[];
   hasBox: boolean;
   fullAddress: string;
-  latitude?: number;
-  longitude?: number;
 }

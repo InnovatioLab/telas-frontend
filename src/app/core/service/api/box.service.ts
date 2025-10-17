@@ -6,7 +6,7 @@ import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { BoxAddressResponseDto } from "@app/model/dto/response/box-address-response.dto";
 import { BoxResponseDto } from "@app/model/dto/response/box-response.dto";
-import { MonitorBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
+import { MonitorsBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { ResponseDto } from "@app/model/dto/response/response.dto";
 import { Monitor } from "@app/model/monitors";
@@ -47,13 +47,13 @@ export class BoxService {
       );
   }
 
-  getAvailableMonitors(): Observable<MonitorBoxMinResponseDto[]> {
+  getAvailableMonitors(): Observable<MonitorsBoxMinResponseDto[]> {
     return this.http
       .get<
-        ResponseDto<MonitorBoxMinResponseDto[]>
+        ResponseDto<MonitorsBoxMinResponseDto[]>
       >(`${environment.apiUrl}monitors`, this.headers)
       .pipe(
-        map((response: ResponseDto<MonitorBoxMinResponseDto[]>) => {
+        map((response: ResponseDto<MonitorsBoxMinResponseDto[]>) => {
           return response.data || [];
         }),
         catchError((error) => {

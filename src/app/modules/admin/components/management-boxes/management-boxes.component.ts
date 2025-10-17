@@ -8,7 +8,7 @@ import { Box } from "@app/model/box";
 import { BoxAddress } from "@app/model/box-address";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
-import { MonitorBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
+import { MonitorsBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { MessageService } from "primeng/api";
@@ -38,7 +38,10 @@ export class ManagementBoxesComponent implements OnInit {
     active: true,
   };
 
-  availableMonitors: MonitorBoxMinResponseDto[] = [];
+  availableMonitors: MonitorsBoxMinResponseDto[] = [];
+  // Seleção por grupos (cada valor é um array de monitorIds)
+  selectedMonitorGroupsCreate: string[][] = [];
+  selectedMonitorGroupsEdit: string[][] = [];
   loadingMonitors = false;
   loadingBoxAddresses = false;
 
@@ -140,6 +143,16 @@ export class ManagementBoxesComponent implements OnInit {
     this.boxService.getAvailableMonitors().subscribe({
       next: (monitors) => {
         this.availableMonitors = monitors;
+        // Quando estiver editando, inicializa a seleção por grupos com base nos monitorIds atuais da box
+        if (this.selectedBoxForEdit) {
+          this.selectedMonitorGroupsEdit = this.availableMonitors
+            .filter((group) =>
+              (this.selectedBoxForEdit?.monitorIds || []).some((id) =>
+                group.monitorIds.includes(id)
+              )
+            )
+            .map((group) => group.monitorIds);
+        }
         this.loadingMonitors = false;
       },
       error: (error) => {
@@ -223,6 +236,7 @@ export class ManagementBoxesComponent implements OnInit {
       active: true,
     };
     this.selectedBoxAddress = null;
+    this.selectedMonitorGroupsCreate = [];
     this.loadAvailableBoxAddresses();
     this.loadAvailableMonitors();
     this.createBoxModalVisible = true;
@@ -238,7 +252,12 @@ export class ManagementBoxesComponent implements OnInit {
       return;
     }
 
-    this.createBox(this.newBox);
+    const monitorIds = this.flattenAndUnique(this.selectedMonitorGroupsCreate);
+    this.createBox({
+      boxAddressId: this.newBox.boxAddressId,
+      monitorIds,
+      active: this.newBox.active,
+    });
   }
 
   createBox(boxRequest: BoxRequestDto): void {
@@ -286,11 +305,13 @@ export class ManagementBoxesComponent implements OnInit {
       return;
     }
 
+    const monitorIds = this.flattenAndUnique(this.selectedMonitorGroupsEdit);
+
     this.updateBox({
       id: this.selectedBoxForEdit.id,
       data: {
         boxAddressId: this.selectedBoxForEdit.boxAddressId,
-        monitorIds: this.selectedBoxForEdit.monitorIds,
+        monitorIds,
         active: this.selectedBoxForEdit.active,
       },
     });
@@ -298,6 +319,7 @@ export class ManagementBoxesComponent implements OnInit {
 
   onSelectBox(box: Box): void {
     this.selectedBoxForEdit = { ...box };
+    console.log(this.selectedBoxForEdit);
     this.selectedBoxAddress = null;
 
     // Carrega os endereços disponíveis incluindo o atual e define a seleção automaticamente
@@ -306,9 +328,10 @@ export class ManagementBoxesComponent implements OnInit {
 
     this.editBoxModalVisible = true;
   }
+
   updateBox(updateData: { id: string; data: BoxRequestDto }): void {
     this.boxService.updateBox(updateData.id, updateData.data).subscribe({
-      next: (updatedBox) => {
+      next: () => {
         this.editBoxModalVisible = false;
         this.selectedBoxForEdit = null;
         this.messageService.add({
@@ -318,7 +341,7 @@ export class ManagementBoxesComponent implements OnInit {
         });
         this.loadBoxes();
       },
-      error: (error) => {
+      error: () => {
         this.messageService.add({
           severity: "error",
           summary: "Error",
@@ -367,5 +390,11 @@ export class ManagementBoxesComponent implements OnInit {
 
   getBoxDisplayName(box: Box): string {
     return `${box.ip} (${box.monitorCount || 0} monitors)`;
+  }
+
+  private flattenAndUnique(groups: string[][]): string[] {
+    const set = new Set<string>();
+    groups.forEach((ids) => ids.forEach((id) => set.add(id)));
+    return Array.from(set);
   }
 }

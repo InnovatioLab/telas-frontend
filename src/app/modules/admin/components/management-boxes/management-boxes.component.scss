@@ -2,6 +2,15 @@ p {
   color: var(--cor-primaria);
 }
 
+.primary-dark-color,
+.monitor-icon {
+  color: var(--cor-primaria-escura);
+}
+
+.monitor-icon {
+  margin-top: 5px;
+}
+
 ::ng-deep {
   .p-card-body {
     width: 100%;
