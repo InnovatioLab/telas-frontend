@@ -152,19 +152,18 @@
                 ></app-error>
               </div>
               <div class="form-field">
-                <label htmlFor="zipCode" class="required">ZipCode</label>
-                <p-inputMask
-                  mask="99999"
+                <label htmlFor="zipCode" class="required">Zip Code</label>
+                <input
+                  type="text"
+                  pInputText
                   formControlName="zipCode"
+                  placeholder="Enter 5-digit Zip Code"
+                  class="w-full input-form"
+                  minlength="5"
+                  maxlength="5"
                   id="inp-zip-code"
-                  placeholder="Enter ZIP code"
-                  (onComplete)="
-                    onZipCodeChange(
-                      getAddressGroup(i),
-                      getAddressGroup(i).get('zipCode')?.value
-                    )
-                  "
-                ></p-inputMask>
+                  pKeyFilter="int"
+                />
                 <app-error
                   *ngIf="
                     addressGroup.get('zipCode')?.touched &&

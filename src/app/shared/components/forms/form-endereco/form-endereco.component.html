@@ -20,19 +20,19 @@
           htmlFor="zipCode"
           id="lb-zip-code"
           [class.required]="campoObrigatorio('zipCode')"
-          >ZipCode</label
+          >Zip Code</label
         >
-
-        <p-inputMask
-          mask="99999"
+        <input
+          type="text"
+          pInputText
           formControlName="zipCode"
-          placeholder="00000"
-          id="inp-zip-code"
+          placeholder="Zip Code"
           class="w-full input-form"
-          uiValidateZipCode
-          (onComplete)="searchZipCode()"
-          (onBlur)="searchZipCode()"
-        ></p-inputMask>
+          minlength="5"
+          maxlength="5"
+          id="inp-zip-code"
+          pKeyFilter="int"
+        />
         <div *ngIf="isLoading" class="mt-1 text-sm">
           <span>Loading address data...</span>
         </div>

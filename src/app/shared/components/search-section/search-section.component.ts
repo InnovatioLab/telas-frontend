@@ -1,14 +1,14 @@
 import { CommonModule } from "@angular/common";
-import { Component, inject, OnInit, OnDestroy, Output, EventEmitter } from "@angular/core";
+import { Component, EventEmitter, inject, OnDestroy, OnInit, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
+import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { LayoutService } from "@app/core/service/state/layout.service";
-import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
+import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { IconSearchComponent } from "@app/shared/icons/search.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { Subscription } from "rxjs";
 
 @Component({
@@ -36,7 +36,7 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('SearchSectionComponent initialized - Instance ID:', this.instanceId);
-    // Subscribe to search service errors to show toasts
+
     this.errorSubscription = this.searchMonitorsService.error$.subscribe((error) => {
       if (error) {
         console.log('Error from service:', error, 'Instance ID:', this.instanceId);
@@ -55,12 +55,10 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     const value = input.value;
     
-    // Allow only numbers and backspace/delete
     if (!/[0-9]/.test(event.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)) {
       event.preventDefault();
     }
     
-    // Limit to 5 digits
     if (value.length >= 5 && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)) {
       event.preventDefault();
     }
@@ -74,7 +72,6 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   }
 
   onInputChange(): void {
-    // Remove non-numeric characters
     this.searchText = this.searchText.replace(/[^0-9]/g, '');
   }
 
@@ -88,7 +85,6 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Debounce to prevent multiple rapid calls
     const now = Date.now();
     if (now - this.lastSearchTime < 1000) {
       return;
@@ -115,26 +111,15 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
         this.isSearching = false;
         this.monitorsFound.emit(monitors);
         
-        // Only show success toast if monitors were found
         if (monitors && monitors.length > 0) {
           this.toastService.sucesso(
             `Found ${monitors.length} monitors near ZIP code ${this.searchText}`
           );
         }
-        
-        // Clear the search input after search
-        this.searchText = "";
-        
-        // Error toast is handled by the service error$ observable
       })
-      .catch((error) => {
+      .catch(() => {
         this.isSearching = false;
         this.monitorsFound.emit([]);
-        
-        // Clear the search input even on error
-        this.searchText = "";
-        
-        // Error toast is handled by the service error$ observable
       });
   }
 

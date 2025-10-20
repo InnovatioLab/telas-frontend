@@ -1,32 +1,37 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TextOnlyDirective } from '@app/core/directives/text-only.directive';
-import { ZipCodeValidatorDirective } from '@app/core/directives/zip-code-validator.directive';
-import { ZipCodeService } from '@app/core/service/api/zipcode.service';
-import { LoadingService } from '@app/core/service/state/loading.service';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
-import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
-import { DialogService } from 'primeng/dynamicdialog';
-import { AddressData } from '../../../../model/dto/request/address-data-request';
-import { ErrorComponent } from '../../error/error.component';
-
+import { CommonModule } from "@angular/common";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
+import { ZipCodeService } from "@app/core/service/api/zipcode.service";
+import { LoadingService } from "@app/core/service/state/loading.service";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
+import { DialogService } from "primeng/dynamicdialog";
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  of,
+  switchMap,
+} from "rxjs";
+import { AddressData } from "../../../../model/dto/request/address-data-request";
+import { ErrorComponent } from "../../error/error.component";
 
 @Component({
-  selector: 'ui-form-endereco',
+  selector: "ui-form-endereco",
   standalone: true,
   imports: [
     CommonModule,
     PrimengModule,
     ErrorComponent,
-    ZipCodeValidatorDirective,
     FormsModule,
     ReactiveFormsModule,
-    TextOnlyDirective
+    TextOnlyDirective,
   ],
-  templateUrl: './form-endereco.component.html',
-  styleUrl: './form-endereco.component.scss',
-  providers: [ZipCodeService]
+  templateUrl: "./form-endereco.component.html",
+  styleUrl: "./form-endereco.component.scss",
+  providers: [ZipCodeService],
 })
 export class FormEnderecoComponent implements OnInit {
   @Input() enderecoForm!: FormGroup;
@@ -46,10 +51,8 @@ export class FormEnderecoComponent implements OnInit {
 
   zipCodeEncontrado = true;
 
-  private lastSearchedZipCode: string | null = null;
-
   constructor(
-    private readonly zipCodeService: ZipCodeService, 
+    private readonly zipCodeService: ZipCodeService,
     public dialogService: DialogService,
     private loadingService: LoadingService
   ) {}
@@ -59,32 +62,154 @@ export class FormEnderecoComponent implements OnInit {
       return;
     }
 
-    if (this.enderecoForm.get('partnerAddress')) {
-      this.isPartnerAddressSelected = !!this.enderecoForm.get('partnerAddress').value;
+    if (this.enderecoForm.get("partnerAddress")) {
+      this.isPartnerAddressSelected =
+        !!this.enderecoForm.get("partnerAddress").value;
+    }
+
+    this.setupZipCodeSearch();
+  }
+
+  private setupZipCodeSearch(): void {
+    const zipCodeControl = this.enderecoForm.get("zipCode");
+
+    if (zipCodeControl) {
+      zipCodeControl.valueChanges
+        .pipe(
+          debounceTime(500),
+          distinctUntilChanged(),
+          filter((zipCode: string) => {
+            return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
+          }),
+          switchMap((zipCode: string): Observable<AddressData | null> => {
+            if (zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode)) {
+              this.loadingService.setLoading(true, "form-endereco");
+              return this.zipCodeService.findLocationByZipCode(zipCode);
+            }
+            return of(null);
+          })
+        )
+        .subscribe({
+          next: (addressData) => {
+            if (addressData) {
+              this.zipCodeEncontrado = true;
+              this.loadingService.setLoading(false, "form-endereco");
+              this.atualizarCamposEndereco(addressData);
+            } else {
+              this.zipCodeEncontrado = false;
+              this.atualizarCamposEndereco({
+                zipCode: zipCodeControl?.value || "",
+                street: "",
+                city: "",
+                state: "",
+                country: "",
+                latitude: "",
+                longitude: "",
+              });
+            }
+          },
+          error: () => {
+            this.zipCodeEncontrado = false;
+            this.loadingService.setLoading(false, "form-endereco");
+            this.atualizarCamposEndereco({
+              zipCode: zipCodeControl?.value || "",
+              street: "",
+              city: "",
+              state: "",
+              country: "",
+              latitude: "",
+              longitude: "",
+            });
+          },
+        });
     }
   }
 
+  // searchZipCode() {
+  //   const zipCode = this.enderecoForm.get("zipCode")?.value;
+
+  //   if (!zipCode || zipCode.includes("_")) {
+  //     return;
+  //   }
+
+  //   const cleanZipCode = zipCode.replace(/\D/g, "");
+
+  //   if (cleanZipCode === this.lastSearchedZipCode) {
+  //     return;
+  //   }
+
+  //   if (/^0{5}$/.test(cleanZipCode)) {
+  //     this.enderecoForm.get("zipCode")?.setErrors({ invalidZipCode: true });
+  //     return;
+  //   }
+
+  //   if (cleanZipCode && cleanZipCode.length === 5) {
+  //     this.loadingService.setLoading(true, "form-endereco");
+  //     this.lastSearchedZipCode = cleanZipCode;
+
+  //     this.zipCodeService.findLocationByZipCode(cleanZipCode).subscribe({
+  //       next: (result) => {
+  //         if (result) {
+  //           this.zipCodeEncontrado = true;
+  //           this.atualizarCamposEndereco(result);
+  //         } else {
+  //           this.zipCodeEncontrado = false;
+  //           this.atualizarCamposEndereco({
+  //             zipCode: cleanZipCode,
+  //             street: "",
+  //             city: "",
+  //             state: "",
+  //             country: "",
+  //             latitude: "",
+  //             longitude: "",
+  //           });
+  //         }
+  //         this.loadingService.setLoading(false, "form-endereco");
+  //       },
+  //       error: () => {
+  //         this.zipCodeEncontrado = false;
+  //         this.atualizarCamposEndereco({
+  //           zipCode: cleanZipCode,
+  //           street: "",
+  //           city: "",
+  //           state: "",
+  //           country: "",
+  //           latitude: "",
+  //           longitude: "",
+  //         });
+  //         this.loadingService.setLoading(false, "form-endereco");
+  //       },
+  //     });
+  //   }
+  // }
+
   updatePartnerAddress(value: boolean) {
     this.isPartnerAddressSelected = value;
-    this.enderecoForm?.get('partnerAddress')?.setValue(value);
+    this.enderecoForm?.get("partnerAddress")?.setValue(value);
   }
 
   campoObrigatorio(campo: string): boolean {
-    return AbstractControlUtils.verificarCampoRequired(this.enderecoForm, campo);
+    return AbstractControlUtils.verificarCampoRequired(
+      this.enderecoForm,
+      campo
+    );
   }
 
   private atualizarCamposEndereco(result: AddressData) {
-    const zipCodeControl = this.enderecoForm.get('zipCode');
-    const streetControl = this.enderecoForm.get('street');
-    const cityControl = this.enderecoForm.get('city');
-    const stateControl = this.enderecoForm.get('state');
-    const countryControl = this.enderecoForm.get('country');
+    const zipCodeControl = this.enderecoForm.get("zipCode");
+    const streetControl = this.enderecoForm.get("street");
+    const cityControl = this.enderecoForm.get("city");
+    const stateControl = this.enderecoForm.get("state");
+    const countryControl = this.enderecoForm.get("country");
 
-    zipCodeControl?.setValue(result.zipCode || '');
-    streetControl?.setValue(result.street || '');
-    cityControl?.setValue(result.city || '');
-    stateControl?.setValue(result.state || '');
-    countryControl?.setValue(result.country || '');
+    console.log("Atualizando campos com:", result);
+    console.log("Street Control:", streetControl);
+
+    zipCodeControl?.setValue(result.zipCode || "");
+    streetControl?.setValue(result.street || "");
+    cityControl?.setValue(result.city || "");
+    stateControl?.setValue(result.state || "");
+    countryControl?.setValue(result.country || "");
 
     this.latitude = result.latitude || null;
     this.longitude = result.longitude || null;
@@ -97,64 +222,6 @@ export class FormEnderecoComponent implements OnInit {
     cityControl?.markAsTouched();
     stateControl?.markAsTouched();
     countryControl?.markAsTouched();
-  }
-
-  searchZipCode() {
-    const zipCode = this.enderecoForm.get('zipCode')?.value;
-
-    if (!zipCode || zipCode.includes('_')) {
-      return;
-    }
-
-    const cleanZipCode = zipCode.replace(/\D/g, '');
-
-    if (cleanZipCode === this.lastSearchedZipCode) {
-      return;
-    }
-
-    if (/^0{5}$/.test(cleanZipCode)) {
-      this.enderecoForm.get('zipCode')?.setErrors({ 'invalidZipCode': true });
-      return;
-    }
-
-    if (cleanZipCode && cleanZipCode.length === 5) {
-      this.loadingService.setLoading(true, 'form-endereco');
-      this.lastSearchedZipCode = cleanZipCode;
-
-      this.zipCodeService.findLocationByZipCode(cleanZipCode).subscribe({
-        next: (result) => {
-          if (result) {
-            this.zipCodeEncontrado = true;
-            this.atualizarCamposEndereco(result);
-          } else {
-            this.zipCodeEncontrado = false;
-            this.atualizarCamposEndereco({
-              zipCode: cleanZipCode,
-              street: '',
-              city: '',
-              state: '',
-              country: '',
-              latitude: '',
-              longitude: '',
-            });
-          }
-          this.loadingService.setLoading(false, 'form-endereco');
-        },
-        error: () => {
-          this.zipCodeEncontrado = false;
-          this.atualizarCamposEndereco({
-            zipCode: cleanZipCode,
-            street: '',
-            city: '',
-            state: '',
-            country: '',
-            latitude: '',
-            longitude: '',
-          });
-          this.loadingService.setLoading(false, 'form-endereco');
-        }
-      });
-    }
   }
 
   removeThisAddress() {

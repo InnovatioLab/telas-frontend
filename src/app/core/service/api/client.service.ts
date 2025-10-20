@@ -104,7 +104,9 @@ export class ClientService extends BaseHttpService<Client> {
 
   clientExistente(email: string): Observable<ClientResponseDTO> {
     return this.http
-      .get<ResponseDTO<ClientResponseDTO>>(`${this.baseUrl}/identification/${email}`)
+      .get<
+        ResponseDTO<ClientResponseDTO>
+      >(`${this.baseUrl}/identification/${email}`)
       .pipe(map((data: ResponseDTO<ClientResponseDTO>) => data.data));
   }
 

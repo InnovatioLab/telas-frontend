@@ -96,14 +96,19 @@
       <div formGroupName="address" class="address-group">
         <div class="form-row">
           <div class="form-field">
-            <label for="zipCode" class="required">ZipCode</label>
+            <label for="zipCode" class="required">Zip Code</label>
             <div class="zipcode-input-container">
-              <p-inputMask
-                mask="99999"
+              <input
+                type="text"
+                pInputText
                 formControlName="zipCode"
-                placeholder="00000"
-                id="zipCode"
-              ></p-inputMask>
+                placeholder="Enter 5-digit Zip Code"
+                class="w-full input-form"
+                minlength="5"
+                maxlength="5"
+                id="inp-zip-code"
+                pKeyFilter="int"
+              />
               <i
                 *ngIf="loadingZipCode"
                 class="pi pi-spin pi-spinner loading-icon"

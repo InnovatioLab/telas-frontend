@@ -31,7 +31,7 @@
 
 .search-phrase {
   text-align: center;
-  
+
   h2 {
     color: var(--cor-primaria);
     font-size: 1.5rem;
@@ -43,7 +43,9 @@
 
 .search-input-container {
   width: 100%;
-  max-width: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .address-search-input {
@@ -51,14 +53,15 @@
   display: flex;
   align-items: center;
   width: 100%;
+  max-width: 300px;
 
   input {
     width: 100%;
     padding: 12px 50px 12px 16px;
-    border: 2px solid var(--cor-primaria);
+    border: 1px solid var(--cor-primaria) !important;
     border-radius: 8px;
     font-size: 16px;
-    color: var(--cor-primaria);
+    color: var(--cor-primaria) !important;
     background-color: var(--cor-branca);
     transition: all 0.3s ease;
 
@@ -86,13 +89,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--cor-cinza);
+    color: var(--cor-cinza) !important;
     transition: all 0.3s ease;
     min-width: 36px;
     height: 36px;
 
     &:hover:not(:disabled) {
-      color: var(--cor-primaria);
+      color: var(--cor-primaria) !important;
     }
 
     &:disabled {

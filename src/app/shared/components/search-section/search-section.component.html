@@ -9,11 +9,11 @@
         width="auto"
       />
     </div>
-    
+
     <div class="search-phrase">
       <h2>Find Available Digital Screen Locations</h2>
     </div>
-    
+
     <div class="search-input-container">
       <div class="address-search-input">
         <input
@@ -21,7 +21,8 @@
           pInputText
           [(ngModel)]="searchText"
           [ngModelOptions]="{ standalone: true }"
-          placeholder="Enter zip code"
+          placeholder="Enter 5-digit Zip Code"
+          minlength="5"
           maxlength="5"
           id="search-zipcode"
           (keydown.enter)="onEnterKey($event)"
