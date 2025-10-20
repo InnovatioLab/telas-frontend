@@ -15,7 +15,7 @@ export class DialogoUtils {
         '500px': '90vw'
       },
       baseZIndex: 10000
-    };
+    }
   }
 
   static exibirSucesso(descricao: string, config?: IConfigDialogo): DynamicDialogConfig {
