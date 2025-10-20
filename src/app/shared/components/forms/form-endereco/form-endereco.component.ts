@@ -202,9 +202,6 @@ export class FormEnderecoComponent implements OnInit {
     const stateControl = this.enderecoForm.get("state");
     const countryControl = this.enderecoForm.get("country");
 
-    console.log("Atualizando campos com:", result);
-    console.log("Street Control:", streetControl);
-
     zipCodeControl?.setValue(result.zipCode || "");
     streetControl?.setValue(result.street || "");
     cityControl?.setValue(result.city || "");

@@ -6,10 +6,10 @@
         <ng-container *ngComponentOutlet="iconComponent"></ng-container>
       </ng-container>
       <ng-template #iconeString>
-        <span *ngIf="data.icon && typeof data.icon === 'string' && data.icon !== 'report'" [ngClass]="data.iconClass ?? ''" [class]="'icon-fill material-symbols-outlined dialogo-icone ' + data.icon">
+        <span *ngIf="data.icon && typeof data.icon === 'string' && data.icon !== 'report'" [ngClass]="data.iconClass ?? ''" [class]="'icon-fill material-symbols-outlined dialogo-icone ' + data.icon" aria-hidden="true">
           {{ data.icon }}
         </span>
-        <app-icon-atencao *ngIf="data.icon === 'report'"/>
+        <app-icon-atencao *ngIf="data.icon === 'report'" aria-hidden="true"/>
       </ng-template>
     </div>
     <span class="dialogo-titulo">

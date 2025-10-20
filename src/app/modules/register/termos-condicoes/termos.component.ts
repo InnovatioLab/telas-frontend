@@ -60,7 +60,6 @@ export class TermosComponent implements OnInit {
         if (client?.role === Role.ADMIN) {
           this.router.navigate(['/admin']);
         } else {
-          console.log("to aqui")
           this.router.navigate(['/client']);
         }
       });

@@ -103,7 +103,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   }
 
   closeSidebar(): void {
-    console.log("chamou fechar sidebar");
     this.visibilidadeSidebar = false;
     this.mapsService.selectPoint(null);
     this.localInfo = null;
@@ -122,7 +121,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   }
 
   addToList(): void {
-    console.log("chamou add to list");
     if (this.pontoSelecionado) {
       const monitorToAdd = this.pontoSelecionado;
       this.addToCart(monitorToAdd);

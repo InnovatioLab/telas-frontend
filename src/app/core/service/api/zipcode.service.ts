@@ -128,7 +128,6 @@ export class ZipCodeService {
     return this.http.get<ResponseDTO<LocalAddressResponse>>(url).pipe(
       map((response) => {
         if (response.data) {
-          console.log("Local API response:", response);
           return {
             zipCode: response.data?.zipCode,
             street: response.data?.street || "",

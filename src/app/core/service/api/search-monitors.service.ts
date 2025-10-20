@@ -133,7 +133,6 @@ export class SearchMonitorsService {
   }
 
   public findByZipCode(zipCode: string): Promise<MapPoint[]> {
-    console.log('SearchMonitorsService.findByZipCode called with:', zipCode);
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
     if (!zipCode || zipCode.trim().length < 5) {
@@ -149,7 +148,6 @@ export class SearchMonitorsService {
       .then(() => {
         const points = this.nearestMonitorsSubject.getValue();
         if (points.length === 0) {
-          console.log('Emitting error: No monitors found for ZIP code', cleanZipCode);
           this.errorSubject.next(
             `No monitors found for ZIP code ${cleanZipCode}`
           );

@@ -46,7 +46,6 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log("[ClientViewComponent] ngOnInit: Initializing component.");
     this.isLoading = true;
 
     window.addEventListener("monitors-found", ((e: Event) => {

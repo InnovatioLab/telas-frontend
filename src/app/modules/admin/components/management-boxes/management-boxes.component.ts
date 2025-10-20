@@ -319,7 +319,6 @@ export class ManagementBoxesComponent implements OnInit {
 
   onSelectBox(box: Box): void {
     this.selectedBoxForEdit = { ...box };
-    console.log(this.selectedBoxForEdit);
     this.selectedBoxAddress = null;
 
     // Carrega os endereços disponíveis incluindo o atual e define a seleção automaticamente

@@ -93,7 +93,6 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe({
         next: (monitors) => {
-          console.log('[AlertView] Monitors recebidos:', monitors);
           this.mapPoints = monitors.map(monitor => {
             let lat: number;
             let lng: number;
@@ -110,7 +109,6 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
             }
             
             const hasAvailableSlots = monitor.hasAvailableSlots;
-            console.log(`[AlertView] Monitor ${monitor.id}: hasAvailableSlots = ${hasAvailableSlots}`);
             
             return {
               id: monitor.id,

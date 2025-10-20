@@ -141,7 +141,6 @@ export class ManagementMonitorsComponent implements OnInit {
           result.totalElements ?? (result as any).totalRecords ?? 0
         );
         this.loading = false;
-        console.log(this.monitors);
       },
       error: (error) => {
         this.toastService.erro("Error loading monitors");

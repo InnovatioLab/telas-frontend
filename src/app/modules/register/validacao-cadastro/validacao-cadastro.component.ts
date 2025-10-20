@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
+import { Role } from "@app/model/client";
+import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
 import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -111,8 +113,8 @@ export class ValidacaoCadastroComponent implements OnInit {
       })
       .subscribe({
         next: (response: any) => {
-          if (response) {
-            this.router.navigate(["/terms-of-service"]);
+          if (response && this.authService.loggedClient) {
+            this.navigationRoleBased(this.authService.loggedClient);
           }
         },
       });
@@ -121,5 +123,12 @@ export class ValidacaoCadastroComponent implements OnInit {
   onInput(event: Event) {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(CAMPOS_REGEX.SOMENTE_NUMEROS_INPUT, "");
+  }
+
+  navigationRoleBased(client: AuthenticatedClientResponseDto) {
+    if (client.role !== Role.ADMIN) {
+      this.router.navigate(["/terms-of-service"]);
+    }
+    this.router.navigate(["/admin"]);
   }
 }

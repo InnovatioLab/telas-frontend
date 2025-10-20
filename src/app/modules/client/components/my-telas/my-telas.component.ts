@@ -153,17 +153,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.hasAds = true;
         this.isClientDataLoaded = true;
         
-        // Debug log para verificar os dados dos ads
-        console.log('Ads carregados:', this.ads);
-        this.ads.forEach((ad, index) => {
-          console.log(`Ad ${index}:`, {
-            id: ad.id,
-            name: ad.name,
-            validation: ad.validation,
-            submissionDate: ad.submissionDate
-          });
-        });
-        
         // Forçar detecção de mudanças para garantir renderização
         this.cdr.detectChanges();
         

@@ -68,13 +68,6 @@ export class ManagementClientsComponent implements OnInit {
         this.clients = result.list || [];
         this.totalRecords = result.totalElements || 0;
         this.loading = false;
-
-        console.log("Clients loaded:", {
-          clients: this.clients.length,
-          totalRecords: this.totalRecords,
-          currentPage: result.currentPage,
-          totalPages: result.totalPages,
-        });
       },
       error: (error) => {
         console.error("Error loading clients:", error);

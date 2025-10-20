@@ -1,5 +1,12 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, inject, OnDestroy, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  inject,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
@@ -35,14 +42,13 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   private instanceId = Math.random().toString(36).substr(2, 9);
 
   ngOnInit(): void {
-    console.log('SearchSectionComponent initialized - Instance ID:', this.instanceId);
-
-    this.errorSubscription = this.searchMonitorsService.error$.subscribe((error) => {
-      if (error) {
-        console.log('Error from service:', error, 'Instance ID:', this.instanceId);
-        this.toastService.erro(error);
+    this.errorSubscription = this.searchMonitorsService.error$.subscribe(
+      (error) => {
+        if (error) {
+          this.toastService.erro(error);
+        }
       }
-    });
+    );
   }
 
   ngOnDestroy(): void {
@@ -54,25 +60,33 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   onKeyPress(event: KeyboardEvent): void {
     const input = event.target as HTMLInputElement;
     const value = input.value;
-    
-    if (!/[0-9]/.test(event.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)) {
+
+    if (
+      !/[0-9]/.test(event.key) &&
+      !["Backspace", "Delete", "Tab", "Enter"].includes(event.key)
+    ) {
       event.preventDefault();
     }
-    
-    if (value.length >= 5 && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)) {
+
+    if (
+      value.length >= 5 &&
+      !["Backspace", "Delete", "Tab", "Enter"].includes(event.key)
+    ) {
       event.preventDefault();
     }
   }
 
   onPaste(event: ClipboardEvent): void {
     event.preventDefault();
-    const paste = (event.clipboardData || (window as any).clipboardData).getData('text');
-    const numbersOnly = paste.replace(/[^0-9]/g, '').substring(0, 5);
+    const paste = (
+      event.clipboardData || (window as any).clipboardData
+    ).getData("text");
+    const numbersOnly = paste.replace(/[^0-9]/g, "").substring(0, 5);
     this.searchText = numbersOnly;
   }
 
   onInputChange(): void {
-    this.searchText = this.searchText.replace(/[^0-9]/g, '');
+    this.searchText = this.searchText.replace(/[^0-9]/g, "");
   }
 
   onEnterKey(event: Event): void {
@@ -104,13 +118,13 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     }
 
     this.isSearching = true;
-    console.log('Starting search for ZIP code:', this.searchText, 'Instance ID:', this.instanceId);
-    
-    this.searchMonitorsService.findByZipCode(this.searchText)
+
+    this.searchMonitorsService
+      .findByZipCode(this.searchText)
       .then((monitors: MapPoint[]) => {
         this.isSearching = false;
         this.monitorsFound.emit(monitors);
-        
+
         if (monitors && monitors.length > 0) {
           this.toastService.sucesso(
             `Found ${monitors.length} monitors near ZIP code ${this.searchText}`
@@ -134,6 +148,6 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
 
   isInAllowedRoutes(): boolean {
     const currentRoute = this.router.url;
-    return currentRoute.includes('/client') || currentRoute === '/';
+    return currentRoute.includes("/client") || currentRoute === "/";
   }
 }
