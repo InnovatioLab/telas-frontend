@@ -12,13 +12,16 @@ import { GoogleMapsService } from "../../../../core/service/api/google-maps.serv
 import { LoadingService } from "../../../../core/service/state/loading.service";
 import { MapPoint } from "../../../../core/service/state/map-point.interface";
 import { MapsComponent } from "../../../../shared/components/maps/maps.component";
+import { SearchSectionComponent } from "../../../../shared/components/search-section/search-section.component";
 import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa/sidebar-mapa.component";
 
 @Component({
   selector: "app-admin-view",
   standalone: true,
-  imports: [CommonModule, FormsModule, MapsComponent, SidebarMapaComponent],
+  imports: [CommonModule, FormsModule, SearchSectionComponent, MapsComponent, SidebarMapaComponent],
   template: `
+    <app-search-section (monitorsFound)="onMonitorsFound($event)"></app-search-section>
+    
     <app-sidebar-mapa></app-sidebar-mapa>
 
     <div class="admin-view">
@@ -214,5 +217,11 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.mapsComponent?.isMapReady()) {
       this.mapsComponent?.forceReinitialize();
     }
+  }
+
+  onMonitorsFound(monitors: MapPoint[]): void {
+    // Handle monitors found from search
+    console.log('Monitors found in admin:', monitors);
+    // You can add logic here to handle the search results
   }
 }

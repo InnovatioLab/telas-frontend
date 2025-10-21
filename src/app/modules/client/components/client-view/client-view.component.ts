@@ -13,6 +13,7 @@ import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { MapsComponent } from "@app/shared/components/maps/maps.component";
 import { PopUpStepAddListComponent } from "@app/shared/components/pop-up-add-list/pop-up-add-list.component";
+import { SearchSectionComponent } from "@app/shared/components/search-section/search-section.component";
 import { SidebarMapaComponent } from "@app/shared/components/sidebar-mapa/sidebar-mapa.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 
@@ -23,6 +24,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
     CommonModule,
     RouterModule,
     PrimengModule,
+    SearchSectionComponent,
     MapsComponent,
     SidebarMapaComponent,
     PopUpStepAddListComponent,
@@ -155,5 +157,11 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addPointToList(point: MapPoint): void {
     this.mapsService.addToSavedPoints(point);
+  }
+
+  onMonitorsFound(monitors: MapPoint[]): void {
+    // Handle monitors found from search
+    console.log('Monitors found in client:', monitors);
+    // You can add logic here to handle the search results
   }
 }

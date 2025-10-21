@@ -1,22 +1,16 @@
 import { CommonModule } from "@angular/common";
-import {
-  Component,
-  EventEmitter,
-  inject,
-  OnDestroy,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, inject, OnInit, OnDestroy, Output, EventEmitter } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
-import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
+import { Router, NavigationEnd } from "@angular/router";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { LayoutService } from "@app/core/service/state/layout.service";
-import { MapPoint } from "@app/core/service/state/map-point.interface";
+import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { IconSearchComponent } from "@app/shared/icons/search.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { Subscription } from "rxjs";
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: "app-search-section",
@@ -37,18 +31,31 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   searchText = "";
   isSearching = false;
   isMobile = this.layoutService.isMobile;
+  showSearchSection = false;
   private errorSubscription: Subscription;
   private lastSearchTime = 0;
   private instanceId = Math.random().toString(36).substr(2, 9);
 
   ngOnInit(): void {
-    this.errorSubscription = this.searchMonitorsService.error$.subscribe(
-      (error) => {
-        if (error) {
-          this.toastService.erro(error);
-        }
+    console.log('SearchSectionComponent initialized - Instance ID:', this.instanceId);
+    
+    // Check initial route
+    this.checkRouteVisibility();
+    
+    // Subscribe to route changes
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.checkRouteVisibility();
+      });
+    
+    // Subscribe to search service errors to show toasts
+    this.errorSubscription = this.searchMonitorsService.error$.subscribe((error) => {
+      if (error) {
+        console.log('Error from service:', error, 'Instance ID:', this.instanceId);
+        this.toastService.erro(error);
       }
-    );
+    });
   }
 
   ngOnDestroy(): void {
@@ -60,33 +67,28 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   onKeyPress(event: KeyboardEvent): void {
     const input = event.target as HTMLInputElement;
     const value = input.value;
-
-    if (
-      !/[0-9]/.test(event.key) &&
-      !["Backspace", "Delete", "Tab", "Enter"].includes(event.key)
-    ) {
+    
+    // Allow only numbers and backspace/delete
+    if (!/[0-9]/.test(event.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)) {
       event.preventDefault();
     }
-
-    if (
-      value.length >= 5 &&
-      !["Backspace", "Delete", "Tab", "Enter"].includes(event.key)
-    ) {
+    
+    // Limit to 5 digits
+    if (value.length >= 5 && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)) {
       event.preventDefault();
     }
   }
 
   onPaste(event: ClipboardEvent): void {
     event.preventDefault();
-    const paste = (
-      event.clipboardData || (window as any).clipboardData
-    ).getData("text");
-    const numbersOnly = paste.replace(/[^0-9]/g, "").substring(0, 5);
+    const paste = (event.clipboardData || (window as any).clipboardData).getData('text');
+    const numbersOnly = paste.replace(/[^0-9]/g, '').substring(0, 5);
     this.searchText = numbersOnly;
   }
 
   onInputChange(): void {
-    this.searchText = this.searchText.replace(/[^0-9]/g, "");
+    // Remove non-numeric characters
+    this.searchText = this.searchText.replace(/[^0-9]/g, '');
   }
 
   onEnterKey(event: Event): void {
@@ -99,6 +101,7 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Debounce to prevent multiple rapid calls
     const now = Date.now();
     if (now - this.lastSearchTime < 1000) {
       return;
@@ -118,22 +121,33 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     }
 
     this.isSearching = true;
-
-    this.searchMonitorsService
-      .findByZipCode(this.searchText)
+    console.log('Starting search for ZIP code:', this.searchText, 'Instance ID:', this.instanceId);
+    
+    this.searchMonitorsService.findByZipCode(this.searchText)
       .then((monitors: MapPoint[]) => {
         this.isSearching = false;
         this.monitorsFound.emit(monitors);
-
+        
+        // Only show success toast if monitors were found
         if (monitors && monitors.length > 0) {
           this.toastService.sucesso(
             `Found ${monitors.length} monitors near ZIP code ${this.searchText}`
           );
         }
+        
+        // Clear the search input after search
+        this.searchText = "";
+        
+        // Error toast is handled by the service error$ observable
       })
-      .catch(() => {
+      .catch((error) => {
         this.isSearching = false;
         this.monitorsFound.emit([]);
+        
+        // Clear the search input even on error
+        this.searchText = "";
+        
+        // Error toast is handled by the service error$ observable
       });
   }
 
@@ -148,6 +162,13 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
 
   isInAllowedRoutes(): boolean {
     const currentRoute = this.router.url;
-    return currentRoute.includes("/client") || currentRoute === "/";
+    // Only show on exact routes: /client, /admin, or root /
+    return currentRoute === '/client' || currentRoute === '/admin' || currentRoute === '/';
+  }
+
+  private checkRouteVisibility(): void {
+    const currentRoute = this.router.url;
+    this.showSearchSection = currentRoute.includes('/client') || currentRoute.includes('/admin');
+    console.log('Route visibility check:', currentRoute, 'Show search section:', this.showSearchSection);
   }
 }
