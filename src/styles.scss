@@ -2439,3 +2439,18 @@ a {
 .p-dialog-title {
   color: var(--cor-branca) !important;
 }
+
+.p-inputswitch {
+  .p-inputswitch-slider {
+    background: var(--cor-branca) !important;
+    border: 2px solid var(--cor-cinza-medio) !important;
+  }
+
+  &.p-inputswitch-checked {
+    background: var(--cor-primaria-clara) !important;
+  }
+
+  &:not(.p-inputswitch-checked) {
+    background: var(--cor-cinza-medio) !important;
+  }
+}

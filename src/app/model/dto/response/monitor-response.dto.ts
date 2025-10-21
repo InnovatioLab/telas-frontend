@@ -10,7 +10,6 @@ export interface MonitorResponseDto {
   type: MonitorType;
   active: boolean;
   locationDescription?: string;
-  size?: number;
   productId?: string;
   maxBlocks?: number;
   fullAddress?: string;

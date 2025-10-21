@@ -8,7 +8,6 @@ export interface MonitorDto {
   id: string;
   active: boolean;
   type: string;
-  size: number;
   maxBlocks: number;
 }
 

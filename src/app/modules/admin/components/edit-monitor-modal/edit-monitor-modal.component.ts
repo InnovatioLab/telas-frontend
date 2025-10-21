@@ -51,10 +51,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
     private readonly zipCodeService: ZipCodeService
   ) {
     this.monitorForm = this.fb.group({
-      size: [
-        null,
-        [Validators.required, Validators.min(0.01), Validators.max(999.99)],
-      ],
       type: [null, [Validators.required]],
       active: [true, [Validators.required]],
       locationDescription: ["", [Validators.maxLength(200)]],
@@ -96,7 +92,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
     if (!this.monitor) return;
 
     const formData = {
-      size: this.monitor.size ?? 0,
       type: this.monitor.type ?? MonitorType.BASIC,
       active: this.monitor.active ?? true,
       locationDescription: this.monitor.locationDescription ?? "",
@@ -169,7 +164,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
       const addressValue = formValue.address;
 
       const monitorRequest: UpdateMonitorRequestDto = {
-        size: formValue.size,
         type: formValue.type,
         active: formValue.active,
         locationDescription: formValue.locationDescription,

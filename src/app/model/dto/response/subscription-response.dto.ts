@@ -33,6 +33,5 @@ export interface SubscriptionMinResponseDto {
 export interface SubscriptionMonitorResponseDto {
   id: string;
   type: MonitorType;
-  size: number;
   addressData: string;
 }

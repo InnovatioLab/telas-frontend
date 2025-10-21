@@ -53,10 +53,6 @@ export class WishlistItemComponent implements OnInit {
     }
   }
 
-  get displaySize(): string {
-    return `${this.item.size}" Onsite Digital Screen`;
-  }
-
   get displayAvailable(): string {
     return this.item.hasAvailableSlots ? "Available" : "Not Available";
   }

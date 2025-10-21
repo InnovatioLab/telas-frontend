@@ -14,20 +14,6 @@
     <div class="form-section">
       <h3>Monitor Information</h3>
       <div class="form-row">
-        <div class="form-field">
-          <label for="size">Size (inches)*</label>
-          <p-inputNumber
-            id="size"
-            formControlName="size"
-            [min]="0.01"
-            [max]="999.99"
-            placeholder="Enter size"
-          >
-          </p-inputNumber>
-          <small class="error-message" *ngIf="getFieldError('size')">{{
-            getFieldError("size")
-          }}</small>
-        </div>
         <div class="form-field" *ngIf="mode === 'edit'">
           <label for="type">Type*</label>
           <p-dropdown

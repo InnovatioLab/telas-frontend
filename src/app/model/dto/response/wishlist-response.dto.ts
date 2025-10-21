@@ -11,7 +11,6 @@ export interface MonitorWishlistResponseDto {
   addressLocationName?: string;
   addressLocationDescription?: string;
   locationDescription?: string;
-  size: number;
   fullAddress: string;
   latitude: number;
   longitude: number;

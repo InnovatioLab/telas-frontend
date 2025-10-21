@@ -11,7 +11,6 @@ export interface Monitor {
   active?: boolean;
   type?: MonitorType;
   locationDescription?: string;
-  size?: number;
   productId?: string;
   maxBlocks?: number;
   address?: Address;

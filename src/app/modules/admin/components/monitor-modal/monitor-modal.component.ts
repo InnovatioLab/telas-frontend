@@ -57,10 +57,6 @@ export class MonitorModalComponent implements OnInit, OnChanges {
     private readonly zipCodeService: ZipCodeService
   ) {
     this.monitorForm = this.fb.group({
-      size: [
-        null,
-        [Validators.required, Validators.min(1.0), Validators.max(999.99)],
-      ],
       type: [MonitorType.BASIC, [Validators.required]],
       active: [true, [Validators.required]],
       locationDescription: ["", [Validators.maxLength(255)]],
@@ -102,7 +98,6 @@ export class MonitorModalComponent implements OnInit, OnChanges {
     }
     if (changes["mode"] && this.mode === "create") {
       this.monitorForm.reset({
-        size: null,
         type: MonitorType.BASIC,
         active: true,
         locationDescription: "",
@@ -120,7 +115,6 @@ export class MonitorModalComponent implements OnInit, OnChanges {
 
   private patchFormWithMonitor(monitor: Monitor): void {
     this.monitorForm.patchValue({
-      size: monitor.size,
       type: monitor.type ?? MonitorType.BASIC,
       active: monitor.active,
       locationDescription: monitor.locationDescription,
@@ -185,7 +179,6 @@ export class MonitorModalComponent implements OnInit, OnChanges {
       const addressValue = formValue.address;
       if (this.mode === "create") {
         const monitorRequest: CreateMonitorRequestDto = {
-          size: formValue.size,
           locationDescription: formValue.locationDescription,
           address: {
             street: addressValue.street,
@@ -200,7 +193,6 @@ export class MonitorModalComponent implements OnInit, OnChanges {
         this.closeModal();
       } else if (this.mode === "edit" && this.monitor) {
         const updateRequest: UpdateMonitorRequestDto = {
-          size: formValue.size,
           type: formValue.type,
           active: formValue.active,
           locationDescription: formValue.locationDescription,

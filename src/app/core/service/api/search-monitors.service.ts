@@ -10,7 +10,6 @@ export interface MonitorMapsResponseDto {
   id: string;
   active: boolean;
   type: string;
-  size: number;
   latitude: number;
   longitude: number;
   hasAvailableSlots: boolean;
@@ -96,7 +95,7 @@ export class SearchMonitorsService {
       .filter((monitor) => monitor.latitude && monitor.longitude)
       .map((monitor) => ({
         id: monitor.id,
-        title: `Monitor ${monitor.type} - ${monitor.size}"`,
+        title: `Monitor ${monitor.type}`,
         description: this.buildMonitorDescription(monitor),
         latitude: monitor.latitude,
         longitude: monitor.longitude,

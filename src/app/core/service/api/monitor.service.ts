@@ -30,41 +30,41 @@ export class MonitorService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getMonitors(filters?: FilterMonitorRequestDto): Observable<Monitor[]> {
-    let params = new HttpParams();
+  // getMonitors(filters?: FilterMonitorRequestDto): Observable<Monitor[]> {
+  //   let params = new HttpParams();
 
-    if (filters) {
-      if (filters.page) params = params.set("page", filters.page.toString());
-      if (filters.size) params = params.set("size", filters.size.toString());
-      if (filters.sortBy) params = params.set("sortBy", filters.sortBy);
-      if (filters.sortDir) params = params.set("sortDir", filters.sortDir);
-      if (filters.genericFilter)
-        params = params.set("genericFilter", filters.genericFilter);
-    }
+  //   if (filters) {
+  //     if (filters.page) params = params.set("page", filters.page.toString());
+  //     if (filters.size) params = params.set("size", filters.size.toString());
+  //     if (filters.sortBy) params = params.set("sortBy", filters.sortBy);
+  //     if (filters.sortDir) params = params.set("sortDir", filters.sortDir);
+  //     if (filters.genericFilter)
+  //       params = params.set("genericFilter", filters.genericFilter);
+  //   }
 
-    return this.http
-      .get<
-        ResponseDto<PaginationResponseDto<MonitorResponseDto>>
-      >(`${this.apiUrl}/filters`, { params, ...this.headers })
-      .pipe(
-        map(
-          (
-            response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>
-          ) => {
-            if (response?.data?.list) {
-              const mappedList = response.data.list.map(
-                this.mapMonitorResponseToMonitor
-              );
-              return mappedList;
-            }
-            return [];
-          }
-        ),
-        catchError((error) => {
-          return of([]);
-        })
-      );
-  }
+  //   return this.http
+  //     .get<
+  //       ResponseDto<PaginationResponseDto<MonitorResponseDto>>
+  //     >(`${this.apiUrl}/filters`, { params, ...this.headers })
+  //     .pipe(
+  //       map(
+  //         (
+  //           response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>
+  //         ) => {
+  //           if (response?.data?.list) {
+  //             const mappedList = response.data.list.map(
+  //               this.mapMonitorResponseToMonitor
+  //             );
+  //             return mappedList;
+  //           }
+  //           return [];
+  //         }
+  //       ),
+  //       catchError((error) => {
+  //         return of([]);
+  //       })
+  //     );
+  // }
 
   getMonitorsWithPagination(
     filters?: FilterMonitorRequestDto
@@ -188,7 +188,6 @@ export class MonitorService {
   ): Monitor {
     const mappedMonitor = {
       id: monitorResponse.id,
-      size: monitorResponse.size || 0,
       active: monitorResponse.active,
       type: monitorResponse.type,
       locationDescription: monitorResponse.locationDescription,

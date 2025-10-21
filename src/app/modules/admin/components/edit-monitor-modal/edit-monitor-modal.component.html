@@ -12,85 +12,6 @@
 
   <form [formGroup]="monitorForm" (ngSubmit)="submit()" class="modal-content">
     <div class="form-section">
-      <h3>Screen Information</h3>
-
-      <div class="form-row">
-        <div class="form-field">
-          <label for="size" class="required">Size (inches)</label>
-          <p-inputNumber
-            id="size"
-            formControlName="size"
-            [min]="0.01"
-            [max]="999.99"
-            [minFractionDigits]="2"
-            [maxFractionDigits]="2"
-            placeholder="Enter size"
-          >
-          </p-inputNumber>
-          <small class="error-message" *ngIf="getFieldError('size')">{{
-            getFieldError("size")
-          }}</small>
-        </div>
-
-        <div class="form-field">
-          <label for="type" class="required">Type</label>
-          <p-dropdown
-            id="type"
-            formControlName="type"
-            [options]="monitorTypes"
-            placeholder="Select screen type"
-          >
-          </p-dropdown>
-          <small class="error-message" *ngIf="getFieldError('type')">{{
-            getFieldError("type")
-          }}</small>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-field">
-          <label for="active">Status</label>
-          <div
-            class="status-toggle-row"
-            style="display: flex; align-items: center"
-          >
-            <p-inputSwitch id="active" formControlName="active">
-            </p-inputSwitch>
-            <span
-              class="status-label"
-              style="margin-left: 1rem; font-weight: bold"
-              [ngStyle]="{
-                color: monitorForm.get('active')?.value ? '#388e3c' : '#d32f2f',
-              }"
-            >
-              {{ monitorForm.get("active")?.value ? "Active" : "Inactive" }}
-            </span>
-          </div>
-          <small class="error-message" *ngIf="getFieldError('active')">{{
-            getFieldError("active")
-          }}</small>
-        </div>
-
-        <div class="form-field">
-          <label for="locationDescription">Location Description</label>
-          <textarea
-            pInputTextarea
-            id="locationDescription"
-            formControlName="locationDescription"
-            placeholder="Enter location description"
-            rows="3"
-          >
-          </textarea>
-          <small
-            class="error-message"
-            *ngIf="getFieldError('locationDescription')"
-            >{{ getFieldError("locationDescription") }}</small
-          >
-        </div>
-      </div>
-    </div>
-
-    <div class="form-section">
       <h3>Address Information</h3>
 
       <div formGroupName="address" class="address-group">
@@ -207,15 +128,53 @@
       </div>
     </div>
 
-    <div
-      class="form-actions"
-      style="
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-      "
-    >
+    <div class="form-section">
+      <h3>Screen Information</h3>
+
+      <div class="grid form-group">
+        <div class="form-field col-3">
+          <label for="active">Status</label>
+          <div
+            class="status-toggle-row"
+            style="display: flex; align-items: center"
+          >
+            <p-inputSwitch id="active" formControlName="active">
+            </p-inputSwitch>
+            <span
+              class="status-label"
+              style="margin-left: 1rem; font-weight: bold"
+              [ngStyle]="{
+                color: monitorForm.get('active')?.value ? '#388e3c' : '#d32f2f',
+              }"
+            >
+              {{ monitorForm.get("active")?.value ? "Active" : "Inactive" }}
+            </span>
+          </div>
+          <small class="error-message" *ngIf="getFieldError('active')">{{
+            getFieldError("active")
+          }}</small>
+        </div>
+
+        <div class="form-field col-9">
+          <label for="locationDescription">Location Description</label>
+          <textarea
+            pInputTextarea
+            id="locationDescription"
+            formControlName="locationDescription"
+            placeholder="Enter location description"
+            rows="3"
+          >
+          </textarea>
+          <small
+            class="error-message"
+            *ngIf="getFieldError('locationDescription')"
+            >{{ getFieldError("locationDescription") }}</small
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="container-buttons">
       <button
         pButton
         pRipple

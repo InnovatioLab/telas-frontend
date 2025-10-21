@@ -66,9 +66,6 @@
         <th scope="col" pSortableColumn="active">
           Status <p-sortIcon field="active"></p-sortIcon>
         </th>
-        <th scope="col" pSortableColumn="size">
-          Size <p-sortIcon field="size"></p-sortIcon>
-        </th>
         <th scope="col" pSortableColumn="type">
           Type <p-sortIcon field="type"></p-sortIcon>
         </th>
@@ -87,7 +84,6 @@
             [severity]="monitor.active ? 'success' : 'danger'"
           ></p-badge>
         </td>
-        <td>{{ monitor.size + " in." }}</td>
         <td>
           {{
             monitor.type && monitor.type.length

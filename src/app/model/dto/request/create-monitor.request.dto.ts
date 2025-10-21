@@ -3,13 +3,11 @@ import { MonitorType } from "@app/model/monitors";
 import { AddressRequestDTO } from "./client-request.dto";
 
 export interface CreateMonitorRequestDto {
-  size: number;
   locationDescription?: string;
   address: AddressRequestDTO;
 }
 
 export interface UpdateMonitorRequestDto {
-  size: number;
   addressId?: string;
   address?: {
     street: string;

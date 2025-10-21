@@ -125,7 +125,6 @@ export class CreateMonitorModalComponent implements OnInit {
       const addressValue = formValue.address;
 
       const monitorRequest: CreateMonitorRequestDto = {
-        size: formValue.size,
         locationDescription: formValue.locationDescription,
         address: {
           street: addressValue.street,

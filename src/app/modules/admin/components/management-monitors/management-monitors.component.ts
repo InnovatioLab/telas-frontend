@@ -462,7 +462,6 @@ export class ManagementMonitorsComponent implements OnInit {
       }));
 
       const payload = {
-        size: this.selectedMonitorForAds.size,
         addressId: this.selectedMonitorForAds.address.id,
         locationDescription: this.selectedMonitorForAds.locationDescription,
         type: this.selectedMonitorForAds.type,
@@ -523,10 +522,6 @@ export class ManagementMonitorsComponent implements OnInit {
 
   getMonitorDetails(monitor: Monitor): string {
     const details = [];
-
-    if (monitor.size) {
-      details.push(`Size: ${monitor.size}"`);
-    }
 
     if (monitor.type) {
       details.push(`Type: ${monitor.type}`);
