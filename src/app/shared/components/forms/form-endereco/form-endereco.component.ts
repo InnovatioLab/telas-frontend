@@ -125,64 +125,6 @@ export class FormEnderecoComponent implements OnInit {
     }
   }
 
-  // searchZipCode() {
-  //   const zipCode = this.enderecoForm.get("zipCode")?.value;
-
-  //   if (!zipCode || zipCode.includes("_")) {
-  //     return;
-  //   }
-
-  //   const cleanZipCode = zipCode.replace(/\D/g, "");
-
-  //   if (cleanZipCode === this.lastSearchedZipCode) {
-  //     return;
-  //   }
-
-  //   if (/^0{5}$/.test(cleanZipCode)) {
-  //     this.enderecoForm.get("zipCode")?.setErrors({ invalidZipCode: true });
-  //     return;
-  //   }
-
-  //   if (cleanZipCode && cleanZipCode.length === 5) {
-  //     this.loadingService.setLoading(true, "form-endereco");
-  //     this.lastSearchedZipCode = cleanZipCode;
-
-  //     this.zipCodeService.findLocationByZipCode(cleanZipCode).subscribe({
-  //       next: (result) => {
-  //         if (result) {
-  //           this.zipCodeEncontrado = true;
-  //           this.atualizarCamposEndereco(result);
-  //         } else {
-  //           this.zipCodeEncontrado = false;
-  //           this.atualizarCamposEndereco({
-  //             zipCode: cleanZipCode,
-  //             street: "",
-  //             city: "",
-  //             state: "",
-  //             country: "",
-  //             latitude: "",
-  //             longitude: "",
-  //           });
-  //         }
-  //         this.loadingService.setLoading(false, "form-endereco");
-  //       },
-  //       error: () => {
-  //         this.zipCodeEncontrado = false;
-  //         this.atualizarCamposEndereco({
-  //           zipCode: cleanZipCode,
-  //           street: "",
-  //           city: "",
-  //           state: "",
-  //           country: "",
-  //           latitude: "",
-  //           longitude: "",
-  //         });
-  //         this.loadingService.setLoading(false, "form-endereco");
-  //       },
-  //     });
-  //   }
-  // }
-
   updatePartnerAddress(value: boolean) {
     this.isPartnerAddressSelected = value;
     this.enderecoForm?.get("partnerAddress")?.setValue(value);
