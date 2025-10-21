@@ -1,11 +1,39 @@
-:host ::ng-deep {
+::ng-deep {
   .notification-sidebar {
-    width: 90%;
-    max-width: 380px;
+    div,
+    p,
+    .sidebar-title {
+      color: black !important;
+    }
 
-    .p-sidebar-header {
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #dee2e6;
+    .p-drawer-content {
+      overflow: auto !important;
+    }
+
+    .p-drawer-header {
+      display: flex !important;
+      align-items: center !important;
+      background: var(--cor-primaria) !important;
+
+      h3 {
+        color: var(--cor-branca) !important;
+        margin-bottom: 0px;
+      }
+    }
+
+    a {
+      color: blue !important;
+      text-decoration: underline !important;
+    }
+
+    div,
+    p,
+    a {
+      font-size: 14px !important;
+    }
+
+    p {
+      margin-bottom: 0px !important;
     }
 
     .sidebar-title {
@@ -14,24 +42,32 @@
       margin: 0;
     }
 
-    .p-sidebar-content {
-      padding: 0;
-    }
-
     .notification-list {
       display: flex;
       flex-direction: column;
+      gap: 10px;
     }
 
     .notification-item {
-      display: flex;
-      gap: 1rem;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #f0f0f0;
-      transition: background-color 0.2s;
+      background-color: #e6f4ff;
+      border-left: 4px solid #049dd9;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #075473;
 
       &:hover {
-        background-color: #f8f9fa;
+        background-color: #d0ecff;
+      }
+
+      &.visualized {
+        background-color: var(--cor-cinza-fundo);
+        border-left: 4px solid var(--cor-cinza);
+        color: var(--cor-cinza-escuro);
+
+        &:hover {
+          background-color: var(--cor-cinza-medio);
+        }
       }
     }
 
@@ -41,31 +77,46 @@
       margin-top: 0.25rem;
     }
 
+    .informacoes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .notification-content {
-      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
     }
 
     .notification-title {
-      font-weight: 600;
-      margin: 0 0 0.25rem 0;
-      color: #343a40;
+      font-size: 18px !important;
+      margin: 0px;
     }
 
-    .notification-message {
-      margin: 0 0 0.5rem 0;
-      font-size: 0.9rem;
-      color: #6c757d;
-      line-height: 1.5;
+    .field {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 0px !important;
+
+      .field-label,
+      .label-campo {
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .field-value,
+      .valor-campo {
+        font-weight: 400;
+        font-size: 14px;
+      }
     }
 
-    .notification-date {
-      font-size: 0.75rem;
-      color: #adb5bd;
-    }
-
-    .p-sidebar-footer {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid #dee2e6;
+    .link-text {
+      font-weight: 500;
+      font-size: 12px;
+      cursor: pointer;
     }
 
     .empty-state {
@@ -77,11 +128,74 @@
       text-align: center;
       color: #6c757d;
       padding: 2rem;
-      
+
       i {
         margin-bottom: 1rem;
         font-size: 2.5rem !important;
       }
+    }
+
+    @media screen and (max-width: 768px) {
+      .informacoes {
+        display: flex;
+        flex-direction: column;
+      }
+
+      p,
+      .link-text {
+        font-size: 12px !important;
+      }
+
+      .notification-title {
+        font-size: 1rem !important;
+      }
+
+      .field {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+
+        .field-value,
+        .valor-campo,
+        .field-label,
+        .label-campo,
+        .link-text {
+          font-size: 12px !important;
+        }
+      }
+
+      .p-button-label {
+        font-size: 12px !important;
+      }
+    }
+  }
+}
+
+:host ::ng-deep {
+  .notification-sidebar {
+    &.p-sidebar {
+      overflow-y: auto !important;
+    }
+
+    .p-sidebar-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .p-sidebar-header {
+      padding: 0px;
+      font-size: 20px;
+      font-weight: 600;
+      padding-left: 15px;
+    }
+
+    .p-sidebar-content {
+      padding: 0;
+    }
+
+    .p-sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #dee2e6;
     }
   }
 }

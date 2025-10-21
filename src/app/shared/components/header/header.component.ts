@@ -1,4 +1,3 @@
-import { NotificationsService } from '@app/core/service/api/notifications.service';
 import { CommonModule } from "@angular/common";
 import {
   AfterViewInit,
@@ -16,6 +15,7 @@ import { NavigationEnd, Router, RouterModule } from "@angular/router";
 import { ShowInRoutesDirective } from "@app/core/directives/show-in-routes.directive";
 import { CartService } from "@app/core/service/api/cart.service";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
+import { NotificationsService } from '@app/core/service/api/notifications.service';
 import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { Authentication } from "@app/core/service/auth/autenthication";

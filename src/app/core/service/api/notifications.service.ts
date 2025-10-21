@@ -1,20 +1,25 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
-import { Notification } from '@app/modules/notificacao/models/notification';
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { Injectable, computed, inject, signal } from "@angular/core";
+import { Notification } from "@app/modules/notificacao/models/notification";
+import { Observable, of } from "rxjs";
+import { catchError, map, tap } from "rxjs/operators";
+import { environment } from "src/environments/environment";
+
+interface FetchNotificationsRequest {
+  ids: string[];
+}
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class NotificationsService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}notifications`;
-  private readonly storageName = 'telas_token';
+  private readonly storageName = "telas_token";
 
   private readonly _allNotifications = signal<Notification[]>([]);
   private readonly _currentlyVisibleCount = signal<number>(10);
+
   public readonly visibleNotifications = computed(() => {
     const all = this._allNotifications() || [];
     const count = this._currentlyVisibleCount() || 0;
@@ -25,20 +30,28 @@ export class NotificationsService {
     const all = this._allNotifications() || [];
     return Array.isArray(all) ? all.length : 0;
   });
-  public readonly hasMoreToLoad = computed(() => this._currentlyVisibleCount() < this.totalNotifications());
+
+  public readonly hasMoreToLoad = computed(
+    () => this._currentlyVisibleCount() < this.totalNotifications()
+  );
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem(this.storageName);
     return new HttpHeaders({
-      Authorization: `Bearer ${token || ''}`,
+      Authorization: `Bearer ${token || ""}`,
     });
   }
 
-  public fetchAllNotifications(body: any = {}): Observable<void> {
+  public fetchAllNotifications(
+    body: FetchNotificationsRequest = { ids: [] }
+  ): Observable<void> {
     return this.http
-      .request<any>('get', this.apiUrl, {
+      .get<any>(this.apiUrl, {
         headers: this.getHeaders(),
-        body: body,
+        params: (body.ids || []).reduce(
+          (p, id) => p.append("ids", id),
+          new HttpParams()
+        ),
       })
       .pipe(
         tap((response) => {
@@ -49,7 +62,7 @@ export class NotificationsService {
         }),
         map((): void => void 0),
         catchError((error) => {
-          console.error('Erro ao buscar notificações:', error);
+          console.error("Erro ao buscar notificações:", error);
           this._allNotifications.set([]);
           return of(void 0);
         })
@@ -59,10 +72,17 @@ export class NotificationsService {
   public markAsRead(id: string): void {
     const all = this._allNotifications() || [];
     const notification = all.find((n) => n.id === id);
+
     if (notification && !notification.visualized) {
-      this.fetchAllNotifications({ ids: [id] }).subscribe(() => {
+      const request: FetchNotificationsRequest = {
+        ids: [id],
+      };
+
+      this.fetchAllNotifications(request).subscribe(() => {
         this._allNotifications.update((notifications) =>
-          (notifications || []).map((n) => (n.id === id ? { ...n, visualized: true } : n))
+          (notifications || []).map((n) =>
+            n.id === id ? { ...n, visualized: true } : n
+          )
         );
       });
     }
@@ -74,7 +94,9 @@ export class NotificationsService {
       .map((n) => n.id);
     if (unreadIds.length > 0) {
       this.fetchAllNotifications({ ids: unreadIds }).subscribe(() => {
-        this._allNotifications.update((notifications) => (notifications || []).map((n) => ({ ...n, visualized: true })));
+        this._allNotifications.update((notifications) =>
+          (notifications || []).map((n) => ({ ...n, visualized: true }))
+        );
       });
     }
   }
@@ -87,6 +109,10 @@ export class NotificationsService {
 
   public resetState(): void {
     this._allNotifications.set([]);
+    this._currentlyVisibleCount.set(10);
+  }
+
+  public resetCount(): void {
     this._currentlyVisibleCount.set(10);
   }
 }

@@ -1,46 +1,75 @@
 <p-sidebar
   [(visible)]="visible"
   (onHide)="closeSidebar()"
+  [blockScroll]="false"
+  [showCloseIcon]="false"
   position="right"
   styleClass="notification-sidebar"
+  [style]="{ width: '90%', maxWidth: '550px' }"
 >
   <ng-template pTemplate="header">
-    <h3 class="sidebar-title">Notificações</h3>
+    <h3 class="sidebar-title">Notifications</h3>
   </ng-template>
 
   <ng-template pTemplate="content">
     @if (notificationsService.visibleNotifications().length > 0) {
-      <div class="notification-list">
-        @for (notification of notificationsService.visibleNotifications(); track notification.id) {
-          <div class="notification-item" (click)="markAsRead(notification)" [class.visualized]="notification.visualized">
-            <div class="notification-icon">
-              <i class="pi pi-info-circle"></i>
-            </div>
-            <div class="notification-content">
-              <p class="notification-title">{{ notification.reference }}</p>
-              <p class="notification-message">{{ notification.message }}</p>
-            </div>
+      <div class="notification-list w-full p-2">
+        @for (
+          notification of notificationsService.visibleNotifications();
+          track notification.id
+        ) {
+          <div
+            class="notification-item flex align-items-center w-full gap-3 px-2 pt-2 pb-3"
+            (click)="markAsRead(notification)"
+            [class.visualized]="notification.visualized"
+          >
+            <div
+              [innerHTML]="notification.message"
+              class="notification-content"
+            ></div>
           </div>
         }
       </div>
     } @else {
-      <div class="empty-state flex flex-column align-items-center justify-content-center gap-3 p-5">
+      <div
+        class="empty-state flex flex-column align-items-center justify-content-center gap-3 p-5"
+      >
         <app-icon-notifications [size]="48"></app-icon-notifications>
         <div class="text-center">
-          <div class="empty-title">Você não tem notificações</div>
-          <div class="empty-subtitle">Quando houver novidades, avisaremos aqui.</div>
+          <div class="empty-title">You have no notifications</div>
+          <div class="empty-subtitle">
+            When there are new updates, we will notify you here.
+          </div>
         </div>
       </div>
     }
   </ng-template>
 
   <ng-template pTemplate="footer">
-    @if (notificationsService.hasMoreToLoad()) {
-      <p-button
-        label="Carregar Mais"
-        (click)="loadMore()"
-        styleClass="p-button-secondary p-button-sm w-full">
-      </p-button>
-    }
+    <div
+      class="flex w-full align-items-center gap-3"
+      [ngClass]="
+        notificationsService.hasMoreToLoad()
+          ? 'justify-content-between'
+          : 'justify-content-end'
+      "
+    >
+      @if (notificationsService.hasMoreToLoad()) {
+        <button
+          pButton
+          label="Load More"
+          (click)="loadMore(); $event.stopPropagation()"
+          styleClass="p-button-secondary p-button-sm"
+        ></button>
+      }
+
+      <button
+        pButton
+        label="Mark All as Read"
+        (click)="markAllAsRead()"
+        styleClass="p-button-text p-button-sm"
+        class="justify-self-end"
+      ></button>
+    </div>
   </ng-template>
 </p-sidebar>
