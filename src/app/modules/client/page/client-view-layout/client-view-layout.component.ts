@@ -5,7 +5,6 @@ import { ContentWrapperComponent } from "@app/shared/components/content-wrapper/
 import { HeaderComponent } from "@app/shared/components/header/header.component";
 import { MenuComponent } from "@app/shared/components/menu/menu.component";
 import { RodapeComponent } from "@app/shared/components/rodape/rodape.component";
-import { SearchSectionComponent } from "@app/shared/components/search-section/search-section.component";
 
 @Component({
   selector: "app-client-view-layout",
@@ -14,7 +13,6 @@ import { SearchSectionComponent } from "@app/shared/components/search-section/se
   standalone: true,
   imports: [
     HeaderComponent,
-    SearchSectionComponent,
     RouterModule,
     MenuComponent,
     ContentWrapperComponent,
@@ -22,7 +20,5 @@ import { SearchSectionComponent } from "@app/shared/components/search-section/se
   ],
 })
 export class ClientViewLayoutComponent {
-  onMonitorsFound(monitors: MapPoint[]): void {
-   
-  }
+  onMonitorsFound(monitors: MapPoint[]): void {}
 }
