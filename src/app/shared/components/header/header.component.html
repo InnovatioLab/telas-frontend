@@ -180,11 +180,7 @@
 
           <div class="right-container">
             <div class="icons-container">
-              <app-alert-counter
-                *ngIf="isAdministrador()"
-                [toggleSidebar]="toggleAdminSidebar.bind(this)"
-              >
-              </app-alert-counter>
+              
 
               <button
                 pButton
@@ -260,12 +256,6 @@
               {{ itensCarrinho() }}</span
             >
           </button>
-
-          <app-alert-counter
-            *ngIf="isAdministrador() && !isAdminSidebarVisible"
-            [toggleSidebar]="toggleAdminSidebar.bind(this)"
-          >
-          </app-alert-counter>
 
           <button
             class="icon-button"

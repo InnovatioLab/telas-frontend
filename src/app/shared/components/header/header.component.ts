@@ -15,7 +15,7 @@ import { NavigationEnd, Router, RouterModule } from "@angular/router";
 import { ShowInRoutesDirective } from "@app/core/directives/show-in-routes.directive";
 import { CartService } from "@app/core/service/api/cart.service";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
-import { NotificationsService } from '@app/core/service/api/notifications.service';
+import { NotificationsService } from "@app/core/service/api/notifications.service";
 import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
@@ -27,7 +27,6 @@ import { NotificationState } from "@app/modules/notificacao/models";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { filter, Subject, Subscription, takeUntil, timer } from "rxjs";
-import { AlertCounterComponent } from "../alert-counter/alert-counter.component";
 import { CheckoutListSideBarComponent } from "../checkout-list-side-bar/checkout-list-side-bar.component";
 import { NotificationSidebarComponent } from "../notification-sidebar/notification-sidebar.component";
 
@@ -50,9 +49,8 @@ interface AdminSidebarPinChangedEvent {
     CheckoutListSideBarComponent,
     FormsModule,
     IconsModule,
-    AlertCounterComponent,
     ShowInRoutesDirective,
-    NotificationSidebarComponent
+    NotificationSidebarComponent,
   ],
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"],
@@ -76,7 +74,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   menuAberto = false;
   isDarkMode = false;
   isAdminSidebarVisible = false;
-    isNotificationsSidebarVisible = false;
+  isNotificationsSidebarVisible = false;
 
   headerAllowedRoutes = ["/client", "/admin"];
 
@@ -106,7 +104,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly searchSubscriptions = new Subscription();
   private readonly destroy$ = new Subject<void>();
   private cartSubscription: Subscription;
-
 
   constructor(
     public router: Router,
@@ -184,26 +181,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       this.isAdminSidebarVisible = savedVisibility === "true";
     }
 
-    window.addEventListener(
-      "admin-sidebar-visibility-changed",
-      (e: CustomEvent<ToggleAdminSidebarEvent>) => {
-        if (e.detail?.visible !== undefined) {
-          this.isAdminSidebarVisible = e.detail.visible;
-          this.cdr.detectChanges();
-        }
-      }
-    );
-
-    window.addEventListener(
-      "admin-sidebar-pin-changed",
-      (e: CustomEvent<AdminSidebarPinChangedEvent>) => {
-        if (e.detail) {
-          this.isAdminSidebarVisible = e.detail.visible;
-          this.cdr.detectChanges();
-        }
-      }
-    );
-
     // Inicializar subscription para mudanças do carrinho
     this.subscribeToCartChanges();
 
@@ -222,8 +199,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       this.cdr.detectChanges();
     });
   }
-
-
 
   private initializeUserServices() {
     if (this.isInAllowedRoutes()) {
@@ -244,7 +219,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
           this.itensSalvos.set(points?.length || 0);
         });
 
-
       this.searchSubscriptions.add(
         this.googleMapsService.searchError$.subscribe((error) => {
           if (error) {
@@ -252,13 +226,10 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         })
       );
-
     }
 
     // Removed search monitors subscription - now handled by SearchSectionComponent
   }
-
-
 
   ngOnDestroy() {
     if (this.resizeListener) {
@@ -355,8 +326,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-
-
   toggleMenu(): void {
     if (!this.isLogado()) return;
 
@@ -398,7 +367,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isAdminSidebarVisible = isVisible;
   }
 
-
   isInAllowedRoutes(): boolean {
     const currentUrl = this.router.url;
 
@@ -407,8 +375,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       return exactRoutePattern.test(currentUrl);
     });
   }
-
-
 
   private subscribeToCartChanges(): void {
     if (this.isLogado()) {

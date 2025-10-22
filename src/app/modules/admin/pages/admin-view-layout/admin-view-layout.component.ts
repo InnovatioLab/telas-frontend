@@ -2,7 +2,6 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { AlertAdminSidebarComponent } from "@app/shared/components/alert-admin-sidebar/alert-admin-sidebar.component";
 import { ContentWrapperComponent } from "@app/shared/components/content-wrapper/content-wrapper.component";
 import { HeaderComponent } from "@app/shared/components/header/header.component";
 import { MenuComponent } from "@app/shared/components/menu/menu.component";
@@ -20,7 +19,6 @@ interface ToggleAdminSidebarEvent {
     RouterModule,
     HeaderComponent,
     MenuComponent,
-    AlertAdminSidebarComponent,
     ContentWrapperComponent,
     RodapeComponent,
   ],
