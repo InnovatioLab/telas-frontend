@@ -19,6 +19,6 @@ export class MenuComponent {
   private readonly authentication = inject(AutenticacaoService);
 
   get isAdministrador(): boolean {
-    return this.authentication._loggedClientSignal().role === Role.ADMIN;
+    return this.authentication._loggedClientSignal()?.role === Role.ADMIN;
   }
 }
