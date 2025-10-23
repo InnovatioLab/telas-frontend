@@ -5,13 +5,13 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Role } from "@app/model/client";
-import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
 import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from "@app/utility/src";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { firstValueFrom } from "rxjs";
 import { CadastrarSenhaComponent } from "../cadastrar-senha/cadastrar-senha.component";
 
 @Component({
@@ -45,6 +45,7 @@ export class ValidacaoCadastroComponent implements OnInit {
     private readonly service: ClientService,
     private readonly dialogService: DialogService,
     private readonly authService: AutenticacaoService,
+    private readonly clientService: ClientService,
     private readonly router: Router
   ) {
     this.validacaoForm = this.formBuilder.group({
@@ -113,8 +114,8 @@ export class ValidacaoCadastroComponent implements OnInit {
       })
       .subscribe({
         next: (response: any) => {
-          if (response && this.authService.loggedClient) {
-            this.navigationRoleBased(this.authService.loggedClient);
+          if (response) {
+            this.handleNavigation();
           }
         },
       });
@@ -125,10 +126,19 @@ export class ValidacaoCadastroComponent implements OnInit {
     input.value = input.value.replace(CAMPOS_REGEX.SOMENTE_NUMEROS_INPUT, "");
   }
 
-  navigationRoleBased(client: AuthenticatedClientResponseDto) {
-    if (client.role !== Role.ADMIN) {
+  async handleNavigation() {
+    const authenticatedClient = await firstValueFrom(
+      this.clientService.getAuthenticatedClient()
+    );
+
+    console.log("Authenticated Client:", authenticatedClient);
+
+    if (authenticatedClient.role !== Role.ADMIN) {
+      console.log("Navigating to terms-of-service");
       this.router.navigate(["/terms-of-service"]);
+    } else {
+      console.log("Navigating to admin");
+      this.router.navigate(["/admin"]);
     }
-    this.router.navigate(["/admin"]);
   }
 }

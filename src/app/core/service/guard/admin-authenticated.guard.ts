@@ -1,24 +1,36 @@
-import { inject } from "@angular/core";
-import { CanActivateFn, Router } from "@angular/router";
+import { Injectable } from "@angular/core";
+import { CanActivate, Router } from "@angular/router";
 import { Role } from "@app/model/client";
+import { firstValueFrom } from "rxjs";
+import { ClientService } from "../api/client.service";
 import { Authentication } from "../auth/autenthication";
 
-export const AdminAuthenticatedGuard: CanActivateFn = (route, state) => {
-  const router = inject(Router);
-  const authentication = inject(Authentication);
+@Injectable({
+  providedIn: "root",
+})
+export class AdminAuthenticatedGuard implements CanActivate {
+  constructor(
+    private readonly authentication: Authentication,
+    private readonly clientService: ClientService,
+    private readonly router: Router
+  ) {}
 
-  if (!authentication.isTokenValido()) {
-    router.navigate(["/login"]);
-    return false;
+  async canActivate() {
+    if (!this.authentication.isTokenValido()) {
+      this.router.navigate(["/login"]);
+      return false;
+    }
+
+    const authenticatedClient = await firstValueFrom(
+      this.clientService.getAuthenticatedClient()
+    );
+    const userRole = authenticatedClient?.role;
+
+    if (userRole !== Role.ADMIN) {
+      this.router.navigate(["/client"]);
+      return false;
+    }
+
+    return true;
   }
-
-  const client = authentication._clientSignal();
-  const userRole = client?.role;
-
-  if (userRole !== Role.ADMIN) {
-    router.navigate(["/client"]);
-    return false;
-  }
-
-  return true;
-};
+}

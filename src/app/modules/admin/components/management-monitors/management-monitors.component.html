@@ -144,9 +144,11 @@
               class="p-button-rounded p-button-danger p-button-text"
               (click)="deleteMonitor(monitor)"
               [disabled]="!monitor.canBeDeleted"
-              [pTooltip]="
-                'This Screen has an active subscription and cannot be deleted.'
-              "
+              pTooltip="{{
+                !monitor.canBeDeleted
+                  ? 'This Screen has an active subscription and cannot be deleted.'
+                  : 'Delete Screen'
+              }}"
               tooltipPosition="top"
               style="background: rgba(244, 63, 94, 0.12)"
             >

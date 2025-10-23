@@ -94,32 +94,15 @@ export class FormEnderecoComponent implements OnInit {
             if (addressData) {
               this.zipCodeEncontrado = true;
               this.loadingService.setLoading(false, "form-endereco");
-              this.atualizarCamposEndereco(addressData);
+              this.fillAddressFields(addressData);
             } else {
               this.zipCodeEncontrado = false;
-              this.atualizarCamposEndereco({
-                zipCode: zipCodeControl?.value || "",
-                street: "",
-                city: "",
-                state: "",
-                country: "",
-                latitude: "",
-                longitude: "",
-              });
+              this.loadingService.setLoading(false, "form-endereco");
             }
           },
           error: () => {
             this.zipCodeEncontrado = false;
             this.loadingService.setLoading(false, "form-endereco");
-            this.atualizarCamposEndereco({
-              zipCode: zipCodeControl?.value || "",
-              street: "",
-              city: "",
-              state: "",
-              country: "",
-              latitude: "",
-              longitude: "",
-            });
           },
         });
     }
@@ -137,30 +120,32 @@ export class FormEnderecoComponent implements OnInit {
     );
   }
 
-  private atualizarCamposEndereco(result: AddressData) {
-    const zipCodeControl = this.enderecoForm.get("zipCode");
-    const streetControl = this.enderecoForm.get("street");
-    const cityControl = this.enderecoForm.get("city");
-    const stateControl = this.enderecoForm.get("state");
-    const countryControl = this.enderecoForm.get("country");
+  private fillAddressFields(result: AddressData) {
+    const fields: Array<keyof AddressData & string> = [
+      "street",
+      "city",
+      "state",
+      "country",
+    ];
 
-    zipCodeControl?.setValue(result.zipCode || "");
-    streetControl?.setValue(result.street || "");
-    cityControl?.setValue(result.city || "");
-    stateControl?.setValue(result.state || "");
-    countryControl?.setValue(result.country || "");
+    const { payload, touched } = fields.reduce(
+      (acc, field) => {
+        const value = (result as any)[field];
+        if (value != null && value !== "") {
+          acc.payload[field] = value;
+          acc.touched.push(field);
+        }
+        return acc;
+      },
+      { payload: {} as Partial<Record<string, any>>, touched: [] as string[] }
+    );
 
-    this.latitude = result.latitude || null;
-    this.longitude = result.longitude || null;
-
-    this.latitudeChange.emit(this.latitude);
-    this.longitudeChange.emit(this.longitude);
-
-    zipCodeControl?.markAsTouched();
-    streetControl?.markAsTouched();
-    cityControl?.markAsTouched();
-    stateControl?.markAsTouched();
-    countryControl?.markAsTouched();
+    if (Object.keys(payload).length > 0) {
+      this.enderecoForm.patchValue(payload);
+      for (const name of touched) {
+        this.enderecoForm.get(name)?.markAsTouched();
+      }
+    }
   }
 
   removeThisAddress() {

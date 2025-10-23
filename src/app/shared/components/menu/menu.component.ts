@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
-import { Authentication } from "@app/core/service/auth/autenthication";
+import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { Role } from "@app/model/client";
 import { AdminMenuSideComponent } from "../admin-menu-side/admin-menu-side.component";
 import { ClientMenuSideComponent } from "../client-menu-side/client-menu-side.component";
 
@@ -15,9 +16,9 @@ import { ClientMenuSideComponent } from "../client-menu-side/client-menu-side.co
   styles: []
 })
 export class MenuComponent {
-  private readonly authentication = inject(Authentication);
+  private readonly authentication = inject(AutenticacaoService);
 
   get isAdministrador(): boolean {
-    return this.authentication.isAdministrador();
+    return this.authentication._loggedClientSignal().role === Role.ADMIN;
   }
 }

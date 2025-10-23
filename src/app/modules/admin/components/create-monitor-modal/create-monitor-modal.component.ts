@@ -14,6 +14,7 @@ import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import {
   debounceTime,
   distinctUntilChanged,
+  filter,
   Observable,
   of,
   switchMap,
@@ -39,10 +40,6 @@ export class CreateMonitorModalComponent implements OnInit {
     private readonly zipCodeService: ZipCodeService
   ) {
     this.monitorForm = this.fb.group({
-      size: [
-        null,
-        [Validators.required, Validators.min(1.0), Validators.max(999.99)],
-      ],
       locationDescription: ["", [Validators.maxLength(200)]],
       address: this.fb.group({
         street: [
@@ -81,8 +78,11 @@ export class CreateMonitorModalComponent implements OnInit {
         .pipe(
           debounceTime(500),
           distinctUntilChanged(),
+          filter((zipCode: string) => {
+            return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
+          }),
           switchMap((zipCode: string): Observable<AddressData | null> => {
-            if (zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode)) {
+            if (zipCode) {
               this.loadingZipCode = true;
               return this.zipCodeService.findLocationByZipCode(zipCode);
             }
@@ -106,15 +106,29 @@ export class CreateMonitorModalComponent implements OnInit {
   private fillAddressFields(addressData: AddressData): void {
     const addressGroup = this.monitorForm.get("address");
 
-    if (addressGroup && addressData) {
-      if (addressData.city) {
-        addressGroup.patchValue({ city: addressData.city });
-      }
-      if (addressData.state) {
-        addressGroup.patchValue({ state: addressData.state });
-      }
-      if (addressData.country) {
-        addressGroup.patchValue({ country: addressData.country });
+    const fields: Array<keyof AddressData & string> = [
+      "street",
+      "city",
+      "state",
+      "country",
+    ];
+
+    const { payload, touched } = fields.reduce(
+      (acc, field) => {
+        const value = (addressData as any)[field];
+        if (value != null && value !== "") {
+          acc.payload[field] = value;
+          acc.touched.push(field);
+        }
+        return acc;
+      },
+      { payload: {} as Partial<Record<string, any>>, touched: [] as string[] }
+    );
+
+    if (Object.keys(payload).length > 0) {
+      addressGroup.patchValue(payload);
+      for (const name of touched) {
+        addressGroup.get(name)?.markAsTouched();
       }
     }
   }
