@@ -1,14 +1,21 @@
 import { CommonModule } from "@angular/common";
-import { Component, inject, OnInit, OnDestroy, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  inject,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router, NavigationEnd } from "@angular/router";
+import { NavigationEnd, Router } from "@angular/router";
+import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { LayoutService } from "@app/core/service/state/layout.service";
-import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
+import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { IconSearchComponent } from "@app/shared/icons/search.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
@@ -37,25 +44,35 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   private instanceId = Math.random().toString(36).substr(2, 9);
 
   ngOnInit(): void {
-    console.log('SearchSectionComponent initialized - Instance ID:', this.instanceId);
-    
+    console.log(
+      "SearchSectionComponent initialized - Instance ID:",
+      this.instanceId
+    );
+
     // Check initial route
     this.checkRouteVisibility();
-    
+
     // Subscribe to route changes
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.checkRouteVisibility();
       });
-    
+
     // Subscribe to search service errors to show toasts
-    this.errorSubscription = this.searchMonitorsService.error$.subscribe((error) => {
-      if (error) {
-        console.log('Error from service:', error, 'Instance ID:', this.instanceId);
-        this.toastService.erro(error);
+    this.errorSubscription = this.searchMonitorsService.error$.subscribe(
+      (error) => {
+        if (error) {
+          console.log(
+            "Error from service:",
+            error,
+            "Instance ID:",
+            this.instanceId
+          );
+          this.toastService.erro(error);
+        }
       }
-    });
+    );
   }
 
   ngOnDestroy(): void {
@@ -67,28 +84,99 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   onKeyPress(event: KeyboardEvent): void {
     const input = event.target as HTMLInputElement;
     const value = input.value;
-    
-    // Allow only numbers and backspace/delete
-    if (!/[0-9]/.test(event.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)) {
-      event.preventDefault();
+    const key = event.key;
+
+    // Allow Ctrl/Cmd+V (paste) and other common Ctrl/Cmd combos like Ctrl+C/Ctrl+X/Ctrl+A
+    if ((event.ctrlKey || event.metaKey) && key && key.toLowerCase() === "v") {
+      return; // let onPaste handle the paste
     }
-    
+    if (
+      (event.ctrlKey || event.metaKey) &&
+      ["a", "c", "x", "z", "y"].includes((key || "").toLowerCase())
+    ) {
+      return; // allow common shortcuts
+    }
+
+    // Allow navigation and control keys
+    const allowedKeys = [
+      "Backspace",
+      "Delete",
+      "Tab",
+      "Enter",
+      "ArrowLeft",
+      "ArrowRight",
+      "Home",
+      "End",
+    ];
+    if (allowedKeys.includes(key)) {
+      return;
+    }
+
+    // Allow only single digit characters
+    if (!/^\d$/.test(key)) {
+      event.preventDefault();
+      return;
+    }
+
     // Limit to 5 digits
-    if (value.length >= 5 && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)) {
+    if (value.length >= 5) {
       event.preventDefault();
     }
   }
 
   onPaste(event: ClipboardEvent): void {
-    event.preventDefault();
-    const paste = (event.clipboardData || (window as any).clipboardData).getData('text');
-    const numbersOnly = paste.replace(/[^0-9]/g, '').substring(0, 5);
-    this.searchText = numbersOnly;
+    // Try to read clipboard synchronously when available, fall back to async or default behavior.
+    const input = event.target as HTMLInputElement | null;
+
+    const clipboardData = event.clipboardData || (window as any).clipboardData;
+
+    if (clipboardData && typeof clipboardData.getData === "function") {
+      // Synchronous clipboard available on the event
+      event.preventDefault();
+      const paste = clipboardData.getData("text") || "";
+      const numbersOnly = paste.replace(/\D/g, "").slice(0, 5);
+      this.searchText = numbersOnly;
+      if (input) {
+        input.value = numbersOnly;
+      }
+      return;
+    }
+
+    // Fallback to Navigator Clipboard API if available (async)
+    if (
+      navigator.clipboard &&
+      typeof navigator.clipboard.readText === "function"
+    ) {
+      // do not prevent default here; we'll update the value when we get the clipboard text
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          const numbersOnly = (text || "").replace(/\D/g, "").slice(0, 5);
+          this.searchText = numbersOnly;
+          if (input) input.value = numbersOnly;
+        })
+        .catch(() => {
+          // If fallback fails, sanitize the input after the paste event
+          setTimeout(() => {
+            const val = (input?.value || "").replace(/\D/g, "").slice(0, 5);
+            this.searchText = val;
+            if (input) input.value = val;
+          }, 0);
+        });
+      return;
+    }
+
+    // Last-resort: allow default paste and sanitize immediately after
+    setTimeout(() => {
+      const val = (input?.value || "").replace(/\D/g, "").slice(0, 5);
+      this.searchText = val;
+      if (input) input.value = val;
+    }, 0);
   }
 
   onInputChange(): void {
-    // Remove non-numeric characters
-    this.searchText = this.searchText.replace(/[^0-9]/g, '');
+    // Keep only numeric characters and limit to max 5 digits
+    this.searchText = (this.searchText || "").replace(/\D/g, "").slice(0, 5);
   }
 
   onEnterKey(event: Event): void {
@@ -121,38 +209,45 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     }
 
     this.isSearching = true;
-    console.log('Starting search for ZIP code:', this.searchText, 'Instance ID:', this.instanceId);
-    
-    this.searchMonitorsService.findByZipCode(this.searchText)
+    console.log(
+      "Starting search for ZIP code:",
+      this.searchText,
+      "Instance ID:",
+      this.instanceId
+    );
+
+    this.searchMonitorsService
+      .findByZipCode(this.searchText)
       .then((monitors: MapPoint[]) => {
         this.isSearching = false;
         this.monitorsFound.emit(monitors);
-        
+
         // Only show success toast if monitors were found
         if (monitors && monitors.length > 0) {
           this.toastService.sucesso(
             `Found ${monitors.length} monitors near ZIP code ${this.searchText}`
           );
         }
-        
+
         // Clear the search input after search
         this.searchText = "";
-        
+
         // Error toast is handled by the service error$ observable
       })
       .catch((error) => {
         this.isSearching = false;
         this.monitorsFound.emit([]);
-        
+
         // Clear the search input even on error
         this.searchText = "";
-        
+
         // Error toast is handled by the service error$ observable
       });
   }
 
   private isValidZipCode(zipCode: string): boolean {
-    const zipRegex = /^\d{5}$/;
+    // Accept between 1 and 5 digits (minimum 1, maximum 5)
+    const zipRegex = /^\d{1,5}$/;
     return zipRegex.test(zipCode);
   }
 
@@ -163,12 +258,22 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   isInAllowedRoutes(): boolean {
     const currentRoute = this.router.url;
     // Only show on exact routes: /client, /admin, or root /
-    return currentRoute === '/client' || currentRoute === '/admin' || currentRoute === '/';
+    return (
+      currentRoute === "/client" ||
+      currentRoute === "/admin" ||
+      currentRoute === "/"
+    );
   }
 
   private checkRouteVisibility(): void {
     const currentRoute = this.router.url;
-    this.showSearchSection = currentRoute.includes('/client') || currentRoute.includes('/admin');
-    console.log('Route visibility check:', currentRoute, 'Show search section:', this.showSearchSection);
+    this.showSearchSection =
+      currentRoute.includes("/client") || currentRoute.includes("/admin");
+    console.log(
+      "Route visibility check:",
+      currentRoute,
+      "Show search section:",
+      this.showSearchSection
+    );
   }
 }

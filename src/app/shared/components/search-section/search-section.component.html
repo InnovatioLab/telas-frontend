@@ -22,6 +22,7 @@
           [(ngModel)]="searchText"
           [ngModelOptions]="{ standalone: true }"
           placeholder="Enter zip code"
+          minlength="5"
           maxlength="5"
           id="search-zipcode"
           (keydown.enter)="onEnterKey($event)"
