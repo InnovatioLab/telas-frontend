@@ -33,7 +33,7 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   private readonly searchMonitorsService = inject(SearchMonitorsService);
   private readonly toastService = inject(ToastService);
 
-  @Output() monitorsFound = new EventEmitter<MapPoint[]>();
+  @Output() monitorsFound = new EventEmitter<{monitors: MapPoint[], zipCode: string}>();
 
   searchText = "";
   isSearching = false;
@@ -44,31 +44,17 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   private instanceId = Math.random().toString(36).substr(2, 9);
 
   ngOnInit(): void {
-    console.log(
-      "SearchSectionComponent initialized - Instance ID:",
-      this.instanceId
-    );
-
-    // Check initial route
     this.checkRouteVisibility();
 
-    // Subscribe to route changes
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.checkRouteVisibility();
       });
 
-    // Subscribe to search service errors to show toasts
     this.errorSubscription = this.searchMonitorsService.error$.subscribe(
       (error) => {
         if (error) {
-          console.log(
-            "Error from service:",
-            error,
-            "Instance ID:",
-            this.instanceId
-          );
           this.toastService.erro(error);
         }
       }
@@ -209,44 +195,30 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     }
 
     this.isSearching = true;
-    console.log(
-      "Starting search for ZIP code:",
-      this.searchText,
-      "Instance ID:",
-      this.instanceId
-    );
 
     this.searchMonitorsService
       .findByZipCode(this.searchText)
       .then((monitors: MapPoint[]) => {
         this.isSearching = false;
-        this.monitorsFound.emit(monitors);
+        this.monitorsFound.emit({monitors, zipCode: this.searchText});
 
-        // Only show success toast if monitors were found
         if (monitors && monitors.length > 0) {
           this.toastService.sucesso(
             `Found ${monitors.length} monitors near ZIP code ${this.searchText}`
           );
         }
 
-        // Clear the search input after search
         this.searchText = "";
-
-        // Error toast is handled by the service error$ observable
       })
       .catch((error) => {
         this.isSearching = false;
-        this.monitorsFound.emit([]);
+        this.monitorsFound.emit({monitors: [], zipCode: this.searchText});
 
-        // Clear the search input even on error
         this.searchText = "";
-
-        // Error toast is handled by the service error$ observable
       });
   }
 
   private isValidZipCode(zipCode: string): boolean {
-    // Accept between 1 and 5 digits (minimum 1, maximum 5)
     const zipRegex = /^\d{1,5}$/;
     return zipRegex.test(zipCode);
   }
@@ -257,7 +229,6 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
 
   isInAllowedRoutes(): boolean {
     const currentRoute = this.router.url;
-    // Only show on exact routes: /client, /admin, or root /
     return (
       currentRoute === "/client" ||
       currentRoute === "/admin" ||
@@ -269,11 +240,5 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     const currentRoute = this.router.url;
     this.showSearchSection =
       currentRoute.includes("/client") || currentRoute.includes("/admin");
-    console.log(
-      "Route visibility check:",
-      currentRoute,
-      "Show search section:",
-      this.showSearchSection
-    );
   }
 }

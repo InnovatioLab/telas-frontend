@@ -9,6 +9,7 @@ import {
 } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
+import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { MapsComponent } from "@app/shared/components/maps/maps.component";
@@ -43,6 +44,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     public readonly mapsService: GoogleMapsService,
+    private readonly zipCodeService: ZipCodeService,
     private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef
   ) {}
@@ -159,9 +161,44 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mapsService.addToSavedPoints(point);
   }
 
-  onMonitorsFound(monitors: MapPoint[]): void {
-    // Handle monitors found from search
-    console.log('Monitors found in client:', monitors);
-    // You can add logic here to handle the search results
+  onMonitorsFound(monitors: MapPoint[], zipCode?: string): void {
+    if (monitors && monitors.length > 0) {
+      this.mapsComponent?.setMapPoints(monitors);
+      this.mapsComponent?.fitBoundsToPoints(monitors);
+      this.mapsService.updateNearestMonitors(monitors);
+    } else {
+      this.focusOnZipCodeLocation(zipCode);
+    }
+  }
+
+  private focusOnZipCodeLocation(zipCode?: string): void {
+    let targetZipCode = zipCode;
+    
+    if (!targetZipCode) {
+      const searchInput = document.getElementById('search-zipcode') as HTMLInputElement;
+      targetZipCode = searchInput?.value;
+    }
+    
+    if (targetZipCode && targetZipCode.length === 5) {
+      this.mapsService.searchAddress(targetZipCode).then((result) => {
+        if (result) {
+          const zipCodePoint: MapPoint = {
+            id: `zipcode-${targetZipCode}`,
+            latitude: result.location.latitude,
+            longitude: result.location.longitude,
+            title: `ZIP Code ${targetZipCode}`,
+            locationDescription: result.formattedAddress,
+            type: 'ZIPCODE',
+            category: 'ZIPCODE'
+          };
+          
+          this.mapsComponent?.setMapPoints([zipCodePoint]);
+          this.mapsComponent?.fitBoundsToPoints([zipCodePoint]);
+          this.mapsService.updateNearestMonitors([zipCodePoint]);
+        }
+      }).catch((error) => {
+        console.error('Error geocoding ZIP code:', error);
+      });
+    }
   }
 }

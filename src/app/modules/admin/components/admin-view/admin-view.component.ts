@@ -9,6 +9,7 @@ import {
 import { FormsModule } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { GoogleMapsService } from "../../../../core/service/api/google-maps.service";
+import { ZipCodeService } from "../../../../core/service/api/zipcode.service";
 import { LoadingService } from "../../../../core/service/state/loading.service";
 import { MapPoint } from "../../../../core/service/state/map-point.interface";
 import { MapsComponent } from "../../../../shared/components/maps/maps.component";
@@ -20,7 +21,7 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
   standalone: true,
   imports: [CommonModule, FormsModule, SearchSectionComponent, MapsComponent, SidebarMapaComponent],
   template: `
-    <app-search-section (monitorsFound)="onMonitorsFound($event)"></app-search-section>
+    <app-search-section (monitorsFound)="onMonitorsFound($event.monitors, $event.zipCode)"></app-search-section>
     
     <app-sidebar-mapa></app-sidebar-mapa>
 
@@ -130,6 +131,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private readonly googleMapsService: GoogleMapsService,
+    private readonly zipCodeService: ZipCodeService,
     private readonly loadingService: LoadingService
   ) {}
 
@@ -219,9 +221,44 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onMonitorsFound(monitors: MapPoint[]): void {
-    // Handle monitors found from search
-    console.log('Monitors found in admin:', monitors);
-    // You can add logic here to handle the search results
+  onMonitorsFound(monitors: MapPoint[], zipCode?: string): void {
+    if (monitors && monitors.length > 0) {
+      this.mapsComponent?.setMapPoints(monitors);
+      this.mapsComponent?.fitBoundsToPoints(monitors);
+      this.googleMapsService.updateNearestMonitors(monitors);
+    } else {
+      this.focusOnZipCodeLocation(zipCode);
+    }
+  }
+
+  private focusOnZipCodeLocation(zipCode?: string): void {
+    let targetZipCode = zipCode;
+    
+    if (!targetZipCode) {
+      const searchInput = document.getElementById('search-zipcode') as HTMLInputElement;
+      targetZipCode = searchInput?.value;
+    }
+    
+    if (targetZipCode && targetZipCode.length === 5) {
+      this.googleMapsService.searchAddress(targetZipCode).then((result) => {
+        if (result) {
+          const zipCodePoint: MapPoint = {
+            id: `zipcode-${targetZipCode}`,
+            latitude: result.location.latitude,
+            longitude: result.location.longitude,
+            title: `ZIP Code ${targetZipCode}`,
+            locationDescription: result.formattedAddress,
+            type: 'ZIPCODE',
+            category: 'ZIPCODE'
+          };
+          
+          this.mapsComponent?.setMapPoints([zipCodePoint]);
+          this.mapsComponent?.fitBoundsToPoints([zipCodePoint]);
+          this.googleMapsService.updateNearestMonitors([zipCodePoint]);
+        }
+      }).catch((error) => {
+        console.error('Error geocoding ZIP code:', error);
+      });
+    }
   }
 }

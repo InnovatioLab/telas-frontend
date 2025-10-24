@@ -824,7 +824,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
 
-  private fitBoundsToPoints(points: MapPoint[]): void {
+  public fitBoundsToPoints(points: MapPoint[]): void {
     if (!points || points.length === 0 || !this._map) return;
 
     const bounds = new google.maps.LatLngBounds();
