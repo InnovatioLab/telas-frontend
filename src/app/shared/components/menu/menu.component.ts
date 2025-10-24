@@ -1,7 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
-import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { ClientService } from "@app/core/service/api/client.service";
 import { Role } from "@app/model/client";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { AdminMenuSideComponent } from "../admin-menu-side/admin-menu-side.component";
 import { ClientMenuSideComponent } from "../client-menu-side/client-menu-side.component";
 
@@ -10,15 +12,22 @@ import { ClientMenuSideComponent } from "../client-menu-side/client-menu-side.co
   standalone: true,
   imports: [CommonModule, AdminMenuSideComponent, ClientMenuSideComponent],
   template: `
-    <app-admin-menu-side *ngIf="isAdministrador"></app-admin-menu-side>
-    <app-client-menu-side *ngIf="!isAdministrador"></app-client-menu-side>
+    <app-admin-menu-side *ngIf="isAdministrador$ | async"></app-admin-menu-side>
+    <app-client-menu-side
+      *ngIf="!(isAdministrador$ | async)"
+    ></app-client-menu-side>
   `,
-  styles: []
+  styles: [],
 })
 export class MenuComponent {
-  private readonly authentication = inject(AutenticacaoService);
+  private readonly clientService = inject(ClientService);
 
-  get isAdministrador(): boolean {
-    return this.authentication._loggedClientSignal()?.role === Role.ADMIN;
-  }
+  /**
+   * Observable boolean usado no template com `async`.
+   * Evita usar getters assíncronos no template (que retornam Promise e
+   * podem causar comportamento incorreto de avaliação no *ngIf).
+   */
+  readonly isAdministrador$: Observable<boolean> = this.clientService
+    .getAuthenticatedClient()
+    .pipe(map((client) => client?.role === Role.ADMIN));
 }
