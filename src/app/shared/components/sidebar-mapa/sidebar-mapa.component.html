@@ -56,21 +56,6 @@
           </div>
         </div>
 
-        <div *ngIf="pontoSelecionado.type" class="info-grupo">
-          <app-icon-tv-display
-            width="18"
-            height="18"
-            fill="var(--cor-primaria)"
-            class="align-self-center"
-          ></app-icon-tv-display>
-          <div class="info-detalhe">
-            <span class="info-label">Display</span>
-            <span class="info-valor">{{
-              getMonitorData()?.size + '" ' + "Onsite Digital Screen"
-            }}</span>
-          </div>
-        </div>
-
         <!-- Campos específicos do monitor -->
         <div *ngIf="getMonitorData()" class="monitor-details">
           <div class="info-grupo">
