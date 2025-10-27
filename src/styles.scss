@@ -2454,3 +2454,34 @@ a {
     background: var(--cor-cinza-medio) !important;
   }
 }
+
+.p-fileupload-cancel-button {
+  color: var(--cor-branca) !important;
+  background-color: var(--cor-erro) !important;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.p-fileupload-upload-button {
+  color: var(--cor-branca) !important;
+  background-color: var(--cor-primaria) !important;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.p-fileupload-file-thumbnail {
+  max-height: 500px !important;
+  object-fit: contain !important;
+}
+
+// .p-fileupload-file {
+//   border: 1px dashed var(--cor-primaria);
+// }
+
+// .p-fileupload-file-info {
+//   display: none !important;
+// }

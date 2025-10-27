@@ -228,16 +228,21 @@
 
 .footer-actions {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   width: 100%;
 
   .recurrence-dropdown {
-    flex: 0 0 auto; // Não cresce nem encolhe, mantém tamanho natural
-    min-width: 140px;
-    max-width: 160px;
+    flex: 0 0 auto;
+    // min-width: 140px;
+    max-width: 200px;
     height: 40px;
+  }
+
+  .checkout-button {
+    flex: 1;
+    max-width: 200px;
   }
 }
 
