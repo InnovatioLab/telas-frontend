@@ -11,9 +11,9 @@ import { Subscription } from "rxjs";
 import { GoogleMapsService } from "../../../../core/service/api/google-maps.service";
 import { ZipCodeService } from "../../../../core/service/api/zipcode.service";
 import { Authentication } from "../../../../core/service/auth/autenthication";
+import { GeolocationService } from "../../../../core/service/geolocation.service";
 import { LoadingService } from "../../../../core/service/state/loading.service";
 import { MapPoint } from "../../../../core/service/state/map-point.interface";
-import { GeolocationService, GeolocationPosition } from "../../../../core/service/geolocation.service";
 import { MapsComponent } from "../../../../shared/components/maps/maps.component";
 import { SearchSectionComponent } from "../../../../shared/components/search-section/search-section.component";
 import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa/sidebar-mapa.component";
@@ -21,10 +21,18 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
 @Component({
   selector: "app-admin-view",
   standalone: true,
-  imports: [CommonModule, FormsModule, SearchSectionComponent, MapsComponent, SidebarMapaComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SearchSectionComponent,
+    MapsComponent,
+    SidebarMapaComponent,
+  ],
   template: `
-    <app-search-section (monitorsFound)="onMonitorsFound($event.monitors, $event.zipCode)"></app-search-section>
-    
+    <app-search-section
+      (monitorsFound)="onMonitorsFound($event.monitors, $event.zipCode)"
+    ></app-search-section>
+
     <app-sidebar-mapa></app-sidebar-mapa>
 
     <div class="admin-view">
@@ -40,21 +48,6 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
           (mapInitialized)="onMapInitialized($event)"
         >
         </app-maps>
-      </div>
-
-      <div class="monitors-list" *ngIf="monitors.length > 0">
-        <h3>Monitores Encontrados</h3>
-        <ul>
-          <li
-            *ngFor="let monitor of monitors"
-            (click)="onMonitorClick(monitor)"
-          >
-            <div class="monitor-info">
-              <span class="monitor-title">{{ monitor.title }}</span>
-              <span class="monitor-type">{{ monitor.data?.type }}</span>
-            </div>
-          </li>
-        </ul>
       </div>
     </div>
   `,
@@ -141,7 +134,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     await this.requestUserLocation();
-    
+
     this.loadNearbyPoints();
     this.setupEventListeners();
   }
@@ -239,39 +232,44 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private focusOnZipCodeLocation(zipCode?: string): void {
     let targetZipCode = zipCode;
-    
+
     if (!targetZipCode) {
-      const searchInput = document.getElementById('search-zipcode') as HTMLInputElement;
+      const searchInput = document.getElementById(
+        "search-zipcode"
+      ) as HTMLInputElement;
       targetZipCode = searchInput?.value;
     }
-    
+
     if (targetZipCode && targetZipCode.length === 5) {
-      this.googleMapsService.searchAddress(targetZipCode).then((result) => {
-        if (result) {
-          const zipCodePoint: MapPoint = {
-            id: `zipcode-${targetZipCode}`,
-            latitude: result.location.latitude,
-            longitude: result.location.longitude,
-            title: `ZIP Code ${targetZipCode}`,
-            locationDescription: result.formattedAddress,
-            type: 'ZIPCODE',
-            category: 'ZIPCODE'
-          };
-          
-          this.mapsComponent?.setMapPoints([zipCodePoint]);
-          this.mapsComponent?.fitBoundsToPoints([zipCodePoint]);
-          this.googleMapsService.updateNearestMonitors([zipCodePoint]);
-        }
-      }).catch((error) => {
-        console.error('Error geocoding ZIP code:', error);
-      });
+      this.googleMapsService
+        .searchAddress(targetZipCode)
+        .then((result) => {
+          if (result) {
+            const zipCodePoint: MapPoint = {
+              id: `zipcode-${targetZipCode}`,
+              latitude: result.location.latitude,
+              longitude: result.location.longitude,
+              title: `ZIP Code ${targetZipCode}`,
+              locationDescription: result.formattedAddress,
+              type: "ZIPCODE",
+              category: "ZIPCODE",
+            };
+
+            this.mapsComponent?.setMapPoints([zipCodePoint]);
+            this.mapsComponent?.fitBoundsToPoints([zipCodePoint]);
+            this.googleMapsService.updateNearestMonitors([zipCodePoint]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error geocoding ZIP code:", error);
+        });
     }
   }
 
   private async requestUserLocation(): Promise<void> {
     try {
       const position = await this.geolocationService.getCurrentPosition();
-      
+
       if (position.latitude !== 30.3322 || position.longitude !== -81.6557) {
         this.mapCenter = { lat: position.latitude, lng: position.longitude };
       } else {
@@ -288,15 +286,21 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
       const address = client.addresses[0];
       if (address.latitude && address.longitude) {
         const userLocation: MapPoint = {
-          id: 'user-location',
-          latitude: typeof address.latitude === 'string' ? parseFloat(address.latitude) : address.latitude,
-          longitude: typeof address.longitude === 'string' ? parseFloat(address.longitude) : address.longitude,
+          id: "user-location",
+          latitude:
+            typeof address.latitude === "string"
+              ? parseFloat(address.latitude)
+              : address.latitude,
+          longitude:
+            typeof address.longitude === "string"
+              ? parseFloat(address.longitude)
+              : address.longitude,
           title: `${address.street}, ${address.city}`,
           locationDescription: `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`,
-          type: 'USER_LOCATION',
-          category: 'USER_LOCATION'
+          type: "USER_LOCATION",
+          category: "USER_LOCATION",
         };
-        
+
         this.mapsComponent?.setMapPoints([userLocation]);
         this.mapsComponent?.fitBoundsToPoints([userLocation]);
       }
