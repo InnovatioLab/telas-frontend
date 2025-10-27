@@ -7,9 +7,11 @@ import {
   EventEmitter,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
@@ -59,7 +61,7 @@ interface MonitorCluster {
     `,
   ],
 })
-export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @ViewChild("mapContainer") mapContainer!: ElementRef;
   @Input() latitude?: number;
   @Input() longitude?: number;
@@ -171,6 +173,16 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.loadGoogleMapsScript();
     this.setupEventListeners();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['center'] && changes['center'].currentValue) {
+      this.updateMapCenter(changes['center'].currentValue);
+    }
+    
+    if (changes['zoom'] && changes['zoom'].currentValue && this._map) {
+      this._map.setZoom(changes['zoom'].currentValue);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -385,7 +397,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     try {
-      const defaultCenter = { lat: -3.7327, lng: -38.527 };
+      const defaultCenter = { lat: 30.3322, lng: -81.6557 };
       const center = this.center || defaultCenter;
 
       this._map = new google.maps.Map(this.mapContainer.nativeElement, {
@@ -449,11 +461,18 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeMapCenter(): void {
+    // Se o center já foi definido pelo componente pai, não sobrescrever
+    if (this.center) {
+      console.log('🗺️ MapsComponent: Center already set by parent:', this.center);
+      return;
+    }
+
     if (this.hasExplicitCoordinates()) {
       this.center = {
         lat: this.latitude,
         lng: this.longitude,
       };
+      console.log('🗺️ MapsComponent: Using explicit coordinates:', this.center);
       return;
     }
 
@@ -463,11 +482,13 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         lat: savedCoords.latitude,
         lng: savedCoords.longitude,
       };
+      console.log('🗺️ MapsComponent: Using saved coordinates:', this.center);
     } else {
       this.center = {
-        lat: -3.7327,
-        lng: -38.527,
+        lat: 30.3322,
+        lng: -81.6557,
       };
+      console.log('🗺️ MapsComponent: Using default Jacksonville coordinates:', this.center);
     }
   }
 
@@ -845,5 +866,19 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
         google.maps.event.removeListener(listener);
       }
     );
+  }
+
+  public setMapCenter(center: { lat: number; lng: number }): void {
+    if (this._map) {
+      this._map.setCenter(center);
+    }
+  }
+
+  private updateMapCenter(center: { lat: number; lng: number }): void {
+    this.center = center;
+    
+    if (this._map) {
+      this._map.setCenter(center);
+    }
   }
 }

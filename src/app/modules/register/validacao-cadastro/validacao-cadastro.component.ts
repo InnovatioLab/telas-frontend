@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
+import { Authentication } from "@app/core/service/auth/autenthication";
 import { Role } from "@app/model/client";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
 import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
@@ -46,7 +47,8 @@ export class ValidacaoCadastroComponent implements OnInit {
     private readonly dialogService: DialogService,
     private readonly authService: AutenticacaoService,
     private readonly clientService: ClientService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly authentication: Authentication
   ) {
     this.validacaoForm = this.formBuilder.group({
       codigo: [
@@ -115,6 +117,8 @@ export class ValidacaoCadastroComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           if (response) {
+            // Atualizar o estado de autenticação para o header/menu
+            this.authentication.isLoggedIn$.next(true);
             this.handleNavigation();
           }
         },

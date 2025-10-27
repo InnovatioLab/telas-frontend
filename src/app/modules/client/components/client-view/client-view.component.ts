@@ -44,6 +44,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   savedPoints: MapPoint[] = [];
   isLoading = false;
   mapCenter: { lat: number; lng: number } | null = null;
+  mapZoom = 9;
 
   constructor(
     public readonly mapsService: GoogleMapsService,
@@ -213,11 +214,16 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const position = await this.geolocationService.getCurrentPosition();
       
-      if (position.latitude !== 30.3322 || position.longitude !== -81.6557) {
-        this.mapCenter = { lat: position.latitude, lng: position.longitude };
+      this.mapCenter = { lat: position.latitude, lng: position.longitude };
+      
+      if (position.accuracy && position.accuracy < 100) {
+        this.mapZoom = 15;
+      } else if (position.accuracy && position.accuracy < 1000) {
+        this.mapZoom = 12;
       } else {
-        this.mapCenter = { lat: 30.3322, lng: -81.6557 };
+        this.mapZoom = 9;
       }
+      
     } catch (error) {
       this.mapCenter = { lat: 30.3322, lng: -81.6557 };
     }
