@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
+import { GoogleMapsService } from "./google-maps.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { AddressData } from "@app/model/dto/request/address-data-request";
 import { ResponseDTO } from "@app/model/dto/response.dto";
@@ -39,7 +40,7 @@ export class ZipCodeService {
 
     return this.findLocationInLocalApi(zipCode).pipe(
       map((localResult) => {
-        if (localResult && this.isAddressValid(localResult)) {
+        if (localResult) {
           return localResult;
         }
         return null;
@@ -134,6 +135,8 @@ export class ZipCodeService {
             city: response.data?.city || "",
             state: response.data?.state || "",
             country: response.data?.country || "",
+            latitude: response.data?.latitude?.toString() || null,
+            longitude: response.data?.longitude?.toString() || null,
           };
         }
         return null;

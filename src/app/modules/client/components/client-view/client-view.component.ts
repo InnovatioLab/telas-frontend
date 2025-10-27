@@ -10,8 +10,10 @@ import {
 import { RouterModule } from "@angular/router";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
+import { Authentication } from "@app/core/service/auth/autenthication";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
+import { GeolocationService, GeolocationPosition } from "@app/core/service/geolocation.service";
 import { MapsComponent } from "@app/shared/components/maps/maps.component";
 import { PopUpStepAddListComponent } from "@app/shared/components/pop-up-add-list/pop-up-add-list.component";
 import { SearchSectionComponent } from "@app/shared/components/search-section/search-section.component";
@@ -41,16 +43,21 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedPoint: MapPoint | null = null;
   savedPoints: MapPoint[] = [];
   isLoading = false;
+  mapCenter: { lat: number; lng: number } | null = null;
 
   constructor(
     public readonly mapsService: GoogleMapsService,
     private readonly zipCodeService: ZipCodeService,
+    private readonly authentication: Authentication,
     private readonly toastService: ToastService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly geolocationService: GeolocationService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.isLoading = true;
+
+    await this.requestUserLocation();
 
     window.addEventListener("monitors-found", ((e: Event) => {
       const customEvent = e as CustomEvent;
@@ -199,6 +206,41 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
       }).catch((error) => {
         console.error('Error geocoding ZIP code:', error);
       });
+    }
+  }
+
+  private async requestUserLocation(): Promise<void> {
+    try {
+      const position = await this.geolocationService.getCurrentPosition();
+      
+      if (position.latitude !== 30.3322 || position.longitude !== -81.6557) {
+        this.mapCenter = { lat: position.latitude, lng: position.longitude };
+      } else {
+        this.mapCenter = { lat: 30.3322, lng: -81.6557 };
+      }
+    } catch (error) {
+      this.mapCenter = { lat: 30.3322, lng: -81.6557 };
+    }
+  }
+
+  private setInitialMapCenter(): void {
+    const client = this.authentication._clientSignal();
+    if (client?.addresses && client.addresses.length > 0) {
+      const address = client.addresses[0];
+      if (address.latitude && address.longitude) {
+        const userLocation: MapPoint = {
+          id: 'user-location',
+          latitude: typeof address.latitude === 'string' ? parseFloat(address.latitude) : address.latitude,
+          longitude: typeof address.longitude === 'string' ? parseFloat(address.longitude) : address.longitude,
+          title: `${address.street}, ${address.city}`,
+          locationDescription: `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`,
+          type: 'USER_LOCATION',
+          category: 'USER_LOCATION'
+        };
+        
+        this.mapsComponent?.setMapPoints([userLocation]);
+        this.mapsComponent?.fitBoundsToPoints([userLocation]);
+      }
     }
   }
 }

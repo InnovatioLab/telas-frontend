@@ -13,6 +13,7 @@
       #mapsComponent
       height="100%"
       width="100%"
+      [center]="mapCenter"
       (pointClick)="handlePointClick($event)"
       (markerClicked)="handleMarkerClick($event)"
       (mapInitialized)="onMapInitialized()"

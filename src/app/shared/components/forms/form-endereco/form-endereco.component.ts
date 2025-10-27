@@ -146,6 +146,13 @@ export class FormEnderecoComponent implements OnInit {
         this.enderecoForm.get(name)?.markAsTouched();
       }
     }
+
+    if (result.latitude && result.longitude) {
+      this.latitude = result.latitude;
+      this.longitude = result.longitude;
+      this.latitudeChange.emit(this.latitude);
+      this.longitudeChange.emit(this.longitude);
+    }
   }
 
   removeThisAddress() {

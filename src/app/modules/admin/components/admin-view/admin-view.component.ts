@@ -10,8 +10,10 @@ import { FormsModule } from "@angular/forms";
 import { Subscription } from "rxjs";
 import { GoogleMapsService } from "../../../../core/service/api/google-maps.service";
 import { ZipCodeService } from "../../../../core/service/api/zipcode.service";
+import { Authentication } from "../../../../core/service/auth/autenthication";
 import { LoadingService } from "../../../../core/service/state/loading.service";
 import { MapPoint } from "../../../../core/service/state/map-point.interface";
+import { GeolocationService, GeolocationPosition } from "../../../../core/service/geolocation.service";
 import { MapsComponent } from "../../../../shared/components/maps/maps.component";
 import { SearchSectionComponent } from "../../../../shared/components/search-section/search-section.component";
 import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa/sidebar-mapa.component";
@@ -132,10 +134,14 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private readonly googleMapsService: GoogleMapsService,
     private readonly zipCodeService: ZipCodeService,
-    private readonly loadingService: LoadingService
+    private readonly authentication: Authentication,
+    private readonly loadingService: LoadingService,
+    private readonly geolocationService: GeolocationService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.requestUserLocation();
+    
     this.loadNearbyPoints();
     this.setupEventListeners();
   }
@@ -259,6 +265,41 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
       }).catch((error) => {
         console.error('Error geocoding ZIP code:', error);
       });
+    }
+  }
+
+  private async requestUserLocation(): Promise<void> {
+    try {
+      const position = await this.geolocationService.getCurrentPosition();
+      
+      if (position.latitude !== 30.3322 || position.longitude !== -81.6557) {
+        this.mapCenter = { lat: position.latitude, lng: position.longitude };
+      } else {
+        this.mapCenter = { lat: 30.3322, lng: -81.6557 };
+      }
+    } catch (error) {
+      this.mapCenter = { lat: 30.3322, lng: -81.6557 };
+    }
+  }
+
+  private setUserLocationCenter(): void {
+    const client = this.authentication._clientSignal();
+    if (client?.addresses && client.addresses.length > 0) {
+      const address = client.addresses[0];
+      if (address.latitude && address.longitude) {
+        const userLocation: MapPoint = {
+          id: 'user-location',
+          latitude: typeof address.latitude === 'string' ? parseFloat(address.latitude) : address.latitude,
+          longitude: typeof address.longitude === 'string' ? parseFloat(address.longitude) : address.longitude,
+          title: `${address.street}, ${address.city}`,
+          locationDescription: `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`,
+          type: 'USER_LOCATION',
+          category: 'USER_LOCATION'
+        };
+        
+        this.mapsComponent?.setMapPoints([userLocation]);
+        this.mapsComponent?.fitBoundsToPoints([userLocation]);
+      }
     }
   }
 }

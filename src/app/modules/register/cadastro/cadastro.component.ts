@@ -216,6 +216,8 @@ export class CadastroComponent implements OnInit {
             state: enderecoCliente.state,
             country: enderecoCliente.country ?? null,
             zipCode: enderecoCliente.zipCode,
+            latitude: this.latitude ? parseFloat(this.latitude) : undefined,
+            longitude: this.longitude ? parseFloat(this.longitude) : undefined,
           },
         ],
       };
