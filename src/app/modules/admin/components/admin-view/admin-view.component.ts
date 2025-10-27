@@ -43,7 +43,7 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
           [center]="mapCenter"
           height="100%"
           width="100%"
-          [zoom]="15"
+          [zoom]="9"
           (markerClicked)="onMarkerClick($event)"
           (mapInitialized)="onMapInitialized($event)"
         >

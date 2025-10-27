@@ -90,14 +90,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy {
     position: google.maps.LatLngLiteral;
     options: google.maps.MarkerOptions;
   }[] = [];
-  private readonly CLUSTER_DISTANCE_THRESHOLD = 0.0001;
   private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
 
   constructor(
     private readonly mapsService: GoogleMapsService,
     private readonly sidebarService: SidebarService,
     private readonly ngZone: NgZone,
-    private readonly el: ElementRef,
     private readonly loadingService: LoadingService
   ) {
     effect(() => {
