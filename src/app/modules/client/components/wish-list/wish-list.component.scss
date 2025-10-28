@@ -6,9 +6,20 @@
 }
 
 .wishlist-item {
-  /* Quando usamos grid, cada item deve ocupar 100% da altura da célula */
-  height: 100%;
-  display: block;
+  flex: 1 1 45%;
+  max-width: 48%;
+
+  // Quando há número ímpar de itens, o último item ocupa toda a largura
+  &:last-child:nth-child(odd) {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  // Se houver apenas 1 item, ele ocupa toda a largura
+  &:only-child {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
 }
 
 .header {
@@ -101,16 +112,8 @@
 
 // Items Container
 .items-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* duas colunas por linha */
-  gap: 1rem;
-  align-items: stretch; /* garante que as células tenham mesma altura */
-  grid-auto-rows: 1fr; /* força linhas a terem alturas iguais */
-}
-
-/* Se houver apenas 1 item, ele ocupa todas as colunas */
-.items-container > .wishlist-item:only-child {
-  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
 }
 
 // Responsividade
@@ -120,12 +123,14 @@
   }
 
   .wishlist-item {
-    height: 100%;
+    flex: 1 1 100%;
+    max-width: 100%;
 
     // Em tablets, todos os itens ocupam toda a largura
     &:last-child:nth-child(odd),
     &:only-child {
-      grid-column: 1 / -1;
+      flex: 1 1 100%;
+      max-width: 100%;
     }
   }
 }
