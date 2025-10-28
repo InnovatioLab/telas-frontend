@@ -6,8 +6,8 @@
       *ngIf="ads.length === 0 && !hasActiveAdRequest"
     >
       <div class="card">
-        <h3>Upload Ads</h3>
-        <p>Select a media file to link to your ads.</p>
+        <h3>Upload Ad</h3>
+        <p>Select only <strong>one</strong> media file to link to your ad.</p>
         <p-fileUpload
           #adFileUpload
           [customUpload]="true"
@@ -16,7 +16,7 @@
           [maxFileSize]="maxFileSize"
           [auto]="false"
           [multiple]="false"
-          chooseLabel="Browse"
+          chooseLabel="Select File"
           uploadLabel="Upload"
           [disabled]="loading"
           [showUploadButton]="selectedAdFile !== null"
@@ -24,6 +24,22 @@
           (uploadHandler)="submitAdUpload($event)"
         >
         </p-fileUpload>
+
+        <div class="infos w-full flex flex-column gap-2 mb-5">
+          <div class="upload-info">
+            <small
+              >Ad must have a <strong>16:9</strong> aspect ratio (Ex: 1280x720,
+              1920x1080)</small
+            >
+          </div>
+
+          <div class="upload-info">
+            <small
+              >Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF - Maximum size:
+              10MB.</small
+            >
+          </div>
+        </div>
       </div>
     </div>
 
@@ -31,9 +47,8 @@
       <div class="upload-section">
         <h3>Attachments</h3>
         <p>
-          Upload up to 3 files at once in the following formats: JPG, PNG, GIF,
-          SVG, BMP, TIFF (maximum 10MB each). You can select multiple files in
-          one upload.
+          Attachments are files you can provide as references or artwork to be
+          included in your AdRequest.
         </p>
 
         <p-fileUpload
@@ -45,7 +60,7 @@
           (onSelect)="onFileUpload($event)"
           (uploadHandler)="confirmUpload()"
           [disabled]="clientAttachments.length >= maxAttachments || loading"
-          chooseLabel="Browse"
+          chooseLabel="Select File"
           uploadLabel="Upload"
           cancelLabel="Cancel"
           [auto]="false"
@@ -287,8 +302,8 @@
           class="pi pi-info-circle"
           style="color: var(--cor-primaria)"
         ></span>
-        Attachments are optional when creating an AdRequest. You can send
-        without attachments if you wish.
+        Attachments are optional when creating an AdRequest. You may submit your
+        AdRequest with or without attachments, as you prefer.
       </p>
     </div>
 
@@ -355,7 +370,7 @@
       ></button>
       <button
         pButton
-        label="Request Ad"
+        label="Send Ad Request"
         (click)="submitAdRequest()"
         [disabled]="requestAdForm.invalid || loading"
         [loading]="loading"

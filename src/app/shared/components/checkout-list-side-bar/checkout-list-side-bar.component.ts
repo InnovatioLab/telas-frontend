@@ -57,9 +57,9 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   checkoutEmProgresso = false;
   dialogoRef: DynamicDialogRef | undefined;
   recurrenceOptions = [
-    { label: "30 Days", value: Recurrence.THIRTY_DAYS },
-    { label: "60 Days", value: Recurrence.SIXTY_DAYS },
-    { label: "90 Days", value: Recurrence.NINETY_DAYS },
+    { label: "1 Month", value: Recurrence.THIRTY_DAYS },
+    { label: "2 Months", value: Recurrence.SIXTY_DAYS },
+    { label: "3 Months", value: Recurrence.NINETY_DAYS },
     { label: "Monthly", value: Recurrence.MONTHLY },
   ];
   selectedRecurrence: Recurrence = Recurrence.MONTHLY;

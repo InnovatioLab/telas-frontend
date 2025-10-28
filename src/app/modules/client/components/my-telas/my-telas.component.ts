@@ -561,7 +561,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
             validationResult.errors.forEach((error) => {
               this.toastService.erro(error);
             });
-            // Limpar o componente de upload se a validação falhar
             if (this.fileUploadComponent) {
               this.fileUploadComponent.clear();
             }

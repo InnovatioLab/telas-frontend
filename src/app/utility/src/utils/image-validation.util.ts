@@ -15,10 +15,7 @@ export class ImageValidationUtil {
   static readonly REQUIRED_ASPECT_RATIO = 16 / 9;
   static readonly ASPECT_RATIO_TOLERANCE = 0.01;
 
-  static readonly VALID_RESOLUTIONS = [
-    { width: 1920, height: 1080 },
-    { width: 3840, height: 2160 },
-  ];
+  static readonly VALID_RESOLUTIONS = [{ width: 1920, height: 1080 }];
 
   static isValidFileType(file: File): boolean {
     const isValidType = this.ACCEPTED_FILE_TYPES.includes(file.type);
@@ -39,7 +36,6 @@ export class ImageValidationUtil {
     return new Promise((resolve) => {
       const img = new Image();
       const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
 
       img.onload = () => {
         const width = img.naturalWidth;
@@ -73,7 +69,7 @@ export class ImageValidationUtil {
             width,
             height,
             aspectRatio,
-            message: `Invalid aspect ratio. Image has ${aspectRatio.toFixed(2)}:1, but 16:9 (${this.REQUIRED_ASPECT_RATIO.toFixed(2)}:1) is required. Valid resolutions: ${this.VALID_RESOLUTIONS.map((r) => `${r.width}x${r.height}`).join(", ")}`,
+            message: `Invalid aspect ratio. Image has ${aspectRatio.toFixed(2)}:1, but 16:9 (${this.REQUIRED_ASPECT_RATIO.toFixed(2)}:1) is required.`,
           });
           return;
         }
