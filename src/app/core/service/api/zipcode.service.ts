@@ -1,6 +1,5 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import { GoogleMapsService } from "./google-maps.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { AddressData } from "@app/model/dto/request/address-data-request";
 import { ResponseDTO } from "@app/model/dto/response.dto";
@@ -76,7 +75,6 @@ export class ZipCodeService {
           title: `${result.city || ""}, ${result.state || ""} ${result.zipCode}`,
           locationDescription: `${result.street || ""} ${result.city || ""}, ${result.state || ""} ${result.zipCode}`,
           id: `zipcode-${result.zipCode}`,
-          type: "ADDRESS",
           category: "ADDRESS",
         };
       }

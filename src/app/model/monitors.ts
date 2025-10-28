@@ -1,11 +1,6 @@
 import { Address, DefaultStatus } from "./client";
 import { MonitorAdResponseDto } from "./dto/response/monitor-response.dto";
 
-export enum MonitorType {
-  BASIC = "BASIC",
-  PREMIUM = "PREMIUM",
-}
-
 export interface Monitor {
   id: string;
   active?: boolean;

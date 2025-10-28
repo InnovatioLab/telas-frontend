@@ -545,12 +545,10 @@ export class GoogleMapsService {
               addressLocationName: `Monitor located at the specified address`,
               addressLocationDescription: `Address: ${adjustedCoords.latitude.toFixed(6)}, ${adjustedCoords.longitude.toFixed(6)}`,
               locationDescription: `Location: ${adjustedCoords.latitude.toFixed(6)}, ${adjustedCoords.longitude.toFixed(6)}`,
-              type: "MONITOR",
               category: "MONITOR",
               data: {
                 id: `id-${i}`,
                 active: true,
-                type: i === 0 ? "BASIC" : "PREMIUM",
                 size: i === 0 ? 40 : 55,
                 distanceInKm: 0,
                 latitude: adjustedCoords.latitude,

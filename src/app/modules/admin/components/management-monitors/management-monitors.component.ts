@@ -296,10 +296,6 @@ export class ManagementMonitorsComponent implements OnInit {
   onEditMonitorModalClose(): void {
     this.editMonitorModalVisible = false;
     this.selectedMonitorForEdit = null;
-
-    setTimeout(() => {
-      this.loadMonitors();
-    }, 50);
   }
 
   onMonitorUpdated(updateData: {
