@@ -1,16 +1,33 @@
 .wishlist-item-card {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* allow flex children to shrink within grid row */
+  flex: 1 1 auto;
 
   ::ng-deep .p-card-body {
     padding: 1.5rem;
+    flex: 1 1 auto; /* corpo do card ocupa o espaço restante */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* prevent inner content from expanding the card */
+    min-height: 0;
   }
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* permite que o componente filho expanda até a altura da célula pai */
+  min-height: 0;
 }
 
 .item-content {
   display: flex;
   gap: 1.5rem;
   align-items: stretch;
-  min-height: 250px;
+  min-height: 0; /* allow shrinking inside card */
+  flex: 1 1 auto;
 
   &.no-photo {
     .item-info {
@@ -21,18 +38,18 @@
 
 .item-photo {
   width: 40%;
-  min-height: 250px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 
   .monitor-image {
     width: 100%;
     height: 100%;
-    max-height: 300px !important; 
-    flex: 1;
+    flex: 1 1 auto;
     object-fit: cover;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: block;
   }
 }
 
@@ -40,6 +57,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 2rem;
 }
 
@@ -122,7 +140,6 @@
   .p-button {
     min-width: 120px;
     align-self: flex-end;
-    margin-top: auto;
 
     &:disabled {
       opacity: 0.6;

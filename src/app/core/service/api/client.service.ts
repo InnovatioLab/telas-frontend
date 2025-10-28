@@ -21,11 +21,13 @@ import { WishlistResponseDto } from "@app/model/dto/response/wishlist-response.d
 import {
   BehaviorSubject,
   catchError,
+  from,
   map,
   Observable,
   of,
   Subject,
 } from "rxjs";
+import { switchMap } from "rxjs/operators";
 import { BaseHttpService } from "./base-htttp.service";
 import { FilterClientRequestDto } from "./client-management.service";
 
@@ -277,8 +279,7 @@ export class ClientService extends BaseHttpService<Client> {
       );
   }
 
-  uploadAttachment(file: File): Observable<any> {
-    // Converter arquivo para Base64
+  uploadAttachment(file: File, id?: string): Observable<any> {
     return new Observable((observer) => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -290,12 +291,17 @@ export class ClientService extends BaseHttpService<Client> {
           bytes: base64,
         };
 
-        this.http
-          .post(`${this.baseUrl}/attachments`, attachmentRequest)
-          .subscribe({
-            next: (response) => observer.next(response),
-            error: (error) => observer.error(error),
-          });
+        if (id) {
+          attachmentRequest["id"] = id;
+        }
+
+        const request = [];
+        request.push(attachmentRequest);
+
+        this.http.post(`${this.baseUrl}/attachments`, request).subscribe({
+          next: (response) => observer.next(response),
+          error: (error) => observer.error(error),
+        });
       };
       reader.onerror = (error) => observer.error(error);
       reader.readAsDataURL(file);
@@ -303,39 +309,33 @@ export class ClientService extends BaseHttpService<Client> {
   }
 
   uploadMultipleAttachments(files: File[]): Observable<any> {
-    return new Observable((observer) => {
-      const attachmentPromises = files.map((file) => {
-        return new Promise<AttachmentRequestDto>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const base64 = (e.target?.result as string).split(",")[1];
-            resolve({
-              name: file.name,
-              type: file.type,
-              bytes: base64,
-            });
-          };
-          reader.onerror = (error) => reject(error);
-          reader.readAsDataURL(file);
-        });
-      });
-
-      Promise.all(attachmentPromises)
-        .then((attachments) => {
-          this.http.post(`${this.baseUrl}/attachments`, attachments).subscribe({
-            next: (response) => observer.next(response),
-            error: (error) => observer.error(error),
+    const attachmentPromises = files.map((file) => {
+      return new Promise<AttachmentRequestDto>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = (e.target?.result as string).split(",")[1];
+          resolve({
+            name: file.name,
+            type: file.type,
+            bytes: base64,
           });
-        })
-        .catch((error) => observer.error(error));
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
     });
+
+    return from(Promise.all(attachmentPromises)).pipe(
+      switchMap((attachments) =>
+        this.http.post(`${this.baseUrl}/attachments`, attachments)
+      )
+    );
   }
 
   createAdRequest(request: ClientAdRequestDto): Observable<any> {
     return this.http.post(`${this.baseUrl}/request-ad`, request);
   }
 
-  // Validar ad
   validateAd(
     adId: string,
     validation: string,

@@ -93,7 +93,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
     if (!this.monitor) return;
 
     const formData = {
-      type: this.monitor.type ?? MonitorType.BASIC,
       active: this.monitor.active ?? true,
       locationDescription: this.monitor.locationDescription ?? "",
       address: {
@@ -182,7 +181,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
       const addressValue = formValue.address;
 
       const monitorRequest: UpdateMonitorRequestDto = {
-        type: formValue.type,
         active: formValue.active,
         locationDescription: formValue.locationDescription,
         address: {

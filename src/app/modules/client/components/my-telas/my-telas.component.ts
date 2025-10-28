@@ -1,5 +1,11 @@
-import { CommonModule, NgOptimizedImage } from "@angular/common";
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import {
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -19,6 +25,7 @@ import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { AttachmentResponseDto } from "@app/model/dto/response/attachment-response.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { ErrorComponent } from "@app/shared/components";
+import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
@@ -37,13 +44,17 @@ import { AdItemComponent } from "../ad-item/ad-item.component";
     ReactiveFormsModule,
     FormsModule,
     ErrorComponent,
-    NgOptimizedImage,
+    IconsModule,
     AdItemComponent,
   ],
 })
 export class MyTelasComponent implements OnInit, OnDestroy {
   @ViewChild("adFileUpload") fileUploadComponent: FileUpload;
   @ViewChild("attachmentFileUpload") attachmentFileUploadComponent: FileUpload;
+  @ViewChild("singleReplaceInput") singleReplaceInput: any;
+
+  // Attachment selecionado para substituição
+  attachmentToReplaceId: string | null = null;
   loading = false;
   activeTabIndex: number = 0;
 
@@ -99,12 +110,11 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly cdr: ChangeDetectorRef
   ) {
+    this.loadAuthenticatedClient();
+
     this.requestAdForm = this.fb.group({
       message: ["", [Validators.required, Validators.maxLength(255)]],
-      phone: [
-        "",
-        [AbstractControlUtils.validatePhone()],
-      ],
+      phone: ["", [AbstractControlUtils.validatePhone()]],
       email: ["", [Validators.email, Validators.maxLength(255)]],
     });
 
@@ -123,7 +133,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.checkRouteParams();
-    this.loadAuthenticatedClient();
   }
 
   ngOnDestroy(): void {
@@ -152,19 +161,21 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.ads = client.ads || [];
         this.hasAds = true;
         this.isClientDataLoaded = true;
-        
-        // Forçar detecção de mudanças para garantir renderização
-        this.cdr.detectChanges();
-        
-        // Timeout adicional para garantir que a renderização aconteça
-        setTimeout(() => {
-          this.cdr.detectChanges();
-        }, 100);
-        
+
+        if (client) {
+          this.requestAdForm.patchValue(
+            {
+              phone: this.authenticatedClient.contact.phone,
+              email: this.authenticatedClient.contact.email,
+            },
+            { emitEvent: false }
+          );
+        }
+
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erro ao carregar dados do cliente:', error);
+        console.error("Erro ao carregar dados do cliente:", error);
         this.toastService.erro("Error loading client data");
         this.isClientDataLoaded = false;
         this.loading = false;
@@ -176,11 +187,9 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     this.activeTabIndex = event.index;
   }
 
-  // Método auxiliar para validar attachments (sem proporção)
   private async validateAttachmentFile(
     file: File
   ): Promise<{ isValid: boolean; errors: string[] }> {
-    // Validações básicas usando a utility
     if (!ImageValidationUtil.isValidFileType(file)) {
       return {
         isValid: false,
@@ -213,42 +222,22 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   }
 
   onFileUpload(event: any): void {
-    const files = event.files;
+    const files = event.currentFiles;
+
     if (files && files.length > 0) {
       this.selectedFiles = [];
       this.uploadPreviews = [];
 
-      if (files.length > this.maxFilesPerUpload) {
-        this.toastService.erro(
-          `Maximum of ${this.maxFilesPerUpload} attachments per upload`
-        );
-        // Limpar o componente
-        if (this.attachmentFileUploadComponent) {
-          this.attachmentFileUploadComponent.clear();
-        }
-        return;
-      }
-
-      // Validar quantidade total
-      if (this.clientAttachments.length + files.length > this.maxAttachments) {
-        this.toastService.erro(
-          `Maximum of ${this.maxAttachments} attachments reached. Please remove some before uploading more.`
-        );
-        // Limpar o componente
-        if (this.attachmentFileUploadComponent) {
-          this.attachmentFileUploadComponent.clear();
-        }
-        return;
-      }
-
-      // Validar cada arquivo usando a utility
       const validateFiles = async () => {
         for (const file of files) {
           const validation = await this.validateAttachmentFile(file);
+
           if (!validation.isValid) {
+            console.error("Erro de validação de arquivo:", validation.errors);
             validation.errors.forEach((error) => {
               this.toastService.erro(error);
             });
+
             // Limpar o componente se alguma validação falhar
             if (this.attachmentFileUploadComponent) {
               this.attachmentFileUploadComponent.clear();
@@ -258,8 +247,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           this.selectedFiles.push(file);
         }
 
-        // Se chegou até aqui, todos os arquivos são válidos
-        // Preparar previews dos arquivos
         this.selectedFiles.forEach((file, index) => {
           const reader = new FileReader();
           reader.onload = () => {
@@ -268,7 +255,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           reader.readAsDataURL(file);
         });
 
-        // Marcar como pendente para upload
         this.pendingUpload = true;
       };
 
@@ -282,7 +268,89 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Método para confirmar o upload
+  onUpdateAttachmentClick(attachmentId: string): void {
+    this.attachmentToReplaceId = attachmentId;
+    try {
+      if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
+        this.singleReplaceInput.nativeElement.value = "";
+        this.singleReplaceInput.nativeElement.click();
+      } else {
+        const el = document.querySelector(
+          "input[type=file][#singleReplaceInput]"
+        ) as HTMLInputElement;
+        if (el) {
+          el.value = "";
+          el.click();
+        }
+      }
+    } catch (err) {
+      console.error("Error opening file selector:", err);
+    }
+  }
+
+  onUpdateAttachmentFile(event: any): void {
+    const file: File | undefined = event?.target?.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.validateAttachmentFile(file)
+      .then((validation) => {
+        if (!validation.isValid) {
+          validation.errors.forEach((error) => this.toastService.erro(error));
+          if (
+            this.singleReplaceInput &&
+            this.singleReplaceInput.nativeElement
+          ) {
+            this.singleReplaceInput.nativeElement.value = "";
+          }
+          return;
+        }
+
+        if (!this.attachmentToReplaceId) {
+          this.toastService.erro("No attachment selected to replace");
+          return;
+        }
+
+        this.loading = true;
+        this.clientService
+          .uploadAttachment(file, this.attachmentToReplaceId)
+          .subscribe({
+            next: (response) => {
+              this.toastService.sucesso("Attachment replaced successfully");
+              this.loadAuthenticatedClient();
+              this.loading = false;
+              if (
+                this.singleReplaceInput &&
+                this.singleReplaceInput.nativeElement
+              ) {
+                this.singleReplaceInput.nativeElement.value = "";
+              }
+              this.attachmentToReplaceId = null;
+            },
+            error: (error) => {
+              console.error("Error replacing attachment:", error);
+              this.toastService.erro("Error replacing attachment");
+              this.loading = false;
+              if (
+                this.singleReplaceInput &&
+                this.singleReplaceInput.nativeElement
+              ) {
+                this.singleReplaceInput.nativeElement.value = "";
+              }
+              this.attachmentToReplaceId = null;
+            },
+          });
+      })
+      .catch((err) => {
+        console.error("Error validating file:", err);
+        this.toastService.erro("Error validating file");
+        if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
+          this.singleReplaceInput.nativeElement.value = "";
+        }
+      });
+  }
+
   confirmUpload(): void {
     if (this.selectedFiles.length === 0) {
       this.toastService.erro("No files selected for upload");
@@ -298,7 +366,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
         // Limpar dados de upload e componente
         this.clearUploadData();
-        // Limpar também o componente de upload de attachments para remover thumbnails
+
         if (this.attachmentFileUploadComponent) {
           this.attachmentFileUploadComponent.clear();
         }
@@ -386,9 +454,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   submitAdRequest(): void {
     if (this.requestAdForm.valid) {
       const request: ClientAdRequestDto = {
-        attachmentIds: this.selectedClientAttachments, // Pode ser array vazio
+        attachmentIds: this.selectedClientAttachments,
         message: this.requestAdForm.get("message")?.value,
         email: this.requestAdForm.get("email")?.value,
+        phone: this.requestAdForm.get("phone")?.value,
       };
 
       this.loading = true;
@@ -531,10 +600,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   shouldDisplayMaxValidationsTry(): boolean {
     return (
       this.ads.length > 0 &&
-      this.ads.some(
-        (ad) =>
-          ad.validation === AdValidationType.PENDING && ad.canBeValidatedByOwner
-      )
+      this.ads.some((ad) => ad.validation === AdValidationType.PENDING)
     );
   }
 
@@ -701,7 +767,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   }
 
   canValidateAd(ad: AdResponseDto): boolean {
-    return ad.validation === "PENDING" && ad.canBeValidatedByOwner;
+    return ad.validation === "PENDING";
   }
 
   canUploadDirectAd(): boolean {

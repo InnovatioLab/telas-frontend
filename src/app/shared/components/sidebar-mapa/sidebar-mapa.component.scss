@@ -1,9 +1,7 @@
 ::ng-deep {
 .sidebar-mapa {
     .p-sidebar {
-      
       border-radius: 16px;
-      // z-index: 9999 !important;
       background: var(--cor-branca);
       border: 1px solid var(--cor-cinza-medio);
       
@@ -198,37 +196,32 @@
       gap: 1.5rem;
       padding-bottom: 2rem;
       
-      button {
-        // min-width: 200px;
-        // height: 52px;
-        // border-radius: 12px;
-        // font-weight: 600;
-        // transition: all 0.2s;
-        
-        &.p-button {
-          background: var(--cor-primaria);
-          border-color: var(--cor-primaria);
+      // button {
+
+      //   &.p-button {
+      //     background: var(--cor-primaria);
+      //     border-color: var(--cor-primaria);
           
-          &:hover {
-            background: var(--cor-primaria-clara);
-            border-color: var(--cor-primaria-clara);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          }
-        }
+      //     &:hover {
+      //       background: var(--cor-primaria-clara);
+      //       border-color: var(--cor-primaria-clara);
+      //       transform: translateY(-2px);
+      //       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      //     }
+      //   }
         
-        &.p-button-secondary {
-          background: var(--cor-cinza);
-          border-color: var(--cor-cinza);
+      //   &.p-button-secondary {
+      //     background: var(--cor-cinza);
+      //     border-color: var(--cor-cinza);
           
-          &:hover {
-            background: var(--cor-cinza-escuro);
-            border-color: var(--cor-cinza-escuro);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          }
-        }
-      }
+      //     &:hover {
+      //       background: var(--cor-cinza-escuro);
+      //       border-color: var(--cor-cinza-escuro);
+      //       transform: translateY(-2px);
+      //       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      //     }
+      //   }
+      // }
     }
   }
   
