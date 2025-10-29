@@ -1,4 +1,4 @@
 export interface RefusedAdRequestDto {
-  justification?: string;
+  justification: string;
   description?: string;
 } 

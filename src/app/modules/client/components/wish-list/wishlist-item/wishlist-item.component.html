@@ -8,17 +8,24 @@
       />
     </div>
 
-    <div
-      class="item-info"
-      *ngIf="item.addressLocationName || item.addressLocationDescription"
-    >
-      <div class="info-group">
+    <div class="item-info">
+      <div
+        class="info-group"
+        *ngIf="item.addressLocationName || item.addressLocationDescription"
+      >
         <h3 class="item-name" *ngIf="item.addressLocationName">
           {{ item.addressLocationName }}
         </h3>
         <p class="item-description" *ngIf="item.addressLocationDescription">
           {{ item.addressLocationDescription }}
         </p>
+      </div>
+
+      <div
+        class="info-group"
+        *ngIf="!item.addressLocationName && !item.addressLocationDescription"
+      >
+        <p><strong>Address: </strong>{{ item.fullAddress }}</p>
       </div>
 
       <div class="info-details">

@@ -17,7 +17,7 @@ import {
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { AddressData } from "@app/model/dto/request/address-data-request";
 import { UpdateMonitorRequestDto } from "@app/model/dto/request/create-monitor.request.dto";
-import { Monitor, MonitorType } from "@app/model/monitors";
+import { Monitor } from "@app/model/monitors";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import {
   debounceTime,
@@ -45,14 +45,12 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
 
   monitorForm: FormGroup;
   loadingZipCode = false;
-  monitorTypes = Object.values(MonitorType);
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly zipCodeService: ZipCodeService
   ) {
     this.monitorForm = this.fb.group({
-      type: [null, [Validators.required]],
       active: [true, [Validators.required]],
       locationDescription: ["", [Validators.maxLength(200)]],
       address: this.fb.group({
@@ -93,7 +91,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
     if (!this.monitor) return;
 
     const formData = {
-      type: this.monitor.type ?? MonitorType.BASIC,
       active: this.monitor.active ?? true,
       locationDescription: this.monitor.locationDescription ?? "",
       address: {
@@ -109,7 +106,7 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
       },
     };
 
-    this.monitorForm.patchValue(formData);
+    this.monitorForm.patchValue(formData, { emitEvent: false });
     this.monitorForm.markAllAsTouched();
   }
 
@@ -182,7 +179,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
       const addressValue = formValue.address;
 
       const monitorRequest: UpdateMonitorRequestDto = {
-        type: formValue.type,
         active: formValue.active,
         locationDescription: formValue.locationDescription,
         address: {

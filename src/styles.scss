@@ -532,6 +532,10 @@ textarea {
   }
 }
 
+textarea {
+  height: auto;
+}
+
 .p-inputmask.ng-dirty.ng-invalid,
 .p-inputmask.ng-touched.ng-invalid,
 .p-inputtext.ng-dirty.ng-invalid,
@@ -1616,6 +1620,10 @@ textarea {
   &:active:hover {
     background-color: rgba(220, 53, 69, 0.1) !important;
   }
+}
+
+.danger {
+  color: var(--cor-erro) !important;
 }
 
 .p-badge {

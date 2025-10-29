@@ -17,5 +17,5 @@ import { AdsManagementComponent } from '../ads-management/ads-management.compone
   styleUrls: ['./management-advertisements.component.scss']
 })
 export class ManagementAdvertisementsComponent {
-  // Componente simplificado que apenas renderiza o p-tabView com os dois componentes
+  
 } 

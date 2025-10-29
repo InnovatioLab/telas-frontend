@@ -1,12 +1,12 @@
+import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { CommonModule } from "@angular/common";
-import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { IconsModule } from "@app/shared/icons/icons.module";
 import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
 import { LoadingService } from "@app/core/service/state/loading.service";
-import { ToastService } from "@app/core/service/state/toast.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
+import { ToastService } from "@app/core/service/state/toast.service";
+import { IconsModule } from "@app/shared/icons/icons.module";
+import { PrimengModule } from "@app/shared/primeng/primeng.module";
 
 @Component({
   selector: "app-search-bar",
@@ -113,7 +113,6 @@ export class SearchBarComponent {
       description: this.buildMonitorDescription(monitor),
       latitude: monitor.latitude,
       longitude: monitor.longitude,
-      type: monitor.type,
       category: "MONITOR",
       addressLocationName: monitor.addressLocationName,
       addressLocationDescription: monitor.addressLocationDescription,

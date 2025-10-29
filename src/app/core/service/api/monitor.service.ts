@@ -189,7 +189,6 @@ export class MonitorService {
     const mappedMonitor = {
       id: monitorResponse.id,
       active: monitorResponse.active,
-      type: monitorResponse.type,
       locationDescription: monitorResponse.locationDescription,
       fullAddress: monitorResponse.fullAddress,
       address: monitorResponse.address || {

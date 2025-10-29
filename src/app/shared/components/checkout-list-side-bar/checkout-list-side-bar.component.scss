@@ -40,8 +40,14 @@
         @supports not (overflow-y: overlay) {
           overflow-y: auto;
 
-          Esconder scrollbar no WebKit quando não necessário
-          &::-webkit-scrollbar {
+          Esconder
+            scrollbar
+            no
+            WebKit
+            quando
+            não
+            necessário
+            &::-webkit-scrollbar {
             width: 6px;
           }
 
@@ -228,21 +234,16 @@
 
 .footer-actions {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   width: 100%;
 
   .recurrence-dropdown {
-    flex: 0 0 auto;
-    // min-width: 140px;
-    max-width: 200px;
+    flex: 0 0 auto; // Não cresce nem encolhe, mantém tamanho natural
+    min-width: 140px;
+    max-width: 160px;
     height: 40px;
-  }
-
-  .checkout-button {
-    flex: 1;
-    max-width: 200px;
   }
 }
 

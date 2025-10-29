@@ -296,10 +296,6 @@ export class ManagementMonitorsComponent implements OnInit {
   onEditMonitorModalClose(): void {
     this.editMonitorModalVisible = false;
     this.selectedMonitorForEdit = null;
-
-    setTimeout(() => {
-      this.loadMonitors();
-    }, 50);
   }
 
   onMonitorUpdated(updateData: {
@@ -464,7 +460,6 @@ export class ManagementMonitorsComponent implements OnInit {
       const payload = {
         addressId: this.selectedMonitorForAds.address.id,
         locationDescription: this.selectedMonitorForAds.locationDescription,
-        type: this.selectedMonitorForAds.type,
         active: this.selectedMonitorForAds.active,
         ads,
       };
@@ -523,10 +518,6 @@ export class ManagementMonitorsComponent implements OnInit {
   getMonitorDetails(monitor: Monitor): string {
     const details = [];
 
-    if (monitor.type) {
-      details.push(`Type: ${monitor.type}`);
-    }
-
     if (monitor.adLinks && monitor.adLinks.length > 0) {
       details.push(`Ads: ${monitor.adLinks.length}`);
     }
@@ -555,7 +546,7 @@ export class ManagementMonitorsComponent implements OnInit {
     this.messageService.add({
       severity: "info",
       summary: "Monitor Details",
-      detail: `Monitor: ${monitor.name || "Monitor " + monitor.id.substring(0, 8)} | Address: ${this.getMonitorAddress(monitor)} | Details: ${this.getMonitorDetails(monitor)}`,
+      detail: `Monitor: ${"Monitor " + monitor.id.substring(0, 8)} | Address: ${this.getMonitorAddress(monitor)} | Details: ${this.getMonitorDetails(monitor)}`,
     });
   }
 

@@ -202,7 +202,6 @@ export class SubscriptionService {
   ): Monitor[] {
     return monitors.map((monitor) => ({
       id: monitor.id,
-      type: monitor.type,
       addressData: monitor.addressData,
     }));
   }

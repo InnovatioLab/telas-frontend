@@ -27,7 +27,7 @@
           <div class="align-self-center">📍</div>
           <div class="info-detalhe">
             <span class="info-label">Description</span>
-            <span class="info-valor">
+            <span class="info-valor text-justify">
               {{
                 getMonitorData().addressLocationDescription | sliceString: 100
               }}</span
@@ -162,16 +162,16 @@
       <div class="acoes-container">
         <button
           pButton
+          pRipple
           label="Wish list"
           icon="pi pi-heart-fill"
-          class="p-button p-button-secondary"
           (click)="addToWishlist()"
         ></button>
         <button
           pButton
+          pRipple
           label="Add Screen"
           icon="pi pi-plus"
-          class="p-button"
           (click)="addToList()"
         ></button>
       </div>

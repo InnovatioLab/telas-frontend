@@ -1,12 +1,10 @@
-import { AdRequest } from "./ad-request";
-import { Client } from "./client";
+import { Ad } from "./client";
 
 export interface RefusedAd {
   id: string;
   justification: string;
   description?: string;
-  adRequest: AdRequest;
-  validator: Client;
+  ad: Ad;
   createdAt?: string;
   updatedAt?: string;
 }

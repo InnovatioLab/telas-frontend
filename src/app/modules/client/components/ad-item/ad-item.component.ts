@@ -85,7 +85,7 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
   }
 
   canValidateAd(): boolean {
-    return this.ad?.validation === "PENDING" && this.ad?.canBeValidatedByOwner;
+    return this.ad?.validation === "PENDING";
   }
 
   onImageLoad(): void {

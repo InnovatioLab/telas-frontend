@@ -1,11 +1,11 @@
-import { Injectable, Inject } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
+import { IZipCodeRepository } from "@app/core/interfaces/services/repository/zipcode-repository.interface";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
+import { ZIPCODE_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { AddressData } from "@app/model/dto/request/address-data-request";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { map, switchMap, tap, catchError } from "rxjs/operators";
-import { IZipCodeRepository } from "@app/core/interfaces/services/repository/zipcode-repository.interface";
-import { GeocodingService, GeocodingResult } from "./geocoding.service";
-import { ZIPCODE_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
+import { catchError, map, switchMap, tap } from "rxjs/operators";
+import { GeocodingResult, GeocodingService } from "./geocoding.service";
 
 @Injectable({
   providedIn: "root",
@@ -17,7 +17,8 @@ export class ZipCodeService {
   }>({ addressData: null, mapPoint: null });
 
   constructor(
-    @Inject(ZIPCODE_REPOSITORY_TOKEN) private readonly zipCodeRepository: IZipCodeRepository,
+    @Inject(ZIPCODE_REPOSITORY_TOKEN)
+    private readonly zipCodeRepository: IZipCodeRepository,
     private readonly geocodingService: GeocodingService
   ) {}
 
@@ -42,18 +43,24 @@ export class ZipCodeService {
           return of(localResult);
         }
         // Se não encontrou na API local, tenta Google Maps
-        return this.geocodingService.geocodeZipCode(zipCode).pipe(
-          map((geocodingResult) => 
-            geocodingResult ? this.mapGeocodingToAddressData(geocodingResult, zipCode) : null
-          )
-        );
+        return this.geocodingService
+          .geocodeZipCode(zipCode)
+          .pipe(
+            map((geocodingResult) =>
+              geocodingResult
+                ? this.mapGeocodingToAddressData(geocodingResult, zipCode)
+                : null
+            )
+          );
       }),
       catchError((error) => {
-        console.warn('Local API failed, trying Google Maps:', error);
+        console.warn("Local API failed, trying Google Maps:", error);
         // Se a API local falhou, tenta Google Maps como fallback
         return this.geocodingService.geocodeZipCode(zipCode).pipe(
-          map((geocodingResult) => 
-            geocodingResult ? this.mapGeocodingToAddressData(geocodingResult, zipCode) : null
+          map((geocodingResult) =>
+            geocodingResult
+              ? this.mapGeocodingToAddressData(geocodingResult, zipCode)
+              : null
           ),
           catchError(() => of(null))
         );
@@ -82,7 +89,6 @@ export class ZipCodeService {
           title: `${result.city || ""}, ${result.state || ""} ${result.zipCode}`,
           locationDescription: `${result.street || ""} ${result.city || ""}, ${result.state || ""} ${result.zipCode}`,
           id: `zipcode-${result.zipCode}`,
-          type: "ADDRESS",
           category: "ADDRESS",
         };
       }
@@ -123,28 +129,31 @@ export class ZipCodeService {
     window.dispatchEvent(event);
   }
 
-  private mapGeocodingToAddressData(result: GeocodingResult, zipCode: string): AddressData {
+  private mapGeocodingToAddressData(
+    result: GeocodingResult,
+    zipCode: string
+  ): AddressData {
     return {
       zipCode: result.zipCode || zipCode,
       latitude: result.latitude.toString(),
       longitude: result.longitude.toString(),
       city: this.extractCityFromAddress(result.formattedAddress),
       state: this.extractStateFromAddress(result.formattedAddress),
-      country: 'Brasil',
-      street: '',
+      country: "Brasil",
+      street: "",
     };
   }
 
   private extractCityFromAddress(formattedAddress: string): string {
     // Simple extraction - could be improved with more sophisticated parsing
-    const parts = formattedAddress.split(',');
-    return parts[0]?.trim() || '';
+    const parts = formattedAddress.split(",");
+    return parts[0]?.trim() || "";
   }
 
   private extractStateFromAddress(formattedAddress: string): string {
     // Simple extraction - could be improved with more sophisticated parsing
-    const parts = formattedAddress.split(',');
-    return parts[1]?.trim() || '';
+    const parts = formattedAddress.split(",");
+    return parts[1]?.trim() || "";
   }
 
   private isAddressValid(address: AddressData): boolean {

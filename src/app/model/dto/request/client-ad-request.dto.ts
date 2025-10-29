@@ -1,5 +1,5 @@
 export interface ClientAdRequestDto {
-  attachmentIds: string[];
+  attachmentIds?: string[];
   message: string;
   phone?: string;
   email?: string;

@@ -6,7 +6,6 @@ export interface WishlistResponseDto {
 export interface MonitorWishlistResponseDto {
   id: string;
   active: boolean;
-  type: TMonitorType;
   photoUrl?: string;
   addressLocationName?: string;
   addressLocationDescription?: string;
@@ -17,5 +16,3 @@ export interface MonitorWishlistResponseDto {
   hasAvailableSlots: boolean;
   estimatedSlotReleaseDate: string | null;
 }
-
-type TMonitorType = "BASIC" | "PREMIUM";

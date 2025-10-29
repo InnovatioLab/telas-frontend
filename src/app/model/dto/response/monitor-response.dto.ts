@@ -1,13 +1,11 @@
 import { DefaultStatus } from "@app/model/client";
-import { MonitorType } from "@app/model/monitors";
+
 
 export interface MonitorResponseDto {
   id: string;
   name?: string;
-  location?: string;
   status?: DefaultStatus;
   lastUpdate?: Date;
-  type: MonitorType;
   active: boolean;
   locationDescription?: string;
   productId?: string;

@@ -1,13 +1,13 @@
 <div class="ad-item w-full">
   <div class="ad-header w-full flex gap-2">
     <div class="ad-info w-full">
-      <h5>{{ ad?.name ? "Ad - " + ad.name : "Ad sem nome" }}&nbsp;</h5>
+      <h5>{{ ad?.name ? "Ad - " + ad.name : "Ad without name" }}&nbsp;</h5>
       <p class="ad-date">
         Submission date:
         {{
           ad?.submissionDate
             ? (ad.submissionDate | date: "dd/MM/yyyy")
-            : "Data não disponível"
+            : "Date not available"
         }}&nbsp;
       </p>
     </div>
@@ -21,16 +21,10 @@
         {{ getValidationLabel(ad?.validation) }}&nbsp;
       </span>
       <ng-container *ngIf="ad?.validation === 'PENDING'">
-        <small class="validation-count">
-          {{
-            ad?.canBeValidatedByOwner
-              ? "Available for validation"
-              : "Waiting for admin approval"
-          }}
-        </small>
+        <small class="validation-count"> Available for validation </small>
       </ng-container>
       <ng-container *ngIf="ad?.validation === 'REJECTED'">
-        <small class="validation-count">Waiting for admin edition</small>
+        <small class="validation-count"> Waiting for admin edition </small>
       </ng-container>
     </div>
   </div>
