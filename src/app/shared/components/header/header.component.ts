@@ -23,12 +23,18 @@ import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToastService } from "@app/core/service/state/toast.service";
+import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
 import { NotificationState } from "@app/modules/notificacao/models";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { filter, Subject, Subscription, takeUntil, timer } from "rxjs";
 import { CheckoutListSideBarComponent } from "../checkout-list-side-bar/checkout-list-side-bar.component";
 import { NotificationSidebarComponent } from "../notification-sidebar/notification-sidebar.component";
+import { HeaderStateService } from "@app/shared/services/header-state.service";
+import { HeaderActionsService } from "@app/shared/services/header-actions.service";
+import { HeaderBrandComponent } from "../header-brand/header-brand.component";
+import { HeaderNavigationComponent } from "../header-navigation/header-navigation.component";
+import { HeaderActionsComponent } from "../header-actions/header-actions.component";
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
@@ -51,6 +57,9 @@ interface AdminSidebarPinChangedEvent {
     IconsModule,
     ShowInRoutesDirective,
     NotificationSidebarComponent,
+    HeaderBrandComponent,
+    HeaderNavigationComponent,
+    HeaderActionsComponent,
   ],
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"],
@@ -60,41 +69,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   checkoutSidebar: CheckoutListSideBarComponent;
   @Output() monitorsFound = new EventEmitter<MapPoint[]>();
 
-  menuVisible = false;
-  isMobileMenuOpen = false;
   readonly TEXTO_ACAO = {
     entrar: "Sign In",
     cadastrar: "Sign Up",
   };
-  itensCarrinho = signal<number>(0);
-  itensNotificacao = signal<number>(0);
-  itensSalvos = signal<number>(0);
-  isLoggedIn = false;
-  isMobile = false;
-  menuAberto = false;
-  isDarkMode = false;
-  isAdminSidebarVisible = false;
-  isNotificationsSidebarVisible = false;
 
   headerAllowedRoutes = ["/client", "/admin"];
-
-  // Getter para verificar se o carrinho tem itens
-  get hasActiveCart(): boolean {
-    return this.itensCarrinho() > 0;
-  }
-
-  // Getter para o tooltip do carrinho
-  get cartTooltip(): string {
-    return this.hasActiveCart
-      ? `View your cart (${this.itensCarrinho()} items)`
-      : "Your cart is empty";
-  }
-
-  get isMenuOpenInSmallMobile(): boolean {
-    const isSmallMobile = window.innerWidth <= 600;
-    const isMenuOpen = this.menuAberto;
-    return isMenuOpen && isSmallMobile;
-  }
 
   private resizeListener: () => void;
   private authSubscription: Subscription;
@@ -117,24 +97,30 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly loadingService: LoadingService,
     private readonly zipcodeService: ZipCodeService,
     private readonly cartService: CartService,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly toggleModeService: ToggleModeService,
+    public readonly headerState: HeaderStateService,
+    public readonly headerActions: HeaderActionsService
   ) {}
 
   ngOnInit() {
     this.notificationsService.fetchAllNotifications().subscribe();
-    this.isLoggedIn = this.authentication.isTokenValido();
-
-    this.itensNotificacao = this.notificationState._quantidadeNotificacoes;
+    
     this.checkScreenSize();
     this.resizeListener = () => this.checkScreenSize();
     window.addEventListener("resize", this.resizeListener);
-    if (this.isLoggedIn) {
+
+    if (this.headerActions.isLoggedIn()) {
       this.initializeUserServices();
     }
 
+    this.setupSubscriptions();
+  }
+
+  private setupSubscriptions(): void {
+    // Auth subscriptions
     this.authSubscription = this.authentication.isLoggedIn$.subscribe(
       (isLoggedIn) => {
-        this.isLoggedIn = isLoggedIn;
         if (isLoggedIn && !this.savedPointsSubscription) {
           this.initializeUserServices();
         }
@@ -144,56 +130,45 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.authStateSubscription = this.authentication.authState$.subscribe(
       () => {
-        this.isLoggedIn = this.authentication.isLoggedIn$.getValue();
-        if (this.isLoggedIn && !this.savedPointsSubscription) {
+        if (this.headerActions.isLoggedIn() && !this.savedPointsSubscription) {
           this.initializeUserServices();
         }
         this.cdr.detectChanges();
       }
     );
 
+    // Menu subscription
     this.menuSubscription = this.sidebarService.atualizarLista.subscribe(() => {
       const isVisible = this.sidebarService.visibilidade();
       const menuTipo = this.sidebarService.tipo();
 
-      this.menuAberto =
-        isVisible && (menuTipo === "client-menu" || menuTipo === "admin-menu");
+      const menuAberto = isVisible && (menuTipo === "client-menu" || menuTipo === "admin-menu");
+      this.headerState.setMenuOpen(menuAberto);
+      this.headerState.setMobileMenuOpen(menuAberto && this.headerState.isMobile());
 
-      // Atualizar isMobileMenuOpen baseado no estado do menu e se está em mobile
-      this.isMobileMenuOpen = this.menuAberto && this.isMobile;
-
-      // Forçar detecção de mudança para o getter ser reavaliado
       this.cdr.detectChanges();
     });
 
+    // Router events
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
-        this.isLoggedIn = this.authentication.isTokenValido();
         this.cdr.detectChanges();
       });
 
-    if (this.isAdministrador()) {
-      const savedVisibility = localStorage.getItem("admin_sidebar_visible");
-      this.isAdminSidebarVisible = savedVisibility === "true";
-    }
-
-    // Inicializar subscription para mudanças do carrinho
-    this.subscribeToCartChanges();
-
-    // Inicializar carrinho apenas se logado (só uma vez na aplicação)
-    if (this.isLogado()) {
-      this.cartService.initializeCart();
-    }
+    // Theme subscription
+    this.toggleModeService.theme$.subscribe((theme: string) => {
+      this.headerState.setDarkMode(theme === 'dark');
+      this.cdr.detectChanges();
+    });
   }
 
   ngAfterViewInit() {
     timer(0).subscribe(() => {
-      this.isLoggedIn = this.authentication.isTokenValido();
-      if (this.isLoggedIn && !this.savedPointsSubscription) {
+      if (this.headerActions.isLoggedIn() && !this.savedPointsSubscription) {
         this.initializeUserServices();
       }
       this.cdr.detectChanges();
@@ -210,13 +185,10 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       this.savedPointsSubscription.unsubscribe();
     }
 
-    // Inicializar subscription do carrinho
-    this.subscribeToCartChanges();
-
     if (this.isInAllowedRoutes()) {
       this.savedPointsSubscription =
         this.googleMapsService.savedPoints$.subscribe((points) => {
-          this.itensSalvos.set(points?.length || 0);
+          this.headerActions.updateSavedItemsCount(points?.length || 0);
         });
 
       this.searchSubscriptions.add(
@@ -227,8 +199,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
         })
       );
     }
-
-    // Removed search monitors subscription - now handled by SearchSectionComponent
   }
 
   ngOnDestroy() {
@@ -258,76 +228,16 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private checkScreenSize() {
-    const newIsMobile = window.innerWidth <= 768;
-    if (this.isMobile !== newIsMobile) {
-      this.isMobile = newIsMobile;
-      this.isMobileMenuOpen = this.menuAberto && this.isMobile;
-    }
+    this.headerState.updateScreenSize();
   }
 
-  redirecionarAdministracao() {
-    if (this.isAdministrador()) {
-      if (this.router.url.includes("/admin/profile")) {
-        this.router.navigate(["/admin"]);
-      } else {
-        this.router.navigate(["/admin/profile"]);
-      }
-    }
+  // Event handlers for child components
+  onLogoClick(): void {
+    this.headerActions.navigateToHome();
   }
 
-  isAdministrador() {
-    return (
-      this.isLogado() && this.authentication?._clientSignal()?.role === "ADMIN"
-    );
-  }
-
-  isLogado() {
-    return this.isLoggedIn || this.authentication.isTokenValido();
-  }
-
-  redirecionarLogin() {
-    this.router.navigate(["/authentication/login"]);
-  }
-
-  redirecionarCadastro() {
-    this.router.navigate(["/register"]);
-  }
-
-  abrirNotificacoes() {
-    this.isNotificationsSidebarVisible = true;
-  }
-
-  fecharNotificacoes() {
-    this.isNotificationsSidebarVisible = false;
-  }
-
-  abrirCheckout() {
-    if (!this.hasActiveCart) {
-      this.toastService.info(
-        "Your cart is empty. Add monitors to start shopping."
-      );
-      return;
-    }
-
-    if (this.checkoutSidebar) {
-      this.checkoutSidebar.abrirSidebar();
-    }
-  }
-
-  navegarPaginaInicial() {
-    if (this.isLogado()) {
-      if (this.isAdministrador()) {
-        this.router.navigate(["/admin"]);
-      } else {
-        this.router.navigate(["/client"]);
-      }
-    } else {
-      this.router.navigate(["/"]);
-    }
-  }
-
-  toggleMenu(): void {
-    if (!this.isLogado()) return;
+  onMenuToggle(): void {
+    if (!this.headerActions.isLoggedIn()) return;
 
     const isVisible = this.sidebarService.visibilidade();
     const menuTipo = this.sidebarService.tipo();
@@ -338,9 +248,69 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     ) {
       this.sidebarService.fechar();
     } else {
-      const menuType = this.isAdministrador() ? "admin-menu" : "client-menu";
+      const menuType = this.headerActions.isAdministrator() ? "admin-menu" : "client-menu";
       this.sidebarService.abrirMenu(menuType);
     }
+  }
+
+  onCheckoutClick(): void {
+    this.headerActions.openCheckout();
+    if (this.checkoutSidebar) {
+      this.checkoutSidebar.abrirSidebar();
+    }
+  }
+
+  onAdminClick(): void {
+    this.headerActions.navigateToAdminProfile();
+  }
+
+  onNotificationsClick(): void {
+    this.headerState.toggleNotificationsSidebar();
+  }
+
+  onNotificationsVisibilityChange(visible: boolean): void {
+    this.headerState.setNotificationsSidebarVisible(visible);
+  }
+
+  // Legacy methods for backward compatibility
+  redirecionarAdministracao() {
+    this.headerActions.navigateToAdminProfile();
+  }
+
+  isAdministrador() {
+    return this.headerActions.isAdministrator();
+  }
+
+  isLogado() {
+    return this.headerActions.isLoggedIn();
+  }
+
+  redirecionarLogin() {
+    this.headerActions.navigateToLogin();
+  }
+
+  redirecionarCadastro() {
+    this.headerActions.navigateToRegister();
+  }
+
+  abrirNotificacoes() {
+    this.headerState.toggleNotificationsSidebar();
+  }
+
+  fecharNotificacoes() {
+    this.headerState.setNotificationsSidebarVisible(false);
+  }
+
+  abrirCheckout() {
+    this.onCheckoutClick();
+  }
+
+  navegarPaginaInicial() {
+    this.headerActions.navigateToHome();
+  }
+
+  toggleMenu(): void {
+    this.onMenuToggle();
   }
 
   isProfileManagementRoute(): boolean {
@@ -348,53 +318,82 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleAdminSidebar(): void {
-    this.isAdminSidebarVisible = !this.isAdminSidebarVisible;
-    localStorage.setItem(
-      "admin_sidebar_visible",
-      this.isAdminSidebarVisible.toString()
-    );
-
-    const toggleEvent = new CustomEvent<ToggleAdminSidebarEvent>(
-      "toggle-admin-sidebar",
-      {
-        detail: { visible: this.isAdminSidebarVisible },
-      }
-    );
-    window.dispatchEvent(toggleEvent);
+    this.headerState.toggleAdminSidebar();
   }
 
   updateAdminSidebarVisibility(isVisible: boolean): void {
-    this.isAdminSidebarVisible = isVisible;
+    this.headerState.setAdminSidebarVisible(isVisible);
   }
 
   isInAllowedRoutes(): boolean {
     const currentUrl = this.router.url;
-
     return this.headerAllowedRoutes.some((route) => {
       const exactRoutePattern = new RegExp(`^${route}(\\/)?$`);
       return exactRoutePattern.test(currentUrl);
     });
   }
 
-  private subscribeToCartChanges(): void {
-    if (this.isLogado()) {
-      // Limpar subscription anterior se existir
-      if (this.cartSubscription) {
-        this.cartSubscription.unsubscribe();
-      }
+  // Getters for template compatibility
+  get isLoggedIn(): boolean {
+    return this.headerActions.isLoggedIn();
+  }
 
-      this.cartSubscription = this.cartService.cartUpdatedStream$.subscribe({
-        next: (cart) => {
-          if (cart && cart.items) {
-            this.itensCarrinho.set(cart.items.length);
-          } else {
-            this.itensCarrinho.set(0);
-          }
-        },
-        error: () => {
-          this.itensCarrinho.set(0);
-        },
-      });
-    }
+  get isMobile(): boolean {
+    return this.headerState.isMobile();
+  }
+
+  get menuAberto(): boolean {
+    return this.headerState.isMenuOpen();
+  }
+
+  get isDarkMode(): boolean {
+    return this.headerState.isDarkMode();
+  }
+
+  get isAdminSidebarVisible(): boolean {
+    return this.headerState.isAdminSidebarVisible();
+  }
+
+  get isNotificationsSidebarVisible(): boolean {
+    return this.headerState.isNotificationsSidebarVisible();
+  }
+
+  get isMobileMenuOpen(): boolean {
+    return this.headerState.isMobileMenuOpen();
+  }
+
+  get itensCarrinho(): any {
+    return { 
+      set: (value: number) => this.headerActions.updateCartItemCount(value),
+      get: () => this.headerActions.cartItemCount()
+    };
+  }
+
+  get itensNotificacao(): any {
+    return { 
+      set: (value: number) => this.headerActions.updateNotificationCount(value),
+      get: () => this.headerActions.notificationCount()
+    };
+  }
+
+  get itensSalvos(): any {
+    return { 
+      set: (value: number) => this.headerActions.updateSavedItemsCount(value),
+      get: () => this.headerActions.savedItemsCount()
+    };
+  }
+
+  get hasActiveCart(): boolean {
+    return this.headerActions.hasActiveCart();
+  }
+
+  get cartTooltip(): string {
+    return this.headerActions.getCartTooltip();
+  }
+
+  get isMenuOpenInSmallMobile(): boolean {
+    const isSmallMobile = window.innerWidth <= 600;
+    const isMenuOpen = this.menuAberto;
+    return isMenuOpen && isSmallMobile;
   }
 }

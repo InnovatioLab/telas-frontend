@@ -41,6 +41,22 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  width: 100%;
+  
+  /* Ajustar tamanho dos ícones SVG */
+  ::ng-deep svg {
+    width: 14px !important;
+    height: 14px !important;
+    max-width: 14px !important;
+    max-height: 14px !important;
+  }
+  
+  svg {
+    width: 14px !important;
+    height: 14px !important;
+    max-width: 14px !important;
+    max-height: 14px !important;
+  }
 }
 
 /* Estado escuro */

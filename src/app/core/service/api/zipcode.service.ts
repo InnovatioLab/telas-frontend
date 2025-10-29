@@ -1,28 +1,25 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable, inject } from "@angular/core";
-import { GoogleMapsService } from "./google-maps.service";
+import { Injectable, Inject } from "@angular/core";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { AddressData } from "@app/model/dto/request/address-data-request";
-import { ResponseDTO } from "@app/model/dto/response.dto";
-import { LocalAddressResponse } from "@app/model/dto/response/local-address-response";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { catchError, map, switchMap, tap } from "rxjs/operators";
-import { ENVIRONMENT } from "src/environments/environment-token";
+import { map, switchMap, tap, catchError } from "rxjs/operators";
+import { IZipCodeRepository } from "@app/core/interfaces/services/repository/zipcode-repository.interface";
+import { GeocodingService, GeocodingResult } from "./geocoding.service";
+import { ZIPCODE_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 
 @Injectable({
   providedIn: "root",
 })
 export class ZipCodeService {
-  private readonly env = inject(ENVIRONMENT);
-  private readonly apiKeyBackup = "9bdde870-2bf6-11f0-92e4-ab00f677d113";
-  private readonly localApiUrl = this.env.apiUrl || "";
-
   private readonly lastLocationSubject = new BehaviorSubject<{
     addressData: AddressData | null;
     mapPoint: MapPoint | null;
   }>({ addressData: null, mapPoint: null });
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    @Inject(ZIPCODE_REPOSITORY_TOKEN) private readonly zipCodeRepository: IZipCodeRepository,
+    private readonly geocodingService: GeocodingService
+  ) {}
 
   public get lastLocation$(): Observable<{
     addressData: AddressData | null;
@@ -38,25 +35,34 @@ export class ZipCodeService {
       return of(null);
     }
 
-    return this.findLocationInLocalApi(zipCode).pipe(
-      map((localResult) => {
-        if (localResult) {
-          return localResult;
-        }
-        return null;
-      }),
+    return this.zipCodeRepository.findByZipCode(zipCode).pipe(
       switchMap((localResult) => {
         if (localResult) {
+          // Se encontrou na API local, retorna o resultado
           return of(localResult);
         }
-        return this.findLocationInExternalApi(zipCode);
+        // Se não encontrou na API local, tenta Google Maps
+        return this.geocodingService.geocodeZipCode(zipCode).pipe(
+          map((geocodingResult) => 
+            geocodingResult ? this.mapGeocodingToAddressData(geocodingResult, zipCode) : null
+          )
+        );
+      }),
+      catchError((error) => {
+        console.warn('Local API failed, trying Google Maps:', error);
+        // Se a API local falhou, tenta Google Maps como fallback
+        return this.geocodingService.geocodeZipCode(zipCode).pipe(
+          map((geocodingResult) => 
+            geocodingResult ? this.mapGeocodingToAddressData(geocodingResult, zipCode) : null
+          ),
+          catchError(() => of(null))
+        );
       }),
       tap((result) => {
         if (result) {
           this.processAndEmitLocation(result);
         }
-      }),
-      catchError(() => of(null))
+      })
     );
   }
 
@@ -117,56 +123,32 @@ export class ZipCodeService {
     window.dispatchEvent(event);
   }
 
+  private mapGeocodingToAddressData(result: GeocodingResult, zipCode: string): AddressData {
+    return {
+      zipCode: result.zipCode || zipCode,
+      latitude: result.latitude.toString(),
+      longitude: result.longitude.toString(),
+      city: this.extractCityFromAddress(result.formattedAddress),
+      state: this.extractStateFromAddress(result.formattedAddress),
+      country: 'Brasil',
+      street: '',
+    };
+  }
+
+  private extractCityFromAddress(formattedAddress: string): string {
+    // Simple extraction - could be improved with more sophisticated parsing
+    const parts = formattedAddress.split(',');
+    return parts[0]?.trim() || '';
+  }
+
+  private extractStateFromAddress(formattedAddress: string): string {
+    // Simple extraction - could be improved with more sophisticated parsing
+    const parts = formattedAddress.split(',');
+    return parts[1]?.trim() || '';
+  }
+
   private isAddressValid(address: AddressData): boolean {
     return !!address.city && !!address.state && !!address.country;
-  }
-
-  private findLocationInLocalApi(
-    zipCode: string
-  ): Observable<AddressData | null> {
-    const url = `${this.localApiUrl}addresses/${zipCode}`;
-
-    return this.http.get<ResponseDTO<LocalAddressResponse>>(url).pipe(
-      map((response) => {
-        if (response.data) {
-          return {
-            zipCode: response.data?.zipCode,
-            street: response.data?.street || "",
-            city: response.data?.city || "",
-            state: response.data?.state || "",
-            country: response.data?.country || "",
-            latitude: response.data?.latitude?.toString() || null,
-            longitude: response.data?.longitude?.toString() || null,
-          };
-        }
-        return null;
-      }),
-      catchError(() => of(null))
-    );
-  }
-
-  findLocationInExternalApi(zipCode: string): Observable<AddressData | null> {
-    const apiKey = this.env.zipCodeApiKey || this.apiKeyBackup;
-    const url = `${this.localApiUrl}addresses/${zipCode}`;
-
-    return this.http.get<any>(url).pipe(
-      map((response) => {
-        const location: AddressData = {
-          street: response.places?.[0]?.["place name"] || "",
-          city: response.places?.[0]?.["place name"] || "",
-          state: response.places?.[0]?.["state abbreviation"] || "",
-          country: response.country || "US",
-          zipCode: response["post code"] || zipCode,
-          latitude: response.places?.[0]?.["latitude"] || "0",
-          longitude: response.places?.[0]?.["longitude"] || "0",
-        };
-
-        return location;
-      }),
-      catchError(() => {
-        return of(null);
-      })
-    );
   }
 
   public getStatesList(): Observable<{ code: string; name: string }[]> {

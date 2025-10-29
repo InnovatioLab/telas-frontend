@@ -9,8 +9,9 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
   const authToken = authentication.token;
   const router = inject(Router);
   const urlLogin = req.url.includes('login');
+  const urlZipCode = req.url.includes('addresses/zipcode');
 
-  if (urlLogin) {
+  if (urlLogin || urlZipCode) {
     return next(req);
   }
 
