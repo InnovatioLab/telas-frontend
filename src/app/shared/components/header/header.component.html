@@ -15,132 +15,41 @@
       <div class="mobile-header">
         <div class="header-content">
           <section class="flex align-items-center gap-2">
-            <div
-              class="menu-trigger"
-              *ngIf="isLogado() && !isProfileManagementRoute()"
-              [ngClass]="{ active: menuAberto }"
-              (click)="toggleMenu()"
-              (keydown.enter)="toggleMenu()"
-              (keydown.space)="toggleMenu()"
-              tabindex="0"
-              role="button"
-              aria-label="Open Side Menu"
-              [attr.aria-expanded]="menuAberto"
-            >
-              <app-icon-bars></app-icon-bars>
-            </div>
-            <div class="logo-container">
-              <img
-                src="assets/img/Logo-black.png"
-                alt="Logo"
-                class="header-logo"
-                (click)="navegarPaginaInicial()"
-                (keydown.enter)="navegarPaginaInicial()"
-                tabindex="0"
-                role="button"
-                aria-label="Ir para página inicial"
-              />
-            </div>
+            <app-header-navigation
+              [isLoggedIn]="isLogado()"
+              [isMenuOpen]="menuAberto"
+              [isProfileManagementRoute]="isProfileManagementRoute()"
+              (menuToggle)="onMenuToggle()">
+            </app-header-navigation>
+            
+            <app-header-brand
+              [onLogoClickHandler]="onLogoClick.bind(this)">
+            </app-header-brand>
           </section>
-
 
           <div class="right-container">
             <div class="icons-container" *ngIf="isLogado()">
-              <button
-                pButton
-                (click)="abrirCheckout()"
-                *ngIf="!isAdministrador()"
-                class="icon-button"
-                id="test-btn-checkout"
-                [pTooltip]="cartTooltip"
-                tooltipPosition="bottom"
-                [disabled]="!hasActiveCart"
-              >
-                <app-icon-shopping-basket></app-icon-shopping-basket>
-                <span
-                  *ngIf="itensCarrinho() > 0"
-                  class="badge flex justify-content-center align-items-center absolute"
-                >
-                  {{ itensCarrinho() }}</span
-                >
-              </button>
-
-              <button
-                pButton
-                (click)="abrirNotificacoes()"
-                class="icon-button"
-                id="test-btn-notification"
-                pTooltip="View notifications"
-                tooltipPosition="bottom"
-              >
-                <app-icon-notifications></app-icon-notifications>
-                <span
-                  *ngIf="itensNotificacao() > 0"
-                  class="badge flex justify-content-center align-items-center absolute"
-                >
-                  {{ itensNotificacao() }}</span
-                >
-              </button>
+              <app-header-actions
+                [isAdministrator]="isAdministrador()"
+                [cartItemCount]="headerActions.cartItemCount()"
+                [notificationCount]="headerActions.notificationCount()"
+                [cartTooltip]="cartTooltip"
+                (checkoutClick)="onCheckoutClick()"
+                (notificationsClick)="onNotificationsClick()">
+              </app-header-actions>
             </div>
           </div>
         </div>
 
         <section class="box-actions main-actions mobile-only">
-          <button
-            class="icon-button"
-            id="test-btn-checkout-mobile"
-            (click)="abrirCheckout()"
-            *ngIf="!isAdministrador()"
-            pButton
-            [rounded]="true"
-            [text]="true"
-            [disabled]="!hasActiveCart"
-            [pTooltip]="cartTooltip"
-            tooltipPosition="bottom"
-          >
-            <app-icon-shopping-basket></app-icon-shopping-basket>
-            <span
-              *ngIf="itensCarrinho() > 0"
-              class="badge flex justify-content-center align-items-center absolute"
-            >
-              {{ itensCarrinho() }}</span
-            >
-          </button>
-
-          <button
-            class="icon-button"
-            id="test-btn-notification"
-            (click)="abrirNotificacoes()"
-            *ngIf="isAdministrador()"
-            pButton
-            [rounded]="true"
-            [text]="true"
-          >
-            <app-icon-notifications></app-icon-notifications>
-            <span
-              *ngIf="itensNotificacao()"
-              class="badge flex justify-content-center align-items-center absolute"
-            >
-              {{ itensNotificacao() }}</span
-            >
-          </button>
-
-          <button
-            class="icon-button"
-            id="test-btn-notification"
-            (click)="abrirNotificacoes()"
-            pButton
-            [rounded]="true"
-            [text]="true"
-          >
-            <app-icon-notifications></app-icon-notifications>
-            <span
-              *ngIf="itensNotificacao()"
-              class="badge flex justify-content-center align-items-center absolute"
-            >
-              {{ itensNotificacao() }}</span
-            >
-          </button>
+          <app-header-actions
+            [isAdministrator]="isAdministrador()"
+            [cartItemCount]="headerActions.cartItemCount()"
+            [notificationCount]="headerActions.notificationCount()"
+            [cartTooltip]="cartTooltip"
+            (checkoutClick)="onCheckoutClick()"
+            (notificationsClick)="onNotificationsClick()">
+          </app-header-actions>
         </section>
       </div>
     </div>
@@ -149,47 +58,27 @@
       <div class="mobile-header">
         <div class="header-content">
           <section class="flex align-items-center gap-2">
-            <div
-              class="menu-trigger"
-              *ngIf="isLogado() && !isProfileManagementRoute()"
-              [ngClass]="{ active: menuAberto }"
-              (click)="toggleMenu()"
-              (keydown.enter)="toggleMenu()"
-              (keydown.space)="toggleMenu()"
-              tabindex="0"
-              role="button"
-              aria-label="Open Side Menu"
-              [attr.aria-expanded]="menuAberto"
-            >
-              <app-icon-bars></app-icon-bars>
-            </div>
-            <div class="logo-container">
-              <img
-                src="assets/img/Logo-black.png"
-                alt="Logo"
-                class="header-logo"
-                (click)="navegarPaginaInicial()"
-                (keydown.enter)="navegarPaginaInicial()"
-                tabindex="0"
-                role="button"
-                aria-label="Ir para página inicial"
-              />
-            </div>
+            <app-header-navigation
+              [isLoggedIn]="isLogado()"
+              [isMenuOpen]="menuAberto"
+              [isProfileManagementRoute]="isProfileManagementRoute()"
+              (menuToggle)="onMenuToggle()">
+            </app-header-navigation>
+            
+            <app-header-brand
+              [onLogoClickHandler]="onLogoClick.bind(this)">
+            </app-header-brand>
           </section>
-
 
           <div class="right-container">
             <div class="icons-container">
-              
-
-              <button
-                pButton
-                class="icon-button"
-                (click)="redirecionarAdministracao()"
-                id="link-administracao-mobile"
-              >
-                <app-icon-settings></app-icon-settings>
-              </button>
+              <app-header-actions
+                [isAdministrator]="isAdministrador()"
+                [cartItemCount]="headerActions.cartItemCount()"
+                [notificationCount]="headerActions.notificationCount()"
+                [cartTooltip]="cartTooltip"
+                (adminClick)="onAdminClick()">
+              </app-header-actions>
             </div>
           </div>
         </div>
@@ -203,98 +92,28 @@
         class="header-container flex flex-row justify-content-between align-items-center w-full"
       >
         <section class="flex align-items-center gap-2">
-          <div
-            class="menu-trigger-desktop"
-            *ngIf="isLogado() && !isProfileManagementRoute()"
-            [ngClass]="{ active: menuAberto }"
-            (click)="toggleMenu()"
-            (keydown.enter)="toggleMenu()"
-            (keydown.space)="toggleMenu()"
-            tabindex="0"
-            role="button"
-            aria-label="Open Side Menu"
-            [attr.aria-expanded]="menuAberto"
-          >
-            <app-icon-bars></app-icon-bars>
-          </div>
-          <div class="logo-container">
-            <img
-              src="assets/img/Logo-black.png"
-              alt="Logo"
-              class="header-logo"
-              (click)="navegarPaginaInicial()"
-              (keydown.enter)="navegarPaginaInicial()"
-              tabindex="0"
-              role="button"
-              aria-label="Ir para página inicial"
-            />
-          </div>
+          <app-header-navigation
+            [isLoggedIn]="isLogado()"
+            [isMenuOpen]="menuAberto"
+            [isProfileManagementRoute]="isProfileManagementRoute()"
+            (menuToggle)="onMenuToggle()">
+          </app-header-navigation>
+          
+          <app-header-brand
+            [onLogoClickHandler]="onLogoClick.bind(this)">
+          </app-header-brand>
         </section>
 
-
-
         <section class="box-actions main-actions desktop-only">
-          <button
-            id="test-btn-checkout-desktop"
-            (click)="abrirCheckout()"
-            *ngIf="!isAdministrador()"
-            pButton
-            [rounded]="true"
-            [text]="true"
-            [pTooltip]="cartTooltip"
-            tooltipPosition="bottom"
-            class="icon-button"
-            [disabled]="!hasActiveCart"
-          >
-            <app-icon-shopping-basket
-              class="icon cursor-pointer"
-            ></app-icon-shopping-basket>
-            <span
-              *ngIf="itensCarrinho() > 0"
-              class="badge flex justify-content-center align-items-center absolute"
-            >
-              {{ itensCarrinho() }}</span
-            >
-          </button>
-
-          <button
-            class="icon-button"
-            id="link-administracao"
-            *ngIf="isAdministrador()"
-            pButton
-            [rounded]="true"
-            [text]="true"
-            (click)="redirecionarAdministracao()"
-            pTooltip="Admin settings"
-            tooltipPosition="bottom"
-          >
-            <app-icon-settings
-              class="icon cursor-pointer icon-fill"
-            ></app-icon-settings>
-          </button>
-
-          <ng-container *ngIf="!isAdministrador()">
-            <button
-              id="test-btn-notification"
-              (click)="abrirNotificacoes()"
-              pButton
-              [rounded]="true"
-              [text]="true"
-              pTooltip="View notifications"
-              tooltipPosition="bottom"
-              class="icon-button"
-            >
-              <app-icon-notifications
-                class="icon cursor-pointer"
-              ></app-icon-notifications>
-              <span
-                *ngIf="itensNotificacao() > 0"
-                class="badge flex justify-content-center align-items-center absolute"
-              >
-                {{ itensNotificacao() }}</span
-              >
-            </button>
-          </ng-container>
+          <app-header-actions
+            [isAdministrator]="isAdministrador()"
+            [cartItemCount]="headerActions.cartItemCount()"
+            [notificationCount]="headerActions.notificationCount()"
+            [cartTooltip]="cartTooltip"
+            (checkoutClick)="onCheckoutClick()"
+            (adminClick)="onAdminClick()"
+            (notificationsClick)="onNotificationsClick()">
+          </app-header-actions>
         </section>
       </div>
     </div>
@@ -304,6 +123,6 @@
 
 <app-notification-sidebar 
   [visible]="isNotificationsSidebarVisible"
-  (visibleChange)="isNotificationsSidebarVisible = $event">
+  (visibleChange)="onNotificationsVisibilityChange($event)">
 </app-notification-sidebar>
 
