@@ -13,6 +13,8 @@ jest.mock('src/environments/environment', () => ({
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ClientService } from '../client.service';
+import { CLIENT_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
+import { ClientRepositoryImpl } from '@app/core/service/repository/client-repository.impl';
 
 describe('ClientService - Teste Básico', () => {
   let service: ClientService;
@@ -20,7 +22,10 @@ describe('ClientService - Teste Básico', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ClientService],
+      providers: [
+        ClientService,
+        { provide: CLIENT_REPOSITORY_TOKEN, useClass: ClientRepositoryImpl }
+      ],
     });
 
     service = TestBed.inject(ClientService);

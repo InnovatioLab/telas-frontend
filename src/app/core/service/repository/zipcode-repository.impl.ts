@@ -21,14 +21,18 @@ export class ZipCodeRepositoryImpl implements IZipCodeRepository {
       return of(null);
     }
 
-    return this.http.get<ResponseDTO<LocalAddressResponse>>(`${this.baseUrl}/zipcode/${zipCode}`).pipe(
+    return this.http.get<ResponseDTO<LocalAddressResponse>>(`${this.baseUrl}/${zipCode}`).pipe(
       map(response => {
-        if (response.data) {
+        if (response.data && response.data.zipCode) {
           return this.mapToAddressData(response.data);
         }
         return null;
       }),
-      catchError(() => of(null))
+      catchError((error) => {
+        console.warn('ZipCode API not available:', error);
+        // Retorna null para que o ZipCodeService tente o Google Maps
+        return of(null);
+      })
     );
   }
 

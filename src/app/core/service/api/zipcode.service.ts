@@ -38,20 +38,31 @@ export class ZipCodeService {
     return this.zipCodeRepository.findByZipCode(zipCode).pipe(
       switchMap((localResult) => {
         if (localResult) {
+          // Se encontrou na API local, retorna o resultado
           return of(localResult);
         }
+        // Se não encontrou na API local, tenta Google Maps
         return this.geocodingService.geocodeZipCode(zipCode).pipe(
           map((geocodingResult) => 
             geocodingResult ? this.mapGeocodingToAddressData(geocodingResult, zipCode) : null
           )
         );
       }),
+      catchError((error) => {
+        console.warn('Local API failed, trying Google Maps:', error);
+        // Se a API local falhou, tenta Google Maps como fallback
+        return this.geocodingService.geocodeZipCode(zipCode).pipe(
+          map((geocodingResult) => 
+            geocodingResult ? this.mapGeocodingToAddressData(geocodingResult, zipCode) : null
+          ),
+          catchError(() => of(null))
+        );
+      }),
       tap((result) => {
         if (result) {
           this.processAndEmitLocation(result);
         }
-      }),
-      catchError(() => of(null))
+      })
     );
   }
 

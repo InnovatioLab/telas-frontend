@@ -65,7 +65,7 @@ describe('ZipCodeRepositoryImpl', () => {
         });
       });
 
-      const req = httpMock.expectOne(`${service['baseUrl']}/zipcode/12345`);
+      const req = httpMock.expectOne(`${service['baseUrl']}/12345`);
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
     });
@@ -83,7 +83,7 @@ describe('ZipCodeRepositoryImpl', () => {
         expect(result).toBeNull();
       });
 
-      const req = httpMock.expectOne(`${service['baseUrl']}/zipcode/12345`);
+      const req = httpMock.expectOne(`${service['baseUrl']}/12345`);
       req.error(new ErrorEvent('API error'));
     });
   });
@@ -126,7 +126,9 @@ describe('ZipCodeRepositoryImpl', () => {
       };
 
       service.saveAddress(addressData).subscribe({
-        next: () => fail('should have errored'),
+        next: () => {
+          throw new Error('should have errored');
+        },
         error: (error) => {
           expect(error).toBeTruthy();
         }
