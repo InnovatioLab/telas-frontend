@@ -71,36 +71,36 @@ export class CreateMonitorModalComponent implements OnInit {
   }
 
   private setupZipCodeSearch(): void {
-    const zipCodeControl = this.monitorForm.get("address.zipCode");
+    // const zipCodeControl = this.monitorForm.get("address.zipCode");
 
-    if (zipCodeControl) {
-      zipCodeControl.valueChanges
-        .pipe(
-          debounceTime(500),
-          distinctUntilChanged(),
-          filter((zipCode: string) => {
-            return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
-          }),
-          switchMap((zipCode: string): Observable<AddressData | null> => {
-            if (zipCode) {
-              this.loadingZipCode = true;
-              return this.zipCodeService.findLocationByZipCode(zipCode);
-            }
-            return of(null);
-          })
-        )
-        .subscribe({
-          next: (addressData) => {
-            this.loadingZipCode = false;
-            if (addressData) {
-              this.fillAddressFields(addressData);
-            }
-          },
-          error: (error) => {
-            this.loadingZipCode = false;
-          },
-        });
-    }
+    // if (zipCodeControl) {
+    //   zipCodeControl.valueChanges
+    //     .pipe(
+    //       debounceTime(500),
+    //       distinctUntilChanged(),
+    //       filter((zipCode: string) => {
+    //         return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
+    //       }),
+    //       switchMap((zipCode: string): Observable<AddressData | null> => {
+    //         if (zipCode) {
+    //           this.loadingZipCode = true;
+    //           return this.zipCodeService.findLocationByZipCode(zipCode);
+    //         }
+    //         return of(null);
+    //       })
+    //     )
+    //     .subscribe({
+    //       next: (addressData) => {
+    //         this.loadingZipCode = false;
+    //         if (addressData) {
+    //           this.fillAddressFields(addressData);
+    //         }
+    //       },
+    //       error: (error) => {
+    //         this.loadingZipCode = false;
+    //       },
+    //     });
+    // }
   }
 
   private fillAddressFields(addressData: AddressData): void {

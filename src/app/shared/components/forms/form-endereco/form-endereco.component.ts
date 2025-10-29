@@ -71,41 +71,41 @@ export class FormEnderecoComponent implements OnInit {
   }
 
   private setupZipCodeSearch(): void {
-    const zipCodeControl = this.enderecoForm.get("zipCode");
+    // const zipCodeControl = this.enderecoForm.get("zipCode");
 
-    if (zipCodeControl) {
-      zipCodeControl.valueChanges
-        .pipe(
-          debounceTime(500),
-          distinctUntilChanged(),
-          filter((zipCode: string) => {
-            return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
-          }),
-          switchMap((zipCode: string): Observable<AddressData | null> => {
-            if (zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode)) {
-              this.loadingService.setLoading(true, "form-endereco");
-              return this.zipCodeService.findLocationByZipCode(zipCode);
-            }
-            return of(null);
-          })
-        )
-        .subscribe({
-          next: (addressData) => {
-            if (addressData) {
-              this.zipCodeEncontrado = true;
-              this.loadingService.setLoading(false, "form-endereco");
-              this.fillAddressFields(addressData);
-            } else {
-              this.zipCodeEncontrado = false;
-              this.loadingService.setLoading(false, "form-endereco");
-            }
-          },
-          error: () => {
-            this.zipCodeEncontrado = false;
-            this.loadingService.setLoading(false, "form-endereco");
-          },
-        });
-    }
+    // if (zipCodeControl) {
+    //   zipCodeControl.valueChanges
+    //     .pipe(
+    //       debounceTime(500),
+    //       distinctUntilChanged(),
+    //       filter((zipCode: string) => {
+    //         return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
+    //       }),
+    //       switchMap((zipCode: string): Observable<AddressData | null> => {
+    //         if (zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode)) {
+    //           this.loadingService.setLoading(true, "form-endereco");
+    //           return this.zipCodeService.findLocationByZipCode(zipCode);
+    //         }
+    //         return of(null);
+    //       })
+    //     )
+    //     .subscribe({
+    //       next: (addressData) => {
+    //         if (addressData) {
+    //           this.zipCodeEncontrado = true;
+    //           this.loadingService.setLoading(false, "form-endereco");
+    //           this.fillAddressFields(addressData);
+    //         } else {
+    //           this.zipCodeEncontrado = false;
+    //           this.loadingService.setLoading(false, "form-endereco");
+    //         }
+    //       },
+    //       error: () => {
+    //         this.zipCodeEncontrado = false;
+    //         this.loadingService.setLoading(false, "form-endereco");
+    //       },
+    //     });
+    // }
   }
 
   updatePartnerAddress(value: boolean) {
