@@ -14,7 +14,7 @@ import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
-import { catchError, finalize, firstValueFrom, of } from "rxjs";
+import { catchError, finalize, of } from "rxjs";
 @Component({
   selector: "app-login",
   imports: [
@@ -93,37 +93,20 @@ export class LoginComponent implements OnInit {
         })
       )
       .subscribe((response) => {
-        if (response) {
-          this.authentication.isLoggedIn$.next(true);
-          this.verificarTermo();
+        if (response && response.client) {
+          // Atualiza o estado central e redireciona conforme termos/role.
+          this.authentication.updateClientData(response.client as any);
+          if ((response.client as any).termAccepted) {
+            this.redirecionarParaHome(response.client as any);
+          } else {
+            this.router.navigate(["/terms-of-service"]);
+          }
         }
       });
   }
 
-  async verificarTermo(): Promise<void> {
-    this.loading = true;
-    try {
-      const authenticatedClient = await firstValueFrom(
-        this.clientService.getAuthenticatedClient()
-      );
-
-      this.authentication.updateClientData(authenticatedClient as any);
-
-      if (authenticatedClient.termAccepted) {
-        this.redirecionarParaHome(authenticatedClient as any);
-      } else {
-        this.router.navigate(["/terms-of-service"]);
-      }
-    } catch (error) {
-      console.error("Error checking acceptance of terms:", error);
-      this.mensagemLoginInvalidoDialog(
-        "Error checking your data. Please try again."
-      );
-      this.logout();
-    } finally {
-      this.loading = false;
-    }
-  }
+  // verificarTermo foi substituído: agora o fluxo de login retorna o client
+  // (via AutenticacaoService.login) e já atualiza o estado central.
 
   redirecionarParaHome(client?: Client): void {
     if (!client) {

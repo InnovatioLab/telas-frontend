@@ -8,7 +8,8 @@ import {
   WishlistResponseDto,
 } from "@app/model/dto/response/wishlist-response.dto";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { Subscription } from "rxjs";
+import { Subscription, of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 import { WishlistItemComponent } from "./wishlist-item/wishlist-item.component";
 
 @Component({
@@ -40,17 +41,24 @@ export class WishListComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    const authSub = this.clientService.getAuthenticatedClient().subscribe({
-      next: (client) => {
-        this.authenticatedClient = client;
-        this.loadWishlist();
-      },
-      error: (error) => {
-        console.error("Error loading authenticated client:", error);
-        this.error = "Error loading client data.";
-        this.isLoading = false;
-      },
-    });
+    const authSub = this.clientService.clientAtual$
+      .pipe(
+        take(1),
+        switchMap((client) =>
+          client ? of(client) : this.clientService.getAuthenticatedClient()
+        )
+      )
+      .subscribe({
+        next: (client) => {
+          this.authenticatedClient = client as any;
+          this.loadWishlist();
+        },
+        error: (error) => {
+          console.error("Error loading authenticated client:", error);
+          this.error = "Error loading client data.";
+          this.isLoading = false;
+        },
+      });
 
     this.subscription.add(authSub);
   }

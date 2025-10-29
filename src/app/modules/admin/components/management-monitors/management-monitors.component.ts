@@ -29,6 +29,8 @@ import { MessageService } from "primeng/api";
 import { GalleriaModule } from "primeng/galleria";
 import { OrderListModule } from "primeng/orderlist";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
+import { of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 import { CreateMonitorModalComponent } from "../create-monitor-modal/create-monitor-modal.component";
 import { EditMonitorModalComponent } from "../edit-monitor-modal/edit-monitor-modal.component";
 
@@ -116,14 +118,21 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   loadAuthenticatedClient(): void {
-    this.clientService.getAuthenticatedClient().subscribe({
-      next: (client) => {
-        this.authenticatedClient = client;
-      },
-      error: (error) => {
-        console.error("Error loading authenticated client:", error);
-      },
-    });
+    this.clientService.clientAtual$
+      .pipe(
+        take(1),
+        switchMap((client) =>
+          client ? of(client) : this.clientService.getAuthenticatedClient()
+        )
+      )
+      .subscribe({
+        next: (client) => {
+          this.authenticatedClient = client as any;
+        },
+        error: (error) => {
+          console.error("Error loading authenticated client:", error);
+        },
+      });
   }
 
   loadInitialData(): void {

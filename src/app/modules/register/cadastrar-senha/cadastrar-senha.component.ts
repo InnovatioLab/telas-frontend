@@ -10,7 +10,6 @@ import { DialogoComponent } from '@app/shared/components/dialogo/dialogo.compone
 import { IconsModule } from '@app/shared/icons/icons.module';
 import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { DialogoUtils } from '@app/shared/utils/dialogo-config.utils';
-import { MascaraUtils } from '@app/shared/utils/mascara.utils';
 import { MENSAGENS, MensagensConstants, TEXTO_ACAO } from '@app/utility/src';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
@@ -59,8 +58,6 @@ export class CadastrarSenhaComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(params => {
       this.usuarioLogin = params.get('login');
-
-      this.aplicarMascaraNoDocumento();
     });
   }
 
@@ -110,26 +107,6 @@ export class CadastrarSenhaComponent implements OnInit, OnDestroy {
     });
 
     this.refDialogo = this.dialogService.open(DialogoComponent, config);
-  }
-
-  aplicarMascaraNoDocumento(): void {
-    if (this.usuarioLogin) {
-      const tamanhoLogin = this.usuarioLogin.length;
-      const cpfTamanho = 11;
-      const cnpjTamanho = 14;
-
-      let valorCampoLogin = '';
-
-      if (tamanhoLogin === cpfTamanho) {
-        valorCampoLogin = MascaraUtils.aplicarMascara(this.usuarioLogin, '999.999.999-99');
-      }
-
-      if (tamanhoLogin === cnpjTamanho) {
-        valorCampoLogin = MascaraUtils.aplicarMascara(this.usuarioLogin, '99.999.999/9999-99');
-      }
-
-      this.alterarContatoForm.get('login')?.setValue(valorCampoLogin);
-    }
   }
 
   exibirMensagemBoasVindas() {

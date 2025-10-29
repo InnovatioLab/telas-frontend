@@ -55,7 +55,7 @@ export class TermsOfServiceComponent implements OnInit {
         this.termoCondicao = termo;
       },
       error: (error) => {
-        this.handleError("Erro ao carregar termos de uso.", error);
+        this.handleError("Error loading terms of use.", error);
       },
       complete: () => {
         this.loading = false;
@@ -65,7 +65,7 @@ export class TermsOfServiceComponent implements OnInit {
 
   aceitarTermos(): void {
     if (!this.client?.id) {
-      this.toastService.erro("Erro: Cliente não identificado");
+      this.toastService.erro("Error: Client not identified");
       return;
     }
 
@@ -73,12 +73,12 @@ export class TermsOfServiceComponent implements OnInit {
     this.clientService.aceitarTermosDeCondicao().subscribe({
       next: () => {
         this.aceitandoTermos = false;
-        this.toastService.sucesso("Termos aceitos com sucesso!");
+        this.toastService.sucesso("Terms accepted!");
         this.navigateAfterAccept();
       },
       error: (error) => {
         this.aceitandoTermos = false;
-        this.handleError("Erro ao aceitar os termos. Tente novamente.", error);
+        this.handleError("Error accepting terms. Please try again.", error);
       },
     });
   }

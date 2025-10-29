@@ -93,6 +93,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     options: google.maps.MarkerOptions;
   }[] = [];
   private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
+  private pendingLocation: MapPoint | null = null;
+  private pendingPoints: MapPoint[] | null = null;
+  private tilesLoaded = false;
+  private tilesLoadTimeoutId: any = null;
 
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -244,24 +248,18 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       const customEvent = e as CustomEvent;
       if (customEvent.detail?.location) {
         const location = customEvent.detail.location;
-        if (this._map && location.latitude && location.longitude) {
-          this.ngZone.run(() => {
-            const newCenter = {
-              lat: location.latitude,
-              lng: location.longitude,
-            };
-            this._map?.setCenter(newCenter);
-            this._map?.setZoom(15);
+        console.debug('[MapsComponent] zipcode-location-found received', location);
+        // If the map is not ready yet, store the location and ensure map initialization.
+        if (!this._map || !this._mapReady) {
+          console.debug('[MapsComponent] storing pendingLocation because map not ready');
+          this.pendingLocation = location;
+          // try to initialize the map so we can apply the pending location when ready
+          this.ensureMapInitialized();
+          return;
+        }
 
-            this.clearMarkers();
-            const marker = new google.maps.Marker({
-              position: newCenter,
-              map: this._map,
-              title: location.title ?? "Localização do CEP",
-              icon: this.mapsService.createRedMarkerIcon(),
-            });
-            this.markers.push(marker);
-          });
+        if (location.latitude && location.longitude) {
+          this.applyLocationToMap(location);
         }
       }
     }) as EventListener);
@@ -273,22 +271,22 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
           lat: customEvent.detail.latitude,
           lng: customEvent.detail.longitude,
         };
-
-        if (this._map) {
-          this.ngZone.run(() => {
-            this._map?.setCenter(newCenter);
-            this._map?.setZoom(15);
-
-            this.clearMarkers();
-            const marker = new google.maps.Marker({
-              position: newCenter,
-              map: this._map,
-              title: "Localização atual",
-              icon: this.mapsService.createRedMarkerIcon(),
-            });
-            this.markers.push(marker);
-          });
+        console.debug('[MapsComponent] user-coordinates-updated received', newCenter);
+        // If the map isn't ready yet, store as pending and initialize map
+        if (!this._map || !this._mapReady) {
+          console.debug('[MapsComponent] storing pendingLocation from user coords because map not ready');
+          this.pendingLocation = {
+            latitude: newCenter.lat,
+            longitude: newCenter.lng,
+            title: 'Localização atual',
+            category: 'ADDRESS',
+            id: 'pending-user-location',
+          } as MapPoint;
+          this.ensureMapInitialized();
+          return;
         }
+
+        this.applyCenterAndMarker(newCenter, 'Localização atual');
       }
     }) as EventListener);
 
@@ -354,6 +352,14 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     const monitorsSub = this.mapsService.nearestMonitors$.subscribe(
       (monitors: MapPoint[]) => {
+        console.debug('[MapsComponent] nearestMonitors$ emitted', monitors?.length);
+        if (!this._map || !this._mapReady) {
+          console.debug('[MapsComponent] storing pendingPoints from nearestMonitors$ because map not ready');
+          this.pendingPoints = monitors;
+          this.ensureMapInitialized();
+          return;
+        }
+
         if (this._map && monitors.length > 0) {
           this.addMapPoints(monitors);
         }
@@ -364,15 +370,15 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       const customEvent = e as CustomEvent;
       if (customEvent.detail?.monitors) {
         const monitors: MapPoint[] = customEvent.detail.monitors;
-        if (this._map) {
-          this.setMapPoints(monitors);
-        } else {
-          setTimeout(() => {
-            if (this._map) {
-              this.setMapPoints(monitors);
-            }
-          }, 1000);
+        console.debug('[MapsComponent] monitors-found event', monitors?.length);
+        if (!this._map || !this._mapReady) {
+          console.debug('[MapsComponent] storing pendingPoints from monitors-found because map not ready');
+          this.pendingPoints = monitors;
+          this.ensureMapInitialized();
+          return;
         }
+
+        this.setMapPoints(monitors);
       }
     }) as EventListener);
 
@@ -412,6 +418,40 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
         this.mapInitialized.emit(this._map);
       });
 
+      // Listen for map idle to mark map as ready and apply pending items when available
+      try {
+        this._map.addListener('idle', () => {
+          console.debug('[MapsComponent] map idle event');
+          if (!this._mapReady) {
+            this._mapReady = true;
+            this.mapReady.emit(true);
+
+            if (this.pendingLocation) {
+              console.debug('[MapsComponent] applying pendingLocation due to idle', this.pendingLocation);
+              this.applyLocationToMap(this.pendingLocation);
+              this.pendingLocation = null;
+            }
+
+            if (this.pendingPoints && this.pendingPoints.length > 0) {
+              console.debug('[MapsComponent] applying pendingPoints due to idle', this.pendingPoints.length);
+              this.setMapPoints(this.pendingPoints);
+              this.pendingPoints = null;
+            }
+          }
+        });
+        // tilesloaded event: fired when tiles have finished loading
+        this._map.addListener('tilesloaded', () => {
+          console.debug('[MapsComponent] tilesloaded event');
+          this.tilesLoaded = true;
+          if (this.tilesLoadTimeoutId) {
+            clearTimeout(this.tilesLoadTimeoutId);
+            this.tilesLoadTimeoutId = null;
+          }
+        });
+      } catch (e) {
+        // ignore if listener registration fails
+      }
+
       this._map.addListener("zoom_changed", () => {
         if (this._map && this.points && this.points.length > 0) {
           this.updateMarkersBasedOnZoom();
@@ -425,10 +465,44 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       setTimeout(() => {
         if (this._map) {
           google.maps.event.trigger(this._map, "resize");
-          this.ngZone.run(() => {
-            this._mapReady = true;
-            this.mapReady.emit(true);
-          });
+          // give the browser a moment to paint the map tiles
+          setTimeout(() => {
+            this.ngZone.run(() => {
+              this._mapReady = true;
+              this.mapReady.emit(true);
+
+              // apply pending location after map is fully ready
+              if (this.pendingLocation) {
+                try {
+                  // small delay to ensure tiles are rendered
+                  setTimeout(() => {
+                    if (this.pendingLocation) {
+                      console.debug('[MapsComponent] applying pendingLocation after resize fallback', this.pendingLocation);
+                      this.applyLocationToMap(this.pendingLocation!);
+                      this.pendingLocation = null;
+                    }
+                  }, 50);
+                } catch (e) {
+                  console.error('Error applying pending location', e);
+                }
+              }
+
+              // apply pending points after map ready
+              if (this.pendingPoints && this.pendingPoints.length > 0) {
+                try {
+                  setTimeout(() => {
+                    if (this.pendingPoints) {
+                      console.debug('[MapsComponent] applying pendingPoints after resize fallback', this.pendingPoints.length);
+                      this.setMapPoints(this.pendingPoints!);
+                      this.pendingPoints = null;
+                    }
+                  }, 50);
+                } catch (e) {
+                  console.error('Error applying pending points', e);
+                }
+              }
+            });
+          }, 100);
         }
       }, 200);
     } catch (error) {
@@ -445,7 +519,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   public isMapReady(): boolean {
     return this._mapReady && this._apiLoaded && !!this._map;
   }
-
   public checkMapState(): void {
     if (this._apiLoaded && !this._map && this.mapContainer?.nativeElement) {
       this.initializeMap();
@@ -574,7 +647,48 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     this.markers.push(marker);
   }
 
+  private applyLocationToMap(location: MapPoint): void {
+    if (!location || !this._map) return;
+
+    const newCenter = { lat: location.latitude, lng: location.longitude };
+
+    this.applyCenterAndMarker(newCenter, location.title ?? "Localização do CEP");
+  }
+
+  private applyCenterAndMarker(center: { lat: number; lng: number }, title?: string): void {
+    if (!this._map) return;
+
+    this.ngZone.run(() => {
+      try {
+        this._map.setCenter(center);
+        this._map.setZoom(15);
+
+        this.clearMarkers();
+        const marker = new google.maps.Marker({
+          position: center,
+          map: this._map,
+          title: title ?? "Localização",
+          icon: this.mapsService.createRedMarkerIcon(),
+        });
+        this.markers.push(marker);
+      } catch (e) {
+        // avoid throwing during init
+        console.error('Error applying center and marker', e);
+      }
+    });
+  }
+
   public setMapPoints(points: MapPoint[]): void {
+    console.debug('[MapsComponent] setMapPoints called with', points?.length);
+
+    // If map is not ready yet, store points to apply later and try to initialize map
+    if (!this._map || !this._mapReady) {
+      console.debug('[MapsComponent] storing pendingPoints from setMapPoints because map not ready');
+      this.pendingPoints = points;
+      this.ensureMapInitialized();
+      return;
+    }
+
     this.points = points;
 
     this.addMapPoints(points);
@@ -738,7 +852,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private createClusterMarker(cluster: MonitorCluster): void {
     if (!this._map) return;
 
-    const clusterIcon = this.createClusterIcon(cluster.count, cluster.monitors);
+    const { icon: clusterIcon, svgUrl } = this.createClusterIcon(
+      cluster.count,
+      cluster.monitors
+    );
 
     const clusterMarker = new google.maps.Marker({
       position: cluster.position,
@@ -747,6 +864,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       icon: clusterIcon,
       zIndex: 1000,
     });
+
+    // attach svg url to marker so we can revoke it later to avoid leaking object URLs
+    try {
+      (clusterMarker as any).__svgUrl = svgUrl;
+    } catch (e) {}
 
     clusterMarker.addListener("click", () => {
       this.ngZone.run(() => {
@@ -784,7 +906,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private createClusterIcon(
     count: number,
     monitors: MapPoint[]
-  ): google.maps.Icon {
+  ): { icon: google.maps.Icon; svgUrl: string } {
     const size = Math.min(50 + count * 4, 80);
 
     let fillColor = "#FF6B35";
@@ -816,17 +938,28 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     const svgBlob = new Blob([svg], { type: "image/svg+xml" });
     const svgUrl = URL.createObjectURL(svgBlob);
 
-    return {
+    const icon: google.maps.Icon = {
       url: svgUrl,
       scaledSize: new google.maps.Size(size, size),
       anchor: new google.maps.Point(size / 2, size / 2),
     };
+
+    return { icon, svgUrl };
   }
 
   private clearMarkers(): void {
     this.markers.forEach((marker) => marker.setMap(null));
     this.markers = [];
-    this.clusterMarkers.forEach((marker) => marker.setMap(null));
+    // revoke any object URLs created for cluster icons to avoid leaking resources
+    this.clusterMarkers.forEach((marker) => {
+      try {
+        const svgUrl = (marker as any).__svgUrl;
+        if (svgUrl) {
+          URL.revokeObjectURL(svgUrl);
+        }
+      } catch (e) {}
+      marker.setMap(null);
+    });
     this.clusterMarkers = [];
   }
 

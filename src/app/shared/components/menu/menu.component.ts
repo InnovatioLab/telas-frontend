@@ -22,12 +22,11 @@ import { ClientMenuSideComponent } from "../client-menu-side/client-menu-side.co
 export class MenuComponent {
   private readonly clientService = inject(ClientService);
 
-  /**
-   * Observable boolean usado no template com `async`.
-   * Evita usar getters assíncronos no template (que retornam Promise e
-   * podem causar comportamento incorreto de avaliação no *ngIf).
-   */
-  readonly isAdministrador$: Observable<boolean> = this.clientService
-    .getAuthenticatedClient()
-    .pipe(map((client) => client?.role === Role.ADMIN));
+  // Usa o clientAtual$ (BehaviorSubject) do ClientService para evitar
+  // requisições redundantes. Esse subject é atualizado a partir do
+  // Authentication.updateClientData / pegarDadosAutenticado.
+  readonly isAdministrador$: Observable<boolean> =
+    this.clientService.clientAtual$.pipe(
+      map((client) => client?.role === Role.ADMIN)
+    );
 }

@@ -30,7 +30,8 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { FileUpload } from "primeng/fileupload";
-import { Subscription } from "rxjs";
+import { Subscription, of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 import { AdItemComponent } from "../ad-item/ad-item.component";
 
 @Component({
@@ -153,34 +154,41 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   loadAuthenticatedClient(): void {
     this.loading = true;
-    this.clientService.getAuthenticatedClient().subscribe({
-      next: (client) => {
-        this.authenticatedClient = client;
-        this.clientAttachments = client.attachments || [];
-        this.hasActiveAdRequest = client.adRequest !== null;
-        this.ads = client.ads || [];
-        this.hasAds = true;
-        this.isClientDataLoaded = true;
+    this.clientService.clientAtual$
+      .pipe(
+        take(1),
+        switchMap((client) =>
+          client ? of(client) : this.clientService.getAuthenticatedClient()
+        )
+      )
+      .subscribe({
+        next: (client) => {
+          this.authenticatedClient = client as any;
+          this.clientAttachments = (client as any).attachments || [];
+          this.hasActiveAdRequest = (client as any).adRequest !== null;
+          this.ads = (client as any).ads || [];
+          this.hasAds = true;
+          this.isClientDataLoaded = true;
 
-        if (client) {
-          this.requestAdForm.patchValue(
-            {
-              phone: this.authenticatedClient.contact.phone,
-              email: this.authenticatedClient.contact.email,
-            },
-            { emitEvent: false }
-          );
-        }
+          if (client) {
+            this.requestAdForm.patchValue(
+              {
+                phone: this.authenticatedClient.contact.phone,
+                email: this.authenticatedClient.contact.email,
+              },
+              { emitEvent: false }
+            );
+          }
 
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error("Erro ao carregar dados do cliente:", error);
-        this.toastService.erro("Error loading client data");
-        this.isClientDataLoaded = false;
-        this.loading = false;
-      },
-    });
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error("Erro ao carregar dados do cliente:", error);
+          this.toastService.erro("Error loading client data");
+          this.isClientDataLoaded = false;
+          this.loading = false;
+        },
+      });
   }
 
   onTabChange(event: any): void {
