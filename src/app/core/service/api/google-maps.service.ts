@@ -231,6 +231,17 @@ export class GoogleMapsService {
     };
   }
 
+  public createUserLocationIcon(): google.maps.Symbol {
+    return {
+      path: google.maps.SymbolPath.CIRCLE,
+      fillColor: "#049dd9", // cor-primaria-clara
+      fillOpacity: 1,
+      strokeWeight: 2,
+      strokeColor: "#FFFFFF",
+      scale: 10,
+    };
+  }
+
   public createSearchMarkerIcon(): google.maps.Symbol {
     return {
       path: google.maps.SymbolPath.CIRCLE,

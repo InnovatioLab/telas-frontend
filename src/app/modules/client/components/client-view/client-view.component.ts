@@ -234,18 +234,12 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     if (client?.addresses && client.addresses.length > 0) {
       const address = client.addresses[0];
       if (address.latitude && address.longitude) {
-        const userLocation: MapPoint = {
-          id: 'user-location',
-          latitude: typeof address.latitude === 'string' ? parseFloat(address.latitude) : address.latitude,
-          longitude: typeof address.longitude === 'string' ? parseFloat(address.longitude) : address.longitude,
-          title: `${address.street}, ${address.city}`,
-          locationDescription: `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`,
-          type: 'USER_LOCATION',
-          category: 'USER_LOCATION'
-        };
+        const lat = typeof address.latitude === 'string' ? parseFloat(address.latitude) : address.latitude;
+        const lng = typeof address.longitude === 'string' ? parseFloat(address.longitude) : address.longitude;
         
-        this.mapsComponent?.setMapPoints([userLocation]);
-        this.mapsComponent?.fitBoundsToPoints([userLocation]);
+        // Apenas centralizar o mapa na localização do usuário, sem criar marcador
+        const center = { lat, lng };
+        this.mapsComponent?.setMapCenter(center, 15);
       }
     }
   }

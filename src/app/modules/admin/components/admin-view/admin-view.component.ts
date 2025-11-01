@@ -134,8 +134,9 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     await this.requestUserLocation();
-
-    this.loadNearbyPoints();
+    // Não buscar monitores automaticamente - apenas centralizar o mapa na localização do usuário
+    // Os monitores só serão buscados quando o usuário pesquisar por ZIP code
+    
     this.setupEventListeners();
   }
 
@@ -170,7 +171,8 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
             lat: lastPoint.latitude,
             lng: lastPoint.longitude,
           };
-          this.loadNearbyPoints();
+          // Não buscar monitores automaticamente quando coordenadas são atualizadas
+          // Os monitores só serão buscados quando o usuário pesquisar por ZIP code
         }
       }
     );
@@ -285,24 +287,20 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (client?.addresses && client.addresses.length > 0) {
       const address = client.addresses[0];
       if (address.latitude && address.longitude) {
-        const userLocation: MapPoint = {
-          id: "user-location",
-          latitude:
-            typeof address.latitude === "string"
-              ? parseFloat(address.latitude)
-              : address.latitude,
-          longitude:
-            typeof address.longitude === "string"
-              ? parseFloat(address.longitude)
-              : address.longitude,
-          title: `${address.street}, ${address.city}`,
-          locationDescription: `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`,
-          type: "USER_LOCATION",
-          category: "USER_LOCATION",
-        };
-
-        this.mapsComponent?.setMapPoints([userLocation]);
-        this.mapsComponent?.fitBoundsToPoints([userLocation]);
+        const lat = typeof address.latitude === "string" ? parseFloat(address.latitude) : address.latitude;
+        const lng = typeof address.longitude === "string" ? parseFloat(address.longitude) : address.longitude;
+        
+        // Apenas centralizar o mapa na localização do usuário, sem criar marcador
+        const center = { lat, lng };
+        
+        // Se houver monitors, ajustar o zoom para mostrar todos
+        if (this.monitors.length > 0) {
+          this.mapsComponent?.setMapCenter(center);
+          this.mapsComponent?.fitBoundsToPoints(this.monitors);
+        } else {
+          // Se não houver monitors, apenas centralizar com zoom padrão
+          this.mapsComponent?.setMapCenter(center, 15);
+        }
       }
     }
   }
