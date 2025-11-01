@@ -12,7 +12,8 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from "@app/utility/src";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 import { CadastrarSenhaComponent } from "../cadastrar-senha/cadastrar-senha.component";
 
 @Component({
@@ -116,9 +117,8 @@ export class ValidacaoCadastroComponent implements OnInit {
       })
       .subscribe({
         next: (response: any) => {
-          if (response) {
-            // Atualizar o estado de autenticação para o header/menu
-            this.authentication.isLoggedIn$.next(true);
+          if (response && response.client) {
+            // login já sincronizou o estado global; apenas navega
             this.handleNavigation();
           }
         },
@@ -131,17 +131,40 @@ export class ValidacaoCadastroComponent implements OnInit {
   }
 
   async handleNavigation() {
-    const authenticatedClient = await firstValueFrom(
-      this.clientService.getAuthenticatedClient()
-    );
+    // Usa o estado já carregado em `Authentication` (via pegarDadosAutenticado)
+    // para decidir a navegação. Isso evita chamadas concorrentes e garante
+    // que `HeaderActionsService` e outros consumidores vejam o usuário correto.
+    const client = this.authentication._clientSignal();
+    if (!client) {
+      // Fallback: tentar obter do serviço caso o signal não esteja populado
+      try {
+        const authenticatedClient = await firstValueFrom(
+          this.clientService.clientAtual$.pipe(
+            take(1),
+            switchMap((c) =>
+              c ? of(c) : this.clientService.getAuthenticatedClient()
+            )
+          )
+        );
+        if ((authenticatedClient as any)?.role === Role.ADMIN) {
+          this.router.navigate(["/admin"]);
+        } else {
+          this.router.navigate(["/terms-of-service"]);
+        }
+        return;
+      } catch (error) {
+        console.error(
+          "Não foi possível determinar o usuário autenticado",
+          error
+        );
+        this.router.navigate(["/"]);
+        return;
+      }
+    }
 
-    console.log("Authenticated Client:", authenticatedClient);
-
-    if (authenticatedClient.role !== Role.ADMIN) {
-      console.log("Navigating to terms-of-service");
+    if (client.role !== Role.ADMIN) {
       this.router.navigate(["/terms-of-service"]);
     } else {
-      console.log("Navigating to admin");
       this.router.navigate(["/admin"]);
     }
   }

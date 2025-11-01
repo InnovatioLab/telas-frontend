@@ -17,7 +17,7 @@ import {
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { AddressData } from "@app/model/dto/request/address-data-request";
 import { UpdateMonitorRequestDto } from "@app/model/dto/request/create-monitor.request.dto";
-import { Monitor, MonitorType } from "@app/model/monitors";
+import { Monitor } from "@app/model/monitors";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import {
   debounceTime,
@@ -45,14 +45,12 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
 
   monitorForm: FormGroup;
   loadingZipCode = false;
-  monitorTypes = Object.values(MonitorType);
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly zipCodeService: ZipCodeService
   ) {
     this.monitorForm = this.fb.group({
-      type: [null, [Validators.required]],
       active: [true, [Validators.required]],
       locationDescription: ["", [Validators.maxLength(200)]],
       address: this.fb.group({
@@ -93,7 +91,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
     if (!this.monitor) return;
 
     const formData = {
-      type: this.monitor.type ?? MonitorType.BASIC,
       active: this.monitor.active ?? true,
       locationDescription: this.monitor.locationDescription ?? "",
       address: {
@@ -109,41 +106,41 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
       },
     };
 
-    this.monitorForm.patchValue(formData);
+    this.monitorForm.patchValue(formData, { emitEvent: false });
     this.monitorForm.markAllAsTouched();
   }
 
   private setupZipCodeSearch(): void {
-    const zipCodeControl = this.monitorForm.get("address.zipCode");
+    // const zipCodeControl = this.monitorForm.get("address.zipCode");
 
-    if (zipCodeControl) {
-      zipCodeControl.valueChanges
-        .pipe(
-          debounceTime(500),
-          distinctUntilChanged(),
-          filter((zipCode: string) => {
-            return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
-          }),
-          switchMap((zipCode: string): Observable<AddressData | null> => {
-            if (zipCode) {
-              this.loadingZipCode = true;
-              return this.zipCodeService.findLocationByZipCode(zipCode);
-            }
-            return of(null);
-          })
-        )
-        .subscribe({
-          next: (addressData) => {
-            this.loadingZipCode = false;
-            if (addressData) {
-              this.fillAddressFields(addressData);
-            }
-          },
-          error: (error) => {
-            this.loadingZipCode = false;
-          },
-        });
-    }
+    // if (zipCodeControl) {
+    //   zipCodeControl.valueChanges
+    //     .pipe(
+    //       debounceTime(500),
+    //       distinctUntilChanged(),
+    //       filter((zipCode: string) => {
+    //         return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
+    //       }),
+    //       switchMap((zipCode: string): Observable<AddressData | null> => {
+    //         if (zipCode) {
+    //           this.loadingZipCode = true;
+    //           return this.zipCodeService.findLocationByZipCode(zipCode);
+    //         }
+    //         return of(null);
+    //       })
+    //     )
+    //     .subscribe({
+    //       next: (addressData) => {
+    //         this.loadingZipCode = false;
+    //         if (addressData) {
+    //           this.fillAddressFields(addressData);
+    //         }
+    //       },
+    //       error: (error) => {
+    //         this.loadingZipCode = false;
+    //       },
+    //     });
+    // }
   }
 
   private fillAddressFields(addressData: AddressData): void {
@@ -182,7 +179,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
       const addressValue = formValue.address;
 
       const monitorRequest: UpdateMonitorRequestDto = {
-        type: formValue.type,
         active: formValue.active,
         locationDescription: formValue.locationDescription,
         address: {

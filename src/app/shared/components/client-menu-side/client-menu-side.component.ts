@@ -20,7 +20,8 @@ import { SubscriptionsIconComponent } from "@app/shared/icons/subscriptions.icon
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogModule } from "primeng/dialog";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
-import { Subscription } from "rxjs";
+import { Subscription, of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 import { IconCloseComponent } from "../../icons/close.icon";
 import { IconFavoriteComponent } from "../../icons/favorite.icon";
 import { IconHomeComponent } from "../../icons/home.icon";
@@ -180,18 +181,25 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   loadAuthenticatedClient(): void {
     this.loading = true;
-    this.clientService.getAuthenticatedClient().subscribe({
-      next: (client) => {
-        this.authenticatedClient = client;
-        this.loading = false;
-        this.updateMenuItems();
-      },
-      error: (error) => {
-        console.error("Error while getting logged client:", error);
-        this.loading = false;
-        this.updateMenuItems();
-      },
-    });
+    this.clientService.clientAtual$
+      .pipe(
+        take(1),
+        switchMap((client) =>
+          client ? of(client) : this.clientService.getAuthenticatedClient()
+        )
+      )
+      .subscribe({
+        next: (client) => {
+          this.authenticatedClient = client as any;
+          this.loading = false;
+          this.updateMenuItems();
+        },
+        error: (error) => {
+          console.error("Error while getting logged client:", error);
+          this.loading = false;
+          this.updateMenuItems();
+        },
+      });
   }
 
   private updateMenuItems(): void {

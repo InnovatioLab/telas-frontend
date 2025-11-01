@@ -474,6 +474,12 @@ export class GoogleMapsService {
   } | null> {
     return new Promise((resolve) => {
       if (navigator.geolocation) {
+        const options: PositionOptions = {
+          enableHighAccuracy: false,
+          timeout: 5000,
+          maximumAge: 0,
+        };
+
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const coordinates = {
@@ -481,21 +487,24 @@ export class GoogleMapsService {
               longitude: position.coords.longitude,
             };
 
-            localStorage.setItem(
-              "user_coordinates",
-              JSON.stringify(coordinates)
-            );
+            try {
+              localStorage.setItem("user_coordinates", JSON.stringify(coordinates));
+            } catch (e) {
+              // ignore localStorage errors
+            }
 
             resolve(coordinates);
           },
-          () => {
+          (err) => {
+            // If user denied or another error occurred, fallback to saved coords or null
             const savedCoordinates = this.getUserCoordinates();
             if (savedCoordinates) {
               resolve(savedCoordinates);
             } else {
               resolve(null);
             }
-          }
+          },
+          options
         );
       } else {
         resolve(this.getUserCoordinates() || null);
@@ -545,12 +554,10 @@ export class GoogleMapsService {
               addressLocationName: `Monitor located at the specified address`,
               addressLocationDescription: `Address: ${adjustedCoords.latitude.toFixed(6)}, ${adjustedCoords.longitude.toFixed(6)}`,
               locationDescription: `Location: ${adjustedCoords.latitude.toFixed(6)}, ${adjustedCoords.longitude.toFixed(6)}`,
-              type: "MONITOR",
               category: "MONITOR",
               data: {
                 id: `id-${i}`,
                 active: true,
-                type: i === 0 ? "BASIC" : "PREMIUM",
                 size: i === 0 ? 40 : 55,
                 distanceInKm: 0,
                 latitude: adjustedCoords.latitude,

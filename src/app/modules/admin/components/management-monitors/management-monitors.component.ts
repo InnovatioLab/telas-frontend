@@ -29,6 +29,8 @@ import { MessageService } from "primeng/api";
 import { GalleriaModule } from "primeng/galleria";
 import { OrderListModule } from "primeng/orderlist";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
+import { of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 import { CreateMonitorModalComponent } from "../create-monitor-modal/create-monitor-modal.component";
 import { EditMonitorModalComponent } from "../edit-monitor-modal/edit-monitor-modal.component";
 
@@ -116,14 +118,21 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   loadAuthenticatedClient(): void {
-    this.clientService.getAuthenticatedClient().subscribe({
-      next: (client) => {
-        this.authenticatedClient = client;
-      },
-      error: (error) => {
-        console.error("Error loading authenticated client:", error);
-      },
-    });
+    this.clientService.clientAtual$
+      .pipe(
+        take(1),
+        switchMap((client) =>
+          client ? of(client) : this.clientService.getAuthenticatedClient()
+        )
+      )
+      .subscribe({
+        next: (client) => {
+          this.authenticatedClient = client as any;
+        },
+        error: (error) => {
+          console.error("Error loading authenticated client:", error);
+        },
+      });
   }
 
   loadInitialData(): void {
@@ -296,10 +305,6 @@ export class ManagementMonitorsComponent implements OnInit {
   onEditMonitorModalClose(): void {
     this.editMonitorModalVisible = false;
     this.selectedMonitorForEdit = null;
-
-    setTimeout(() => {
-      this.loadMonitors();
-    }, 50);
   }
 
   onMonitorUpdated(updateData: {
@@ -464,7 +469,6 @@ export class ManagementMonitorsComponent implements OnInit {
       const payload = {
         addressId: this.selectedMonitorForAds.address.id,
         locationDescription: this.selectedMonitorForAds.locationDescription,
-        type: this.selectedMonitorForAds.type,
         active: this.selectedMonitorForAds.active,
         ads,
       };
@@ -523,10 +527,6 @@ export class ManagementMonitorsComponent implements OnInit {
   getMonitorDetails(monitor: Monitor): string {
     const details = [];
 
-    if (monitor.type) {
-      details.push(`Type: ${monitor.type}`);
-    }
-
     if (monitor.adLinks && monitor.adLinks.length > 0) {
       details.push(`Ads: ${monitor.adLinks.length}`);
     }
@@ -555,7 +555,7 @@ export class ManagementMonitorsComponent implements OnInit {
     this.messageService.add({
       severity: "info",
       summary: "Monitor Details",
-      detail: `Monitor: ${monitor.name || "Monitor " + monitor.id.substring(0, 8)} | Address: ${this.getMonitorAddress(monitor)} | Details: ${this.getMonitorDetails(monitor)}`,
+      detail: `Monitor: ${"Monitor " + monitor.id.substring(0, 8)} | Address: ${this.getMonitorAddress(monitor)} | Details: ${this.getMonitorDetails(monitor)}`,
     });
   }
 

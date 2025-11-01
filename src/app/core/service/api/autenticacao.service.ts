@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, signal } from "@angular/core";
+import { Authentication } from "@app/core/service/auth/autenthication";
 import { Client } from "@app/model/client";
 import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
 import { SenhaUpdate } from "@app/model/dto/request/senha-update.request";
@@ -42,11 +43,19 @@ export class AutenticacaoService {
 
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly clientService: ClientService
+    private readonly clientService: ClientService,
+    private readonly authentication: Authentication
   ) {
     if (this.storege.getDataUser()) {
       const user = JSON.parse(this.storege.getDataUser());
       this._userSignal.set(user);
+      // Notifica o serviço central de autenticação para centralizar o estado
+      try {
+        this.authentication.updateClientData(user as any);
+      } catch (e) {
+        // não bloquear a inicialização caso haja diferenças de shape
+        console.warn("Falha ao sincronizar estado de autenticação inicial:", e);
+      }
     }
   }
 
@@ -65,38 +74,10 @@ export class AutenticacaoService {
     return this._loggedClientSignal();
   }
 
-  // login(payload: { username: string; password: string }): Observable<any> {
-  //   return this.httpClient
-  //     .post<{ data: string }>(`${this.url}login`, payload)
-  //     .pipe(
-  //       map((response) => {
-  //         if (!response?.data) {
-  //           throw new Error("Invalid token received.");
-  //         }
-  //         const token = response.data;
-  //         let decodedToken: DecodedToken;
-  //         try {
-  //           decodedToken = jwt_decode.jwtDecode(token);
-  //         } catch (error) {
-  //           console.error("Error While decoding JWT token:", error);
-  //           throw new Error("Error While decoding JWT token.");
-  //         }
-  //         AuthenticationStorage.setToken(token);
-  //         return decodedToken.id;
-  //       }),
-  //       switchMap((userId: string) =>
-  //         this.clientService.getAuthenticatedClient().pipe(
-  //           map((client) => {
-  //             AuthenticationStorage.setDataUser(JSON.stringify(client));
-  //             this._loggedClientSignal.set(client);
-  //             return userId;
-  //           })
-  //         )
-  //       )
-  //     );
-  // }
-
-  login(payload: { username: string; password: string }): Observable<any> {
+  login(payload: {
+    username: string;
+    password: string;
+  }): Observable<{ token: string; client: AuthenticatedClientResponseDto }> {
     return this.httpClient.post<any>(`${this.url}login`, payload).pipe(
       map((response) => {
         if (!response?.data) {
@@ -111,14 +92,30 @@ export class AutenticacaoService {
           tap((client) => {
             AuthenticationStorage.setDataUser(JSON.stringify(client));
             this._loggedClientSignal.set(client);
+            // Notifica Authentication para evitar duplicação de requests
+            try {
+              this.authentication.updateClientData(client as any);
+            } catch (e) {
+              console.warn("Falha ao notificar Authentication após login:", e);
+            }
           }),
-          map(() => token)
+          // Retorna um objeto com token e client para o caller
+          map((client) => ({ token, client }))
         );
       }),
       catchError((error) => {
         console.error("Login process failed:", error.message || error);
         AuthenticationStorage.clearToken();
         this._loggedClientSignal.set(null);
+        try {
+          // garante que o estado central seja limpo caso tenhamos falha
+          this.authentication.removerAutenticacao();
+        } catch (e) {
+          console.warn(
+            "Falha ao notificar Authentication na falha do login:",
+            e
+          );
+        }
         const friendlyError = new Error(
           "Invalid credentials. Please try again."
         );
@@ -131,6 +128,11 @@ export class AutenticacaoService {
     AuthenticationStorage.clearToken();
     this._userSignal.set(null);
     this._loggedClientSignal.set(null);
+    try {
+      this.authentication.removerAutenticacao();
+    } catch (e) {
+      console.warn("Falha ao notificar Authentication no logout:", e);
+    }
   }
 
   recuperarSenha(login: string) {

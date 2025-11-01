@@ -98,6 +98,13 @@ small {
     padding: 24px;
   }
 
+  .validation-container {
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+    gap: 1rem;
+  }
+
   .p-dialog-footer {
     padding: 16px 24px;
     border-top: 1px solid #e0e0e0;

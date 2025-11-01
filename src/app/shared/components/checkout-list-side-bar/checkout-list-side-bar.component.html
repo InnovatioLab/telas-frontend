@@ -105,37 +105,32 @@
 
     <ng-template pTemplate="footer">
       <div *ngIf="cart && cart.items.length > 0" class="container-footer">
-        <!-- Label do dropdown separada para ficar mais acima -->
-        <!-- <div class="recurrence-label">
-         
-        </div> -->
+        <div class="recurrence-label">
+          <label for="recurrence" class="block text-sm font-medium"
+            >Recurrence:</label
+          >
+        </div>
 
-        <!-- Container para alinhar dropdown e botão na mesma linha -->
         <div class="footer-actions">
-          <div cass="w-full recurrence-container">
-            <label for="recurrence" class="block text-sm font-medium"
-              >Recurrence:</label
-            >
-            <p-dropdown
-              id="recurrence"
-              [(ngModel)]="selectedRecurrence"
-              [options]="recurrenceOptions"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onRecurrenceChange()"
-              (onShow)="onDropdownShow()"
-              (onHide)="onDropdownHide()"
-              (click)="onDropdownClick($event)"
-              placeholder="Select recurrence"
-              class="recurrence-dropdown"
-              [panelStyle]="{ 'margin-top': '-160px' }"
-              [overlayOptions]="{
-                showTransitionOptions: '0ms',
-                hideTransitionOptions: '0ms',
-              }"
-            >
-            </p-dropdown>
-          </div>
+          <p-dropdown
+            id="recurrence"
+            [(ngModel)]="selectedRecurrence"
+            [options]="recurrenceOptions"
+            optionLabel="label"
+            optionValue="value"
+            (onChange)="onRecurrenceChange()"
+            (onShow)="onDropdownShow()"
+            (onHide)="onDropdownHide()"
+            (click)="onDropdownClick($event)"
+            placeholder="Select recurrence"
+            class="recurrence-dropdown"
+            [panelStyle]="{ 'margin-top': '-160px' }"
+            [overlayOptions]="{
+              showTransitionOptions: '0ms',
+              hideTransitionOptions: '0ms',
+            }"
+          >
+          </p-dropdown>
 
           <button
             pButton
@@ -197,13 +192,6 @@
         <p *ngIf="selectedMonitor.locationDescription != null">
           <strong>Location Description:</strong>
           {{ selectedMonitor.locationDescription }}
-        </p>
-        <p>
-          <strong>Type:</strong>
-          {{
-            selectedMonitor.type.charAt(0).toUpperCase() +
-              selectedMonitor.type.slice(1).toLowerCase()
-          }}
         </p>
         <p>
           <strong>Status:</strong>

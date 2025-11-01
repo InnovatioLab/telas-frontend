@@ -10,6 +10,7 @@ import { ManagementBoxesComponent } from "./components/management-boxes/manageme
 import { ManagementClientsComponent } from "./components/management-clients/management-clients.component";
 import { ManagementMonitorsComponent } from "./components/management-monitors/management-monitors.component";
 import { AdminViewLayoutComponent } from "./pages/admin-view-layout/admin-view-layout.component";
+import { AdRequestManagementComponent } from "./components/ad-request-management/ad-request-management.component";
 
 export const ROUTES: Route[] = [
   {
@@ -44,7 +45,7 @@ export const ROUTES: Route[] = [
       },
       {
         path: "ads",
-        component: ManagementAdvertisementsComponent,
+        component: AdRequestManagementComponent,
         title: "Ads Management",
       },
       {

@@ -1,48 +1,6 @@
 <p-tabView (onChange)="onTabChange($event)" [activeIndex]="activeTabIndex">
   <!-- Tab 1: Attachments -->
   <p-tabPanel header="Attachments">
-    <div
-      class="upload-container"
-      *ngIf="ads.length === 0 && !hasActiveAdRequest"
-    >
-      <div class="card">
-        <h3>Upload Ad</h3>
-        <p>Select only <strong>one</strong> media file to link to your ad.</p>
-        <p-fileUpload
-          #adFileUpload
-          [customUpload]="true"
-          (onSelect)="onAdFileSelect($event)"
-          [accept]="acceptedFileTypes"
-          [maxFileSize]="maxFileSize"
-          [auto]="false"
-          [multiple]="false"
-          chooseLabel="Select File"
-          uploadLabel="Upload"
-          [disabled]="loading"
-          [showUploadButton]="selectedAdFile !== null"
-          [showCancelButton]="selectedAdFile !== null"
-          (uploadHandler)="submitAdUpload($event)"
-        >
-        </p-fileUpload>
-
-        <div class="infos w-full flex flex-column gap-2 mb-5">
-          <div class="upload-info">
-            <small
-              >Ad must have a <strong>16:9</strong> aspect ratio (Ex: 1280x720,
-              1920x1080)</small
-            >
-          </div>
-
-          <div class="upload-info">
-            <small
-              >Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF - Maximum size:
-              10MB.</small
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="attachments-content">
       <div class="upload-section">
         <h3>Attachments</h3>
@@ -53,13 +11,14 @@
 
         <p-fileUpload
           #attachmentFileUpload
+          *ngIf="clientAttachments.length < maxAttachments"
           [multiple]="true"
           [accept]="acceptedFileTypes"
           [maxFileSize]="maxFileSize"
           [customUpload]="true"
           (onSelect)="onFileUpload($event)"
           (uploadHandler)="confirmUpload()"
-          [disabled]="clientAttachments.length >= maxAttachments || loading"
+          [disabled]="loading"
           chooseLabel="Select File"
           uploadLabel="Upload"
           cancelLabel="Cancel"
@@ -102,11 +61,9 @@
             </div>
             <div class="attachment-preview">
               <img
-                [ngSrc]="attachment.attachmentLink"
+                [src]="attachment.attachmentLink"
                 [alt]="attachment.attachmentName"
                 class="attachment-image"
-                width="600"
-                height="400"
                 (error)="onImageError($event)"
               />
               <div
@@ -133,10 +90,26 @@
                 icon="pi pi-download"
                 (onClick)="downloadAttachment(attachment.attachmentLink)"
                 [disabled]="loading"
-                severity="success"
+                severity="info"
                 [text]="true"
                 pTooltip="Download"
               >
+              </p-button>
+              <p-button
+                icon="pi pi-refresh"
+                (onClick)="onUpdateAttachmentClick(attachment.attachmentId)"
+                [disabled]="loading"
+                severity="info"
+                [text]="true"
+                pTooltip="Replace"
+              >
+                <input
+                  type="file"
+                  #singleReplaceInput
+                  style="display: none"
+                  (change)="onUpdateAttachmentFile($event)"
+                  [accept]="acceptedFileTypes"
+                />
               </p-button>
             </div>
           </div>
@@ -198,7 +171,8 @@
               class="pi pi-info-circle"
               style="color: var(--cor-primaria)"
             ></span>
-            Attachments are optional for creating an AdRequest.
+            Attachments are optional when creating an AdRequest. You may submit
+            your AdRequest with or without attachments, as you prefer.
           </p>
         </div>
         <div class="request-ad-section">
@@ -281,7 +255,7 @@
   [draggable]="false"
   [resizable]="false"
 >
-  <div class="dialog-content">
+  <div class="dialog-content flex flex-column gap-3 justify-content-center">
     <div
       class="selected-attachments-info"
       *ngIf="selectedClientAttachments.length > 0"
@@ -292,31 +266,24 @@
         the ad request.
       </p>
     </div>
+
     <div
       class="no-attachments-info"
       *ngIf="selectedClientAttachments.length === 0"
     >
       <h4>No Attachments Selected</h4>
-      <p>
-        <span
-          class="pi pi-info-circle"
-          style="color: var(--cor-primaria)"
-        ></span>
-        Attachments are optional when creating an AdRequest. You may submit your
-        AdRequest with or without attachments, as you prefer.
-      </p>
     </div>
 
     <form [formGroup]="requestAdForm" class="request-form">
       <div class="form-field">
         <label for="message" class="required">Message</label>
-        <input
+        <textarea
+          pTextarea
+          rows="8"
           id="message"
-          type="text"
-          pInputText
           formControlName="message"
           placeholder="Type your message..."
-        />
+        ></textarea>
         <app-error
           id="error-msg-message"
           [control]="requestAdForm.get('message')"
@@ -389,7 +356,22 @@
   [draggable]="false"
   [resizable]="false"
 >
-  <div class="dialog-content">
+  <div class="dialog-content validation-container">
+    <div
+      class="w-full flex gap-2 justify-content-center align-items-center"
+      *ngIf="
+        validateAdForm.get('validation')?.value === 'REJECTED' &&
+        selectedAdForValidation.refusedCount === 2
+      "
+    >
+      <span
+        class="pi pi-info-circle mb-1"
+        style="color: var(--cor-erro)"
+      ></span>
+      <p class="mb-0 danger font-semibold text-center">
+        Be careful, this is the last chance to refuse the ad.
+      </p>
+    </div>
     <form [formGroup]="validateAdForm" class="validate-form">
       <div class="form-field">
         <label for="validation" class="required">Validation</label>
@@ -439,7 +421,7 @@
           id="description"
           pInputTextarea
           formControlName="description"
-          placeholder="Digite a descrição"
+          placeholder="Type an optional description"
           rows="3"
         >
         </textarea>

@@ -7,7 +7,6 @@ export interface BoxAddressDto {
 export interface MonitorDto {
   id: string;
   active: boolean;
-  type: string;
   maxBlocks: number;
 }
 

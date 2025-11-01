@@ -5,6 +5,7 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { ToastModule } from "primeng/toast";
 import { catchError, of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 import packageJson from "../../package.json";
 import { ClientService } from "./core/service/api/client.service";
 import { Authentication } from "./core/service/auth/autenthication";
@@ -51,9 +52,12 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.clientService
-      .getAuthenticatedClient()
+    this.clientService.clientAtual$
       .pipe(
+        take(1),
+        switchMap((client) =>
+          client ? of(client) : this.clientService.getAuthenticatedClient()
+        ),
         catchError((error) => {
           console.error(
             "Error retrieving data from authenticated client: ",
@@ -71,7 +75,6 @@ export class AppComponent implements OnInit {
           }
 
           this.authentication.updateClientData(authenticatedClient as Client);
-          this.authentication.isLoggedIn$.next(true);
 
           if (!authenticatedClient.termAccepted) {
             this.router.navigate(["/terms-of-service"]);

@@ -9,7 +9,6 @@ import { MapPoint } from "../state/map-point.interface";
 export interface MonitorMapsResponseDto {
   id: string;
   active: boolean;
-  type: string;
   latitude: number;
   longitude: number;
   hasAvailableSlots: boolean;
@@ -95,11 +94,10 @@ export class SearchMonitorsService {
       .filter((monitor) => monitor.latitude && monitor.longitude)
       .map((monitor) => ({
         id: monitor.id,
-        title: `Monitor ${monitor.type}`,
+        title: `Monitor ${monitor.monitorLocationDescription || ""}`,
         description: this.buildMonitorDescription(monitor),
         latitude: monitor.latitude,
         longitude: monitor.longitude,
-        type: monitor.type,
         category: "MONITOR",
         addressLocationName: monitor.addressLocationName,
         addressLocationDescription: monitor.addressLocationDescription,

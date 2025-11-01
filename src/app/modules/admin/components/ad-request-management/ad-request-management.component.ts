@@ -221,7 +221,6 @@ export class AdRequestManagementComponent implements OnInit {
       const base64Data = base64String.split(",")[1];
 
       const payload: CreateClientAdDto = {
-        adRequestId: this.selectedAdRequest!.id,
         name: this.selectedFile!.name,
         type: this.getFileType(this.selectedFile!),
         bytes: base64Data,

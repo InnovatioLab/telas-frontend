@@ -136,5 +136,24 @@ export class Authentication extends AuthenticationStorage {
   updateClientData(client: Client): void {
     this._clientSignal.set(client);
     AuthenticationStorage.setDataUser(JSON.stringify(client));
+    // atualiza também o estado compartilhado no ClientService para evitar
+    // que componentes façam requisições redundantes ao backend
+    try {
+      if (
+        this.clientService &&
+        typeof this.clientService.setClientAtual === "function"
+      ) {
+        this.clientService.setClientAtual(client);
+      }
+    } catch (e) {
+      console.warn("Falha ao sincronizar client atual com ClientService:", e);
+    }
+    // sinaliza que há um usuário logado
+    try {
+      this.loggedInSubject.next(true);
+      this.authStateSubject.next();
+    } catch (e) {
+      console.warn("Falha ao emitir estado de login em updateClientData:", e);
+    }
   }
 }

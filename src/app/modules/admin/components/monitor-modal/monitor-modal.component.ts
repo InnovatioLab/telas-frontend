@@ -20,7 +20,7 @@ import {
   CreateMonitorRequestDto,
   UpdateMonitorRequestDto,
 } from "@app/model/dto/request/create-monitor.request.dto";
-import { Monitor, MonitorType } from "@app/model/monitors";
+import { Monitor } from "@app/model/monitors";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import {
@@ -50,14 +50,12 @@ export class MonitorModalComponent implements OnInit, OnChanges {
 
   monitorForm: FormGroup;
   loadingZipCode = false;
-  monitorTypes = Object.values(MonitorType);
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly zipCodeService: ZipCodeService
   ) {
     this.monitorForm = this.fb.group({
-      type: [MonitorType.BASIC, [Validators.required]],
       active: [true, [Validators.required]],
       locationDescription: ["", [Validators.maxLength(255)]],
       address: this.fb.group({
@@ -98,7 +96,6 @@ export class MonitorModalComponent implements OnInit, OnChanges {
     }
     if (changes["mode"] && this.mode === "create") {
       this.monitorForm.reset({
-        type: MonitorType.BASIC,
         active: true,
         locationDescription: "",
         address: {
@@ -115,7 +112,6 @@ export class MonitorModalComponent implements OnInit, OnChanges {
 
   private patchFormWithMonitor(monitor: Monitor): void {
     this.monitorForm.patchValue({
-      type: monitor.type ?? MonitorType.BASIC,
       active: monitor.active,
       locationDescription: monitor.locationDescription,
       address: {
@@ -193,7 +189,6 @@ export class MonitorModalComponent implements OnInit, OnChanges {
         this.closeModal();
       } else if (this.mode === "edit" && this.monitor) {
         const updateRequest: UpdateMonitorRequestDto = {
-          type: formValue.type,
           active: formValue.active,
           locationDescription: formValue.locationDescription,
           address: {

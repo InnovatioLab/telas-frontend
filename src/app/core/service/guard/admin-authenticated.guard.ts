@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { CanActivate, Router } from "@angular/router";
 import { Role } from "@app/model/client";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 import { ClientService } from "../api/client.service";
 import { Authentication } from "../auth/autenthication";
 
@@ -22,7 +23,12 @@ export class AdminAuthenticatedGuard implements CanActivate {
     }
 
     const authenticatedClient = await firstValueFrom(
-      this.clientService.getAuthenticatedClient()
+      this.clientService.clientAtual$.pipe(
+        take(1),
+        switchMap((client) =>
+          client ? of(client) : this.clientService.getAuthenticatedClient()
+        )
+      )
     );
     const userRole = authenticatedClient?.role;
 

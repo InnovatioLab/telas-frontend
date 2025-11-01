@@ -7,34 +7,28 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  signal,
   ViewChild,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { NavigationEnd, Router, RouterModule } from "@angular/router";
 import { ShowInRoutesDirective } from "@app/core/directives/show-in-routes.directive";
-import { CartService } from "@app/core/service/api/cart.service";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
-import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
-import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
-import { NotificationState } from "@app/modules/notificacao/models";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { HeaderActionsService } from "@app/shared/services/header-actions.service";
+import { HeaderStateService } from "@app/shared/services/header-state.service";
 import { filter, Subject, Subscription, takeUntil, timer } from "rxjs";
 import { CheckoutListSideBarComponent } from "../checkout-list-side-bar/checkout-list-side-bar.component";
-import { NotificationSidebarComponent } from "../notification-sidebar/notification-sidebar.component";
-import { HeaderStateService } from "@app/shared/services/header-state.service";
-import { HeaderActionsService } from "@app/shared/services/header-actions.service";
+import { HeaderActionsComponent } from "../header-actions/header-actions.component";
 import { HeaderBrandComponent } from "../header-brand/header-brand.component";
 import { HeaderNavigationComponent } from "../header-navigation/header-navigation.component";
-import { HeaderActionsComponent } from "../header-actions/header-actions.component";
+import { NotificationSidebarComponent } from "../notification-sidebar/notification-sidebar.component";
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
@@ -88,15 +82,10 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     public router: Router,
     private readonly authentication: Authentication,
-    private readonly notificationState: NotificationState,
     private readonly googleMapsService: GoogleMapsService,
-    private readonly searchMonitorsService: SearchMonitorsService,
     private readonly sidebarService: SidebarService,
     private readonly cdr: ChangeDetectorRef,
     private readonly toastService: ToastService,
-    private readonly loadingService: LoadingService,
-    private readonly zipcodeService: ZipCodeService,
-    private readonly cartService: CartService,
     private readonly notificationsService: NotificationsService,
     private readonly toggleModeService: ToggleModeService,
     public readonly headerState: HeaderStateService,
@@ -105,7 +94,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.notificationsService.fetchAllNotifications().subscribe();
-    
+
     this.checkScreenSize();
     this.resizeListener = () => this.checkScreenSize();
     window.addEventListener("resize", this.resizeListener);
@@ -142,9 +131,12 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       const isVisible = this.sidebarService.visibilidade();
       const menuTipo = this.sidebarService.tipo();
 
-      const menuAberto = isVisible && (menuTipo === "client-menu" || menuTipo === "admin-menu");
+      const menuAberto =
+        isVisible && (menuTipo === "client-menu" || menuTipo === "admin-menu");
       this.headerState.setMenuOpen(menuAberto);
-      this.headerState.setMobileMenuOpen(menuAberto && this.headerState.isMobile());
+      this.headerState.setMobileMenuOpen(
+        menuAberto && this.headerState.isMobile()
+      );
 
       this.cdr.detectChanges();
     });
@@ -161,7 +153,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Theme subscription
     this.toggleModeService.theme$.subscribe((theme: string) => {
-      this.headerState.setDarkMode(theme === 'dark');
+      this.headerState.setDarkMode(theme === "dark");
       this.cdr.detectChanges();
     });
   }
@@ -248,7 +240,9 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     ) {
       this.sidebarService.fechar();
     } else {
-      const menuType = this.headerActions.isAdministrator() ? "admin-menu" : "client-menu";
+      const menuType = this.headerActions.isAdministrator()
+        ? "admin-menu"
+        : "client-menu";
       this.sidebarService.abrirMenu(menuType);
     }
   }
@@ -363,23 +357,23 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get itensCarrinho(): any {
-    return { 
+    return {
       set: (value: number) => this.headerActions.updateCartItemCount(value),
-      get: () => this.headerActions.cartItemCount()
+      get: () => this.headerActions.cartItemCount(),
     };
   }
 
   get itensNotificacao(): any {
-    return { 
+    return {
       set: (value: number) => this.headerActions.updateNotificationCount(value),
-      get: () => this.headerActions.notificationCount()
+      get: () => this.headerActions.notificationCount(),
     };
   }
 
   get itensSalvos(): any {
-    return { 
+    return {
       set: (value: number) => this.headerActions.updateSavedItemsCount(value),
-      get: () => this.headerActions.savedItemsCount()
+      get: () => this.headerActions.savedItemsCount(),
     };
   }
 
