@@ -45,6 +45,8 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.checkRouteVisibility();
+    
+    this.searchMonitorsService.clearError();
 
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -65,6 +67,7 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     if (this.errorSubscription) {
       this.errorSubscription.unsubscribe();
     }
+    this.searchMonitorsService.clearError();
   }
 
   onKeyPress(event: KeyboardEvent): void {
@@ -194,6 +197,7 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.searchMonitorsService.clearError();
     this.isSearching = true;
 
     this.searchMonitorsService

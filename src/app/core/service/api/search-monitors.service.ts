@@ -230,4 +230,8 @@ export class SearchMonitorsService {
   public get error$(): Observable<string | null> {
     return this.errorSubject.asObservable();
   }
+
+  public clearError(): void {
+    this.errorSubject.next(null);
+  }
 }

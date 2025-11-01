@@ -7,32 +7,23 @@ import {
   ViewChild,
 } from "@angular/core";
 import {
-  FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { AdService } from "@app/core/service/api/ad.service";
-import { ClientService } from "@app/core/service/api/client.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { AdValidationType } from "@app/model/client";
-import { ClientAdRequestDto } from "@app/model/dto/request/client-ad-request.dto";
-import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
-import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
 import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
-import { AttachmentResponseDto } from "@app/model/dto/response/attachment-response.dto";
-import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
+import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
 import { ErrorComponent } from "@app/shared/components";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { FileUpload } from "primeng/fileupload";
-import { Subscription, of } from "rxjs";
-import { switchMap, take } from "rxjs/operators";
+import { Subscription } from "rxjs";
 import { AdItemComponent } from "../ad-item/ad-item.component";
+import { MyTelasService } from "../../services/my-telas.service";
 
 @Component({
   selector: "app-my-telas",
@@ -56,43 +47,21 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   // Attachment selecionado para substituição
   attachmentToReplaceId: string | null = null;
-  loading = false;
-  activeTabIndex: number = 0;
-
-  private routeParamsSubscription: Subscription;
-
-  authenticatedClient: AuthenticatedClientResponseDto | null = null;
-  hasActiveAdRequest = false;
-  isClientDataLoaded = false;
-
-  clientAttachments: Array<{
-    attachmentId: string;
-    attachmentName: string;
-    attachmentLink: string;
-  }> = [];
-
   selectedClientAttachments: string[] = [];
   attachmentCheckboxStates: { [key: string]: boolean } = {};
-
-  attachments: AttachmentResponseDto[] = [];
-  selectedAttachments: string[] = [];
-  maxAttachments = 3;
-  maxFileSize = 10 * 1024 * 1024;
-  acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff";
-
   selectedFiles: File[] = [];
   uploadPreviews: string[] = [];
   maxFilesPerUpload = 3;
   pendingUpload = false;
-
   selectedAdFile: File | null = null;
-  ads: AdResponseDto[] = [];
-  hasAds = false;
-
   showRequestAdDialog = false;
   showValidateAdDialog = false;
   showUploadAdDialog = false;
   selectedAdForValidation: AdResponseDto | null = null;
+
+  readonly maxAttachments = 3;
+  readonly maxFileSize = 10 * 1024 * 1024;
+  readonly acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff";
 
   requestAdForm: FormGroup;
   validateAdForm: FormGroup;
@@ -103,33 +72,19 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     { label: "Rejected", value: "REJECTED" },
   ];
 
+  private routeParamsSubscription: Subscription;
+
   constructor(
-    private readonly clientService: ClientService,
-    private readonly adService: AdService,
+    public readonly myTelasService: MyTelasService,
     private readonly toastService: ToastService,
-    private readonly fb: FormBuilder,
     private readonly route: ActivatedRoute,
     private readonly cdr: ChangeDetectorRef
   ) {
-    this.loadAuthenticatedClient();
+    this.requestAdForm = this.myTelasService.createRequestAdForm();
+    this.validateAdForm = this.myTelasService.createValidateAdForm();
+    this.uploadAdForm = this.myTelasService.createUploadAdForm();
 
-    this.requestAdForm = this.fb.group({
-      message: ["", [Validators.required, Validators.maxLength(255)]],
-      phone: ["", [AbstractControlUtils.validatePhone()]],
-      email: ["", [Validators.email, Validators.maxLength(255)]],
-    });
-
-    this.validateAdForm = this.fb.group({
-      validation: ["", [Validators.required]],
-      justification: ["", [Validators.maxLength(100)]],
-      description: ["", [Validators.maxLength(255)]],
-    });
-
-    this.uploadAdForm = this.fb.group({
-      name: ["", [Validators.required, Validators.maxLength(255)]],
-      type: ["", [Validators.required, Validators.maxLength(15)]],
-      adFile: [null, [Validators.required]],
-    });
+    this.loadClientData();
   }
 
   ngOnInit(): void {
@@ -146,87 +101,31 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     this.routeParamsSubscription = this.route.queryParams.subscribe(
       (params) => {
         if (params["ads"] && params["ads"] === "true") {
-          this.activeTabIndex = 1;
+          this.myTelasService.setActiveTab(1);
         }
       }
     );
   }
 
-  loadAuthenticatedClient(): void {
-    this.loading = true;
-    this.clientService.clientAtual$
-      .pipe(
-        take(1),
-        switchMap((client) =>
-          client ? of(client) : this.clientService.getAuthenticatedClient()
-        )
-      )
-      .subscribe({
-        next: (client) => {
-          this.authenticatedClient = client as any;
-          this.clientAttachments = (client as any).attachments || [];
-          this.hasActiveAdRequest = (client as any).adRequest !== null;
-          this.ads = (client as any).ads || [];
-          this.hasAds = true;
-          this.isClientDataLoaded = true;
-
-          if (client) {
-            this.requestAdForm.patchValue(
-              {
-                phone: this.authenticatedClient.contact.phone,
-                email: this.authenticatedClient.contact.email,
-              },
-              { emitEvent: false }
-            );
-          }
-
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error("Erro ao carregar dados do cliente:", error);
-          this.toastService.erro("Error loading client data");
-          this.isClientDataLoaded = false;
-          this.loading = false;
-        },
-      });
+  async loadClientData(): Promise<void> {
+    try {
+      const contactData = await this.myTelasService.loadClientData();
+      if (contactData) {
+        this.requestAdForm.patchValue(
+          {
+            phone: contactData.phone,
+            email: contactData.email,
+          },
+          { emitEvent: false }
+        );
+      }
+    } catch (error) {
+      console.error("Error loading client data:", error);
+    }
   }
 
   onTabChange(event: any): void {
-    this.activeTabIndex = event.index;
-  }
-
-  private async validateAttachmentFile(
-    file: File
-  ): Promise<{ isValid: boolean; errors: string[] }> {
-    if (!ImageValidationUtil.isValidFileType(file)) {
-      return {
-        isValid: false,
-        errors: [
-          `File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`,
-        ],
-      };
-    }
-
-    if (!ImageValidationUtil.isValidFileSize(file, 10)) {
-      return {
-        isValid: false,
-        errors: [`File "${file.name}" must be at most 10MB.`],
-      };
-    }
-
-    if (!ImageValidationUtil.isValidFileName(file, 255)) {
-      return {
-        isValid: false,
-        errors: [
-          `File name "${file.name}" is too long. Maximum of 255 characters allowed.`,
-        ],
-      };
-    }
-
-    return {
-      isValid: true,
-      errors: [],
-    };
+    this.myTelasService.setActiveTab(event.index);
   }
 
   onFileUpload(event: any): void {
@@ -238,7 +137,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
       const validateFiles = async () => {
         for (const file of files) {
-          const validation = await this.validateAttachmentFile(file);
+          const validation = await this.myTelasService.validateAttachmentFile(file);
 
           if (!validation.isValid) {
             console.error("Erro de validação de arquivo:", validation.errors);
@@ -246,7 +145,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
               this.toastService.erro(error);
             });
 
-            // Limpar o componente se alguma validação falhar
             if (this.attachmentFileUploadComponent) {
               this.attachmentFileUploadComponent.clear();
             }
@@ -296,94 +194,62 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  onUpdateAttachmentFile(event: any): void {
+  async onUpdateAttachmentFile(event: any): Promise<void> {
     const file: File | undefined = event?.target?.files?.[0];
     if (!file) {
       return;
     }
 
-    this.validateAttachmentFile(file)
-      .then((validation) => {
-        if (!validation.isValid) {
-          validation.errors.forEach((error) => this.toastService.erro(error));
-          if (
-            this.singleReplaceInput &&
-            this.singleReplaceInput.nativeElement
-          ) {
-            this.singleReplaceInput.nativeElement.value = "";
-          }
-          return;
-        }
-
-        if (!this.attachmentToReplaceId) {
-          this.toastService.erro("No attachment selected to replace");
-          return;
-        }
-
-        this.loading = true;
-        this.clientService
-          .uploadAttachment(file, this.attachmentToReplaceId)
-          .subscribe({
-            next: (response) => {
-              this.toastService.sucesso("Attachment replaced successfully");
-              this.loadAuthenticatedClient();
-              this.loading = false;
-              if (
-                this.singleReplaceInput &&
-                this.singleReplaceInput.nativeElement
-              ) {
-                this.singleReplaceInput.nativeElement.value = "";
-              }
-              this.attachmentToReplaceId = null;
-            },
-            error: (error) => {
-              console.error("Error replacing attachment:", error);
-              this.toastService.erro("Error replacing attachment");
-              this.loading = false;
-              if (
-                this.singleReplaceInput &&
-                this.singleReplaceInput.nativeElement
-              ) {
-                this.singleReplaceInput.nativeElement.value = "";
-              }
-              this.attachmentToReplaceId = null;
-            },
-          });
-      })
-      .catch((err) => {
-        console.error("Error validating file:", err);
-        this.toastService.erro("Error validating file");
-        if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
+    try {
+      const validation = await this.myTelasService.validateAttachmentFile(file);
+      if (!validation.isValid) {
+        validation.errors.forEach((error) => this.toastService.erro(error));
+        if (
+          this.singleReplaceInput &&
+          this.singleReplaceInput.nativeElement
+        ) {
           this.singleReplaceInput.nativeElement.value = "";
         }
-      });
+        return;
+      }
+
+      if (!this.attachmentToReplaceId) {
+        this.toastService.erro("No attachment selected to replace");
+        return;
+      }
+
+      await this.myTelasService.replaceAttachment(this.attachmentToReplaceId, file);
+      
+      if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
+        this.singleReplaceInput.nativeElement.value = "";
+      }
+      this.attachmentToReplaceId = null;
+      await this.loadClientData();
+    } catch (err) {
+      console.error("Error replacing attachment:", err);
+      if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
+        this.singleReplaceInput.nativeElement.value = "";
+      }
+      this.attachmentToReplaceId = null;
+    }
   }
 
-  confirmUpload(): void {
+  async confirmUpload(): Promise<void> {
     if (this.selectedFiles.length === 0) {
       this.toastService.erro("No files selected for upload");
       return;
     }
 
-    this.loading = true;
-    this.clientService.uploadMultipleAttachments(this.selectedFiles).subscribe({
-      next: (response) => {
-        this.loadAuthenticatedClient();
-        this.toastService.sucesso("Attachments uploaded successfully");
-        this.loading = false;
+    try {
+      await this.myTelasService.uploadAttachments(this.selectedFiles);
+      this.clearUploadData();
 
-        // Limpar dados de upload e componente
-        this.clearUploadData();
-
-        if (this.attachmentFileUploadComponent) {
-          this.attachmentFileUploadComponent.clear();
-        }
-      },
-      error: (error) => {
-        this.toastService.erro("Error uploading attachments");
-        this.loading = false;
-      },
-    });
+      if (this.attachmentFileUploadComponent) {
+        this.attachmentFileUploadComponent.clear();
+      }
+    } catch (error) {
+      console.error("Error uploading attachments:", error);
+    }
   }
 
   cancelUpload(): void {
@@ -398,24 +264,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     this.selectedFiles = [];
     this.uploadPreviews = [];
     this.pendingUpload = false;
-  }
-
-  isValidFileType(file: File): boolean {
-    const validTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-      "image/svg+xml",
-      "image/bmp",
-      "image/tiff",
-    ];
-    const isValidType = validTypes.includes(file.type);
-
-    const nameRegex = /.*\.(jpg|jpeg|png|gif|svg|bmp|tiff)$/i;
-    const isValidName = nameRegex.test(file.name);
-
-    return isValidType && isValidName;
   }
 
   toggleClientAttachmentSelection(attachmentId: string): void {
@@ -459,33 +307,24 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     this.requestAdForm.reset();
   }
 
-  submitAdRequest(): void {
+  async submitAdRequest(): Promise<void> {
     if (this.requestAdForm.valid) {
-      const request: ClientAdRequestDto = {
+      const request = {
         attachmentIds: this.selectedClientAttachments,
         message: this.requestAdForm.get("message")?.value,
         email: this.requestAdForm.get("email")?.value,
         phone: this.requestAdForm.get("phone")?.value,
       };
 
-      this.loading = true;
-      this.clientService.createAdRequest(request).subscribe({
-        next: () => {
-          this.toastService.sucesso("Ad request successfully submitted");
-          this.closeRequestAdDialog();
-
-          this.selectedClientAttachments = [];
-          this.attachmentCheckboxStates = {};
-
-          this.hasActiveAdRequest = true;
-          this.loadAuthenticatedClient();
-          this.loading = false;
-        },
-        error: (error) => {
-          this.toastService.erro("Error submitting request");
-          this.loading = false;
-        },
-      });
+      try {
+        await this.myTelasService.createAdRequest(request);
+        this.closeRequestAdDialog();
+        this.selectedClientAttachments = [];
+        this.attachmentCheckboxStates = {};
+        await this.loadClientData();
+      } catch (error) {
+        console.error("Error submitting request:", error);
+      }
     }
   }
 
@@ -517,7 +356,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     justificationControl?.updateValueAndValidity();
   }
 
-  submitAdValidation(): void {
+  async submitAdValidation(): Promise<void> {
     if (this.validateAdForm.valid && this.selectedAdForValidation) {
       const validation = this.validateAdForm.get("validation")?.value;
       let refusedData: RefusedAdRequestDto | undefined;
@@ -529,47 +368,17 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         };
       }
 
-      this.loading = true;
-      this.clientService
-        .validateAd(this.selectedAdForValidation.id, validation, refusedData)
-        .subscribe({
-          next: () => {
-            this.toastService.sucesso("Ad validated successfully");
-            this.closeValidateAdDialog();
-            this.loadAuthenticatedClient();
-            this.loading = false;
-          },
-          error: (error) => {
-            this.toastService.erro("Error validating ad");
-            this.loading = false;
-          },
-        });
-    }
-  }
-
-  getValidationBadgeClass(validation: AdValidationType): string {
-    switch (validation) {
-      case AdValidationType.PENDING:
-        return "badge-warning";
-      case AdValidationType.APPROVED:
-        return "badge-success";
-      case AdValidationType.REJECTED:
-        return "badge-danger";
-      default:
-        return "badge-secondary";
-    }
-  }
-
-  getValidationLabel(validation: AdValidationType): string {
-    switch (validation) {
-      case AdValidationType.PENDING:
-        return "Pending";
-      case AdValidationType.APPROVED:
-        return "Approved";
-      case AdValidationType.REJECTED:
-        return "Rejected";
-      default:
-        return "Unknown";
+      try {
+        await this.myTelasService.validateAd(
+          this.selectedAdForValidation.id,
+          validation,
+          refusedData
+        );
+        this.closeValidateAdDialog();
+        await this.loadClientData();
+      } catch (error) {
+        console.error("Error validating ad:", error);
+      }
     }
   }
 
@@ -605,17 +414,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  shouldDisplayMaxValidationsTry(): boolean {
-    return (
-      this.ads.length > 0 &&
-      this.ads.some((ad) => ad.validation === AdValidationType.PENDING)
-    );
-  }
-
-  navigateToAdsTab(): void {
-    this.activeTabIndex = 1;
-  }
-
   openUploadAdDialog(): void {
     this.showUploadAdDialog = true;
     this.uploadAdForm.reset();
@@ -624,6 +422,56 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   closeUploadAdDialog(): void {
     this.showUploadAdDialog = false;
     this.uploadAdForm.reset();
+  }
+
+  async submitAdUpload(event: any): Promise<void> {
+    if (this.uploadAdForm.valid) {
+      const formValue = this.uploadAdForm.value;
+      const file = formValue.adFile || this.selectedAdFile;
+
+      if (!file) {
+        console.error("No file selected");
+        this.toastService.erro("No file selected");
+        return;
+      }
+
+      try {
+        const validationResult = await ImageValidationUtil.validateImageFile(file);
+        if (!validationResult.isValid) {
+          validationResult.errors.forEach((error) => {
+            this.toastService.erro(error);
+          });
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const base64String = reader.result as string;
+          const base64Data = base64String.split(",")[1];
+
+          const createAdDto = {
+            name: formValue.name,
+            type: formValue.type,
+            bytes: base64Data,
+          };
+
+          const client = this.myTelasService.authenticatedClient();
+          if (client) {
+            await this.myTelasService.uploadAd(client.id, createAdDto);
+            this.selectedAdFile = null;
+            if (this.fileUploadComponent) {
+              this.fileUploadComponent.clear();
+            }
+            await this.loadClientData();
+          }
+        };
+
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error("Error validating image:", error);
+        this.toastService.erro("Error validating image file");
+      }
+    }
   }
 
   onAdFileSelect(event: any): void {
@@ -650,14 +498,13 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           this.uploadAdForm.patchValue({
             adFile: file,
             name: file.name,
-            type: this.getFileType(file),
+            type: this.myTelasService.getFileType(file),
           });
           this.selectedAdFile = file;
         })
         .catch((error) => {
           console.error("Error validating image:", error);
           this.toastService.erro("Error validating image file");
-          // Limpar o componente de upload em caso de erro
           if (this.fileUploadComponent) {
             this.fileUploadComponent.clear();
           }
@@ -671,138 +518,35 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  getFileType(file: File): string {
-    const extension = file.name.split(".").pop()?.toLowerCase();
-    switch (extension) {
-      case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      case "svg":
-        return "image/svg+xml";
-      case "bmp":
-        return "image/bmp";
-      case "tiff":
-        return "image/tiff";
-      default:
-        return "image/jpeg";
-    }
+  getValidationBadgeClass(validation: string): string {
+    return this.myTelasService.getValidationBadgeClass(validation as any);
   }
 
-  submitAdUpload(event: any): void {
-    if (this.uploadAdForm.valid) {
-      const formValue = this.uploadAdForm.value;
-      const file = formValue.adFile || this.selectedAdFile;
-
-      if (!file) {
-        console.error("No file selected");
-        this.toastService.erro("No file selected");
-        return;
-      }
-
-      this.loading = true;
-      ImageValidationUtil.validateImageFile(file)
-        .then((validationResult) => {
-          if (!validationResult.isValid) {
-            validationResult.errors.forEach((error) => {
-              this.toastService.erro(error);
-            });
-            this.loading = false;
-            return;
-          }
-
-          const reader = new FileReader();
-          reader.onload = () => {
-            const base64String = reader.result as string;
-            const base64Data = base64String.split(",")[1];
-
-            const createAdDto: CreateClientAdDto = {
-              name: formValue.name,
-              type: formValue.type,
-              bytes: base64Data,
-            };
-
-            this.adService
-              .createClientAd(this.authenticatedClient!.id, createAdDto)
-              .subscribe({
-                next: () => {
-                  this.toastService.sucesso("Ad sent for admin review");
-                  this.selectedAdFile = null;
-                  if (this.fileUploadComponent) {
-                    this.fileUploadComponent.clear();
-                  }
-                  this.loadAuthenticatedClient();
-                  this.loading = false;
-                },
-                error: (error) => {
-                  console.error("Error uploading ad:", error);
-                  this.toastService.erro("Error uploading ad");
-                  this.loading = false;
-                },
-              });
-          };
-
-          reader.readAsDataURL(file);
-        })
-        .catch((error) => {
-          console.error("Error validating image:", error);
-          this.toastService.erro("Error validating image file");
-          this.loading = false;
-        });
-    }
+  getValidationLabel(validation: string): string {
+    return this.myTelasService.getValidationLabel(validation as any);
   }
 
   canCreateAdRequest(): boolean {
-    if (!this.isClientDataLoaded) {
-      return false;
-    }
-
-    if (
-      !this.authenticatedClient ||
-      this.authenticatedClient.adRequest !== null
-    ) {
-      return false;
-    }
-
-    if (this.ads.length > 0) {
-      return this.ads.some((ad) => ad.validation === "REJECTED");
-    }
-
-    return this.authenticatedClient.adRequest !== null ? false : true;
+    return this.myTelasService.canCreateAdRequest();
   }
 
   canValidateAd(ad: AdResponseDto): boolean {
-    return ad.validation === "PENDING";
+    return this.myTelasService.canValidateAd(ad);
   }
 
   canUploadDirectAd(): boolean {
-    if (!this.isClientDataLoaded) {
-      return false;
-    }
-
-    if (
-      !this.authenticatedClient ||
-      this.authenticatedClient.adRequest !== null ||
-      this.ads.length > 0
-    ) {
-      return false;
-    }
-
-    return true;
+    return this.myTelasService.canUploadDirectAd();
   }
 
   shouldShowCreateAdRequestMessage(): boolean {
-    if (!this.isClientDataLoaded) {
-      return false;
-    }
+    return this.myTelasService.shouldShowCreateAdRequestMessage();
+  }
 
-    return (
-      this.ads.length === 1 &&
-      this.ads[0].validation === "REJECTED" &&
-      (!this.hasActiveAdRequest || this.authenticatedClient?.adRequest === null)
-    );
+  shouldDisplayMaxValidationsTry(): boolean {
+    return this.myTelasService.shouldDisplayMaxValidationsTry();
+  }
+
+  navigateToAdsTab(): void {
+    this.myTelasService.setActiveTab(1);
   }
 }
