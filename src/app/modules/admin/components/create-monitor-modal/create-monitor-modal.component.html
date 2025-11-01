@@ -31,13 +31,14 @@
                   id="inp-zip-code"
                   pKeyFilter="int"
                 />
-                <i
+                <span
                   *ngIf="loadingZipCode"
-                  class="pi pi-spin pi-spinner loading-icon"
-                ></i>
+                  class="loading-icon"
+                  aria-label="Loading"
+                ></span>
               </div>
               <small class="help-text"
-                >Enter the zip code to automatically fill city and state</small
+                >Enter the zip code to automatically fill street, city, state and country</small
               >
               <small
                 class="error-message"
@@ -97,7 +98,7 @@
 
           <div class="form-row">
             <div class="form-field">
-              <label for="country">Country</label>
+              <label for="country" class="required">Country</label>
               <input
                 pInputText
                 id="country"
