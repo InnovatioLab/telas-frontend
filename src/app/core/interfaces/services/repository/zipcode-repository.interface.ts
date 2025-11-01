@@ -7,3 +7,4 @@ export interface IZipCodeRepository {
   findAddressesByZipCode(zipCode: string): Observable<AddressData[]>;
 }
 
+

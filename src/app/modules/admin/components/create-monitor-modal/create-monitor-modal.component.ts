@@ -60,7 +60,7 @@ export class CreateMonitorModalComponent implements OnInit {
             Validators.maxLength(2),
           ],
         ],
-        country: ["US", [Validators.maxLength(100)]],
+        country: ["US", [Validators.required, Validators.maxLength(100)]],
         address2: ["", [Validators.maxLength(100)]],
       }),
     });
@@ -125,6 +125,12 @@ export class CreateMonitorModalComponent implements OnInit {
       { payload: {} as Partial<Record<string, any>>, touched: [] as string[] }
     );
 
+    // Garantir que o country sempre tenha um valor
+    if (!payload.country || payload.country === "") {
+      payload.country = "US";
+      touched.push("country");
+    }
+
     if (Object.keys(payload).length > 0) {
       addressGroup.patchValue(payload);
       for (const name of touched) {
@@ -144,7 +150,7 @@ export class CreateMonitorModalComponent implements OnInit {
           street: addressValue.street,
           city: addressValue.city,
           state: addressValue.state,
-          country: addressValue.country,
+          country: addressValue.country || "US",
           zipCode: addressValue.zipCode,
           address2: addressValue.address2 ?? null,
         },
@@ -177,7 +183,17 @@ export class CreateMonitorModalComponent implements OnInit {
   }
 
   closeModal(): void {
-    this.monitorForm.reset();
+    this.monitorForm.reset({
+      locationDescription: "",
+      address: {
+        street: "",
+        zipCode: "",
+        city: "",
+        state: "",
+        country: "US",
+        address2: "",
+      },
+    });
     this.close.emit();
   }
 
