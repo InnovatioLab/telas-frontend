@@ -4,7 +4,7 @@
 
 <div class="client-view">
   <div class="map-container">
-    <div *ngIf="isLoading" class="map-loading">
+    <div *ngIf="clientViewService.isLoading()" class="map-loading">
       <p>Loading map, please wait...</p>
       <div class="loading-spinner"></div>
     </div>
@@ -13,8 +13,8 @@
       #mapsComponent
       height="100%"
       width="100%"
-      [zoom]="mapZoom"
-      [center]="mapCenter"
+      [zoom]="clientViewService.mapZoom()"
+      [center]="clientViewService.mapCenter()"
       (pointClick)="handlePointClick($event)"
       (markerClicked)="handleMarkerClick($event)"
       (mapInitialized)="onMapInitialized()"
