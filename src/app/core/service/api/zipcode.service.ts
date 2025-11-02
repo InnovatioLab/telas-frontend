@@ -6,6 +6,7 @@ import { AddressData } from "@app/model/dto/request/address-data-request";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { GeocodingResult, GeocodingService } from "./geocoding.service";
+import { LocationDomainService } from "../domain/location-domain.service";
 
 @Injectable({
   providedIn: "root",
@@ -19,7 +20,8 @@ export class ZipCodeService {
   constructor(
     @Inject(ZIPCODE_REPOSITORY_TOKEN)
     private readonly zipCodeRepository: IZipCodeRepository,
-    private readonly geocodingService: GeocodingService
+    private readonly geocodingService: GeocodingService,
+    private readonly locationDomainService: LocationDomainService
   ) {}
 
   public get lastLocation$(): Observable<{
@@ -76,57 +78,12 @@ export class ZipCodeService {
   private processAndEmitLocation(result: AddressData): void {
     if (!result) return;
 
-    let mapPoint: MapPoint | null = null;
-
-    if (result.latitude && result.longitude) {
-      const lat = parseFloat(result.latitude);
-      const lng = parseFloat(result.longitude);
-
-      if (!isNaN(lat) && !isNaN(lng)) {
-        mapPoint = {
-          latitude: lat,
-          longitude: lng,
-          title: `${result.city || ""}, ${result.state || ""} ${result.zipCode}`,
-          locationDescription: `${result.street || ""} ${result.city || ""}, ${result.state || ""} ${result.zipCode}`,
-          id: `zipcode-${result.zipCode}`,
-          category: "ADDRESS",
-        };
-      }
-    }
-
-    this.lastLocationSubject.next({
-      addressData: result,
-      mapPoint,
-    });
-
-    if (mapPoint) {
-      this.emitLocationFoundEvent(mapPoint);
-
-      localStorage.setItem(
-        "user_coordinates",
-        JSON.stringify({
-          latitude: mapPoint.latitude,
-          longitude: mapPoint.longitude,
-          address: mapPoint.title,
-          source: "zipcode-search",
-        })
-      );
-
-      const coordsEvent = new CustomEvent("user-coordinates-updated", {
-        detail: {
-          latitude: mapPoint.latitude,
-          longitude: mapPoint.longitude,
-        },
+    this.locationDomainService.processLocation(result, (mapPoint) => {
+      this.lastLocationSubject.next({
+        addressData: result,
+        mapPoint,
       });
-      window.dispatchEvent(coordsEvent);
-    }
-  }
-
-  private emitLocationFoundEvent(location: MapPoint): void {
-    const event = new CustomEvent("zipcode-location-found", {
-      detail: { location },
     });
-    window.dispatchEvent(event);
   }
 
   private mapGeocodingToAddressData(
