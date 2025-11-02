@@ -13,9 +13,10 @@ import { authInterceptor } from "@app/core/interceptor/autenticacao.interceptor"
 import { errorInterceptor } from "@app/core/interceptor/error.interceptor";
 import { loadingInterceptor } from "@app/core/interceptor/loading.interceptor";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { CLIENT_REPOSITORY_TOKEN, CLIENT_MANAGEMENT_REPOSITORY_TOKEN, ZIPCODE_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
+import { CLIENT_REPOSITORY_TOKEN, CLIENT_MANAGEMENT_REPOSITORY_TOKEN, SUBSCRIPTION_REPOSITORY_TOKEN, ZIPCODE_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { ClientRepositoryImpl } from "@app/core/service/repository/client-repository.impl";
 import { ClientManagementRepositoryImpl } from "@app/core/service/repository/client-management-repository.impl";
+import { SubscriptionRepositoryImpl } from "@app/core/service/repository/subscription-repository.impl";
 import { ZipCodeRepositoryImpl } from "@app/core/service/repository/zipcode-repository.impl";
 import { provideEnvironmentNgxMask } from "ngx-mask";
 import { ConfirmationService, MessageService } from "primeng/api";
@@ -30,6 +31,7 @@ bootstrapApplication(AppComponent, {
     { provide: ENVIRONMENT, useValue: environment },
     { provide: CLIENT_REPOSITORY_TOKEN, useClass: ClientRepositoryImpl },
     { provide: CLIENT_MANAGEMENT_REPOSITORY_TOKEN, useClass: ClientManagementRepositoryImpl },
+    { provide: SUBSCRIPTION_REPOSITORY_TOKEN, useClass: SubscriptionRepositoryImpl },
     { provide: ZIPCODE_REPOSITORY_TOKEN, useClass: ZipCodeRepositoryImpl },
     provideHttpClient(
       withInterceptors([errorInterceptor, loadingInterceptor, authInterceptor])
