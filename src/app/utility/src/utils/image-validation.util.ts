@@ -15,7 +15,12 @@ export class ImageValidationUtil {
   static readonly REQUIRED_ASPECT_RATIO = 16 / 9;
   static readonly ASPECT_RATIO_TOLERANCE = 0.01;
 
-  static readonly VALID_RESOLUTIONS = [{ width: 1920, height: 1080 }];
+  static readonly VALID_RESOLUTIONS = [
+    { width: 1920, height: 1080 },
+    { width: 1280, height: 720 },
+    { width: 3840, height: 2160 },
+    { width: 2560, height: 1440 },
+  ];
 
   static isValidFileType(file: File): boolean {
     const isValidType = this.ACCEPTED_FILE_TYPES.includes(file.type);
@@ -64,22 +69,26 @@ export class ImageValidationUtil {
           this.ASPECT_RATIO_TOLERANCE;
 
         if (!isValidAspectRatio) {
+          const currentRatio = aspectRatio.toFixed(2);
+          const requiredRatio = this.REQUIRED_ASPECT_RATIO.toFixed(2);
+          const ratioName = aspectRatio === 1 ? 'square (1:1)' : `${currentRatio}:1`;
+          
           resolve({
             isValid: false,
             width,
             height,
             aspectRatio,
-            message: `Invalid aspect ratio. Image has ${aspectRatio.toFixed(2)}:1, but 16:9 (${this.REQUIRED_ASPECT_RATIO.toFixed(2)}:1) is required.`,
+            message: `Invalid aspect ratio. Image is ${ratioName}, but 16:9 (${requiredRatio}:1) is required. Please use an image with 16:9 aspect ratio (e.g., 1920x1080, 1280x720, 2560x1440).`,
           });
           return;
         }
 
         resolve({
-          isValid: false,
+          isValid: true,
           width,
           height,
           aspectRatio,
-          message: `Invalid resolution: ${width}x${height}. Valid resolutions for 16:9 aspect ratio: ${this.VALID_RESOLUTIONS.map((r) => `${r.width}x${r.height}`).join(", ")}`,
+          message: `Valid image with 16:9 aspect ratio: ${width}x${height}`,
         });
       };
 
