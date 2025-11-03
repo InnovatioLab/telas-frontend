@@ -5,6 +5,7 @@ import { firstValueFrom, of } from "rxjs";
 import { switchMap, take } from "rxjs/operators";
 import { ClientService } from "../api/client.service";
 import { Authentication } from "../auth/autenthication";
+import { AuthenticationStorage } from "../auth/authentication-storage";
 
 @Injectable({
   providedIn: "root",
@@ -17,7 +18,9 @@ export class ClientAuthenticatedGuard implements CanActivate {
   ) {}
 
   async canActivate() {
-    if (!this.authentication.isTokenValido()) {
+    const token = AuthenticationStorage.getToken();
+
+    if (!token || !this.authentication.isTokenValido()) {
       this.router.navigate(["/login"]);
       return false;
     }

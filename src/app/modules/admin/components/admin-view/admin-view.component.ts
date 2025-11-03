@@ -299,7 +299,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
           this.mapsComponent?.fitBoundsToPoints(this.monitors);
         } else {
           // Se não houver monitors, apenas centralizar com zoom padrão
-          this.mapsComponent?.setMapCenter(center, 15);
+          this.mapsComponent?.setMapCenter(center);
         }
       }
     }

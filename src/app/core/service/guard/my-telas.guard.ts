@@ -1,7 +1,7 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router } from "@angular/router";
 import { catchError, map, of } from "rxjs";
-import { switchMap, take } from "rxjs/operators";
+import { take } from "rxjs/operators";
 import { ClientService } from "../api/client.service";
 
 export const MyTelasGuard: CanActivateFn = () => {
@@ -10,11 +10,8 @@ export const MyTelasGuard: CanActivateFn = () => {
 
   return clientService.clientAtual$.pipe(
     take(1),
-    switchMap((client) =>
-      client ? of(client) : clientService.getAuthenticatedClient()
-    ),
     map((client) => {
-      if ((client as any).shouldDisplayAttachments === false) {
+      if (client && !(client as any).shouldDisplayAttachments) {
         router.navigate(["/client"]);
         return false;
       }

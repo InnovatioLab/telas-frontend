@@ -44,7 +44,6 @@ interface MonitorCluster {
   template: `
     <div #mapContainer [style.width]="width" [style.height]="height"></div>
   `,
-  styleUrls: ['./maps.component.scss'],
   styles: [
     `
       :host {
@@ -85,7 +84,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private _map: google.maps.Map | null = null;
   private markers: google.maps.Marker[] = [];
   private clusterMarkers: google.maps.Marker[] = [];
-  private infoWindows: google.maps.InfoWindow[] = [];
   private readonly subscriptions: Subscription[] = [];
   private _apiLoaded = false;
   private _mapReady = false;
@@ -95,12 +93,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     options: google.maps.MarkerOptions;
   }[] = [];
   private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
-  private pendingLocation: MapPoint | null = null;
-  private pendingPoints: MapPoint[] | null = null;
-  private tilesLoaded = false;
-  private tilesLoadTimeoutId: any = null;
-  private userLocationFromBrowser: { lat: number; lng: number } | null = null;
-  private readonly USER_LOCATION_FILTER_RADIUS = 0.002; // Aproximadamente 222 metros em graus
 
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -191,35 +183,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     if (changes['zoom'] && changes['zoom'].currentValue && this._map) {
       this._map.setZoom(changes['zoom'].currentValue);
     }
-    
-    // Quando os pontos mudam via @Input, atualizar o mapa
-    if (changes['points'] && changes['points'].currentValue && this._map && this._mapReady) {
-      const newPoints = changes['points'].currentValue as MapPoint[];
-      
-      // Filtrar USER_LOCATION (localização obtida via navegador) para não criar marcadores
-      let pointsToPlot = newPoints.filter(p => 
-        p.category !== 'USER_LOCATION' && 
-        p.type !== 'USER_LOCATION' && 
-        p.id !== 'user-location' &&
-        p.id !== 'pending-user-location'
-      );
-
-      // Filtrar monitores muito próximos da localização do usuário obtida via navegador
-      if (this.userLocationFromBrowser) {
-        pointsToPlot = pointsToPlot.filter(p => {
-          const distance = this.calculateDistanceBetweenPoints(
-            this.userLocationFromBrowser!.lat,
-            this.userLocationFromBrowser!.lng,
-            p.latitude,
-            p.longitude
-          );
-          return distance > this.USER_LOCATION_FILTER_RADIUS;
-        });
-      }
-      
-      this.points = pointsToPlot;
-      this.addMapPoints(pointsToPlot);
-    }
   }
 
   ngAfterViewInit(): void {
@@ -281,18 +244,24 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       const customEvent = e as CustomEvent;
       if (customEvent.detail?.location) {
         const location = customEvent.detail.location;
-        console.debug('[MapsComponent] zipcode-location-found received', location);
-        // If the map is not ready yet, store the location and ensure map initialization.
-        if (!this._map || !this._mapReady) {
-          console.debug('[MapsComponent] storing pendingLocation because map not ready');
-          this.pendingLocation = location;
-          // try to initialize the map so we can apply the pending location when ready
-          this.ensureMapInitialized();
-          return;
-        }
+        if (this._map && location.latitude && location.longitude) {
+          this.ngZone.run(() => {
+            const newCenter = {
+              lat: location.latitude,
+              lng: location.longitude,
+            };
+            this._map?.setCenter(newCenter);
+            this._map?.setZoom(15);
 
-        if (location.latitude && location.longitude) {
-          this.applyLocationToMap(location);
+            this.clearMarkers();
+            const marker = new google.maps.Marker({
+              position: newCenter,
+              map: this._map,
+              title: location.title ?? "Localização do CEP",
+              icon: this.mapsService.createRedMarkerIcon(),
+            });
+            this.markers.push(marker);
+          });
         }
       }
     }) as EventListener);
@@ -304,30 +273,21 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
           lat: customEvent.detail.latitude,
           lng: customEvent.detail.longitude,
         };
-        console.debug('[MapsComponent] user-coordinates-updated received', newCenter);
-        // If the map isn't ready yet, store as pending and initialize map
-        if (!this._map || !this._mapReady) {
-          console.debug('[MapsComponent] storing pendingLocation from user coords because map not ready');
-            this.pendingLocation = {
-            latitude: newCenter.lat,
-            longitude: newCenter.lng,
-            title: 'Localização atual',
-            category: 'USER_LOCATION',
-            id: 'pending-user-location',
-          } as MapPoint;
-          // Armazenar localização do usuário para filtrar monitores próximos
-          this.userLocationFromBrowser = newCenter;
-          this.ensureMapInitialized();
-          return;
-        }
 
-        // Armazenar localização do usuário para filtrar monitores próximos
-        this.userLocationFromBrowser = newCenter;
-        
-        // Apenas centralizar o mapa, sem criar marcador
         if (this._map) {
-          this._map.setCenter(newCenter);
-          this._map.setZoom(15);
+          this.ngZone.run(() => {
+            this._map?.setCenter(newCenter);
+            this._map?.setZoom(15);
+
+            this.clearMarkers();
+            const marker = new google.maps.Marker({
+              position: newCenter,
+              map: this._map,
+              title: "Localização atual",
+              icon: this.mapsService.createRedMarkerIcon(),
+            });
+            this.markers.push(marker);
+          });
         }
       }
     }) as EventListener);
@@ -394,14 +354,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     const monitorsSub = this.mapsService.nearestMonitors$.subscribe(
       (monitors: MapPoint[]) => {
-        console.debug('[MapsComponent] nearestMonitors$ emitted', monitors?.length);
-        if (!this._map || !this._mapReady) {
-          console.debug('[MapsComponent] storing pendingPoints from nearestMonitors$ because map not ready');
-          this.pendingPoints = monitors;
-          this.ensureMapInitialized();
-          return;
-        }
-
         if (this._map && monitors.length > 0) {
           this.addMapPoints(monitors);
         }
@@ -412,15 +364,15 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       const customEvent = e as CustomEvent;
       if (customEvent.detail?.monitors) {
         const monitors: MapPoint[] = customEvent.detail.monitors;
-        console.debug('[MapsComponent] monitors-found event', monitors?.length);
-        if (!this._map || !this._mapReady) {
-          console.debug('[MapsComponent] storing pendingPoints from monitors-found because map not ready');
-          this.pendingPoints = monitors;
-          this.ensureMapInitialized();
-          return;
+        if (this._map) {
+          this.setMapPoints(monitors);
+        } else {
+          setTimeout(() => {
+            if (this._map) {
+              this.setMapPoints(monitors);
+            }
+          }, 1000);
         }
-
-        this.setMapPoints(monitors);
       }
     }) as EventListener);
 
@@ -460,40 +412,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
         this.mapInitialized.emit(this._map);
       });
 
-      // Listen for map idle to mark map as ready and apply pending items when available
-      try {
-        this._map.addListener('idle', () => {
-          console.debug('[MapsComponent] map idle event');
-          if (!this._mapReady) {
-            this._mapReady = true;
-            this.mapReady.emit(true);
-
-            if (this.pendingLocation) {
-              console.debug('[MapsComponent] applying pendingLocation due to idle', this.pendingLocation);
-              this.applyLocationToMap(this.pendingLocation);
-              this.pendingLocation = null;
-            }
-
-            if (this.pendingPoints && this.pendingPoints.length > 0) {
-              console.debug('[MapsComponent] applying pendingPoints due to idle', this.pendingPoints.length);
-              this.setMapPoints(this.pendingPoints);
-              this.pendingPoints = null;
-            }
-          }
-        });
-        // tilesloaded event: fired when tiles have finished loading
-        this._map.addListener('tilesloaded', () => {
-          console.debug('[MapsComponent] tilesloaded event');
-          this.tilesLoaded = true;
-          if (this.tilesLoadTimeoutId) {
-            clearTimeout(this.tilesLoadTimeoutId);
-            this.tilesLoadTimeoutId = null;
-          }
-        });
-      } catch (e) {
-        // ignore if listener registration fails
-      }
-
       this._map.addListener("zoom_changed", () => {
         if (this._map && this.points && this.points.length > 0) {
           this.updateMarkersBasedOnZoom();
@@ -507,44 +425,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       setTimeout(() => {
         if (this._map) {
           google.maps.event.trigger(this._map, "resize");
-          // give the browser a moment to paint the map tiles
-          setTimeout(() => {
-            this.ngZone.run(() => {
-              this._mapReady = true;
-              this.mapReady.emit(true);
-
-              // apply pending location after map is fully ready
-              if (this.pendingLocation) {
-                try {
-                  // small delay to ensure tiles are rendered
-                  setTimeout(() => {
-                    if (this.pendingLocation) {
-                      console.debug('[MapsComponent] applying pendingLocation after resize fallback', this.pendingLocation);
-                      this.applyLocationToMap(this.pendingLocation!);
-                      this.pendingLocation = null;
-                    }
-                  }, 50);
-                } catch (e) {
-                  console.error('Error applying pending location', e);
-                }
-              }
-
-              // apply pending points after map ready
-              if (this.pendingPoints && this.pendingPoints.length > 0) {
-                try {
-                  setTimeout(() => {
-                    if (this.pendingPoints) {
-                      console.debug('[MapsComponent] applying pendingPoints after resize fallback', this.pendingPoints.length);
-                      this.setMapPoints(this.pendingPoints!);
-                      this.pendingPoints = null;
-                    }
-                  }, 50);
-                } catch (e) {
-                  console.error('Error applying pending points', e);
-                }
-              }
-            });
-          }, 100);
+          this.ngZone.run(() => {
+            this._mapReady = true;
+            this.mapReady.emit(true);
+          });
         }
       }, 200);
     } catch (error) {
@@ -561,6 +445,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   public isMapReady(): boolean {
     return this._mapReady && this._apiLoaded && !!this._map;
   }
+
   public checkMapState(): void {
     if (this._apiLoaded && !this._map && this.mapContainer?.nativeElement) {
       this.initializeMap();
@@ -631,32 +516,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private addMapPoints(points: MapPoint[]): void {
     if (!this._map) return;
 
-    // Filtrar pontos USER_LOCATION (localização obtida via navegador) para não criar marcadores
-    let pointsToPlot = points.filter(p => 
-      p.category !== 'USER_LOCATION' && 
-      p.type !== 'USER_LOCATION' && 
-      p.id !== 'user-location' &&
-      p.id !== 'pending-user-location'
-    );
-
-    // Filtrar monitores que estão muito próximos da localização do usuário obtida via navegador
-    if (this.userLocationFromBrowser) {
-      pointsToPlot = pointsToPlot.filter(p => {
-        const distance = this.calculateDistanceBetweenPoints(
-          this.userLocationFromBrowser!.lat,
-          this.userLocationFromBrowser!.lng,
-          p.latitude,
-          p.longitude
-        );
-        // Se o monitor estiver muito próximo (dentro do raio), não plotar
-        return distance > this.USER_LOCATION_FILTER_RADIUS;
-      });
-    }
-
-    if (pointsToPlot.length === 0) {
-      return;
-    }
-
     this.clearMarkers();
 
     const currentZoom = this._map.getZoom() || 15;
@@ -684,20 +543,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   private createMarker(point: MapPoint, lat: number, lng: number): void {
-    // Nunca criar marcador para USER_LOCATION (localização obtida via navegador)
-    if (point.category === 'USER_LOCATION' || 
-        point.type === 'USER_LOCATION' || 
-        point.id === 'user-location' ||
-        point.id === 'pending-user-location') {
-      return;
-    }
-
     let icon: google.maps.Symbol;
 
     if (point.category === "MONITOR" || point.type === "MONITOR") {
       icon = this.mapsService.createMonitorIcon();
-    } else if (point.category === "ADDRESS") {
-      icon = this.mapsService.createUserLocationIcon();
     } else {
       icon = this.mapsService.createRedMarkerIcon();
     }
@@ -705,30 +554,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     const marker = new google.maps.Marker({
       position: { lat, lng },
       map: this._map,
+      title: point.title || "",
       icon: icon,
-      // Removido o title para não mostrar o tooltip padrão
-    });
-
-    // Criar InfoWindow customizado para tooltip
-    const infoWindow = this.createCustomTooltip(point, marker);
-
-    // Mostrar tooltip no hover
-    marker.addListener("mouseover", () => {
-      this.closeAllInfoWindows();
-      infoWindow.open({
-        anchor: marker,
-        map: this._map,
-      });
-    });
-
-    // Fechar tooltip quando sair do marker (opcional - pode manter aberto)
-    marker.addListener("mouseout", () => {
-      // Descomentar a linha abaixo se quiser fechar automaticamente
-      // infoWindow.close();
     });
 
     marker.addListener("click", () => {
-      this.closeAllInfoWindows();
       this.ngZone.run(() => {
         this.markerClicked.emit(point);
 
@@ -742,309 +572,27 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     });
 
     this.markers.push(marker);
-    this.infoWindows.push(infoWindow);
-  }
-
-  private createCustomTooltip(point: MapPoint, marker: google.maps.Marker): google.maps.InfoWindow {
-    const tooltipContent = this.createTooltipContent(point);
-    
-    const infoWindow = new google.maps.InfoWindow({
-      content: tooltipContent,
-      disableAutoPan: false,
-      pixelOffset: new google.maps.Size(0, -35),
-      maxWidth: 240,
-    });
-
-    // Adicionar listener para remover scroll e espaçamento desnecessário após o InfoWindow ser exibido
-    infoWindow.addListener('domready', () => {
-      // Aplicar estilos diretamente no tooltip customizado
-      const tooltip = document.querySelector('.custom-map-tooltip') as HTMLElement;
-      if (tooltip) {
-        tooltip.style.padding = '0.5rem 1rem';
-        tooltip.style.margin = '0';
-        tooltip.style.background = '#ffffff';
-        tooltip.style.borderRadius = '0.5rem';
-        tooltip.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)';
-        tooltip.style.border = '1px solid rgba(0, 0, 0, 0.08)';
-        tooltip.style.minWidth = '120px';
-        tooltip.style.maxWidth = '240px';
-        tooltip.style.boxSizing = 'border-box';
-        
-        const title = tooltip.querySelector('.tooltip-title') as HTMLElement;
-        if (title) {
-          title.style.margin = '0';
-          title.style.padding = '0';
-          title.style.lineHeight = '1.4';
-        }
-        
-        const description = tooltip.querySelector('.tooltip-description') as HTMLElement;
-        if (description) {
-          description.style.margin = '0';
-          description.style.marginTop = '0.25rem';
-          description.style.padding = '0';
-          description.style.lineHeight = '1.4';
-        }
-      }
-      
-      // Remover espaçamento do container principal do Google Maps
-      const container = document.querySelector('.gm-style-iw-c');
-      if (container) {
-        const containerEl = container as HTMLElement;
-        containerEl.style.maxHeight = 'none';
-        containerEl.style.padding = '0';
-        containerEl.style.margin = '0';
-        containerEl.style.borderRadius = '0.5rem';
-        containerEl.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)';
-        containerEl.style.background = 'transparent';
-      }
-      
-      // Remover espaçamento do container do conteúdo
-      const infoWindowElement = document.querySelector('.gm-style-iw-d');
-      if (infoWindowElement) {
-        const contentEl = infoWindowElement as HTMLElement;
-        contentEl.style.overflow = 'visible';
-        contentEl.style.maxHeight = 'none';
-        contentEl.style.height = 'auto';
-        contentEl.style.padding = '0';
-        contentEl.style.margin = '0';
-        contentEl.style.background = 'transparent';
-        
-        // Remover espaçamento de todos os elementos filhos
-        const childDivs = contentEl.querySelectorAll('div');
-        childDivs.forEach((childEl) => {
-          const el = childEl as HTMLElement;
-          if (el.className !== 'custom-map-tooltip') {
-            el.style.overflow = 'visible';
-            el.style.maxHeight = 'none';
-            el.style.height = 'auto';
-            el.style.padding = '0';
-            el.style.margin = '0';
-          }
-        });
-      }
-      
-      // Ajustar o container com o botão de fechar
-      const chrContainer = document.querySelector('.gm-style-iw-chr');
-      if (chrContainer) {
-        const chrEl = chrContainer as HTMLElement;
-        chrEl.style.margin = '0';
-        chrEl.style.padding = '0';
-        chrEl.style.width = '20px';
-        chrEl.style.height = '20px';
-      }
-      
-      // Remover qualquer padding adicional do botão de fechar
-      const closeButton = document.querySelector('.gm-ui-hover-effect');
-      if (closeButton) {
-        const btnEl = closeButton as HTMLElement;
-        btnEl.style.padding = '0';
-        btnEl.style.margin = '0';
-        btnEl.style.top = '6px';
-        btnEl.style.right = '6px';
-        btnEl.style.width = '20px';
-        btnEl.style.height = '20px';
-      }
-    });
-
-    return infoWindow;
-  }
-
-  private createTooltipContent(point: MapPoint): string {
-    const title = point.title || point.addressLocationName || 'Screen';
-    const description = point.locationDescription || point.addressLocationDescription || '';
-    
-    // Evitar duplicação: se descrição for igual ao título, não mostrar descrição
-    const showDescription = description && description.trim() !== title.trim() && description.trim() !== '';
-    
-    return `
-      <div class="custom-map-tooltip">
-        <div class="tooltip-title">${this.escapeHtml(title)}</div>
-        ${showDescription ? `<div class="tooltip-description">${this.escapeHtml(description)}</div>` : ''}
-      </div>
-    `;
-  }
-
-  private escapeHtml(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  private closeAllInfoWindows(): void {
-    this.infoWindows.forEach(window => {
-      window.close();
-    });
-  }
-
-  private applyLocationToMap(location: MapPoint): void {
-    if (!location || !this._map) return;
-
-    // Se for USER_LOCATION (localização obtida via navegador), apenas centralizar o mapa sem criar marcador
-    if (location.category === 'USER_LOCATION' || 
-        location.type === 'USER_LOCATION' || 
-        location.id === 'user-location' ||
-        location.id === 'pending-user-location') {
-      const newCenter = { lat: location.latitude, lng: location.longitude };
-      // Armazenar localização do usuário para filtrar monitores próximos
-      this.userLocationFromBrowser = newCenter;
-      if (this._map) {
-        this._map.setCenter(newCenter);
-        this._map.setZoom(15);
-      }
-      return;
-    }
-
-    const newCenter = { lat: location.latitude, lng: location.longitude };
-    this.applyCenterAndMarker(newCenter, location.title ?? "Localização do CEP");
-  }
-
-  private applyCenterAndMarker(center: { lat: number; lng: number }, title?: string): void {
-    if (!this._map) return;
-
-    this.ngZone.run(() => {
-      try {
-        this._map.setCenter(center);
-        this._map.setZoom(15);
-
-        this.clearMarkers();
-        const marker = new google.maps.Marker({
-          position: center,
-          map: this._map,
-          icon: this.mapsService.createUserLocationIcon(),
-        });
-        
-        // Criar tooltip customizado se tiver título
-        if (title) {
-          const locationPoint: MapPoint = {
-            latitude: center.lat,
-            longitude: center.lng,
-            title: title,
-          };
-          const infoWindow = this.createCustomTooltip(locationPoint, marker);
-          
-          marker.addListener("mouseover", () => {
-            this.closeAllInfoWindows();
-            infoWindow.open({
-              anchor: marker,
-              map: this._map,
-            });
-          });
-          
-          this.infoWindows.push(infoWindow);
-        }
-        
-        this.markers.push(marker);
-      } catch (e) {
-        // avoid throwing during init
-        console.error('Error applying center and marker', e);
-      }
-    });
   }
 
   public setMapPoints(points: MapPoint[]): void {
-    console.debug('[MapsComponent] setMapPoints called with', points?.length);
+    this.points = points;
 
-    // If map is not ready yet, store points to apply later and try to initialize map
-    if (!this._map || !this._mapReady) {
-      console.debug('[MapsComponent] storing pendingPoints from setMapPoints because map not ready');
-      // Filtrar USER_LOCATION antes de armazenar como pending
-      let filteredPoints = points.filter(p => 
-        p.category !== 'USER_LOCATION' && 
-        p.type !== 'USER_LOCATION' && 
-        p.id !== 'user-location' &&
-        p.id !== 'pending-user-location'
-      );
-      
-      // Filtrar monitores muito próximos da localização do usuário
-      if (this.userLocationFromBrowser) {
-        filteredPoints = filteredPoints.filter(p => {
-          const distance = this.calculateDistanceBetweenPoints(
-            this.userLocationFromBrowser!.lat,
-            this.userLocationFromBrowser!.lng,
-            p.latitude,
-            p.longitude
-          );
-          return distance > this.USER_LOCATION_FILTER_RADIUS;
-        });
-      }
-      
-      this.pendingPoints = filteredPoints;
-      this.ensureMapInitialized();
-      return;
-    }
+    this.addMapPoints(points);
 
-    // Filtrar USER_LOCATION (localização obtida via navegador) dos pontos para não criar marcadores
-    let pointsToPlot = points.filter(p => 
-      p.category !== 'USER_LOCATION' && 
-      p.type !== 'USER_LOCATION' && 
-      p.id !== 'user-location' &&
-      p.id !== 'pending-user-location'
-    );
-
-    // Filtrar monitores que estão muito próximos da localização do usuário obtida via navegador
-    if (this.userLocationFromBrowser) {
-      pointsToPlot = pointsToPlot.filter(p => {
-        const distance = this.calculateDistanceBetweenPoints(
-          this.userLocationFromBrowser!.lat,
-          this.userLocationFromBrowser!.lng,
-          p.latitude,
-          p.longitude
-        );
-        // Se o monitor estiver muito próximo (dentro do raio), não plotar
-        return distance > this.USER_LOCATION_FILTER_RADIUS;
-      });
-    }
-
-    this.points = pointsToPlot;
-
-    this.addMapPoints(pointsToPlot);
-
-    if (pointsToPlot.length > 0) {
-      this.fitBoundsToPoints(pointsToPlot);
+    if (points.length > 0) {
+      this.fitBoundsToPoints(points);
     }
   }
 
   private updateMapPoints(): void {
     if (!this.points || this.points.length === 0) return;
 
-    // Filtrar USER_LOCATION novamente por segurança
-    let pointsToPlot = this.points.filter(p => 
-      p.category !== 'USER_LOCATION' && 
-      p.type !== 'USER_LOCATION' && 
-      p.id !== 'user-location' &&
-      p.id !== 'pending-user-location'
-    );
-
-    // Filtrar monitores muito próximos da localização do usuário obtida via navegador
-    if (this.userLocationFromBrowser) {
-      pointsToPlot = pointsToPlot.filter(p => {
-        const distance = this.calculateDistanceBetweenPoints(
-          this.userLocationFromBrowser!.lat,
-          this.userLocationFromBrowser!.lng,
-          p.latitude,
-          p.longitude
-        );
-        return distance > this.USER_LOCATION_FILTER_RADIUS;
-      });
-    }
-
-    if (pointsToPlot.length === 0) return;
-
     this.markerPositions = this.mapsService.convertToMarkerPositions(
-      pointsToPlot
+      this.points
     );
 
-    this.markersConfig = pointsToPlot.map((point, index) => {
-      // Definir ícone baseado na categoria do ponto
-      if (!point.icon) {
-        if (point.category === "MONITOR" || point.type === "MONITOR") {
-          point.icon = this.mapsService.createMonitorIcon() as any;
-        } else if (point.category === "ADDRESS") {
-          point.icon = this.mapsService.createUserLocationIcon() as any;
-        } else {
-          point.icon = this.mapsService.createRedMarkerIcon() as any;
-        }
-      }
+    this.markersConfig = this.points.map((point, index) => {
+      point.icon ??= this.mapsService.createRedMarkerIcon() as any;
 
       point.id ??= `point-${index}`;
 
@@ -1102,30 +650,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private createClusteredMarkers(): void {
     if (!this._map) return;
 
-    // Filtrar USER_LOCATION antes de criar clusters
-    let pointsToPlot = this.points.filter(p => 
-      p.category !== 'USER_LOCATION' && 
-      p.type !== 'USER_LOCATION' && 
-      p.id !== 'user-location' &&
-      p.id !== 'pending-user-location'
-    );
-
-    // Filtrar monitores muito próximos da localização do usuário obtida via navegador
-    if (this.userLocationFromBrowser) {
-      pointsToPlot = pointsToPlot.filter(p => {
-        const distance = this.calculateDistanceBetweenPoints(
-          this.userLocationFromBrowser!.lat,
-          this.userLocationFromBrowser!.lng,
-          p.latitude,
-          p.longitude
-        );
-        return distance > this.USER_LOCATION_FILTER_RADIUS;
-      });
-    }
-
-    if (pointsToPlot.length === 0) return;
-
-    const clusters = this.createClusters(pointsToPlot);
+    const clusters = this.createClusters(this.points);
 
     clusters.forEach((cluster) => {
       if (cluster.count === 1) {
@@ -1141,32 +666,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   private createIndividualMarkers(): void {
-    // Filtrar USER_LOCATION antes de criar marcadores
-    let pointsToPlot = this.points.filter(p => 
-      p.category !== 'USER_LOCATION' && 
-      p.type !== 'USER_LOCATION' && 
-      p.id !== 'user-location' &&
-      p.id !== 'pending-user-location'
-    );
-
-    // Filtrar monitores muito próximos da localização do usuário obtida via navegador
-    if (this.userLocationFromBrowser) {
-      pointsToPlot = pointsToPlot.filter(p => {
-        const distance = this.calculateDistanceBetweenPoints(
-          this.userLocationFromBrowser!.lat,
-          this.userLocationFromBrowser!.lng,
-          p.latitude,
-          p.longitude
-        );
-        return distance > this.USER_LOCATION_FILTER_RADIUS;
-      });
-    }
-
-    if (pointsToPlot.length === 0) return;
-
     const locationGroups = new Map<string, MapPoint[]>();
 
-    pointsToPlot.forEach((point) => {
+    this.points.forEach((point) => {
       const key = `${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`;
       if (!locationGroups.has(key)) {
         locationGroups.set(key, []);
@@ -1233,25 +735,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     return Math.sqrt(dLat * dLat + dLng * dLng);
   }
 
-  private calculateDistanceBetweenPoints(
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number
-  ): number {
-    // Calcula distância em graus (mais rápido para comparação)
-    const dLat = Math.abs(lat1 - lat2);
-    const dLng = Math.abs(lng1 - lng2);
-    return Math.sqrt(dLat * dLat + dLng * dLng);
-  }
-
   private createClusterMarker(cluster: MonitorCluster): void {
     if (!this._map) return;
 
-    const { icon: clusterIcon, svgUrl } = this.createClusterIcon(
-      cluster.count,
-      cluster.monitors
-    );
+    const clusterIcon = this.createClusterIcon(cluster.count, cluster.monitors);
 
     const clusterMarker = new google.maps.Marker({
       position: cluster.position,
@@ -1260,11 +747,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       icon: clusterIcon,
       zIndex: 1000,
     });
-
-    // attach svg url to marker so we can revoke it later to avoid leaking object URLs
-    try {
-      (clusterMarker as any).__svgUrl = svgUrl;
-    } catch (e) {}
 
     clusterMarker.addListener("click", () => {
       this.ngZone.run(() => {
@@ -1302,7 +784,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private createClusterIcon(
     count: number,
     monitors: MapPoint[]
-  ): { icon: google.maps.Icon; svgUrl: string } {
+  ): google.maps.Icon {
     const size = Math.min(50 + count * 4, 80);
 
     let fillColor = "#FF6B35";
@@ -1334,34 +816,17 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     const svgBlob = new Blob([svg], { type: "image/svg+xml" });
     const svgUrl = URL.createObjectURL(svgBlob);
 
-    const icon: google.maps.Icon = {
+    return {
       url: svgUrl,
       scaledSize: new google.maps.Size(size, size),
       anchor: new google.maps.Point(size / 2, size / 2),
     };
-
-    return { icon, svgUrl };
   }
 
   private clearMarkers(): void {
-    // Fechar todos os InfoWindows antes de limpar
-    this.closeAllInfoWindows();
-    
-    // Limpar arrays de InfoWindows
-    this.infoWindows = [];
-    
     this.markers.forEach((marker) => marker.setMap(null));
     this.markers = [];
-    // revoke any object URLs created for cluster icons to avoid leaking resources
-    this.clusterMarkers.forEach((marker) => {
-      try {
-        const svgUrl = (marker as any).__svgUrl;
-        if (svgUrl) {
-          URL.revokeObjectURL(svgUrl);
-        }
-      } catch (e) {}
-      marker.setMap(null);
-    });
+    this.clusterMarkers.forEach((marker) => marker.setMap(null));
     this.clusterMarkers = [];
   }
 
@@ -1403,12 +868,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     );
   }
 
-  public setMapCenter(center: { lat: number; lng: number }, zoom?: number): void {
+  public setMapCenter(center: { lat: number; lng: number }): void {
     if (this._map) {
       this._map.setCenter(center);
-      if (zoom !== undefined) {
-        this._map.setZoom(zoom);
-      }
     }
   }
 
