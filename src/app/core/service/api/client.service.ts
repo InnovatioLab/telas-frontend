@@ -1,5 +1,8 @@
 import { HttpBackend, HttpClient, HttpParams } from "@angular/common/http";
-import { inject, Injectable, Inject } from "@angular/core";
+import { inject, Inject, Injectable } from "@angular/core";
+import { IClientRepository } from "@app/core/interfaces/services/repository/client-repository.interface";
+import { ClientDomainService } from "@app/core/service/domain/client.domain.service";
+import { CLIENT_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { Client } from "@app/model/client";
 import { Page } from "@app/model/dto/page.dto";
 import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
@@ -14,10 +17,6 @@ import {
 } from "@app/model/dto/response/ad-request-response.dto";
 import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
-import { ClientRepositoryImpl } from "@app/core/service/repository/client-repository.impl";
-import { IClientRepository } from "@app/core/interfaces/services/repository/client-repository.interface";
-import { CLIENT_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
-import { ClientDomainService } from "@app/core/service/domain/client.domain.service";
 import { ClientResponseDTO } from "@app/model/dto/response/client-response.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { ResponseDto } from "@app/model/dto/response/response.dto";
