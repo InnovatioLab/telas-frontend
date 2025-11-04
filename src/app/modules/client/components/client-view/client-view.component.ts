@@ -115,7 +115,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
       this.clientViewService.focusOnZipCodeLocation(zipCode).then(() => {
         const center = this.clientViewService.mapCenter();
         if (center) {
-          this.mapsComponent?.setMapCenter(center, 15);
+          this.mapsComponent?.setMapCenter(center);
         }
       });
     }

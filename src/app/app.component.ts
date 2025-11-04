@@ -41,14 +41,18 @@ export class AppComponent implements OnInit {
     private readonly authentication: Authentication,
     private readonly clientService: ClientService
   ) {}
+
   ngOnInit(): void {
     this.verificarAutoLogin();
   }
 
   verificarAutoLogin(): void {
     const token = AuthenticationStorage.getToken();
+    if (!token) return;
 
-    if (!token || !this.authentication.isTokenValido()) {
+    if (!this.authentication.isTokenValido()) {
+      this.authentication.removerAutenticacao();
+      this.router.navigate(["/login"]);
       return;
     }
 
@@ -60,7 +64,7 @@ export class AppComponent implements OnInit {
         ),
         catchError((error) => {
           console.error(
-            "Error retrieving data from authenticated client: ",
+            "Error retrieving data from authenticated client:",
             error
           );
           this.authentication.removerAutenticacao();
@@ -68,19 +72,14 @@ export class AppComponent implements OnInit {
           return of(null);
         })
       )
-      .subscribe({
-        next: (authenticatedClient) => {
-          if (!authenticatedClient) {
-            return;
-          }
+      .subscribe((authenticatedClient) => {
+        if (!authenticatedClient) return;
 
-          this.authentication.updateClientData(authenticatedClient as Client);
+        this.authentication.updateClientData(authenticatedClient as Client);
 
-          if (!authenticatedClient.termAccepted) {
-            this.router.navigate(["/terms-of-service"]);
-            return;
-          }
-        },
+        if (!authenticatedClient.termAccepted) {
+          this.router.navigate(["/terms-of-service"]);
+        }
       });
   }
 }

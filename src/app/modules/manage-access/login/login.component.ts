@@ -5,8 +5,9 @@ import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { Client, Role } from "@app/model/client";
+import { Role } from "@app/model/client";
 import { ILoginRequest } from "@app/model/dto/request/login.request";
+import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
 import { BaseModule } from "@app/shared/base/base.module";
 import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
@@ -94,9 +95,9 @@ export class LoginComponent implements OnInit {
       )
       .subscribe((response) => {
         if (response && response.client) {
-          // Atualiza o estado central e redireciona conforme termos/role.
           this.authentication.updateClientData(response.client as any);
-          if ((response.client as any).termAccepted) {
+
+          if (response.client.termAccepted) {
             this.redirecionarParaHome(response.client as any);
           } else {
             this.router.navigate(["/terms-of-service"]);
@@ -105,25 +106,17 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  // verificarTermo foi substituído: agora o fluxo de login retorna o client
-  // (via AutenticacaoService.login) e já atualiza o estado central.
-
-  redirecionarParaHome(client?: Client): void {
-    if (!client) {
-      client = this.autenticacaoService.user;
-
-      if (!client) {
-        this.router.navigate(["/client"]);
-        return;
-      }
-    }
-
+  redirecionarParaHome(client: AuthenticatedClientResponseDto): void {
     this.loading = false;
 
     if (client.role === Role.ADMIN) {
       this.router.navigate(["/admin"]);
     } else {
-      this.router.navigate(["/client"]);
+      if (client.hasSubscription && client.ads.length === 0) {
+        this.router.navigate(["/client/my-telas"]);
+      } else {
+        this.router.navigate(["/client"]);
+      }
     }
   }
 

@@ -231,17 +231,6 @@ export class GoogleMapsService {
     };
   }
 
-  public createUserLocationIcon(): google.maps.Symbol {
-    return {
-      path: google.maps.SymbolPath.CIRCLE,
-      fillColor: "#049dd9", // cor-primaria-clara
-      fillOpacity: 1,
-      strokeWeight: 2,
-      strokeColor: "#FFFFFF",
-      scale: 10,
-    };
-  }
-
   public createSearchMarkerIcon(): google.maps.Symbol {
     return {
       path: google.maps.SymbolPath.CIRCLE,
@@ -485,12 +474,6 @@ export class GoogleMapsService {
   } | null> {
     return new Promise((resolve) => {
       if (navigator.geolocation) {
-        const options: PositionOptions = {
-          enableHighAccuracy: false,
-          timeout: 5000,
-          maximumAge: 0,
-        };
-
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const coordinates = {
@@ -498,24 +481,21 @@ export class GoogleMapsService {
               longitude: position.coords.longitude,
             };
 
-            try {
-              localStorage.setItem("user_coordinates", JSON.stringify(coordinates));
-            } catch (e) {
-              // ignore localStorage errors
-            }
+            localStorage.setItem(
+              "user_coordinates",
+              JSON.stringify(coordinates)
+            );
 
             resolve(coordinates);
           },
-          (err) => {
-            // If user denied or another error occurred, fallback to saved coords or null
+          () => {
             const savedCoordinates = this.getUserCoordinates();
             if (savedCoordinates) {
               resolve(savedCoordinates);
             } else {
               resolve(null);
             }
-          },
-          options
+          }
         );
       } else {
         resolve(this.getUserCoordinates() || null);

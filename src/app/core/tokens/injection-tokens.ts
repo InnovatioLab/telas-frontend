@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
-import { IClientRepository } from '../interfaces/services/repository/client-repository.interface';
 import { IClientManagementRepository } from '../interfaces/services/repository/client-management-repository.interface';
+import { IClientRepository } from '../interfaces/services/repository/client-repository.interface';
 import { ISubscriptionRepository } from '../interfaces/services/repository/subscription-repository.interface';
 import { IBoxRepository } from '../interfaces/services/repository/box-repository.interface';
 import { ICartRepository } from '../interfaces/services/repository/cart-repository.interface';
