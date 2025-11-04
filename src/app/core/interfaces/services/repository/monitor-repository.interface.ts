@@ -13,3 +13,4 @@ export interface IMonitorRepository {
   findValidAds(monitorId: string): Observable<any[]>;
 }
 
+

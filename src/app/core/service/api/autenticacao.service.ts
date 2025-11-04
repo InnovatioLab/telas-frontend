@@ -1,6 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, signal } from "@angular/core";
-import { Authentication } from "@app/core/service/auth/autenthication";
+import { Injectable, signal, inject, Optional } from "@angular/core";
 import { Client } from "@app/model/client";
 import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
 import { SenhaUpdate } from "@app/model/dto/request/senha-update.request";
@@ -10,21 +9,33 @@ import { catchError, map, Observable, switchMap, tap, throwError } from "rxjs";
 import { environment } from "src/environments/environment";
 import { AuthenticationStorage } from "../auth/authentication-storage";
 import { ClientService } from "./client.service";
+import { AuthService } from "../auth/auth.service";
 
 @Injectable({ providedIn: "root" })
 export class AutenticacaoService {
+  private authService?: AuthService;
+  
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly clientService: ClientService,
+    @Optional() authService?: AuthService
+  ) {
+    try {
+      this.authService = inject(AuthService, { optional: true });
+    } catch {
+      this.authService = undefined;
+    }
+    if (!this.authService && authService) {
+      this.authService = authService;
+    }
+  }
+
   _userSignal = signal<Client | null>(null);
   _loggedClientSignal = signal<AuthenticatedClientResponseDto | null>(null);
   _helperJwt: JwtHelperService;
+  
   get helperJwt() {
-    const helper = this._helperJwt
-      ? this._helperJwt
-      : new JwtHelperService({
-          tokenGetter: AuthenticationStorage.getToken(),
-        });
-
-    this._helperJwt = helper;
-    return this._helperJwt;
+    return this.authService.helperJwt;
   }
 
   nomeToken = AuthenticationStorage.storageName;
@@ -41,36 +52,24 @@ export class AutenticacaoService {
 
   storege = AuthenticationStorage;
 
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly clientService: ClientService,
-    private readonly authentication: Authentication
-  ) {
-    if (this.storege.getDataUser()) {
-      const user = JSON.parse(this.storege.getDataUser());
-      this._userSignal.set(user);
-      // Notifica o serviço central de autenticação para centralizar o estado
-      try {
-        this.authentication.updateClientData(user as any);
-      } catch (e) {
-        // não bloquear a inicialização caso haja diferenças de shape
-        console.warn("Falha ao sincronizar estado de autenticação inicial:", e);
-      }
+  public get token(): string | null {
+    if (this.authService) {
+      return this.authService.token;
     }
-  }
-
-  public get token(): string {
-    if (this.storege.getToken()) {
-      return this.storege.getToken();
-    }
-    return null;
+    return AuthenticationStorage.getToken();
   }
 
   public get user(): Client | null {
+    if (this.authService) {
+      return this.authService.user;
+    }
     return this._userSignal();
   }
 
   public get loggedClient(): AuthenticatedClientResponseDto | null {
+    if (this.authService) {
+      return this.authService.loggedClient;
+    }
     return this._loggedClientSignal();
   }
 
@@ -78,6 +77,9 @@ export class AutenticacaoService {
     username: string;
     password: string;
   }): Observable<{ token: string; client: AuthenticatedClientResponseDto }> {
+    if (this.authService) {
+      return this.authService.login(payload) as Observable<{ token: string; client: AuthenticatedClientResponseDto }>;
+    }
     return this.httpClient.post<any>(`${this.url}login`, payload).pipe(
       map((response) => {
         if (!response?.data) {
@@ -92,30 +94,14 @@ export class AutenticacaoService {
           tap((client) => {
             AuthenticationStorage.setDataUser(JSON.stringify(client));
             this._loggedClientSignal.set(client);
-            // Notifica Authentication para evitar duplicação de requests
-            try {
-              this.authentication.updateClientData(client as any);
-            } catch (e) {
-              console.warn("Falha ao notificar Authentication após login:", e);
-            }
           }),
-          // Retorna um objeto com token e client para o caller
           map((client) => ({ token, client }))
         );
       }),
-      catchError((error) => {
+      catchError((error: any) => {
         console.error("Login process failed:", error.message || error);
         AuthenticationStorage.clearToken();
         this._loggedClientSignal.set(null);
-        try {
-          // garante que o estado central seja limpo caso tenhamos falha
-          this.authentication.removerAutenticacao();
-        } catch (e) {
-          console.warn(
-            "Falha ao notificar Authentication na falha do login:",
-            e
-          );
-        }
         const friendlyError = new Error(
           "Invalid credentials. Please try again."
         );
@@ -125,21 +111,26 @@ export class AutenticacaoService {
   }
 
   logout(): void {
-    AuthenticationStorage.clearToken();
-    this._userSignal.set(null);
-    this._loggedClientSignal.set(null);
-    try {
-      this.authentication.removerAutenticacao();
-    } catch (e) {
-      console.warn("Falha ao notificar Authentication no logout:", e);
+    if (this.authService) {
+      this.authService.logout();
+    } else {
+      AuthenticationStorage.clearToken();
+      this._userSignal.set(null);
+      this._loggedClientSignal.set(null);
     }
   }
 
-  recuperarSenha(login: string) {
+  recuperarSenha(login: string): Observable<any> {
+    if (this.authService) {
+      return this.authService.recuperarSenha(login);
+    }
     return this.httpClient.post(`${this.url}recovery-password/${login}`, {});
   }
 
-  redefinirSenha(login: string, request: SenhaRequestDto) {
+  redefinirSenha(login: string, request: SenhaRequestDto): Observable<any> {
+    if (this.authService) {
+      return this.authService.redefinirSenha(login, request);
+    }
     return this.httpClient.patch<SenhaRequestDto>(
       `${this.url}reset-password/${login}`,
       request
@@ -147,6 +138,9 @@ export class AutenticacaoService {
   }
 
   alterarSenha(request: SenhaUpdate): Observable<SenhaUpdate> {
+    if (this.authService) {
+      return this.authService.alterarSenha(request);
+    }
     return this.httpClient.patch<SenhaUpdate>(
       `${this.url}update-password`,
       request,
@@ -159,15 +153,16 @@ export class AutenticacaoService {
   }
 
   atualizarToken(): Observable<{ data: { id_token: string } }> {
-    return this.httpBackend
-      .post<{ data: { id_token: string } }>(`${this.url}/refresh-token`, {
-        refresh_token: AuthenticationStorage.getRefreshToken(),
+    if (this.authService) {
+      return this.authService.atualizarToken();
+    }
+    return this.httpBackend.post<{ data: { id_token: string } }>(`${this.url}/refresh-token`, {
+      refresh_token: AuthenticationStorage.getRefreshToken()
+    }).pipe(
+      map((response) => {
+        AuthenticationStorage.setToken(response.data.id_token);
+        return response;
       })
-      .pipe(
-        map((response) => {
-          AuthenticationStorage.setToken(response.data.id_token);
-          return response;
-        })
-      );
+    );
   }
 }
