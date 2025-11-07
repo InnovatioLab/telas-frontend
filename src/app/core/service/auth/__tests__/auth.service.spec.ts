@@ -22,6 +22,16 @@ import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenti
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { SenhaUpdate } from '@app/model/dto/request/senha-update.request';
 
+function createJwt(payload: any): string {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const b64 = (obj: any) =>
+    btoa(unescape(encodeURIComponent(JSON.stringify(obj))))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  return `${b64(header)}.${b64(payload)}.signature`;
+}
+
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
@@ -134,10 +144,20 @@ describe('AuthService', () => {
   });
 
   describe('isTokenValid', () => {
-    it('should return token validity', () => {
-      tokenStorageSpy.isTokenValid.mockReturnValue(true);
+    it('should return token validity using tokenStorage when available', () => {
+      const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJleHAiOjk5OTk5OTk5OTl9.signature';
+      tokenStorageSpy.getToken.mockReturnValue(mockToken);
+      tokenStorageSpy.isTokenValid = jest.fn().mockReturnValue(true);
       expect(service.isTokenValid()).toBe(true);
       expect(tokenStorageSpy.isTokenValid).toHaveBeenCalled();
+    });
+
+    it('should return token validity using helperJwt when tokenStorage.isTokenValid is not available', () => {
+      const future = Math.floor(Date.now() / 1000) + 3600;
+      const mockToken = createJwt({ id: '1', exp: future });
+      tokenStorageSpy.getToken.mockReturnValue(mockToken);
+      delete (tokenStorageSpy as any).isTokenValid;
+      expect(service.isTokenValid()).toBe(true);
     });
   });
 

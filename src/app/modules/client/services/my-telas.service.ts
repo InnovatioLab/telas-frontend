@@ -1,8 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, Injector } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdService } from '@app/core/service/api/ad.service';
 import { ClientService } from '@app/core/service/api/client.service';
 import { ToastService } from '@app/core/service/state/toast.service';
+import { AuthService } from '@app/core/service/auth/auth.service';
 import { AdValidationType } from '@app/model/client';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
 import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
@@ -45,7 +46,8 @@ export class MyTelasService {
     private readonly clientService: ClientService,
     private readonly adService: AdService,
     private readonly toastService: ToastService,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private readonly injector: Injector
   ) {}
 
   createRequestAdForm(): FormGroup {
@@ -71,7 +73,7 @@ export class MyTelasService {
     });
   }
 
-  async loadClientData(): Promise<{ phone: string; email: string } | null> {
+  async loadClientData(forceRefresh: boolean = false): Promise<{ phone: string; email: string } | null> {
     this._isLoading.set(true);
 
     try {
@@ -79,7 +81,7 @@ export class MyTelasService {
         .pipe(
           take(1),
           switchMap((client) =>
-            client ? of(client) : this.clientService.getAuthenticatedClient()
+            client && !forceRefresh ? of(client) : this.clientService.getAuthenticatedClient()
           )
         )
         .toPromise();
@@ -90,6 +92,21 @@ export class MyTelasService {
         this._hasActiveAdRequest.set((client as any).adRequest !== null);
         this._ads.set((client as any).ads || []);
         this._isClientDataLoaded.set(true);
+
+        if (forceRefresh) {
+          if (this.clientService.setClientAtual) {
+            this.clientService.setClientAtual(client as any);
+          }
+
+          try {
+            const authService = this.injector.get(AuthService, null);
+            if (authService && typeof authService.updateClientData === 'function') {
+              authService.updateClientData(client as any);
+            }
+          } catch (error) {
+            console.debug('AuthService not available for update:', error);
+          }
+        }
 
         return {
           phone: (client as any).contact?.phone || "",
@@ -118,7 +135,7 @@ export class MyTelasService {
     try {
       await this.clientService.uploadMultipleAttachments(files).toPromise();
       this.toastService.sucesso("Attachments uploaded successfully");
-      await this.loadClientData();
+      await this.loadClientData(true);
     } catch (error) {
       this.toastService.erro("Error uploading attachments");
       throw error;
@@ -133,7 +150,7 @@ export class MyTelasService {
     try {
       await this.clientService.uploadAttachment(file, attachmentId).toPromise();
       this.toastService.sucesso("Attachment replaced successfully");
-      await this.loadClientData();
+      await this.loadClientData(true);
     } catch (error) {
       this.toastService.erro("Error replacing attachment");
       throw error;
@@ -149,7 +166,7 @@ export class MyTelasService {
       await this.clientService.createAdRequest(request).toPromise();
       this.toastService.sucesso("Ad request successfully submitted");
       this._hasActiveAdRequest.set(true);
-      await this.loadClientData();
+      await this.loadClientData(true);
     } catch (error) {
       this.toastService.erro("Error submitting request");
       throw error;
@@ -164,7 +181,7 @@ export class MyTelasService {
     try {
       await this.clientService.validateAd(adId, validation, refusedData).toPromise();
       this.toastService.sucesso("Ad validated successfully");
-      await this.loadClientData();
+      await this.loadClientData(true);
     } catch (error) {
       this.toastService.erro("Error validating ad");
       throw error;
@@ -179,7 +196,7 @@ export class MyTelasService {
     try {
       await this.adService.createClientAd(clientId, adDto).toPromise();
       this.toastService.sucesso("Ad sent for admin review");
-      await this.loadClientData();
+      await this.loadClientData(true);
     } catch (error) {
       console.error("Error uploading ad:", error);
       this.toastService.erro("Error uploading ad");

@@ -5,6 +5,8 @@ import { catchError, map } from "rxjs/operators";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
 import { MapPoint } from "../state/map-point.interface";
+import { MonitorMapPointMapper } from "../mapper/monitor-map-point.mapper";
+import { ZipCodeExtractor } from "../utils/zipcode-extractor.util";
 
 export interface MonitorMapsResponseDto {
   id: string;
@@ -42,7 +44,8 @@ export class SearchMonitorsService {
 
   constructor(
     private readonly http: HttpClient,
-    @Inject(ENVIRONMENT) private readonly env: Environment
+    @Inject(ENVIRONMENT) private readonly env: Environment,
+    private readonly mapper: MonitorMapPointMapper
   ) {}
 
   private getAuthHeaders(): HttpHeaders {
@@ -69,12 +72,11 @@ export class SearchMonitorsService {
       .pipe(
         map((response) => {
           const monitors = response.data || [];
-          const allPoints = this.convertMonitorsToMapPoints(monitors);
+          const allPoints = this.mapper.convertToMapPoints(monitors);
 
           this.nearestMonitorsSubject.next(allPoints);
           this.loadingSubject.next(false);
 
-          // Don't emit error here - let findByZipCode handle it
           return monitors;
         }),
         catchError((error) => {
@@ -87,47 +89,6 @@ export class SearchMonitorsService {
       );
   }
 
-  private convertMonitorsToMapPoints(
-    monitors: MonitorMapsResponseDto[]
-  ): MapPoint[] {
-    return monitors
-      .filter((monitor) => monitor.latitude && monitor.longitude)
-      .map((monitor) => ({
-        id: monitor.id,
-        title: `Monitor ${monitor.monitorLocationDescription || ""}`,
-        description: this.buildMonitorDescription(monitor),
-        latitude: monitor.latitude,
-        longitude: monitor.longitude,
-        category: "MONITOR",
-        addressLocationName: monitor.addressLocationName,
-        addressLocationDescription: monitor.addressLocationDescription,
-        locationDescription: monitor.monitorLocationDescription,
-        data: monitor,
-      }));
-  }
-
-  private buildMonitorDescription(monitor: MonitorMapsResponseDto): string {
-    const parts: string[] = [];
-
-    if (monitor.hasAvailableSlots !== undefined) {
-      parts.push(
-        `Available Slots: ${monitor.hasAvailableSlots ? "Yes" : "No"}`
-      );
-    }
-
-    if (monitor.adsDailyDisplayTimeInMinutes) {
-      parts.push(
-        `Daily Display Time: ${monitor.adsDailyDisplayTimeInMinutes} min`
-      );
-    }
-
-    if (monitor.estimatedSlotReleaseDate && !monitor.hasAvailableSlots) {
-      const releaseDate = new Date(monitor.estimatedSlotReleaseDate);
-      parts.push(`Next Available: ${releaseDate.toLocaleDateString()}`);
-    }
-
-    return parts.join(" | ") || "Monitor Information";
-  }
 
   public findByZipCode(zipCode: string): Promise<MapPoint[]> {
     this.loadingSubject.next(true);
@@ -182,7 +143,7 @@ export class SearchMonitorsService {
         throw new Error("Address not found");
       }
 
-      const zipCode = this.extractZipCodeFromAddress(
+      const zipCode = ZipCodeExtractor.extractFromAddress(
         geocodeResult.formattedAddress
       );
 

@@ -1,225 +1,47 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, Inject } from "@angular/core";
 import {
   CreateMonitorRequestDto,
   UpdateMonitorRequestDto,
 } from "@app/model/dto/request/create-monitor.request.dto";
 import { FilterMonitorRequestDto } from "@app/model/dto/request/filter-monitor.request.dto";
-import { MonitorResponseDto } from "@app/model/dto/response/monitor-response.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
-import { ResponseDto } from "@app/model/dto/response/response.dto";
 import { Monitor } from "@app/model/monitors";
 import { Observable, of } from "rxjs";
-import { catchError, map } from "rxjs/operators";
-import { environment } from "src/environments/environment";
+import { IMonitorRepository } from "@app/core/interfaces/services/repository/monitor-repository.interface";
+import { MONITOR_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { IMonitorAlert } from "./interfaces/monitor";
 
 @Injectable({
   providedIn: "root",
 })
 export class MonitorService {
-  private readonly apiUrl = environment.apiUrl + "monitors";
-  storageName = "telas_token";
-  token = localStorage.getItem(this.storageName);
+  constructor(
+    @Inject(MONITOR_REPOSITORY_TOKEN) 
+    private readonly repository: IMonitorRepository
+  ) {}
 
-  headers = {
-    headers: {
-      Authorization: `Bearer ${this.token}`,
-    },
-  };
-
-  constructor(private readonly http: HttpClient) {}
-
-  // getMonitors(filters?: FilterMonitorRequestDto): Observable<Monitor[]> {
-  //   let params = new HttpParams();
-
-  //   if (filters) {
-  //     if (filters.page) params = params.set("page", filters.page.toString());
-  //     if (filters.size) params = params.set("size", filters.size.toString());
-  //     if (filters.sortBy) params = params.set("sortBy", filters.sortBy);
-  //     if (filters.sortDir) params = params.set("sortDir", filters.sortDir);
-  //     if (filters.genericFilter)
-  //       params = params.set("genericFilter", filters.genericFilter);
-  //   }
-
-  //   return this.http
-  //     .get<
-  //       ResponseDto<PaginationResponseDto<MonitorResponseDto>>
-  //     >(`${this.apiUrl}/filters`, { params, ...this.headers })
-  //     .pipe(
-  //       map(
-  //         (
-  //           response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>
-  //         ) => {
-  //           if (response?.data?.list) {
-  //             const mappedList = response.data.list.map(
-  //               this.mapMonitorResponseToMonitor
-  //             );
-  //             return mappedList;
-  //           }
-  //           return [];
-  //         }
-  //       ),
-  //       catchError((error) => {
-  //         return of([]);
-  //       })
-  //     );
-  // }
-
-  getMonitorsWithPagination(
-    filters?: FilterMonitorRequestDto
-  ): Observable<PaginationResponseDto<Monitor>> {
-    let params = new HttpParams();
-
-    if (filters) {
-      if (filters.page) params = params.set("page", filters.page.toString());
-      if (filters.size) params = params.set("size", filters.size.toString());
-      if (filters.sortBy) params = params.set("sortBy", filters.sortBy);
-      if (filters.sortDir) params = params.set("sortDir", filters.sortDir);
-      if (filters.genericFilter)
-        params = params.set("genericFilter", filters.genericFilter);
-    }
-
-    params = params.set("_t", Date.now().toString());
-
-    return this.http
-      .get<
-        ResponseDto<PaginationResponseDto<MonitorResponseDto>>
-      >(`${this.apiUrl}/filters`, { params })
-      .pipe(
-        map(
-          (
-            response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>
-          ) => {
-            if (response?.data) {
-              const mappedList = response.data.list.map(
-                this.mapMonitorResponseToMonitor
-              );
-              return {
-                ...response.data,
-                list: mappedList,
-              };
-            }
-            throw new Error("API não retornou dados dos monitores");
-          }
-        ),
-        catchError((error) => {
-          throw error;
-        })
-      );
+  getMonitorsWithPagination(filters?: FilterMonitorRequestDto): Observable<PaginationResponseDto<Monitor>> {
+    return this.repository.findWithPagination(filters);
   }
 
   getMonitorById(id: string): Observable<Monitor | null> {
-    return this.http
-      .get<
-        ResponseDto<MonitorResponseDto>
-      >(`${this.apiUrl}/${id}`, this.headers)
-      .pipe(
-        map((response: ResponseDto<MonitorResponseDto>) => {
-          if (response?.data) {
-            const mappedMonitor = this.mapMonitorResponseToMonitor(
-              response.data
-            );
-            return mappedMonitor;
-          }
-          return null;
-        }),
-        catchError((error) => {
-          return of(null);
-        })
-      );
+    return this.repository.findById(id);
   }
 
   createMonitor(monitorRequest: CreateMonitorRequestDto): Observable<boolean> {
-    return this.http
-      .post<ResponseDto<void>>(this.apiUrl, monitorRequest, this.headers)
-      .pipe(
-        map((response: ResponseDto<any>) => {
-          if (response) {
-            return true;
-          }
-          return false;
-        }),
-        catchError((error) => {
-          return of(false);
-        })
-      );
+    return this.repository.create(monitorRequest);
   }
 
-  updateMonitor(
-    id: string,
-    monitorRequest: UpdateMonitorRequestDto
-  ): Observable<boolean> {
-    return this.http
-      .put<
-        ResponseDto<void>
-      >(`${this.apiUrl}/${id}`, monitorRequest, this.headers)
-      .pipe(
-        map((response: ResponseDto<any>) => {
-          if (response) {
-            return true;
-          }
-          return false;
-        }),
-        catchError((error) => {
-          return of(false);
-        })
-      );
+  updateMonitor(id: string, monitorRequest: UpdateMonitorRequestDto): Observable<boolean> {
+    return this.repository.update(id, monitorRequest);
   }
 
   deleteMonitor(id: string): Observable<boolean> {
-    return this.http
-      .delete<ResponseDto<any>>(`${this.apiUrl}/${id}`, this.headers)
-      .pipe(
-        map((response: ResponseDto<any>) => {
-          if (response) {
-            return true;
-          }
-          return false;
-        }),
-        catchError((error) => {
-          return of(false);
-        })
-      );
-  }
-
-  private mapMonitorResponseToMonitor(
-    monitorResponse: MonitorResponseDto
-  ): Monitor {
-    const mappedMonitor = {
-      id: monitorResponse.id,
-      active: monitorResponse.active,
-      locationDescription: monitorResponse.locationDescription,
-      fullAddress: monitorResponse.fullAddress,
-      address: monitorResponse.address || {
-        id: "",
-        street: "",
-        city: "",
-        state: "",
-        country: "",
-        zipCode: "",
-      },
-      adLinks: monitorResponse.adLinks || [],
-      canBeDeleted: monitorResponse.canBeDeleted,
-      createdAt: monitorResponse.createdAt,
-      updatedAt: monitorResponse.updatedAt,
-    };
-    return mappedMonitor;
+    return this.repository.delete(id);
   }
 
   getValidAds(monitorId: string): Observable<any[]> {
-    return this.http
-      .get<
-        ResponseDto<any[]>
-      >(`${this.apiUrl}/valid-ads/${monitorId}`, this.headers)
-      .pipe(
-        map((response: ResponseDto<any[]>) => {
-          return response.data || [];
-        }),
-        catchError((error) => {
-          return of([]);
-        })
-      );
+    return this.repository.findValidAds(monitorId);
   }
 
   getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {
