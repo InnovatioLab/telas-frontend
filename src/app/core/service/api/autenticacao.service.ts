@@ -1,5 +1,5 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable, signal, inject, Optional } from "@angular/core";
+import { HttpClient, HttpBackend } from "@angular/common/http";
+import { Injectable, signal, Injector, inject } from "@angular/core";
 import { Client } from "@app/model/client";
 import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
 import { SenhaUpdate } from "@app/model/dto/request/senha-update.request";
@@ -13,21 +13,27 @@ import { AuthService } from "../auth/auth.service";
 
 @Injectable({ providedIn: "root" })
 export class AutenticacaoService {
-  private authService?: AuthService;
+  private _authService?: AuthService;
   
+  httpBackend: HttpClient;
+
   constructor(
     private readonly httpClient: HttpClient,
     private readonly clientService: ClientService,
-    @Optional() authService?: AuthService
+    private readonly injector: Injector
   ) {
-    try {
-      this.authService = inject(AuthService, { optional: true });
-    } catch {
-      this.authService = undefined;
+    this.httpBackend = new HttpClient(inject(HttpBackend));
+  }
+
+  private get authService(): AuthService | undefined {
+    if (!this._authService) {
+      try {
+        this._authService = this.injector.get(AuthService, null);
+      } catch {
+        this._authService = undefined;
+      }
     }
-    if (!this.authService && authService) {
-      this.authService = authService;
-    }
+    return this._authService || undefined;
   }
 
   _userSignal = signal<Client | null>(null);
@@ -35,7 +41,15 @@ export class AutenticacaoService {
   _helperJwt: JwtHelperService;
   
   get helperJwt() {
-    return this.authService.helperJwt;
+    if (this.authService) {
+      return this.authService.helperJwt;
+    }
+    if (!this._helperJwt) {
+      this._helperJwt = new JwtHelperService({
+        tokenGetter: () => AuthenticationStorage.getToken() || ''
+      });
+    }
+    return this._helperJwt;
   }
 
   nomeToken = AuthenticationStorage.storageName;
@@ -46,7 +60,6 @@ export class AutenticacaoService {
       Authorization: `Bearer ${AuthenticationStorage.getToken()}`,
     },
   };
-  httpBackend: HttpClient;
 
   private readonly url = environment.apiUrl + "auth/";
 
