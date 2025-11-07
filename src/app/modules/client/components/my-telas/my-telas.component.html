@@ -32,7 +32,7 @@
 
         <div class="upload-info">
           <small
-            >Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF - Maximum size:
+            >Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF, PDF - Maximum size:
             10MB - Maximum: 3 files per upload.</small
           >
         </div>
@@ -175,14 +175,58 @@
             </p>
           </div>
           }
-          <div class="request-ad-section">
-            <button
-              pButton
-              label="Request Ad"
-              icon="pi pi-send"
-              (click)="openRequestAdDialog()"
-              [disabled]="myTelasService.isLoading()"
-            ></button>
+          
+          <div class="ad-request-form-container">
+            <h4>Create Ad Request</h4>
+            <form [formGroup]="requestAdForm" class="request-form">
+              <div class="form-field">
+                <label for="slogan">Slogan (Optional)</label>
+                <input
+                  id="slogan"
+                  type="text"
+                  pInputText
+                  formControlName="slogan"
+                  placeholder="Enter your slogan (max 50 characters)"
+                  [maxlength]="50"
+                />
+                @if (mostrarErro(requestAdForm, 'slogan')) {
+                  <app-error
+                    id="error-msg-slogan"
+                    [control]="requestAdForm.get('slogan')"
+                  ></app-error>
+                }
+              </div>
+
+              <div class="form-field">
+                <label for="brandGuidelineUrl">Brand Guideline URL (Optional)</label>
+                <input
+                  id="brandGuidelineUrl"
+                  type="url"
+                  pInputText
+                  formControlName="brandGuidelineUrl"
+                  placeholder="https://example.com/guidelines"
+                  [maxlength]="255"
+                />
+                @if (mostrarErro(requestAdForm, 'brandGuidelineUrl')) {
+                  <app-error
+                    id="error-msg-brandGuidelineUrl"
+                    [control]="requestAdForm.get('brandGuidelineUrl')"
+                  ></app-error>
+                }
+              </div>
+
+              <div class="form-actions">
+                <button
+                  pButton
+                  label="Submit Ad Request"
+                  icon="pi pi-send"
+                  (click)="submitAdRequest()"
+                  [disabled]="requestAdForm.invalid || myTelasService.isLoading()"
+                  [loading]="myTelasService.isLoading()"
+                  class="p-button-primary"
+                ></button>
+              </div>
+            </form>
           </div>
         </div>
       }
@@ -248,108 +292,6 @@
     </div>
   </p-tabPanel>
 </p-tabView>
-
-<!-- Dialog para Request Ad -->
-<p-dialog
-  header="Request Ad"
-  [(visible)]="showRequestAdDialog"
-  [modal]="true"
-  [style]="{ width: '500px' }"
-  [draggable]="false"
-  [resizable]="false"
->
-  <div class="dialog-content flex flex-column gap-3 justify-content-center">
-    @if (selectedClientAttachments.length > 0) {
-      <div class="selected-attachments-info">
-        <h4>Selected Attachments:</h4>
-        <p>
-          {{ selectedClientAttachments.length }} attachment(s) will be used for
-          the ad request.
-        </p>
-      </div>
-    }
-
-    @if (selectedClientAttachments.length === 0) {
-      <div class="no-attachments-info">
-        <h4>No Attachments Selected</h4>
-      </div>
-    }
-
-    <form [formGroup]="requestAdForm" class="request-form">
-      <div class="form-field">
-        <label for="message" class="required">Message</label>
-        <textarea
-          pTextarea
-          rows="8"
-          id="message"
-          formControlName="message"
-          placeholder="Type your message..."
-        ></textarea>
-        @if (mostrarErro(requestAdForm, 'message')) {
-          <app-error
-            id="error-msg-message"
-            [control]="requestAdForm.get('message')"
-          ></app-error>
-        }
-      </div>
-
-      <div class="form-field">
-        <label id="ld-numero" for="phone">Phone</label>
-        <p-inputMask
-          mask="+1 999 999 9999"
-          [unmask]="true"
-          formControlName="phone"
-          placeholder="+1 508 215 8681"
-          class="w-full"
-          id="inp-numero"
-        />
-        @if (mostrarErro(requestAdForm, 'phone')) {
-          <app-error
-            id="error-msg-phone"
-            [control]="requestAdForm.get('phone')"
-          ></app-error>
-        }
-      </div>
-
-      <div class="form-field">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          pInputText
-          formControlName="email"
-          placeholder="emailexample@mail.com"
-        />
-        @if (mostrarErro(requestAdForm, 'email')) {
-          <app-error
-            id="error-msg-email"
-            [control]="requestAdForm.get('email')"
-          ></app-error>
-        }
-      </div>
-    </form>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="w-full flex justify-content-between align-items-center">
-      <button
-        pButton
-        label="Cancel"
-        id="btnSecundario"
-        (click)="closeRequestAdDialog()"
-        class="p-button-secondary"
-      ></button>
-      <button
-        pButton
-        label="Send Ad Request"
-        (click)="submitAdRequest()"
-        [disabled]="requestAdForm.invalid || myTelasService.isLoading()"
-            [loading]="myTelasService.isLoading()"
-        class="p-button-primary"
-      ></button>
-    </div>
-  </ng-template>
-</p-dialog>
 
 <!-- Dialog para Validar Ad -->
 <p-dialog

@@ -99,7 +99,7 @@ export class ManagementMonitorsComponent implements OnInit {
   selectedAdIndex: number = 0;
   authenticatedClient: AuthenticatedClientResponseDto | null = null;
 
-  acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff";
+  acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
 
   constructor(
     private readonly monitorService: MonitorService,

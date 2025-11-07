@@ -172,10 +172,13 @@ export class BoxService {
 
   createBox(boxRequest: BoxRequestDto): Observable<Box> {
     return this.http
-      .post<ResponseDto<Box>>(this.apiUrl, boxRequest, this.headers)
+      .post<ResponseDto<BoxResponseDto>>(this.apiUrl, boxRequest, this.headers)
       .pipe(
-        map((response: ResponseDto<Box>) => {
-          return response.data || ({} as Box);
+        map((response: ResponseDto<BoxResponseDto>) => {
+          if (response.data) {
+            return this.mapBoxResponseToBox(response.data);
+          }
+          return null;
         }),
         catchError((error) => {
           throw error;
@@ -190,9 +193,10 @@ export class BoxService {
       >(`${this.apiUrl}/${id}`, boxRequest, this.headers)
       .pipe(
         map((response: ResponseDto<BoxResponseDto>) => {
-          return response.data
-            ? this.mapBoxResponseToBox(response.data)
-            : ({} as Box);
+          if (response.data) {
+            return this.mapBoxResponseToBox(response.data);
+          }
+          return null;
         }),
         catchError((error) => {
           throw error;

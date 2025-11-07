@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ClientService } from '@app/core/service/api/client.service';
 import { AdService } from '@app/core/service/api/ad.service';
+import { ClientService } from '@app/core/service/api/client.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { AdValidationType } from '@app/model/client';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
@@ -50,9 +50,8 @@ export class MyTelasService {
 
   createRequestAdForm(): FormGroup {
     return this.fb.group({
-      message: ["", [Validators.required, Validators.maxLength(255)]],
-      phone: ["", [AbstractControlUtils.validatePhone()]],
-      email: ["", [Validators.email, Validators.maxLength(255)]],
+      slogan: ["", [Validators.maxLength(50)]],
+      brandGuidelineUrl: ["", [AbstractControlUtils.validateUrl(), Validators.maxLength(255)]],
     });
   }
 
@@ -191,11 +190,23 @@ export class MyTelasService {
   }
 
   validateAttachmentFile(file: File): Promise<{ isValid: boolean; errors: string[] }> {
-    if (!ImageValidationUtil.isValidFileType(file)) {
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    
+    if (!isPdf && !ImageValidationUtil.isValidFileType(file)) {
       return Promise.resolve({
         isValid: false,
-        errors: [`File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`],
+        errors: [`File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, TIFF formats or PDF files are allowed.`],
       });
+    }
+
+    if (isPdf) {
+      // Para PDF, apenas validar extensão
+      if (!/.*\.pdf$/i.test(file.name)) {
+        return Promise.resolve({
+          isValid: false,
+          errors: [`File "${file.name}" is invalid. Only PDF files are allowed.`],
+        });
+      }
     }
 
     if (!ImageValidationUtil.isValidFileSize(file, 10)) {
