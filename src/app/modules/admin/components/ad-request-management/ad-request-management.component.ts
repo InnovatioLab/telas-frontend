@@ -245,11 +245,19 @@ export class AdRequestManagementComponent implements OnInit {
     reader.readAsDataURL(this.selectedFile);
   }
 
+  isDataPdf(preview: string | null): boolean {
+    if (!preview) return false;
+    try {
+      return preview.startsWith("data:application/pdf");
+    } catch (err) {
+      return false;
+    }
+  }
+
   viewAttachment(link: string): void {
     window.open(link, "_blank");
   }
 
-  // Download attachment
   downloadAttachment(link: string): void {
     const a = document.createElement("a");
     a.href = link;

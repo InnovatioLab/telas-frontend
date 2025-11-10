@@ -468,7 +468,6 @@ export class ManagementMonitorsComponent implements OnInit {
 
       const payload = {
         addressId: this.selectedMonitorForAds.address.id,
-        locationDescription: this.selectedMonitorForAds.locationDescription,
         active: this.selectedMonitorForAds.active,
         ads,
       };

@@ -247,7 +247,15 @@
       class="file-preview flex flex-column align-items-center gap-3"
     >
       <h4 class="align-self-start">Selected File Preview:</h4>
-      <img [src]="filePreview" alt="File Preview" class="preview-image" />
+      <ng-container *ngIf="isDataPdf(filePreview); else imgPreview">
+        <!-- <pdf-viewer
+          [src]="filePreview"
+          style="width: 100%; height: 400px"
+        ></pdf-viewer> -->
+      </ng-container>
+      <ng-template #imgPreview>
+        <img [src]="filePreview" alt="File Preview" class="preview-image" />
+      </ng-template>
     </div>
   </div>
 

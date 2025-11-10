@@ -9,17 +9,16 @@ jest.mock('src/environments/environment', () => ({
   }
 }));
 
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MonitorService } from '../monitor.service';
-import { Monitor } from '@app/model/monitors';
+import { TestBed } from '@angular/core/testing';
+import { IMonitorRepository } from '@app/core/interfaces/services/repository/monitor-repository.interface';
+import { MONITOR_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
 import { CreateMonitorRequestDto, UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
-import { IMonitorAlert } from '../interfaces/monitor';
-import { MONITOR_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
-import { IMonitorRepository } from '@app/core/interfaces/services/repository/monitor-repository.interface';
+import { Monitor } from '@app/model/monitors';
 import { of, throwError } from 'rxjs';
+import { MonitorService } from '../monitor.service';
 
 describe('MonitorService', () => {
   let service: MonitorService;

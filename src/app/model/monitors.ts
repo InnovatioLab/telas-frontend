@@ -4,7 +4,6 @@ import { MonitorAdResponseDto } from "./dto/response/monitor-response.dto";
 export interface Monitor {
   id: string;
   active?: boolean;
-  locationDescription?: string;
   productId?: string;
   maxBlocks?: number;
   address?: Address;

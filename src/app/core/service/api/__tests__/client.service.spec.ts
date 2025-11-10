@@ -9,28 +9,25 @@ jest.mock('src/environments/environment', () => ({
   }
 }));
 
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpParams } from '@angular/common/http';
-import { ClientService } from '../client.service';
-import { CLIENT_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
+import { TestBed } from '@angular/core/testing';
 import { IClientRepository } from '@app/core/interfaces/services/repository/client-repository.interface';
 import { ClientDomainService } from '@app/core/service/domain/client.domain.service';
-import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
-import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
-import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
-import { ResponseDTO } from '@app/model/dto/response.dto';
+import { CLIENT_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
+import { Client } from '@app/model/client';
+import { Page } from '@app/model/dto/page.dto';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
+import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
 import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
-import { Client } from '@app/model/client';
-import { WishlistResponseDto } from '@app/model/dto/response/wishlist-response.dto';
-import { Page } from '@app/model/dto/page.dto';
-import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
-import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
 import { AdRequestResponseDto, PendingAdAdminValidationResponseDto } from '@app/model/dto/response/ad-request-response.dto';
+import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
+import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
+import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
+import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
+import { WishlistResponseDto } from '@app/model/dto/response/wishlist-response.dto';
 import { of, throwError } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { ClientService } from '../client.service';
 
 describe('ClientService', () => {
   let service: ClientService;
@@ -60,7 +57,6 @@ describe('ClientService', () => {
     termAccepted: true,
     currentSubscriptionFlowStep: 0,
     hasSubscription: false,
-    shouldDisplayAttachments: false,
   };
 
   beforeEach(() => {

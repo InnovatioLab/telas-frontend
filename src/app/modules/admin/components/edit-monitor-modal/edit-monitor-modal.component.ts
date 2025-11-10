@@ -19,14 +19,6 @@ import { AddressData } from "@app/model/dto/request/address-data-request";
 import { UpdateMonitorRequestDto } from "@app/model/dto/request/create-monitor.request.dto";
 import { Monitor } from "@app/model/monitors";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import {
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  Observable,
-  of,
-  switchMap,
-} from "rxjs";
 
 @Component({
   selector: "app-edit-monitor-modal",
@@ -92,7 +84,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
 
     const formData = {
       active: this.monitor.active ?? true,
-      locationDescription: this.monitor.locationDescription ?? "",
       address: {
         id: this.monitor.address?.id ?? "",
         street: this.monitor.address?.street ?? "",
@@ -112,7 +103,6 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
 
   private setupZipCodeSearch(): void {
     // const zipCodeControl = this.monitorForm.get("address.zipCode");
-
     // if (zipCodeControl) {
     //   zipCodeControl.valueChanges
     //     .pipe(

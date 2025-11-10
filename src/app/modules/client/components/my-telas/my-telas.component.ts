@@ -1,10 +1,5 @@
 import { CommonModule } from "@angular/common";
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import {
   FormGroup,
   FormsModule,
@@ -125,7 +120,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
       const validateFiles = async () => {
         for (const file of files) {
-          const validation = await this.myTelasService.validateAttachmentFile(file);
+          const validation =
+            await this.myTelasService.validateAttachmentFile(file);
 
           if (!validation.isValid) {
             console.error("Erro de validação de arquivo:", validation.errors);
@@ -192,10 +188,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       const validation = await this.myTelasService.validateAttachmentFile(file);
       if (!validation.isValid) {
         validation.errors.forEach((error) => this.toastService.erro(error));
-        if (
-          this.singleReplaceInput &&
-          this.singleReplaceInput.nativeElement
-        ) {
+        if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
           this.singleReplaceInput.nativeElement.value = "";
         }
         return;
@@ -206,8 +199,11 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         return;
       }
 
-      await this.myTelasService.replaceAttachment(this.attachmentToReplaceId, file);
-      
+      await this.myTelasService.replaceAttachment(
+        this.attachmentToReplaceId,
+        file
+      );
+
       if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
         this.singleReplaceInput.nativeElement.value = "";
       }
@@ -289,9 +285,13 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   async submitAdRequest(): Promise<void> {
     if (this.requestAdForm.valid) {
       const request = {
-        attachmentIds: this.selectedClientAttachments.length > 0 ? this.selectedClientAttachments : undefined,
+        attachmentIds:
+          this.selectedClientAttachments.length > 0
+            ? this.selectedClientAttachments
+            : undefined,
         slogan: this.requestAdForm.get("slogan")?.value || undefined,
-        brandGuidelineUrl: this.requestAdForm.get("brandGuidelineUrl")?.value || undefined,
+        brandGuidelineUrl:
+          this.requestAdForm.get("brandGuidelineUrl")?.value || undefined,
       };
 
       try {
@@ -414,7 +414,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       }
 
       try {
-        const validationResult = await ImageValidationUtil.validateImageFile(file);
+        const validationResult =
+          await ImageValidationUtil.validateImageFile(file);
         if (!validationResult.isValid) {
           validationResult.errors.forEach((error) => {
             this.toastService.erro(error);
@@ -526,5 +527,14 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   navigateToAdsTab(): void {
     this.myTelasService.setActiveTab(1);
+  }
+
+  isPdfLink(link?: string | null): boolean {
+    if (!link) return false;
+    try {
+      return /\.pdf(\?|$)/i.test(link);
+    } catch (err) {
+      return false;
+    }
   }
 }
