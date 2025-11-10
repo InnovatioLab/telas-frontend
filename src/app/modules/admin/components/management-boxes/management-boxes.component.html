@@ -127,23 +127,20 @@
     </div>
 
     <div class="form-group">
-      <label for="monitors">Select Monitors</label>
-      <p-multiSelect
+      <label for="monitors" class="required">Select Monitor</label>
+      <p-select
         id="monitors"
         [options]="availableMonitors"
-        [(ngModel)]="selectedMonitorGroupsCreate"
+        [(ngModel)]="selectedMonitorIdCreate"
         [ngModelOptions]="{ standalone: true }"
         optionLabel="fullAddress"
-        optionValue="monitorIds"
-        placeholder="Select monitors"
+        optionValue="id"
+        placeholder="Select a monitor"
         class="w-full"
         [loading]="loadingMonitors"
         [disabled]="loadingMonitors"
         [overlayOptions]="{ appendTo: 'body' }"
         [filter]="true"
-        [virtualScroll]="true"
-        [maxSelectedLabels]="2"
-        [displaySelectedLabel]="true"
         filterPlaceHolder="Type address to search..."
         emptyFilterMessage="No monitors found."
         emptyMessage="No monitors found."
@@ -151,23 +148,7 @@
         filterBy="fullAddress"
         [autofocusFilter]="true"
       >
-        <ng-template let-option pTemplate="item">
-          <div
-            class="flex justify-content-start align-items-center w-full sm:gap-1 gap-2"
-          >
-            <div class="flex align-items-center sm:gap-1 gap-2">
-              <span
-                class="text-xs md:text-sm lg:text-sm font-bold primary-dark-color"
-                >{{ option.monitorIds?.length || 0 }}</span
-              >
-              <app-icon-tv-display class="monitor-icon"></app-icon-tv-display>
-            </div>
-            <span class="text-xs md:text-sm lg:text-sm">{{
-              option.fullAddress
-            }}</span>
-          </div>
-        </ng-template>
-      </p-multiSelect>
+      </p-select>
 
       <small class="help-text" *ngIf="loadingMonitors"
         >Loading monitors...</small
@@ -244,24 +225,21 @@
     </div>
 
     <div class="form-group">
-      <label for="editMonitors">Select Monitors</label>
-      <p-multiSelect
+      <label for="editMonitors" class="required">Select Monitor</label>
+      <p-select
         id="editMonitors"
         [options]="availableMonitors"
-        [(ngModel)]="selectedMonitorGroupsEdit"
+        [(ngModel)]="selectedMonitorIdEdit"
         [ngModelOptions]="{ standalone: true }"
         optionLabel="fullAddress"
-        optionValue="monitorIds"
-        placeholder="Select monitors"
+        optionValue="id"
+        placeholder="Select a monitor"
         class="w-full"
         [loading]="loadingMonitors"
         [disabled]="loadingMonitors"
         [overlayOptions]="{ appendTo: 'body' }"
         appendTo="body"
         [filter]="true"
-        [virtualScroll]="true"
-        [maxSelectedLabels]="2"
-        [displaySelectedLabel]="true"
         filterPlaceHolder="Type address to search..."
         emptyFilterMessage="No monitors found."
         emptyMessage="No monitors found."
@@ -269,23 +247,7 @@
         filterBy="fullAddress"
         [autofocusFilter]="true"
       >
-        <ng-template let-option pTemplate="item">
-          <div
-            class="flex justify-content-start align-items-center w-full sm:gap-1 gap-2"
-          >
-            <div class="flex align-items-center sm:gap-1 gap-2">
-              <span
-                class="text-xs md:text-sm lg:text-sm font-bold primary-dark-color"
-                >{{ option.monitorIds?.length || 0 }}</span
-              >
-              <app-icon-tv-display class="monitor-icon"></app-icon-tv-display>
-            </div>
-            <span class="text-xs md:text-sm lg:text-sm">{{
-              option.fullAddress
-            }}</span>
-          </div>
-        </ng-template>
-      </p-multiSelect>
+      </p-select>
       <small class="help-text" *ngIf="loadingMonitors"
         >Loading monitors...</small
       >

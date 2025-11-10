@@ -17,5 +17,4 @@ export interface CartItemResponseDto {
   photoUrl?: string;
   addressLocationName?: string;
   addressLocationDescription?: string;
-  locationDescription?: string;
 }

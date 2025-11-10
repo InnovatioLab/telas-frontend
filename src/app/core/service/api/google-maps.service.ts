@@ -544,7 +544,6 @@ export class GoogleMapsService {
               title: `Monitor ${i + 1}`,
               addressLocationName: `Monitor located at the specified address`,
               addressLocationDescription: `Address: ${adjustedCoords.latitude.toFixed(6)}, ${adjustedCoords.longitude.toFixed(6)}`,
-              locationDescription: `Location: ${adjustedCoords.latitude.toFixed(6)}, ${adjustedCoords.longitude.toFixed(6)}`,
               category: "MONITOR",
               data: {
                 id: `id-${i}`,
@@ -555,7 +554,6 @@ export class GoogleMapsService {
                 longitude: adjustedCoords.longitude,
                 addressLocationName: `Monitor ${i + 1}`,
                 addressLocationDescription: `Address: ${adjustedCoords.latitude.toFixed(2)}, ${adjustedCoords.longitude.toFixed(2)}`,
-                locationDescription: `Location: ${adjustedCoords.latitude.toFixed(2)}, ${adjustedCoords.longitude.toFixed(2)}`,
                 photoUrl: `https://example.com/photos/monitor-${i}.jpg`,
               },
             });

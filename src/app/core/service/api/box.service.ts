@@ -1,4 +1,6 @@
-import { Injectable, Inject } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
+import { IBoxRepository } from "@app/core/interfaces/services/repository/box-repository.interface";
+import { BOX_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { Box } from "@app/model/box";
 import { BoxAddress } from "@app/model/box-address";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
@@ -7,8 +9,6 @@ import { MonitorsBoxMinResponseDto } from "@app/model/dto/response/monitor-box-m
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { Monitor } from "@app/model/monitors";
 import { Observable } from "rxjs";
-import { IBoxRepository } from "@app/core/interfaces/services/repository/box-repository.interface";
-import { BOX_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 
 @Injectable({
   providedIn: "root",

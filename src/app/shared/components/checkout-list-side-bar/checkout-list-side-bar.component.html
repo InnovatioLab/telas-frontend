@@ -52,12 +52,6 @@
               <h4 class="item-title">
                 {{ item.addressLocationName || "Screen Title Not Available" }}
               </h4>
-              <div
-                class="location-description"
-                *ngIf="item.locationDescription"
-              >
-                <small>{{ item.locationDescription }}</small>
-              </div>
               <div class="item-address">
                 <small>Address: {{ item.monitorAddress }}</small>
               </div>
@@ -107,7 +101,7 @@
       <div *ngIf="cart && cart.items.length > 0" class="container-footer">
         <div class="recurrence-label">
           <label for="recurrence" class="block text-sm font-medium"
-            >Recurrence:</label
+            >Campaign Length:</label
           >
         </div>
 
@@ -189,10 +183,6 @@
           </p>
         </div>
         <p><strong>Address:</strong> {{ selectedMonitor.fullAddress }}</p>
-        <p *ngIf="selectedMonitor.locationDescription != null">
-          <strong>Location Description:</strong>
-          {{ selectedMonitor.locationDescription }}
-        </p>
         <p>
           <strong>Status:</strong>
           {{ selectedMonitor.active ? "Active" : "Inactive" }}

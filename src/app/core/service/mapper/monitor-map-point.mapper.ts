@@ -13,13 +13,12 @@ export class MonitorMapPointMapper {
   private convertSingleMonitor(monitor: MonitorMapsResponseDto): MapPoint {
     return {
       id: monitor.id,
-      title: `Monitor ${monitor.monitorLocationDescription || ''}`,
+      title: `Monitor ${monitor.id || ''}`,
       latitude: monitor.latitude,
       longitude: monitor.longitude,
       category: 'MONITOR',
       addressLocationName: monitor.addressLocationName,
       addressLocationDescription: monitor.addressLocationDescription,
-      locationDescription: monitor.monitorLocationDescription,
       data: monitor,
     };
   }

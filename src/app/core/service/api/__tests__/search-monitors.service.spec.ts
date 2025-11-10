@@ -9,16 +9,14 @@ jest.mock('src/environments/environment', () => ({
   }
 }));
 
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { SearchMonitorsService, MonitorMapsResponseDto, ApiResponseDto } from '../search-monitors.service';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
-import { ENVIRONMENT } from 'src/environments/environment-token';
-import { Environment } from 'src/environments/environment.interface';
+import { TestBed } from '@angular/core/testing';
 import { MonitorMapPointMapper } from '@app/core/service/mapper/monitor-map-point.mapper';
 import { ZipCodeExtractor } from '@app/core/service/utils/zipcode-extractor.util';
-import { of, throwError } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ENVIRONMENT } from 'src/environments/environment-token';
+import { Environment } from 'src/environments/environment.interface';
+import { ApiResponseDto, MonitorMapsResponseDto, SearchMonitorsService } from '../search-monitors.service';
 
 describe('SearchMonitorsService', () => {
   let service: SearchMonitorsService;
@@ -34,7 +32,6 @@ describe('SearchMonitorsService', () => {
     adsDailyDisplayTimeInMinutes: 120,
     addressLocationName: 'Test Address',
     addressLocationDescription: 'Test Description',
-    monitorLocationDescription: 'Test Monitor',
     photoUrl: 'http://example.com/photo.jpg'
   };
 
