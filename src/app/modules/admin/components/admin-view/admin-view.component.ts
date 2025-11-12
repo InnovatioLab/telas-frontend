@@ -263,7 +263,6 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         })
         .catch((error) => {
-          console.error("Error geocoding ZIP code:", error);
         });
     }
   }

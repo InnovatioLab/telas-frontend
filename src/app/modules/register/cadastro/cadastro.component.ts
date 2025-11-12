@@ -236,7 +236,6 @@ export class CadastroComponent implements OnInit {
         },
       });
     } else {
-      console.error("Form is invalid, invalid fields:", form.errors);
       this.markFormGroupTouched(form);
     }
   }

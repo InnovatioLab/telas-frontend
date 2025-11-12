@@ -218,7 +218,6 @@ export class EditClientModalComponent implements OnInit {
           }
         },
         error: (error) => {
-          console.error("Error fetching ZIP code data:", error);
         },
       });
     }
@@ -262,7 +261,6 @@ export class EditClientModalComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          console.error("Error updating client:", error);
           this.toastService.erro("Failed to update client");
           this.loading = false;
         },

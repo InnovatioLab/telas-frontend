@@ -62,7 +62,6 @@ export class NotificationsService {
         }),
         map((): void => void 0),
         catchError((error) => {
-          console.error("Erro ao buscar notificações:", error);
           this._allNotifications.set([]);
           return of(void 0);
         })

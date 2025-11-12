@@ -112,7 +112,6 @@ export class AutenticacaoService {
         );
       }),
       catchError((error: any) => {
-        console.error("Login process failed:", error.message || error);
         AuthenticationStorage.clearToken();
         this._loggedClientSignal.set(null);
         const friendlyError = new Error(

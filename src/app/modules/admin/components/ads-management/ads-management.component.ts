@@ -83,7 +83,7 @@ export class AdsManagementComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error("Error loading pending ads:", error);
+        
         this.toastService.erro("Failed to load pending ads");
         this.loading = false;
       },
@@ -153,7 +153,7 @@ export class AdsManagementComponent implements OnInit {
           this.loadingValidation = false;
         },
         error: (error) => {
-          console.error("Error validating ad:", error);
+          
           this.toastService.erro("Failed to validate ad");
           this.loadingValidation = false;
         },

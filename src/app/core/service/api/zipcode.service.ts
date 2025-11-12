@@ -56,8 +56,6 @@ export class ZipCodeService {
           );
       }),
       catchError((error) => {
-        console.warn("Local API failed, trying Google Maps:", error);
-        // Se a API local falhou, tenta Google Maps como fallback
         return this.geocodingService.geocodeZipCode(zipCode).pipe(
           map((geocodingResult) =>
             geocodingResult

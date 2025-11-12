@@ -148,7 +148,6 @@ export class AuthService implements IAuthService {
         this.isLoadingSubject.next(false);
         this.clearToken();
         this._loggedClientSignal.set(null);
-        console.error('Login process failed:', error.message || error);
         const friendlyError = new Error('Invalid credentials. Please try again.');
         return throwError(() => friendlyError);
       })
@@ -251,9 +250,6 @@ export class AuthService implements IAuthService {
     }
 
     const client = await firstValueFrom(this.clientService.buscarClient<Client>(clientId));
-    if (!client.role) {
-      console.error('Role do cliente não encontrada no retorno da API.');
-    }
     
     this._clientSignal.update((data) => ({ ...data, ...client }));
     AuthenticationStorage.setDataUser(JSON.stringify(this._clientSignal()));
@@ -283,14 +279,12 @@ export class AuthService implements IAuthService {
         this.clientService.setClientAtual(client);
       }
     } catch (e) {
-      console.warn('Falha ao sincronizar client atual com ClientService:', e);
     }
     
     try {
       this.isAuthenticatedSubject.next(true);
       this.authStateSubject.next();
     } catch (e) {
-      console.warn('Falha ao emitir estado de login em updateClientData:', e);
     }
   }
 

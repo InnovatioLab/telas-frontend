@@ -119,9 +119,6 @@ export class Authentication extends AuthenticationStorage {
     const login$ = this.clientService.buscarClient<Client>(this.clientId);
 
     const client = await firstValueFrom(login$) as Client;
-    if (!client.role) {
-      console.error("Role do cliente não encontrada no retorno da API.");
-    }
     const currentData = this._clientSignal() || {};
     const mergedClient = Object.assign({}, currentData, client);
     this._clientSignal.set(mergedClient as Client);
@@ -202,7 +199,6 @@ export class Authentication extends AuthenticationStorage {
       try {
         (clientService as any).setClientAtual(client);
       } catch (e) {
-        console.warn("Falha ao sincronizar client atual com ClientService:", e);
       }
     }
     
@@ -210,7 +206,6 @@ export class Authentication extends AuthenticationStorage {
       this.loggedInSubject.next(true);
       this.authStateSubject.next();
     } catch (e) {
-      console.warn("Falha ao emitir estado de login em updateClientData:", e);
     }
   }
 }

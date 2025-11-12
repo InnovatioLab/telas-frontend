@@ -1,8 +1,9 @@
 import { registerLocaleData } from "@angular/common";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import enUS from "@angular/common/locales/en";
-import { LOCALE_ID, importProvidersFrom } from "@angular/core";
+import { LOCALE_ID, importProvidersFrom, ErrorHandler } from "@angular/core";
 import { bootstrapApplication } from "@angular/platform-browser";
+import { GlobalErrorHandler } from "@app/core/error/global-error-handler";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { provideRouter, withInMemoryScrolling } from "@angular/router";
 import { appRoutes } from "@app/app-routes.routes";
@@ -31,6 +32,7 @@ import { ENVIRONMENT } from "./environments/environment-token";
 registerLocaleData(enUS);
 bootstrapApplication(AppComponent, {
   providers: [
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: ENVIRONMENT, useValue: environment },
     { provide: CLIENT_REPOSITORY_TOKEN, useClass: ClientRepositoryImpl },
     { provide: CLIENT_MANAGEMENT_REPOSITORY_TOKEN, useClass: ClientManagementRepositoryImpl },

@@ -21,6 +21,7 @@ import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconClockComponent } from "@app/shared/icons/clock.icon";
 import { IconCloseComponent } from "@app/shared/icons/close.icon";
 import { IconsModule } from "@app/shared/icons/icons.module";
+import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
 import { IconWarningComponent } from "@app/shared/icons/warning.icon";
 import { Subscription } from "rxjs";
 import { ENVIRONMENT } from "src/environments/environment-token";
@@ -34,6 +35,7 @@ import { PrimengModule } from "../../primeng/primeng.module";
     CommonModule,
     PrimengModule,
     IconsModule,
+    IconTvDisplayComponent,
     IconBoltComponent,
     IconCheckComponent,
     IconCloseComponent,
@@ -51,6 +53,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
   localInfo: {
     name?: string;
+    description?: string;
     formattedAddress?: string;
   } | null = null;
   loadingLocationInfo = false;
@@ -157,7 +160,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.toastService.erro("Error adding to cart");
-        console.error("Error adding to cart:", error);
       },
     });
   }
@@ -193,7 +195,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.toastService.erro("Error updating cart");
-          console.error("Error updating cart:", error);
         },
       });
     }
@@ -208,7 +209,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.toastService.erro("Error adding to wishlist");
-          console.error("Error adding to wishlist:", error);
         },
       });
     }

@@ -97,7 +97,6 @@ export class TermsOfServiceComponent implements OnInit {
 
   private handleError(message: string, error: any): void {
     this.error = true;
-    console.error(message, error);
     this.toastService.erro(message);
   }
 

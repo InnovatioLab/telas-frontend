@@ -68,7 +68,6 @@ export class ClientViewService {
         this.mapsService.updateNearestMonitors([zipCodePoint]);
       }
     }).catch((error) => {
-      console.error('Error geocoding ZIP code:', error);
     });
   }
 
