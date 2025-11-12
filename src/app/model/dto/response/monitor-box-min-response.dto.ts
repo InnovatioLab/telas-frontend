@@ -1,5 +1,5 @@
 export interface MonitorsBoxMinResponseDto {
-  monitorIds: string[];
+  id: string;
   hasBox: boolean;
   fullAddress: string;
 }

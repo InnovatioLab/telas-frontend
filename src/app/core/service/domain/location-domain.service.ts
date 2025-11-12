@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AddressData } from '@app/model/dto/request/address-data-request';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
+import { AddressData } from '@app/model/dto/request/address-data-request';
 
 @Injectable({ providedIn: 'root' })
 export class LocationDomainService {

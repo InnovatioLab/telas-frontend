@@ -1,4 +1,7 @@
-<p-tabView (onChange)="onTabChange($event)" [activeIndex]="myTelasService.activeTabIndex()">
+<p-tabView
+  (onChange)="onTabChange($event)"
+  [activeIndex]="myTelasService.activeTabIndex()"
+>
   <!-- Tab 1: Attachments -->
   <p-tabPanel header="Attachments">
     <div class="attachments-content">
@@ -32,8 +35,8 @@
 
         <div class="upload-info">
           <small
-            >Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF - Maximum size:
-            10MB - Maximum: 3 files per upload.</small
+            >Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF, PDF - Maximum
+            size: 10MB - Maximum: 3 files per upload.</small
           >
         </div>
       </div>
@@ -41,164 +44,237 @@
       @if (myTelasService.clientAttachments().length > 0) {
         <div class="attachments-list">
           <h4>
-            Your Attachments ({{ myTelasService.clientAttachments().length }}/{{ maxAttachments }})
+            Your Attachments ({{ myTelasService.clientAttachments().length }}/{{
+              maxAttachments
+            }})
           </h4>
           <div class="attachments-grid">
-            @for (attachment of myTelasService.clientAttachments(); track attachment.attachmentId) {
+            @for (
+              attachment of myTelasService.clientAttachments();
+              track attachment.attachmentId
+            ) {
               <div
                 class="attachment-card"
                 [class.selected]="
                   isClientAttachmentSelected(attachment.attachmentId)
                 "
               >
-            <div class="attachment-selection">
-              <p-checkbox
-                [binary]="true"
-                [(ngModel)]="attachmentCheckboxStates[attachment.attachmentId]"
-                (onChange)="
-                  onAttachmentCheckboxChange(attachment.attachmentId, $event)
-                "
-              >
-              </p-checkbox>
-            </div>
-            <div class="attachment-preview">
-              <img
-                [src]="attachment.attachmentLink"
-                [alt]="attachment.attachmentName"
-                class="attachment-image"
-                (error)="onImageError($event)"
-              />
-                @if (!attachment.attachmentLink) {
-                  <div class="attachment-fallback">
-                    <span
-                      class="pi pi-file-image"
-                      style="color: var(--cor-primaria)"
-                    ></span>
-                  </div>
-                }
-            </div>
-            <div class="attachment-actions">
-              <p-button
-                icon="pi pi-eye"
-                (onClick)="viewAttachment(attachment.attachmentLink)"
-                [disabled]="myTelasService.isLoading()"
-                severity="info"
-                [text]="true"
-                pTooltip="View"
-              >
-              </p-button>
-              <p-button
-                icon="pi pi-download"
-                (onClick)="downloadAttachment(attachment.attachmentLink)"
-                [disabled]="myTelasService.isLoading()"
-                severity="info"
-                [text]="true"
-                pTooltip="Download"
-              >
-              </p-button>
-              <p-button
-                icon="pi pi-refresh"
-                (onClick)="onUpdateAttachmentClick(attachment.attachmentId)"
-                [disabled]="myTelasService.isLoading()"
-                severity="info"
-                [text]="true"
-                pTooltip="Replace"
-              >
-                <input
-                  type="file"
-                  #singleReplaceInput
-                  style="display: none"
-                  (change)="onUpdateAttachmentFile($event)"
-                  [accept]="acceptedFileTypes"
-                />
-              </p-button>
-            </div>
-          </div>
+                <div class="attachment-selection">
+                  <p-checkbox
+                    [binary]="true"
+                    [(ngModel)]="
+                      attachmentCheckboxStates[attachment.attachmentId]
+                    "
+                    (onChange)="
+                      onAttachmentCheckboxChange(
+                        attachment.attachmentId,
+                        $event
+                      )
+                    "
+                  >
+                  </p-checkbox>
+                </div>
+                <div class="attachment-preview">
+                  @if (isPdfLink(attachment.attachmentLink)) {
+                    <!-- <pdf-viewer
+                      [src]="attachment.attachmentLink"
+                      class="attachment-pdf-viewer"
+                      style="height: 160px; width: 100%"
+                    ></pdf-viewer> -->
+                  }
+
+                  @if (!isPdfLink(attachment.attachmentLink)) {
+                    <img
+                      [src]="attachment.attachmentLink"
+                      [alt]="attachment.attachmentName"
+                      class="attachment-image"
+                      (error)="onImageError($event)"
+                    />
+
+                    @if (!attachment.attachmentLink) {
+                      <div class="attachment-fallback">
+                        <span
+                          class="pi pi-file-image"
+                          style="color: var(--cor-primaria)"
+                        ></span>
+                      </div>
+                    }
+                  }
+                </div>
+                <div class="attachment-actions">
+                  <p-button
+                    icon="pi pi-eye"
+                    (onClick)="viewAttachment(attachment.attachmentLink)"
+                    [disabled]="myTelasService.isLoading()"
+                    severity="info"
+                    [text]="true"
+                    pTooltip="View"
+                  >
+                  </p-button>
+                  <p-button
+                    icon="pi pi-download"
+                    (onClick)="downloadAttachment(attachment.attachmentLink)"
+                    [disabled]="myTelasService.isLoading()"
+                    severity="info"
+                    [text]="true"
+                    pTooltip="Download"
+                  >
+                  </p-button>
+                  <p-button
+                    icon="pi pi-refresh"
+                    (onClick)="onUpdateAttachmentClick(attachment.attachmentId)"
+                    [disabled]="myTelasService.isLoading()"
+                    severity="info"
+                    [text]="true"
+                    pTooltip="Replace"
+                  >
+                    <input
+                      type="file"
+                      #singleReplaceInput
+                      style="display: none"
+                      (change)="onUpdateAttachmentFile($event)"
+                      [accept]="acceptedFileTypes"
+                    />
+                  </p-button>
+                </div>
+              </div>
             }
           </div>
         </div>
       }
 
-      @if (myTelasService.authenticatedClient() && myTelasService.clientAttachments().length === 0) {
+      @if (
+        myTelasService.authenticatedClient() &&
+        myTelasService.clientAttachments().length === 0
+      ) {
         <div class="no-attachments">
-        <p>
-          <span
-            class="pi pi-info-circle"
-            style="color: var(--cor-primaria)"
-          ></span>
-          You don't have any attachments yet. Upload some files to get started.
-        </p>
-        </div>
-      }
-
-      @if (shouldShowCreateAdRequestMessage()) {
-        <div class="py-0 px-2 mt-3">
-        <div class="rejection-info flex gap-3">
-          <span
-            class="pi pi-exclamation-triangle"
-            style="color: #ff9800"
-          ></span>
-          <div class="message-content">
-            <h4>Ad Rejected</h4>
-            <p class="mb-0">
-              Your ad has been rejected by the admin. You must create an
-              AdRequest so that the admin can create a new ad for you to
-              validate.
-            </p>
-          </div>
-        </div>
-        </div>
-      }
-
-      @if (myTelasService.isClientDataLoaded() && canCreateAdRequest()) {
-        <div class="request-ad-section">
-          @if (selectedClientAttachments.length > 0) {
-            <div class="selection-info">
-          <p>
-            <span
-              class="pi pi-check-circle"
-              style="color: var(--cor-primaria)"
-            ></span>
-              {{ selectedClientAttachments.length }} attachment(s) selected
-            </p>
-            </div>
-          }
-          @if (selectedClientAttachments.length === 0) {
-            <div class="selection-info">
           <p>
             <span
               class="pi pi-info-circle"
               style="color: var(--cor-primaria)"
             ></span>
-            Attachments are optional when creating an AdRequest. You may submit
-              your AdRequest with or without attachments, as you prefer.
-            </p>
-          </div>
-          }
-          <div class="request-ad-section">
-            <button
-              pButton
-              label="Request Ad"
-              icon="pi pi-send"
-              (click)="openRequestAdDialog()"
-              [disabled]="myTelasService.isLoading()"
-            ></button>
+            You don't have any attachments yet. Upload some files to get
+            started.
+          </p>
+        </div>
+      }
+
+      @if (shouldShowCreateAdRequestMessage()) {
+        <div class="py-0 px-2 mt-3">
+          <div class="rejection-info flex gap-3">
+            <span
+              class="pi pi-exclamation-triangle"
+              style="color: #ff9800"
+            ></span>
+            <div class="message-content">
+              <h4>Ad Rejected</h4>
+              <p class="mb-0">
+                Your ad has been rejected by the admin. You must create an
+                AdRequest so that the admin can create a new ad for you to
+                validate.
+              </p>
+            </div>
           </div>
         </div>
       }
 
-      @if (myTelasService.hasActiveAdRequest() && myTelasService.clientAttachments().length > 0) {
-        <div class="ad-request-active-section">
-        <div class="active-request-info flex gap-3">
-          <span class="pi pi-check-circle"></span>
-          <div class="message-content">
-            <h4>Ad Request Already Submitted</h4>
-            <p>
-              You have already created an ad request. Please wait for the admin
-              to create your ad so you can validate it.
-            </p>
+      @if (myTelasService.isClientDataLoaded() && canCreateAdRequest()) {
+        <div class="request-ad-section">
+          <div class="w-full m-auto">
+            <h5 class="mb-5">
+              Combine file upload and slogan field in one view.
+            </h5>
           </div>
+
+          @if (selectedClientAttachments.length > 0) {
+            <div class="selection-info">
+              <p>
+                <span
+                  class="pi pi-check-circle"
+                  style="color: var(--cor-primaria)"
+                ></span>
+                {{ selectedClientAttachments.length }} attachment(s) selected
+              </p>
+            </div>
+          }
+
+          <form [formGroup]="requestAdForm" class="flex flex-column gap-5">
+            <div class="grid form-group">
+              <div class="col-12 md:col-6 lg:col-6">
+                <label for="slogan" htmlFor="slogan" class="text-left"
+                  >Slogan</label
+                >
+                <input
+                  id="slogan"
+                  type="text"
+                  pInputText
+                  formControlName="slogan"
+                  placeholder="Enter your slogan (max 50 characters)"
+                  [maxlength]="50"
+                  id="inp-slogan"
+                />
+                @if (mostrarErro(requestAdForm, "slogan")) {
+                  <app-error
+                    id="error-msg-slogan"
+                    [control]="requestAdForm.get('slogan')"
+                  ></app-error>
+                }
+              </div>
+              <div class="col-12 md:col-6 lg:col-6">
+                <label
+                  for="brandGuidelineUrl"
+                  htmlFor="brandGuidelineUrl"
+                  class="text-left"
+                  >Brand Guideline URL</label
+                >
+                <input
+                  id="brandGuidelineUrl"
+                  type="url"
+                  pInputText
+                  formControlName="brandGuidelineUrl"
+                  placeholder="https://example.com/guidelines"
+                  [maxlength]="255"
+                  id="inp-brandGuidelineUrl"
+                />
+                @if (mostrarErro(requestAdForm, "brandGuidelineUrl")) {
+                  <app-error
+                    id="error-msg-brandGuidelineUrl"
+                    [control]="requestAdForm.get('brandGuidelineUrl')"
+                  ></app-error>
+                }
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button
+                pButton
+                label="Submit"
+                icon="pi pi-send"
+                (click)="submitAdRequest()"
+                [disabled]="requestAdForm.invalid || myTelasService.isLoading()"
+                [loading]="myTelasService.isLoading()"
+                class="p-button-primary"
+              ></button>
+            </div>
+          </form>
         </div>
+      }
+
+      @if (
+        myTelasService.hasActiveAdRequest() &&
+        myTelasService.clientAttachments().length > 0
+      ) {
+        <div class="ad-request-active-section">
+          <div class="active-request-info flex gap-3">
+            <span class="pi pi-check-circle"></span>
+            <div class="message-content">
+              <h4>Ad Request Already Submitted</h4>
+              <p>
+                You have already created an ad request. Please wait for the
+                admin to create your ad so you can validate it.
+              </p>
+            </div>
+          </div>
         </div>
       }
     </div>
@@ -208,148 +284,49 @@
   <p-tabPanel header="Ads">
     @if (shouldDisplayMaxValidationsTry()) {
       <div class="ads-info">
-      <p class="validation-info">
-        <span
-          class="pi pi-info-circle"
-          style="color: var(--cor-primaria)"
-        ></span>
-        You can validate each ad a maximum of 3 times. Rejected ads can be
-        edited by the admin and will return to pending status.
-      </p>
+        <p class="validation-info">
+          <span
+            class="pi pi-info-circle"
+            style="color: var(--cor-primaria)"
+          ></span>
+          You can validate each ad a maximum of 3 times. Rejected ads can be
+          edited by the admin and will return to pending status.
+        </p>
       </div>
     }
     <div class="ads-content w-full">
       @if (myTelasService.ads().length > 0) {
         <div class="ads-list w-full">
-        @for (ad of myTelasService.ads(); track ad.id) {
-          <app-ad-item
-            [ad]="ad"
-            [loading]="myTelasService.isLoading()"
-            (view)="viewAttachment($event)"
-            (download)="downloadAttachment($event)"
-            (validate)="openValidateAdDialog($event)"
-          />
-        }
+          @for (ad of myTelasService.ads(); track ad.id) {
+            <app-ad-item
+              [ad]="ad"
+              [loading]="myTelasService.isLoading()"
+              (view)="viewAttachment($event)"
+              (download)="downloadAttachment($event)"
+              (validate)="openValidateAdDialog($event)"
+            />
+          }
         </div>
       }
 
       @if (myTelasService.ads().length === 0) {
         <div class="no-ads-message flex flex-column align-items-center">
-        <div class="empty-state flex flex-column align-items-center gap-3">
-          <span class="pi pi-image" style="font-size: 48px; color: #ccc"></span>
-          <h4>No Ads Found</h4>
-          <p>
-            You don't have any ads to validate yet. Ads will appear here when
-            they are available for validation.
-          </p>
-        </div>
+          <div class="empty-state flex flex-column align-items-center gap-3">
+            <span
+              class="pi pi-image"
+              style="font-size: 48px; color: #ccc"
+            ></span>
+            <h4>No Ads Found</h4>
+            <p>
+              You don't have any ads to validate yet. Ads will appear here when
+              they are available for validation.
+            </p>
+          </div>
         </div>
       }
     </div>
   </p-tabPanel>
 </p-tabView>
-
-<!-- Dialog para Request Ad -->
-<p-dialog
-  header="Request Ad"
-  [(visible)]="showRequestAdDialog"
-  [modal]="true"
-  [style]="{ width: '500px' }"
-  [draggable]="false"
-  [resizable]="false"
->
-  <div class="dialog-content flex flex-column gap-3 justify-content-center">
-    @if (selectedClientAttachments.length > 0) {
-      <div class="selected-attachments-info">
-        <h4>Selected Attachments:</h4>
-        <p>
-          {{ selectedClientAttachments.length }} attachment(s) will be used for
-          the ad request.
-        </p>
-      </div>
-    }
-
-    @if (selectedClientAttachments.length === 0) {
-      <div class="no-attachments-info">
-        <h4>No Attachments Selected</h4>
-      </div>
-    }
-
-    <form [formGroup]="requestAdForm" class="request-form">
-      <div class="form-field">
-        <label for="message" class="required">Message</label>
-        <textarea
-          pTextarea
-          rows="8"
-          id="message"
-          formControlName="message"
-          placeholder="Type your message..."
-        ></textarea>
-        @if (mostrarErro(requestAdForm, 'message')) {
-          <app-error
-            id="error-msg-message"
-            [control]="requestAdForm.get('message')"
-          ></app-error>
-        }
-      </div>
-
-      <div class="form-field">
-        <label id="ld-numero" for="phone">Phone</label>
-        <p-inputMask
-          mask="+1 999 999 9999"
-          [unmask]="true"
-          formControlName="phone"
-          placeholder="+1 508 215 8681"
-          class="w-full"
-          id="inp-numero"
-        />
-        @if (mostrarErro(requestAdForm, 'phone')) {
-          <app-error
-            id="error-msg-phone"
-            [control]="requestAdForm.get('phone')"
-          ></app-error>
-        }
-      </div>
-
-      <div class="form-field">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          pInputText
-          formControlName="email"
-          placeholder="emailexample@mail.com"
-        />
-        @if (mostrarErro(requestAdForm, 'email')) {
-          <app-error
-            id="error-msg-email"
-            [control]="requestAdForm.get('email')"
-          ></app-error>
-        }
-      </div>
-    </form>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="w-full flex justify-content-between align-items-center">
-      <button
-        pButton
-        label="Cancel"
-        id="btnSecundario"
-        (click)="closeRequestAdDialog()"
-        class="p-button-secondary"
-      ></button>
-      <button
-        pButton
-        label="Send Ad Request"
-        (click)="submitAdRequest()"
-        [disabled]="requestAdForm.invalid || myTelasService.isLoading()"
-            [loading]="myTelasService.isLoading()"
-        class="p-button-primary"
-      ></button>
-    </div>
-  </ng-template>
-</p-dialog>
 
 <!-- Dialog para Validar Ad -->
 <p-dialog
@@ -361,15 +338,18 @@
   [resizable]="false"
 >
   <div class="dialog-content validation-container">
-    @if (validateAdForm.get('validation')?.value === 'REJECTED' && selectedAdForValidation.refusedCount === 2) {
+    @if (
+      validateAdForm.get("validation")?.value === "REJECTED" &&
+      selectedAdForValidation.refusedCount === 2
+    ) {
       <div class="w-full flex gap-2 justify-content-center align-items-center">
-      <span
-        class="pi pi-info-circle mb-1"
-        style="color: var(--cor-erro)"
-      ></span>
-      <p class="mb-0 danger font-semibold text-center">
-        Be careful, this is the last chance to refuse the ad.
-      </p>
+        <span
+          class="pi pi-info-circle mb-1"
+          style="color: var(--cor-erro)"
+        ></span>
+        <p class="mb-0 danger font-semibold text-center">
+          Be careful, this is the last chance to refuse the ad.
+        </p>
       </div>
     }
     <form [formGroup]="validateAdForm" class="validate-form">
@@ -386,7 +366,7 @@
           appendTo="body"
         >
         </p-select>
-        @if (mostrarErro(validateAdForm, 'validation')) {
+        @if (mostrarErro(validateAdForm, "validation")) {
           <app-error
             id="error-msg-validation"
             [control]="validateAdForm.get('validation')"
@@ -394,42 +374,42 @@
         }
       </div>
 
-      @if (validateAdForm.get('validation')?.value === 'REJECTED') {
+      @if (validateAdForm.get("validation")?.value === "REJECTED") {
         <div class="form-field">
-        <label for="justification" class="required">Justification</label>
-        <input
-          id="justification"
-          type="text"
-          pInputText
-          formControlName="justification"
-          placeholder="Type your justification"
-        />
-        @if (mostrarErro(validateAdForm, 'justification')) {
-          <app-error
-            id="error-msg-justification"
-            [control]="validateAdForm.get('justification')"
-          ></app-error>
-        }
+          <label for="justification" class="required">Justification</label>
+          <input
+            id="justification"
+            type="text"
+            pInputText
+            formControlName="justification"
+            placeholder="Type your justification"
+          />
+          @if (mostrarErro(validateAdForm, "justification")) {
+            <app-error
+              id="error-msg-justification"
+              [control]="validateAdForm.get('justification')"
+            ></app-error>
+          }
         </div>
       }
 
-      @if (validateAdForm.get('validation')?.value === 'REJECTED') {
+      @if (validateAdForm.get("validation")?.value === "REJECTED") {
         <div class="form-field">
-        <label for="description">Description</label>
-        <textarea
-          id="description"
-          pInputTextarea
-          formControlName="description"
-          placeholder="Type an optional description"
-          rows="3"
-        >
-        </textarea>
-        @if (mostrarErro(validateAdForm, 'description')) {
-          <app-error
-            id="error-msg-description"
-            [control]="validateAdForm.get('description')"
-          ></app-error>
-        }
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            pInputTextarea
+            formControlName="description"
+            placeholder="Type an optional description"
+            rows="3"
+          >
+          </textarea>
+          @if (mostrarErro(validateAdForm, "description")) {
+            <app-error
+              id="error-msg-description"
+              [control]="validateAdForm.get('description')"
+            ></app-error>
+          }
         </div>
       }
     </form>
@@ -449,7 +429,7 @@
         label="Validate Ad"
         (click)="submitAdValidation()"
         [disabled]="validateAdForm.invalid || myTelasService.isLoading()"
-            [loading]="myTelasService.isLoading()"
+        [loading]="myTelasService.isLoading()"
       ></button>
     </div>
   </ng-template>

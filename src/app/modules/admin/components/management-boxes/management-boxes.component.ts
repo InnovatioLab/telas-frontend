@@ -8,7 +8,6 @@ import { Box } from "@app/model/box";
 import { BoxAddress } from "@app/model/box-address";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
-import { MonitorsBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { MessageService } from "primeng/api";
@@ -34,14 +33,14 @@ export class ManagementBoxesComponent implements OnInit {
 
   newBox: BoxRequestDto = {
     boxAddressId: "",
-    monitorIds: [],
+    monitorId: "",
     active: true,
   };
 
-  availableMonitors: MonitorsBoxMinResponseDto[] = [];
-  // Seleção por grupos (cada valor é um array de monitorIds)
-  selectedMonitorGroupsCreate: string[][] = [];
-  selectedMonitorGroupsEdit: string[][] = [];
+  // Lista de monitores individuais para o select
+  availableMonitors: Array<{ id: string; fullAddress: string }> = [];
+  selectedMonitorIdCreate: string | null = null;
+  selectedMonitorIdEdit: string | null = null;
   loadingMonitors = false;
   loadingBoxAddresses = false;
 
@@ -139,26 +138,46 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   loadAvailableMonitors(): void {
+    if (this.loadingMonitors) {
+      return; // Evitar múltiplas chamadas simultâneas
+    }
+    
     this.loadingMonitors = true;
     this.boxService.getAvailableMonitors().subscribe({
       next: (monitors) => {
-        this.availableMonitors = monitors;
-        // Quando estiver editando, inicializa a seleção por grupos com base nos monitorIds atuais da box
-        if (this.selectedBoxForEdit) {
-          this.selectedMonitorGroupsEdit = this.availableMonitors
-            .filter((group) =>
-              (this.selectedBoxForEdit?.monitorIds || []).some((id) =>
-                group.monitorIds.includes(id)
-              )
-            )
-            .map((group) => group.monitorIds);
+        this.availableMonitors = [];
+        
+        if (monitors && Array.isArray(monitors)) {
+          monitors.forEach((monitor) => {
+            if (monitor && monitor.id && monitor.fullAddress) {
+              this.availableMonitors.push({
+                id: monitor.id,
+                fullAddress: monitor.fullAddress,
+              });
+            }
+          });
         }
+        
+        // Quando estiver editando, selecionar o primeiro monitorId da box atual
+        if (this.selectedBoxForEdit && this.selectedBoxForEdit.monitorIds?.length > 0) {
+          this.selectedMonitorIdEdit = this.selectedBoxForEdit.monitorIds[0];
+        } else {
+          this.selectedMonitorIdEdit = null;
+        }
+        
         this.loadingMonitors = false;
       },
       error: (error) => {
+        console.error("Error loading monitors:", error);
         this.toastService.erro("Error loading monitors");
         this.loadingMonitors = false;
       },
+      complete: () => {
+        // Garantir que o loading seja desativado mesmo se o Observable completar sem emitir valores
+        if (this.loadingMonitors) {
+          this.loadingMonitors = false;
+        }
+      }
     });
   }
 
@@ -232,11 +251,11 @@ export class ManagementBoxesComponent implements OnInit {
   openCreateBoxModal(): void {
     this.newBox = {
       boxAddressId: "",
-      monitorIds: [],
+      monitorId: "",
       active: true,
     };
     this.selectedBoxAddress = null;
-    this.selectedMonitorGroupsCreate = [];
+    this.selectedMonitorIdCreate = null;
     this.loadAvailableBoxAddresses();
     this.loadAvailableMonitors();
     this.createBoxModalVisible = true;
@@ -252,10 +271,18 @@ export class ManagementBoxesComponent implements OnInit {
       return;
     }
 
-    const monitorIds = this.flattenAndUnique(this.selectedMonitorGroupsCreate);
+    if (!this.selectedMonitorIdCreate) {
+      this.messageService.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Monitor is required",
+      });
+      return;
+    }
+
     this.createBox({
       boxAddressId: this.newBox.boxAddressId,
-      monitorIds,
+      monitorId: this.selectedMonitorIdCreate,
       active: this.newBox.active,
     });
   }
@@ -305,13 +332,20 @@ export class ManagementBoxesComponent implements OnInit {
       return;
     }
 
-    const monitorIds = this.flattenAndUnique(this.selectedMonitorGroupsEdit);
+    if (!this.selectedMonitorIdEdit) {
+      this.messageService.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Monitor is required",
+      });
+      return;
+    }
 
     this.updateBox({
       id: this.selectedBoxForEdit.id,
       data: {
         boxAddressId: this.selectedBoxForEdit.boxAddressId,
-        monitorIds,
+        monitorId: this.selectedMonitorIdEdit,
         active: this.selectedBoxForEdit.active,
       },
     });
@@ -353,6 +387,7 @@ export class ManagementBoxesComponent implements OnInit {
   onEditBoxModalClose(): void {
     this.editBoxModalVisible = false;
     this.selectedBoxForEdit = null;
+    this.selectedMonitorIdEdit = null;
   }
 
   onBoxUpdated(updateData: { id: string; data: BoxRequestDto }): void {
@@ -389,11 +424,5 @@ export class ManagementBoxesComponent implements OnInit {
 
   getBoxDisplayName(box: Box): string {
     return `${box.ip} (${box.monitorCount || 0} monitors)`;
-  }
-
-  private flattenAndUnique(groups: string[][]): string[] {
-    const set = new Set<string>();
-    groups.forEach((ids) => ids.forEach((id) => set.add(id)));
-    return Array.from(set);
   }
 }

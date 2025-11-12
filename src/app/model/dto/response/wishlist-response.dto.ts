@@ -9,7 +9,6 @@ export interface MonitorWishlistResponseDto {
   photoUrl?: string;
   addressLocationName?: string;
   addressLocationDescription?: string;
-  locationDescription?: string;
   fullAddress: string;
   latitude: number;
   longitude: number;

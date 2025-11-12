@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { IMonitorRepository } from '@app/core/interfaces/services/repository/monitor-repository.interface';
+import { CreateMonitorRequestDto, UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
+import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
+import { MonitorResponseDto } from '@app/model/dto/response/monitor-response.dto';
+import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
+import { ResponseDto } from '@app/model/dto/response/response.dto';
+import { Monitor } from '@app/model/monitors';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { IMonitorRepository } from '@app/core/interfaces/services/repository/monitor-repository.interface';
-import { Monitor } from '@app/model/monitors';
-import { CreateMonitorRequestDto, UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
-import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
-import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
-import { ResponseDto } from '@app/model/dto/response/response.dto';
-import { MonitorResponseDto } from '@app/model/dto/response/monitor-response.dto';
 
 @Injectable({ providedIn: 'root' })
 export class MonitorRepositoryImpl implements IMonitorRepository {
@@ -119,7 +119,6 @@ export class MonitorRepositoryImpl implements IMonitorRepository {
     return {
       id: monitorResponse.id,
       active: monitorResponse.active,
-      locationDescription: monitorResponse.locationDescription,
       fullAddress: monitorResponse.fullAddress,
       address: monitorResponse.address || {
         id: '',

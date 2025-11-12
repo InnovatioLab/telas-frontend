@@ -43,4 +43,5 @@ export interface AuthenticatedClientResponseDto {
   currentSubscriptionFlowStep: number;
   hasSubscription: boolean;
   shouldDisplayAttachments: boolean;
+  hasAdRequest: boolean;
 }

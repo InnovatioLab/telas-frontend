@@ -115,7 +115,6 @@ export class SearchBarComponent {
       category: "MONITOR",
       addressLocationName: monitor.addressLocationName,
       addressLocationDescription: monitor.addressLocationDescription,
-      locationDescription: monitor.monitorLocationDescription,
       hasAvailableSlots: monitor.hasAvailableSlots,
       photoUrl: monitor.photoUrl,
       data: monitor,

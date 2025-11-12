@@ -7,10 +7,11 @@ export class ImageValidationUtil {
     "image/svg+xml",
     "image/bmp",
     "image/tiff",
+    "application/pdf",
   ];
 
   static readonly ACCEPTED_FILE_EXTENSIONS =
-    /.*\.(jpg|jpeg|png|gif|svg|bmp|tiff)$/i;
+    /.*\.(jpg|jpeg|png|gif|svg|bmp|tiff|pdf)$/i;
 
   static readonly REQUIRED_ASPECT_RATIO = 16 / 9;
   static readonly ASPECT_RATIO_TOLERANCE = 0.01;

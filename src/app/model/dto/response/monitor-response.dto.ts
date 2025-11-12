@@ -7,7 +7,6 @@ export interface MonitorResponseDto {
   status?: DefaultStatus;
   lastUpdate?: Date;
   active: boolean;
-  locationDescription?: string;
   productId?: string;
   maxBlocks?: number;
   fullAddress?: string;

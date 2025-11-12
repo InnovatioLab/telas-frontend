@@ -112,7 +112,7 @@ export class LoginComponent implements OnInit {
     if (client.role === Role.ADMIN) {
       this.router.navigate(["/admin"]);
     } else {
-      if (client.hasSubscription && client.ads.length === 0) {
+      if (client.hasSubscription && !client.hasAdRequest) {
         this.router.navigate(["/client/my-telas"]);
       } else {
         this.router.navigate(["/client"]);

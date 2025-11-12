@@ -1,11 +1,5 @@
 import { CommonModule } from "@angular/common";
-import {
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import {
   FormGroup,
   FormsModule,
@@ -14,16 +8,16 @@ import {
 } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
+import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { ErrorComponent } from "@app/shared/components";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
-import { AdItemComponent } from "../ad-item/ad-item.component";
 import { MyTelasService } from "../../services/my-telas.service";
+import { AdItemComponent } from "../ad-item/ad-item.component";
 
 @Component({
   selector: "app-my-telas",
@@ -54,14 +48,13 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   maxFilesPerUpload = 3;
   pendingUpload = false;
   selectedAdFile: File | null = null;
-  showRequestAdDialog = false;
   showValidateAdDialog = false;
   showUploadAdDialog = false;
   selectedAdForValidation: AdResponseDto | null = null;
 
-  readonly maxAttachments = 3;
+  readonly maxAttachments = 5;
   readonly maxFileSize = 10 * 1024 * 1024;
-  readonly acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff";
+  readonly acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
 
   requestAdForm: FormGroup;
   validateAdForm: FormGroup;
@@ -77,8 +70,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   constructor(
     public readonly myTelasService: MyTelasService,
     private readonly toastService: ToastService,
-    private readonly route: ActivatedRoute,
-    private readonly cdr: ChangeDetectorRef
+    private readonly route: ActivatedRoute
   ) {
     this.requestAdForm = this.myTelasService.createRequestAdForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
@@ -109,16 +101,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   async loadClientData(): Promise<void> {
     try {
-      const contactData = await this.myTelasService.loadClientData();
-      if (contactData) {
-        this.requestAdForm.patchValue(
-          {
-            phone: contactData.phone,
-            email: contactData.email,
-          },
-          { emitEvent: false }
-        );
-      }
+      await this.myTelasService.loadClientData();
     } catch (error) {
     }
   }
@@ -136,7 +119,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
       const validateFiles = async () => {
         for (const file of files) {
-          const validation = await this.myTelasService.validateAttachmentFile(file);
+          const validation =
+            await this.myTelasService.validateAttachmentFile(file);
 
           if (!validation.isValid) {
             validation.errors.forEach((error) => {
@@ -200,10 +184,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       const validation = await this.myTelasService.validateAttachmentFile(file);
       if (!validation.isValid) {
         validation.errors.forEach((error) => this.toastService.erro(error));
-        if (
-          this.singleReplaceInput &&
-          this.singleReplaceInput.nativeElement
-        ) {
+        if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
           this.singleReplaceInput.nativeElement.value = "";
         }
         return;
@@ -214,8 +195,11 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         return;
       }
 
-      await this.myTelasService.replaceAttachment(this.attachmentToReplaceId, file);
-      
+      await this.myTelasService.replaceAttachment(
+        this.attachmentToReplaceId,
+        file
+      );
+
       if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
         this.singleReplaceInput.nativeElement.value = "";
       }
@@ -292,27 +276,21 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     return this.attachmentCheckboxStates[attachmentId] || false;
   }
 
-  openRequestAdDialog(): void {
-    this.showRequestAdDialog = true;
-  }
-
-  closeRequestAdDialog(): void {
-    this.showRequestAdDialog = false;
-    this.requestAdForm.reset();
-  }
-
   async submitAdRequest(): Promise<void> {
     if (this.requestAdForm.valid) {
       const request = {
-        attachmentIds: this.selectedClientAttachments,
-        message: this.requestAdForm.get("message")?.value,
-        email: this.requestAdForm.get("email")?.value,
-        phone: this.requestAdForm.get("phone")?.value,
+        attachmentIds:
+          this.selectedClientAttachments.length > 0
+            ? this.selectedClientAttachments
+            : undefined,
+        slogan: this.requestAdForm.get("slogan")?.value || undefined,
+        brandGuidelineUrl:
+          this.requestAdForm.get("brandGuidelineUrl")?.value || undefined,
       };
 
       try {
         await this.myTelasService.createAdRequest(request);
-        this.closeRequestAdDialog();
+        this.requestAdForm.reset();
         this.selectedClientAttachments = [];
         this.attachmentCheckboxStates = {};
         await this.loadClientData();
@@ -427,7 +405,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       }
 
       try {
-        const validationResult = await ImageValidationUtil.validateImageFile(file);
+        const validationResult =
+          await ImageValidationUtil.validateImageFile(file);
         if (!validationResult.isValid) {
           validationResult.errors.forEach((error) => {
             this.toastService.erro(error);
@@ -537,5 +516,14 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   navigateToAdsTab(): void {
     this.myTelasService.setActiveTab(1);
+  }
+
+  isPdfLink(link?: string | null): boolean {
+    if (!link) return false;
+    try {
+      return /\.pdf(\?|$)/i.test(link);
+    } catch (err) {
+      return false;
+    }
   }
 }

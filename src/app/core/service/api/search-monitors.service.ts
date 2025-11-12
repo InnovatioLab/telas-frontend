@@ -4,8 +4,8 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
-import { MapPoint } from "../state/map-point.interface";
 import { MonitorMapPointMapper } from "../mapper/monitor-map-point.mapper";
+import { MapPoint } from "../state/map-point.interface";
 import { ZipCodeExtractor } from "../utils/zipcode-extractor.util";
 
 export interface MonitorMapsResponseDto {
@@ -18,7 +18,6 @@ export interface MonitorMapsResponseDto {
   adsDailyDisplayTimeInMinutes: number;
   addressLocationName?: string;
   addressLocationDescription?: string;
-  monitorLocationDescription?: string;
   photoUrl?: string;
 }
 
