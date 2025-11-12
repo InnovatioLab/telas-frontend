@@ -516,7 +516,6 @@ export class GoogleMapsService {
         }
       }
     } catch (e) {
-      console.error("Erro ao ler coordenadas salvas:", e);
     }
     return null;
   }
@@ -757,7 +756,6 @@ export class GoogleMapsService {
         });
       });
     } catch (error) {
-      console.error("Error in reverse geocoding:", error);
       return null;
     }
   }

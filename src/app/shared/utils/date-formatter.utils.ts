@@ -12,7 +12,6 @@ export class DateFormatter {
         year: 'numeric'
       });
     } catch (error) {
-      console.error('Erro ao formatar data:', error);
       return '';
     }
   }
@@ -32,7 +31,6 @@ export class DateFormatter {
         minute: '2-digit'
       });
     } catch (error) {
-      console.error('Erro ao formatar data e hora:', error);
       return '';
     }
   }

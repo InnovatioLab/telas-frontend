@@ -40,7 +40,6 @@ export class CartService {
         this.markAsModified();
       }),
       catchError((error) => {
-        console.error("Error while adding item to cart:", error);
         throw error;
       })
     );
@@ -53,7 +52,6 @@ export class CartService {
         this.markAsModified();
       }),
       catchError((error) => {
-        console.error("Error while updating cart:", error);
         throw error;
       })
     );
@@ -94,11 +92,7 @@ export class CartService {
 
   initializeCart(): void {
     if (!this.isLoaded && !this.activeCartRequest$) {
-      this.getLoggedUserActiveCart().subscribe({
-        error: (error) => {
-          console.error("Error initializing cart:", error);
-        },
-      });
+      this.getLoggedUserActiveCart().subscribe();
     }
   }
 

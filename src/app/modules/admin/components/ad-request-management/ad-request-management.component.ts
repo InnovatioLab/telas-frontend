@@ -70,7 +70,7 @@ export class AdRequestManagementComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error("Error loading ad requests:", error);
+        
         this.toastService.erro("Failed to load ad requests");
         this.loading = false;
       },
@@ -135,7 +135,7 @@ export class AdRequestManagementComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch((error) => {
-          console.error("Error validating image:", error);
+          
           this.toastService.erro("Error validating image file");
         });
     }
@@ -162,7 +162,7 @@ export class AdRequestManagementComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch((error) => {
-          console.error("Error validating image:", error);
+          
           this.toastService.erro("Error validating image file");
         });
     }
@@ -236,7 +236,7 @@ export class AdRequestManagementComponent implements OnInit {
             this.loadingUpload = false;
           },
           error: (error) => {
-            console.error("Error uploading ad:", error);
+            
             this.toastService.erro("Failed to upload ad");
             this.loadingUpload = false;
           },

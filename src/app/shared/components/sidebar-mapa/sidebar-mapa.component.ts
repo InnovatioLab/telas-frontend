@@ -160,7 +160,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.toastService.erro("Error adding to cart");
-        console.error("Error adding to cart:", error);
       },
     });
   }
@@ -196,7 +195,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.toastService.erro("Error updating cart");
-          console.error("Error updating cart:", error);
         },
       });
     }
@@ -211,7 +209,6 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.toastService.erro("Error adding to wishlist");
-          console.error("Error adding to wishlist:", error);
         },
       });
     }

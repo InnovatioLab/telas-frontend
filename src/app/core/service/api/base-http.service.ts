@@ -271,7 +271,6 @@ export abstract class BaseHttpService<T, CreateDto = T, UpdateDto = Partial<T>>
    * Pode ser sobrescrito pelas classes filhas
    */
   protected handleError(error: any): Observable<never> {
-    console.error('HTTP Error:', error);
     throw error;
   }
 }

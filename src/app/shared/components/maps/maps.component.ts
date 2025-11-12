@@ -461,9 +461,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   private initializeMapCenter(): void {
-    // Se o center já foi definido pelo componente pai, não sobrescrever
     if (this.center) {
-      console.log('🗺️ MapsComponent: Center already set by parent:', this.center);
       return;
     }
 
@@ -472,7 +470,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
         lat: this.latitude,
         lng: this.longitude,
       };
-      console.log('🗺️ MapsComponent: Using explicit coordinates:', this.center);
       return;
     }
 
@@ -482,13 +479,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
         lat: savedCoords.latitude,
         lng: savedCoords.longitude,
       };
-      console.log('🗺️ MapsComponent: Using saved coordinates:', this.center);
     } else {
       this.center = {
         lat: 30.3322,
         lng: -81.6557,
       };
-      console.log('🗺️ MapsComponent: Using default Jacksonville coordinates:', this.center);
     }
   }
 
@@ -508,7 +503,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
         }
       }
     } catch (e) {
-      console.error("Erro ao ler coordenadas salvas:", e);
     }
     return null;
   }

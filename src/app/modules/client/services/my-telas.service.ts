@@ -105,7 +105,6 @@ export class MyTelasService {
               authService.updateClientData(client as any);
             }
           } catch (error) {
-            console.debug('AuthService not available for update:', error);
           }
         }
 
@@ -117,7 +116,6 @@ export class MyTelasService {
 
       return null;
     } catch (error) {
-      console.error("Error loading client data:", error);
       this.toastService.erro("Error loading client data");
       this._isClientDataLoaded.set(false);
       throw error;
@@ -199,7 +197,6 @@ export class MyTelasService {
       this.toastService.sucesso("Ad sent for admin review");
       await this.loadClientData(true);
     } catch (error) {
-      console.error("Error uploading ad:", error);
       this.toastService.erro("Error uploading ad");
       throw error;
     } finally {

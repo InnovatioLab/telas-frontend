@@ -120,13 +120,11 @@ export class ClientService extends BaseHttpService<Client> {
 
   buscarClient<T>(idOuUID: string): Observable<T> {
     if (!idOuUID) {
-      console.error("ID/UUID não fornecido para busca de usuário");
       throw new Error("ID/UUID não fornecido");
     }
     return this.http.get<ResponseDTO<T>>(`${this.baseUrl}/${idOuUID}`).pipe(
       map((response: ResponseDTO<T>) => {
         if (response?.data === undefined) {
-          console.error("Resposta da API inválida:", response);
           throw new Error("Dados do usuário não encontrados");
         }
         return response.data;
@@ -136,7 +134,6 @@ export class ClientService extends BaseHttpService<Client> {
 
   buscaClientPorIdentificador<T>(email: string): Observable<ClientResponseDTO> {
     if (!email) {
-      console.error("Email not provided for user search");
       throw new Error("Email not provided");
     }
     return this.http
@@ -146,7 +143,6 @@ export class ClientService extends BaseHttpService<Client> {
       .pipe(
         map((response: ResponseDTO<ClientResponseDTO>) => {
           if (response?.data === undefined) {
-            console.error("Invalid API response:", response);
             throw new Error("User data not found");
           }
           return response.data;

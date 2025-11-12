@@ -1,15 +1,11 @@
-.guest-landing-container {
-  padding: 20px;
-  margin: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+.section-placeholder {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 14px;
   background-color: #f9f9f9;
-  
-  h1 {
-    color: #333;
-  }
-  
-  p {
-    color: #666;
-  }
+  border-radius: 4px;
+  margin: 10px 0;
 }

@@ -29,8 +29,6 @@ export class ZipCodeRepositoryImpl implements IZipCodeRepository {
         return null;
       }),
       catchError((error) => {
-        console.warn('ZipCode API not available:', error);
-        // Retorna null para que o ZipCodeService tente o Google Maps
         return of(null);
       })
     );
@@ -67,7 +65,6 @@ export class ZipCodeRepositoryImpl implements IZipCodeRepository {
   }
 
   private handleError(error: any): Observable<never> {
-    console.error('ZipCode Repository Error:', error);
     return throwError(() => new Error(error.message || 'Server error'));
   }
 }

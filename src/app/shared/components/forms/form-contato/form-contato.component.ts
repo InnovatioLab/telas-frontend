@@ -31,7 +31,6 @@ export class FormContatoComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.contatoForm) {
-      console.error("contatoForm não foi inicializado.");
       return;
     }
 

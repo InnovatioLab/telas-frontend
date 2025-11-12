@@ -1,8 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 export class ApiErrorHandler {
   static handleApiError(error: HttpErrorResponse): string {
-    console.error('API Error:', error);
+    if (!environment.production) {
+      console.error('API Error:', error);
+    }
 
     if (error.status === 401 || error.status === 403) {
       return 'You do not have permission to perform this operation.';

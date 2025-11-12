@@ -70,7 +70,7 @@ export class ManagementClientsComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error("Error loading clients:", error);
+        
         this.toastService.erro("Failed to load clients");
         this.loading = false;
       },
@@ -124,7 +124,7 @@ export class ManagementClientsComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          console.error("Error making client partner:", error);
+          
           this.toastService.erro("Failed to make client partner");
           this.loading = false;
         },
@@ -208,7 +208,7 @@ export class ManagementClientsComponent implements OnInit {
         });
       },
       error: (error) => {
-        console.error("Error loading client details:", error);
+        
         this.toastService.erro("Failed to load client details");
         this.loading = false;
       },

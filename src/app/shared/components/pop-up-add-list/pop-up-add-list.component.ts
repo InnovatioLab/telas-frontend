@@ -82,7 +82,6 @@ export class PopUpStepAddListComponent {
         this.toastService.sucesso('Monitor added to cart');
       },
       error: (error) => {
-        console.error('Erro ao adicionar ao carrinho:', error);
         this.toastService.erro('Error adding monitor to cart');
       }
     });
@@ -115,7 +114,6 @@ export class PopUpStepAddListComponent {
           this.toastService.sucesso('Monitor added to cart');
         },
         error: (error) => {
-          console.error('Erro ao atualizar carrinho:', error);
           this.toastService.erro('Error updating cart');
         }
       });

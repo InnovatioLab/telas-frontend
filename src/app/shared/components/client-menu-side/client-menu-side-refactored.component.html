@@ -1,6 +1,7 @@
 <app-base-sidebar
   [menuItems]="menuItems"
   [sidebarType]="'client-menu'"
+  [iconMap]="iconMap"
   [currentUser]="authenticatedClient"
   (menuItemSelected)="onMenuItemSelected($event)"
 ></app-base-sidebar>
@@ -17,4 +18,6 @@
 >
   vai mudar
 </p-dialog>
+
+
 

@@ -65,9 +65,6 @@ export class ValidacaoCadastroComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe((params) => {
       this.clientLogin = params.get("login");
-      if (!this.clientLogin) {
-        console.error('Parâmetro "login" não encontrado na rota.');
-      }
     });
   }
 
@@ -153,10 +150,6 @@ export class ValidacaoCadastroComponent implements OnInit {
         }
         return;
       } catch (error) {
-        console.error(
-          "Não foi possível determinar o usuário autenticado",
-          error
-        );
         this.router.navigate(["/"]);
         return;
       }

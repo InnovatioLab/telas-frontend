@@ -21,7 +21,6 @@ export const SubscriptionsGuard: CanActivateFn = () => {
       return true;
     }),
     catchError((error) => {
-      console.error("Error while getting logged client:", error);
       router.navigate(["/client"]);
       return of(false);
     })

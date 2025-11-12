@@ -120,7 +120,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         );
       }
     } catch (error) {
-      console.error("Error loading client data:", error);
     }
   }
 
@@ -140,7 +139,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           const validation = await this.myTelasService.validateAttachmentFile(file);
 
           if (!validation.isValid) {
-            console.error("Erro de validação de arquivo:", validation.errors);
             validation.errors.forEach((error) => {
               this.toastService.erro(error);
             });
@@ -165,7 +163,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       };
 
       validateFiles().catch((error) => {
-        console.error("Error validating files:", error);
         this.toastService.erro("Error validating files");
         if (this.attachmentFileUploadComponent) {
           this.attachmentFileUploadComponent.clear();
@@ -190,7 +187,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         }
       }
     } catch (err) {
-      console.error("Error opening file selector:", err);
     }
   }
 
@@ -226,7 +222,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       this.attachmentToReplaceId = null;
       await this.loadClientData();
     } catch (err) {
-      console.error("Error replacing attachment:", err);
       if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
         this.singleReplaceInput.nativeElement.value = "";
       }
@@ -248,7 +243,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.attachmentFileUploadComponent.clear();
       }
     } catch (error) {
-      console.error("Error uploading attachments:", error);
     }
   }
 
@@ -323,7 +317,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.attachmentCheckboxStates = {};
         await this.loadClientData();
       } catch (error) {
-        console.error("Error submitting request:", error);
       }
     }
   }
@@ -377,7 +370,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.closeValidateAdDialog();
         await this.loadClientData();
       } catch (error) {
-        console.error("Error validating ad:", error);
       }
     }
   }
@@ -430,7 +422,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       const file = formValue.adFile || this.selectedAdFile;
 
       if (!file) {
-        console.error("No file selected");
         this.toastService.erro("No file selected");
         return;
       }
@@ -468,7 +459,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
         reader.readAsDataURL(file);
       } catch (error) {
-        console.error("Error validating image:", error);
         this.toastService.erro("Error validating image file");
       }
     }
@@ -503,7 +493,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           this.selectedAdFile = file;
         })
         .catch((error) => {
-          console.error("Error validating image:", error);
           this.toastService.erro("Error validating image file");
           if (this.fileUploadComponent) {
             this.fileUploadComponent.clear();

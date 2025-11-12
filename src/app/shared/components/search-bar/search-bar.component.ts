@@ -52,7 +52,6 @@ export class SearchBarComponent {
         },
         error: (error) => {
           this.loadingService.setLoading(false, "address-search");
-          console.error("Error searching monitors:", error);
           this.toastService.erro(
             `Error searching monitors with ZIP code ${searchTextCopy}`
           );

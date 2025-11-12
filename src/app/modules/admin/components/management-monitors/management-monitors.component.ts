@@ -130,7 +130,7 @@ export class ManagementMonitorsComponent implements OnInit {
           this.authenticatedClient = client as any;
         },
         error: (error) => {
-          console.error("Error loading authenticated client:", error);
+          
         },
       });
   }
@@ -480,7 +480,7 @@ export class ManagementMonitorsComponent implements OnInit {
           }
         },
         error: (error) => {
-          console.error("Erro no saveAdOrder:", error);
+          
           this.toastService.erro("Failed to save ad order.");
         },
         complete: () => {
@@ -583,7 +583,7 @@ export class ManagementMonitorsComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error("Error loading ads:", error);
+        
         this.toastService.erro("Failed to load ads");
         this.loading = false;
       },
@@ -591,6 +591,10 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   openUploadAdsModal(monitor: Monitor): void {
+    if (!this.authenticatedClient) {
+      this.loadAuthenticatedClient();
+    }
+    
     this.selectedMonitorForUpload = monitor;
     this.selectedFile = null;
     this.newAd = { name: "", type: "", bytes: "" };
@@ -623,36 +627,74 @@ export class ManagementMonitorsComponent implements OnInit {
           this.showCreateAdModal = true;
         })
         .catch((error) => {
-          console.error("Error validating image:", error);
+          
           this.toastService.erro("Error validating image file");
         });
     }
   }
 
   createAdvertisement(): void {
-    if (!this.selectedFile || !this.newAd.bytes) return;
-    this.loadingCreateAd = true;
-    const client = this.autenticacaoService.user;
-    if (!client?.id) {
-      this.toastService.erro("Client ID not found");
-      this.loadingCreateAd = false;
+    if (!this.selectedFile || !this.newAd.bytes) {
+      this.toastService.erro("Please select a file");
       return;
     }
+    
+    this.loadingCreateAd = true;
+    
+    let clientId: string | null = null;
+    
+    if (this.authenticatedClient?.id) {
+      clientId = this.authenticatedClient.id;
+    } else if (this.autenticacaoService.user?.id) {
+      clientId = this.autenticacaoService.user.id;
+    } else if (this.autenticacaoService.loggedClient?.id) {
+      clientId = this.autenticacaoService.loggedClient.id;
+    }
+    
+    if (!clientId) {
+      this.clientService.getAuthenticatedClient().subscribe({
+        next: (client) => {
+          this.authenticatedClient = client as any;
+          if (client?.id) {
+            this.proceedWithAdUpload(client.id);
+          } else {
+            this.toastService.erro("Client ID not found. Please try logging in again.");
+            this.loadingCreateAd = false;
+          }
+        },
+        error: () => {
+          this.toastService.erro("Client ID not found. Please try logging in again.");
+          this.loadingCreateAd = false;
+        }
+      });
+      return;
+    }
+    
+    this.proceedWithAdUpload(clientId);
+  }
+  
+  private proceedWithAdUpload(clientId: string): void {
     const payload = {
-      name: this.selectedFile.name,
-      type: this.selectedFile.type,
+      name: this.selectedFile!.name,
+      type: this.selectedFile!.type,
       bytes: this.newAd.bytes,
     };
-    this.adService.createClientAd(client.id, payload).subscribe({
+    
+    this.adService.createClientAd(clientId, payload).subscribe({
       next: () => {
         this.loadingCreateAd = false;
         this.showCreateAdModal = false;
-        this.toastService.sucesso("Ads created successfully");
-        this.closeAdsModal();
+        this.selectedFile = null;
+        this.newAd = { name: "", type: "", bytes: "" };
+        this.uploadAdPreview = null;
+        this.toastService.sucesso("Ad uploaded successfully");
+        this.loadMonitors(); // Recarregar a lista de monitores
       },
-      error: () => {
+      error: (error) => {
         this.loadingCreateAd = false;
-        this.toastService.erro("Failed to create ad");
+        console.error("Error creating ad:", error);
+        const errorMessage = error?.error?.message || error?.message || "Failed to create ad";
+        this.toastService.erro(errorMessage);
       },
     });
   }

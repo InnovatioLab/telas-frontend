@@ -63,10 +63,6 @@ export class AppComponent implements OnInit {
           client ? of(client) : this.clientService.getAuthenticatedClient()
         ),
         catchError((error) => {
-          console.error(
-            "Error retrieving data from authenticated client:",
-            error
-          );
           this.authentication.removerAutenticacao();
           this.router.navigate(["/login"]);
           return of(null);

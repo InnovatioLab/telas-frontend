@@ -17,6 +17,8 @@ import {
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { AutenticacaoService } from "../service/api/autenticacao.service";
+import { ToastService } from "../service/state/toast.service";
+import { ApiErrorHandler } from "../error/api-error-handler";
 
 export function errorInterceptor(
   req: HttpRequest<unknown>,
@@ -25,74 +27,49 @@ export function errorInterceptor(
   const dialogService = inject(DialogService);
   const router = inject(Router);
   const autenticacaoService = inject(AutenticacaoService);
+  const toastService = inject(ToastService);
 
   let configDialogo: DynamicDialogConfig;
   let refDialog: DynamicDialogRef | undefined;
   const rotaLogin = "token";
 
   return next(req).pipe(
-    catchError(({ error, status, url }: HttpErrorResponse) => {
+    catchError((httpError: HttpErrorResponse) => {
+      const { error, status, url } = httpError;
+
       if (status === HttpStatusCode.Unauthorized && !url?.includes(rotaLogin)) {
-        configDialogo = DialogoUtils.exibirAlerta(
-          error?.detail ?? "Unauthorized access. Please log in again.",
-          {
-            acaoPrimariaCallback: () => {
-              refDialog?.destroy();
-              autenticacaoService.logout();
-              router.navigate(["/login"]);
-            },
-          }
-        );
-      }
-
-      if (status === HttpStatusCode.Unauthorized && url?.includes(rotaLogin)) {
-        configDialogo = DialogoUtils.exibirAlerta(
-          "Invalid data! Please review and try again.",
-          {
-            acaoPrimariaCallback: () => {
-              refDialog?.destroy();
-              autenticacaoService.logout();
-              router.navigate(["/login"]);
-            },
-          }
-        );
-      }
-
-      if (configDialogo) {
+        const errorMessage = error?.detail ?? "Unauthorized access. Please log in again.";
+        configDialogo = DialogoUtils.exibirAlerta(errorMessage, {
+          acaoPrimariaCallback: () => {
+            refDialog?.destroy();
+            autenticacaoService.logout();
+            router.navigate(["/login"]);
+          },
+        });
         refDialog = dialogService.open(DialogoComponent, configDialogo);
         return throwError(() => new Error(errorMessage));
       }
 
-      let errorMessage = "An error occurred";
-
-      if (error?.mensagem) {
-        errorMessage = error.mensagem;
-      } else if (
-        error?.errors &&
-        Array.isArray(error.errors) &&
-        error.errors.length > 0
-      ) {
-        errorMessage = error.errors[0];
-      } else if (error?.detail) {
-        errorMessage = error.detail;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      } else if (typeof error === "string") {
-        errorMessage = error;
+      if (status === HttpStatusCode.Unauthorized && url?.includes(rotaLogin)) {
+        const errorMessage = "Invalid data! Please review and try again.";
+        configDialogo = DialogoUtils.exibirAlerta(errorMessage, {
+          acaoPrimariaCallback: () => {
+            refDialog?.destroy();
+            autenticacaoService.logout();
+            router.navigate(["/login"]);
+          },
+        });
+        refDialog = dialogService.open(DialogoComponent, configDialogo);
+        return throwError(() => new Error(errorMessage));
       }
 
-      configDialogo = DialogoUtils.criarConfig({
-        titulo: "Error!",
-        descricao: errorMessage,
-        icon: "warning",
-        iconClass: "alert",
-        acaoPrimaria: "Close",
-        acaoPrimariaCallback: () => {
-          refDialog?.destroy();
-        },
-      });
-
-      refDialog = dialogService.open(DialogoComponent, configDialogo);
+      const errorMessage = ApiErrorHandler.handleApiError(httpError);
+      
+      if (status >= 500) {
+        toastService.erro(errorMessage);
+      } else if (status >= 400 && status !== HttpStatusCode.Unauthorized) {
+        toastService.aviso(errorMessage);
+      }
 
       return throwError(() => new Error(errorMessage));
     })

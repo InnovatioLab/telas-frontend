@@ -54,7 +54,6 @@ export class WishListComponent implements OnInit, OnDestroy {
           this.loadWishlist();
         },
         error: (error) => {
-          console.error("Error loading authenticated client:", error);
           this.error = "Error loading client data.";
           this.isLoading = false;
         },
@@ -70,7 +69,6 @@ export class WishListComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error("Error loading wishlist:", error);
         this.error = "Error loading wishlist.";
         this.isLoading = false;
       },

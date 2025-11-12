@@ -92,7 +92,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error("Error loading cart:", error);
           this.cart = null;
         },
       })
@@ -153,7 +152,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
               // O cart será atualizado automaticamente via stream
             },
             error: (error) => {
-              console.error("Erro ao remover item:", error);
             },
           });
           this.dialogoRef?.close();
@@ -184,7 +182,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        console.error("Error while loading monitor details:", error);
         this.toastService.erro("Error while loading monitor details");
         this.loadingSelectedMonitorLocationInfo = false;
       },
@@ -212,7 +209,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         // O cart será atualizado automaticamente via stream
       },
       error: (error) => {
-        console.error("Erro ao atualizar recorrência:", error);
       },
     });
   }
@@ -263,7 +259,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         window.location.href = checkoutUrl;
       },
       error: (error) => {
-        console.error("Erro ao iniciar checkout:", error);
         this.toastService.erro(error);
         this.checkoutEmProgresso = false;
       },

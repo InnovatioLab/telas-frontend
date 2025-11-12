@@ -45,7 +45,6 @@ export class PrivacyPolicyComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error("Error loading privacy policy:", error);
         this.error = true;
         this.loading = false;
       },

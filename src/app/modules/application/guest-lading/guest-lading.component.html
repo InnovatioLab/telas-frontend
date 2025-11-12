@@ -1,7 +1,33 @@
 <app-guest-header/>
-<app-hero/>
-<app-banner/>
-<app-mapper-animate/>
-<app-how-it-works/>
-<app-feature/>
+
+@defer (on viewport) {
+  <app-hero/>
+} @placeholder {
+  <div class="section-placeholder">Loading hero section...</div>
+}
+
+@defer (on viewport) {
+  <app-banner/>
+} @placeholder {
+  <div class="section-placeholder">Loading banner...</div>
+}
+
+@defer (on viewport) {
+  <app-mapper-animate/>
+} @placeholder {
+  <div class="section-placeholder">Loading map animation...</div>
+}
+
+@defer (on viewport) {
+  <app-how-it-works/>
+} @placeholder {
+  <div class="section-placeholder">Loading how it works...</div>
+}
+
+@defer (on viewport) {
+  <app-feature/>
+} @placeholder {
+  <div class="section-placeholder">Loading features...</div>
+}
+
 <app-guest-footer/>

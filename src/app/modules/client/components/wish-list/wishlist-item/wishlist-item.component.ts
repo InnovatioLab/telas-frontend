@@ -93,7 +93,7 @@ export class WishlistItemComponent implements OnInit {
         this.isButtonDisabled = true;
       },
       error: (error) => {
-        console.error("Error creating cart:", error);
+        
       },
     });
   }
@@ -123,7 +123,7 @@ export class WishlistItemComponent implements OnInit {
         this.isButtonDisabled = true;
       },
       error: (error) => {
-        console.error("Error updating cart:", error);
+        
       },
     });
   }
