@@ -63,6 +63,10 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     { label: "Monthly", value: Recurrence.MONTHLY },
   ];
   selectedRecurrence: Recurrence = Recurrence.MONTHLY;
+  blockQuantityOptions = [
+    { label: "1", value: 1 },
+    { label: "2", value: 2 },
+  ];
   monitorDetailsVisible: boolean = false;
   dropdownOpen: boolean = false;
 
@@ -82,13 +86,13 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to cart changes stream
     this.subscriptions.add(
       this.cartService.cartUpdatedStream$.subscribe({
         next: (cart) => {
           this.cart = cart;
           if (cart) {
             this.selectedRecurrence = cart.recurrence;
+            this.ensureBlockQuantityDefaults();
           }
         },
         error: (error) => {
@@ -97,10 +101,39 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Set initial cart data from current value
     this.cart = this.cartService.currentCart;
     if (this.cart) {
       this.selectedRecurrence = this.cart.recurrence;
+      this.ensureBlockQuantityDefaults();
+    }
+  }
+
+  private ensureBlockQuantityDefaults(): void {
+    if (!this.cart) return;
+
+    let needsUpdate = false;
+    this.cart.items.forEach((item) => {
+      if (!item.blockQuantity || item.blockQuantity < 1 || item.blockQuantity > 2) {
+        item.blockQuantity = 1;
+        needsUpdate = true;
+      }
+    });
+
+    if (needsUpdate) {
+      const cartRequest: CartRequestDto = {
+        recurrence: this.selectedRecurrence,
+        items: this.cart.items.map((item) => ({
+          monitorId: item.monitorId,
+          blockQuantity: item.blockQuantity,
+        })),
+      };
+
+      this.cartService.update(cartRequest, this.cart.id).subscribe({
+        next: () => {
+        },
+        error: (error) => {
+        },
+      });
     }
   }
 
@@ -200,15 +233,43 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
       recurrence: this.selectedRecurrence,
       items: this.cart.items.map((item) => ({
         monitorId: item.monitorId,
-        blockQuantity: item.blockQuantity,
+        blockQuantity: item.blockQuantity || 1,
       })),
     };
 
     this.cartService.update(cartRequest, this.cart.id).subscribe({
       next: () => {
-        // O cart será atualizado automaticamente via stream
       },
       error: (error) => {
+      },
+    });
+  }
+
+  onBlockQuantityChange(item: CartItemResponseDto, newValue: number): void {
+    if (!this.cart) return;
+
+    if (!newValue || newValue < 1) {
+      newValue = 1;
+    } else if (newValue > 2) {
+      newValue = 2;
+    }
+
+    item.blockQuantity = newValue;
+
+    const cartRequest: CartRequestDto = {
+      recurrence: this.selectedRecurrence,
+      items: this.cart.items.map((cartItem) => ({
+        monitorId: cartItem.monitorId,
+        blockQuantity: cartItem.blockQuantity || 1,
+      })),
+    };
+
+    this.cartService.update(cartRequest, this.cart.id).subscribe({
+      next: () => {
+      },
+      error: (error) => {
+        this.toastService.erro("Error updating block quantity");
+        item.blockQuantity = item.blockQuantity === 1 ? 2 : 1;
       },
     });
   }
