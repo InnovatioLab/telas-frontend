@@ -13,7 +13,7 @@
   width: 50px;
   border-radius: 30px;
   position: relative;
-  transition: all 0.3s ease;
+  transition: all var(--animation-duration-default) var(--animation-ease-in-out);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   
   &:hover {
@@ -29,7 +29,7 @@
   top: 1px;
   background-color: white;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: all var(--animation-duration-default) var(--animation-ease-in-out);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,0 +1,255 @@
+@use "sass:map";
+@use "./variables" as *;
+
+$animation-durations: (
+  'fast': 150ms,
+  'default': 300ms,
+  'slow': 500ms
+);
+
+$animation-easings: (
+  'ease-in-out': cubic-bezier(0.4, 0, 0.2, 1),
+  'ease-out': cubic-bezier(0, 0, 0.2, 1),
+  'ease-in': cubic-bezier(0.4, 0, 1, 1),
+  'bounce': cubic-bezier(0.68, -0.55, 0.265, 1.55)
+);
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+:root {
+  --animation-duration-fast: #{map.get($animation-durations, 'fast')};
+  --animation-duration-default: #{map.get($animation-durations, 'default')};
+  --animation-duration-slow: #{map.get($animation-durations, 'slow')};
+  
+  --animation-ease-in-out: #{map.get($animation-easings, 'ease-in-out')};
+  --animation-ease-out: #{map.get($animation-easings, 'ease-out')};
+  --animation-ease-in: #{map.get($animation-easings, 'ease-in')};
+  --animation-ease-bounce: #{map.get($animation-easings, 'bounce')};
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--animation-duration-default) var(--animation-ease-out);
+}
+
+.animate-fade-out {
+  animation: fadeOut var(--animation-duration-fast) var(--animation-ease-in);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight var(--animation-duration-default) var(--animation-ease-out);
+}
+
+.animate-slide-out-right {
+  animation: slideOutRight var(--animation-duration-fast) var(--animation-ease-in);
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft var(--animation-duration-default) var(--animation-ease-out);
+}
+
+.animate-slide-out-left {
+  animation: slideOutLeft var(--animation-duration-fast) var(--animation-ease-in);
+}
+
+.animate-slide-in-down {
+  animation: slideInDown var(--animation-duration-default) var(--animation-ease-out);
+}
+
+.animate-slide-in-up {
+  animation: slideInUp var(--animation-duration-default) var(--animation-ease-out);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--animation-duration-default) var(--animation-ease-bounce);
+}
+
+.animate-scale-out {
+  animation: scaleOut var(--animation-duration-fast) var(--animation-ease-in);
+}
+
+.animate-shake {
+  animation: shake 0.5s var(--animation-ease-in-out);
+}
+
+.animate-pulse {
+  animation: pulse 2s var(--animation-ease-in-out) infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark var(--animation-duration-default) var(--animation-ease-bounce);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+

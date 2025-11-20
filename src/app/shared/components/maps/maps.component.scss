@@ -104,7 +104,7 @@
     width: 20px !important;
     height: 20px !important;
     opacity: 0.6;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--animation-duration-fast) var(--animation-ease-in-out);
     
     &:hover {
       opacity: 1;

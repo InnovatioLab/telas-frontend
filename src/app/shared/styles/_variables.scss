@@ -1,11 +1,13 @@
 @use "sass:map";
 @use "sass:meta";
 
-// Colors
+// Colors - Fonte única de verdade para todas as cores do projeto
 $colors: (
-  'primary': #232F3E,
+  'primary': #111519,
   'primary-light': #496382,
   'primary-dark': #131921,
+  'primary-clara': #049dd9,
+  'primary-escura': #075473,
   'gray-bg': #f8f9fa,
   'gray': #6c757d,
   'gray-medium': #e9ecef,
@@ -13,14 +15,17 @@ $colors: (
   'legend': #696F74,
   'success': #28a745,
   'error': #dc3545,
+  'error-claro': #f8d7da,
+  'error-escuro': #b02a37,
   'disabled': #696F74CC,
   'white': #FFFFFF,
-  'black-light': #16191B
+  'black-light': #16191B,
+  'alerta': #f59c00
 );
 
 // Typography
 $typography: (
-  'font-family': 'Montserrat' sans-serif,
+  'font-family': 'Montserrat, sans-serif',
   'font-size-base': 16px,
   'font-size-sm': 14px,
   'font-size-lg': 18px,
@@ -28,6 +33,13 @@ $typography: (
   'font-size-2xl': 24px,
   'font-size-3xl': 30px,
   'font-size-4xl': 36px,
+  'font-size-pequeno': 0.75rem,
+  'font-size-padrao': 0.875rem,
+  'font-size-medio': 1.125rem,
+  'font-size-grande': 1.25rem,
+  'font-size-extra-grande': 1.5rem,
+  'font-size-titulo': 1.625rem,
+  'font-size-h5': 1.875rem,
   'font-weight-normal': 400,
   'font-weight-medium': 500,
   'font-weight-semibold': 600,
@@ -108,22 +120,85 @@ $modal: (
   'footer-bg': map.get($colors, 'white')
 );
 
-// CSS Custom Properties
+// CSS Custom Properties - Fonte única de verdade
+// Gerando variáveis em português (padrão do projeto) e inglês (compatibilidade)
 :root {
+  // Cores em português (padrão do projeto)
+  --cor-primaria: #{map.get($colors, 'primary')};
+  --cor-primaria-clara: #{map.get($colors, 'primary-clara')};
+  --cor-primaria-escura: #{map.get($colors, 'primary-escura')};
+  --cor-cinza-fundo: #{map.get($colors, 'gray-bg')};
+  --cor-cinza: #{map.get($colors, 'gray')};
+  --cor-cinza-medio: #{map.get($colors, 'gray-medium')};
+  --cor-cinza-escuro: #{map.get($colors, 'gray-dark')};
+  --cor-legenda: #{map.get($colors, 'legend')};
+  --cor-sucesso: #{map.get($colors, 'success')};
+  --cor-erro: #{map.get($colors, 'error')};
+  --cor-erro-claro: #{map.get($colors, 'error-claro')};
+  --cor-erro-escuro: #{map.get($colors, 'error-escuro')};
+  --cor-desabilitado: #{map.get($colors, 'disabled')};
+  --cor-branca: #{map.get($colors, 'white')};
+  --cor-preto-claro: #{map.get($colors, 'black-light')};
+  --cor-alerta: #{map.get($colors, 'alerta')};
+
+  // Cores RGB para transparências
+  --cor-erro-rgb: 220, 53, 69;
+  --cor-primaria-rgb: 35, 47, 62;
+
+  // Cores em inglês (compatibilidade)
   @each $name, $color in $colors {
     --color-#{$name}: #{$color};
   }
 
-  @each $name, $size in map.get($typography, 'font-sizes') {
-    --font-size-#{$name}: #{$size};
-  }
+  // Typography em português
+  --fonte-familia: #{map.get($typography, 'font-family')};
+  --fonte-tamanho-pequeno: #{map.get($typography, 'font-size-pequeno')};
+  --fonte-tamanho-padrao: #{map.get($typography, 'font-size-padrao')};
+  --fonte-tamanho-medio: #{map.get($typography, 'font-size-medio')};
+  --fonte-tamanho-grande: #{map.get($typography, 'font-size-grande')};
+  --fonte-tamanho-extra-grande: #{map.get($typography, 'font-size-extra-grande')};
+  --fonte-tamanho-titulo: #{map.get($typography, 'font-size-titulo')};
+  --fonte-tamanho-h5: #{map.get($typography, 'font-size-h5')};
+  --fonte-peso-regular: #{map.get($typography, 'font-weight-normal')};
+  --fonte-peso-medio: #{map.get($typography, 'font-weight-medium')};
+  --fonte-peso-semibold: #{map.get($typography, 'font-weight-semibold')};
+  --fonte-peso-negrito: #{map.get($typography, 'font-weight-bold')};
 
-  @each $name, $weight in map.get($typography, 'font-weights') {
-    --font-weight-#{$name}: #{$weight};
-  }
-
+  // Typography em inglês (compatibilidade)
   --font-family: #{map.get($typography, 'font-family')};
+  --font-size-base: #{map.get($typography, 'font-size-base')};
+  --font-size-sm: #{map.get($typography, 'font-size-sm')};
+  --font-size-lg: #{map.get($typography, 'font-size-lg')};
+  --font-size-xl: #{map.get($typography, 'font-size-xl')};
+  --font-size-2xl: #{map.get($typography, 'font-size-2xl')};
+  --font-size-3xl: #{map.get($typography, 'font-size-3xl')};
+  --font-size-4xl: #{map.get($typography, 'font-size-4xl')};
+  --font-weight-normal: #{map.get($typography, 'font-weight-normal')};
+  --font-weight-medium: #{map.get($typography, 'font-weight-medium')};
+  --font-weight-semibold: #{map.get($typography, 'font-weight-semibold')};
+  --font-weight-bold: #{map.get($typography, 'font-weight-bold')};
 
+  // Dimensions em português
+  --altura-input: #{map.get($dimensions, 'input-height')};
+  --altura-botao: #{map.get($dimensions, 'button-height')};
+  --altura-botao-pequeno: #{map.get($dimensions, 'button-height-small')};
+  --largura-botao-padrao: #{map.get($dimensions, 'button-width')};
+  --largura-botao-pequeno: #{map.get($dimensions, 'button-width-small')};
+  --largura-dropdown-trigger: #{map.get($dimensions, 'dropdown-trigger-width')};
+  --largura-max-card-grande: #{map.get(map.get($dimensions, 'card'), 'max-width-large')};
+  --altura-max-card-grande: #{map.get(map.get($dimensions, 'card'), 'max-height-large')};
+  --largura-max-card-pequeno: #{map.get(map.get($dimensions, 'card'), 'max-width-small')};
+  --largura-min-card-pequeno: #{map.get(map.get($dimensions, 'card'), 'min-width-small')};
+  --altura-max-form-mobile: #{map.get($dimensions, 'form-mobile-max-height')};
+  --largura-sidebar: #{map.get(map.get($dimensions, 'sidebar'), 'width')};
+  --largura-sidebar-compacto: #{map.get(map.get($dimensions, 'sidebar'), 'width-compact')};
+  --altura-box-fechar: #{map.get(map.get($dimensions, 'box'), 'close-height')};
+  --altura-box-usuario: #{map.get(map.get($dimensions, 'box'), 'user-height')};
+  --largura-iniciais-usuario: #{map.get(map.get($dimensions, 'user-initials'), 'width')};
+  --altura-iniciais-usuario: #{map.get(map.get($dimensions, 'user-initials'), 'height')};
+  --altura-link-rotas: #{map.get($dimensions, 'route-link-height')};
+
+  // Dimensions em inglês (compatibilidade)
   @each $name, $value in $dimensions {
     @if meta.type-of($value) == 'map' {
       @each $subname, $subvalue in $value {
@@ -134,27 +209,60 @@ $modal: (
     }
   }
 
+  // Borders em português
+  --borda-raio-padrao: #{map.get(map.get($borders, 'radius'), 'default')};
+  --borda-raio-pequeno: #{map.get(map.get($borders, 'radius'), 'small')};
+  --borda-raio-circular: #{map.get(map.get($borders, 'radius'), 'circular')};
+  --borda-largura: #{map.get($borders, 'width')};
+  --borda-estilo: #{map.get($borders, 'style')};
+  --borda-padrao: var(--borda-largura) var(--borda-estilo) var(--cor-cinza-medio);
+
+  // Borders em inglês (compatibilidade)
   @each $name, $value in map.get($borders, 'radius') {
     --border-radius-#{$name}: #{$value};
   }
-
   --border-width: #{map.get($borders, 'width')};
   --border-style: #{map.get($borders, 'style')};
   --border-default: var(--border-width) var(--border-style) var(--color-gray-medium);
 
+  // Spacing em português
+  --espacamento-pequeno: #{map.get($spacing, 'small')};
+  --espacamento-padrao: #{map.get($spacing, 'base')};
+  --espacamento-medio: #{map.get($spacing, 'medium')};
+  --espacamento-grande: #{map.get($spacing, 'large')};
+  --espacamento-extra-grande: #{map.get($spacing, 'xlarge')};
+
+  // Spacing em inglês (compatibilidade)
   @each $name, $value in $spacing {
     --spacing-#{$name}: #{$value};
   }
 
+  // Shadows em português
+  --sombra-padrao: #{map.get($shadows, 'default')};
+  --sombra-hover: #{map.get($shadows, 'hover')};
+
+  // Shadows em inglês (compatibilidade)
   @each $name, $value in $shadows {
     --shadow-#{$name}: #{$value};
   }
 
+  // Transitions em português
+  --transicao-padrao: #{map.get($transitions, 'default')};
+  --transicao-rapida: #{map.get($transitions, 'fast')};
+
+  // Transitions em inglês (compatibilidade)
   @each $name, $value in $transitions {
     --transition-#{$name}: #{$value};
   }
 
-  @each $name, $value in $modal {
-    --modal-#{$name}: #{$value};
-  }
-} 
+  // Modal
+  --modal-padding: #{map.get($modal, 'padding')};
+  --modal-border-radius: #{map.get($modal, 'border-radius')};
+  --modal-header-bg: #{map.get($modal, 'header-bg')};
+  --modal-content-bg: #{map.get($modal, 'content-bg')};
+  --modal-footer-bg: #{map.get($modal, 'footer-bg')};
+
+  // PrimeNG specific
+  --p-datatable-header-cell-background: var(--cor-primaria);
+  --p-datatable-header-cell-color: #fff;
+}

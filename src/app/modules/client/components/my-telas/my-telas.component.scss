@@ -331,7 +331,7 @@ small {
   overflow: hidden;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
+  transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
   position: relative;
 
   &:hover {

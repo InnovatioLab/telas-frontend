@@ -63,7 +63,7 @@
     font-size: 16px;
     color: var(--cor-primaria) !important;
     background-color: var(--cor-branca);
-    transition: all 0.3s ease;
+    transition: all var(--animation-duration-default) var(--animation-ease-in-out);
 
     &:focus {
       outline: none;
@@ -90,7 +90,7 @@
     align-items: center;
     justify-content: center;
     color: var(--cor-cinza) !important;
-    transition: all 0.3s ease;
+    transition: all var(--animation-duration-default) var(--animation-ease-in-out);
     min-width: 36px;
     height: 36px;
 

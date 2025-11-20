@@ -7,7 +7,7 @@
   background-color: var(--cor-branca);
   z-index: 1001;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--animation-duration-default) var(--animation-ease-out);
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);
@@ -91,7 +91,7 @@
     cursor: pointer;
     padding: 5px;
     border-radius: 50%;
-    transition: all 0.2s ease;
+    transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
@@ -115,7 +115,7 @@
       align-items: center;
       color: var(--cor-primaria);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
       outline: none;
       gap: 12px;
 
@@ -170,7 +170,7 @@
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 999;
   display: block;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn var(--animation-duration-default) var(--animation-ease-out);
 }
 
 @keyframes fadeIn {

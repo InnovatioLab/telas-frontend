@@ -154,7 +154,7 @@
                 border: 1px solid var(--cor-cinza-medio);
                 background: #ffffff;
                 color: var(--cor-primaria);
-                transition: all 0.2s ease;
+                transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
 
                 &:hover:not(.p-highlight) {
                   background: #f8f9fa;

@@ -142,7 +142,7 @@
         background: var(--cor-cinza-fundo);
         border-radius: 12px;
         border: 1px solid var(--cor-cinza-medio);
-        transition: all 0.2s;
+        transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
         
         &:hover {
           background: var(--cor-branca);
