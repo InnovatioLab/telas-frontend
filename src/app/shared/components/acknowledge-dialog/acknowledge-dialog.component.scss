@@ -102,3 +102,53 @@
     border-bottom: 1px solid var(--cor-cinza-medio);
   }
 }
+
+html[data-theme="dark"] :host,
+html.dark-theme :host,
+body.dark-theme :host {
+  .acknowledge-dialog {
+    background-color: var(--cor-card-background-dark) !important;
+  }
+
+  .alert-info {
+    background-color: var(--cor-cinza-fundo-dark) !important;
+  }
+
+  .alert-title {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  .device-id {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  .form-group label {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  .dialogo-titulo {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  .dialogo-descricao {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  ::ng-deep {
+    .p-dialog {
+      background-color: var(--cor-card-background-dark) !important;
+
+      .p-dialog-content {
+        background-color: var(--cor-card-background-dark) !important;
+      }
+
+      .p-dialog-header {
+        background-color: var(--cor-primaria-dark) !important;
+      }
+
+      .p-dialog-header-close {
+        color: var(--cor-texto-clara) !important;
+      }
+    }
+  }
+}

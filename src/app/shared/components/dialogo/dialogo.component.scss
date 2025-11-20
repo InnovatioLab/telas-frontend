@@ -100,3 +100,25 @@ s {
   all: unset;
   text-decoration: none !important;
 }
+
+html[data-theme="dark"] #dialogo-container,
+html.dark-theme #dialogo-container,
+body.dark-theme #dialogo-container {
+  background: var(--cor-card-background-dark) !important;
+
+  .dialogo-icone {
+    color: var(--cor-icone-clara) !important;
+  }
+
+  .dialogo-titulo {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  .dialogo-descricao {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  p, span, div {
+    color: var(--cor-texto-clara) !important;
+  }
+}

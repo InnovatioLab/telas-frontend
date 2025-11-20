@@ -1,27 +1,28 @@
 <p-card styleClass="card-header">
   <div class="card-header-content">
     <div class="p-card-content">
-      <span class="p-input-icon-left">
-        <app-icon-search
-          style="color: #496382"
-          class="search-icon"
-          (click)="onSearch()"
-        ></app-icon-search>
-        <input
-          type="text"
-          style="width: 250px"
-          pInputText
-          placeholder="Search Ad Requests"
-          [(ngModel)]="searchTerm"
-          [ngModelOptions]="{ standalone: true }"
-          (keyup.enter)="onSearch()"
-        />
+      <div class="w-full flex align-items-center gap-2">
+        <span class="p-input-icon-left">
+          <app-icon-search
+            class="search-icon search-icon-color"
+            (click)="onSearch()"
+          ></app-icon-search>
+          <input
+            type="text"
+            class="search-input-width"
+            pInputText
+            placeholder="Search Ad Requests"
+            [(ngModel)]="searchTerm"
+            [ngModelOptions]="{ standalone: true }"
+            (keyup.enter)="onSearch()"
+          />
+        </span>
         <span
-          class="pi pi-info-circle ml-2"
-          style="color: var(--cor-primaria)"
+          class="pi pi-info-circle info-icon"
           pTooltip="Search by Client BusinessName, Phone, Email or Role"
+          tooltipPosition="top"
         ></span>
-      </span>
+      </div>
     </div>
   </div>
 </p-card>

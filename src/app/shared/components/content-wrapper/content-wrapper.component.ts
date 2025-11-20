@@ -27,9 +27,9 @@ import { LayoutService } from "@app/core/service/state/layout.service";
       .content-wrapper {
         width: 100%;
         transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: var(--cor-branca);
+        background-color: var(--cor-cinza-fundo);
         box-sizing: border-box;
-        min-height: calc(100vh - 70px); /* Header height */
+        min-height: calc(100vh - 70px);
       }
 
       .content-container {

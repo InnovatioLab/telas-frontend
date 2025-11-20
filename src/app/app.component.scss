@@ -233,6 +233,50 @@
     }
   }
 
+  html[data-theme="dark"] .p-toast,
+  html.dark-theme .p-toast,
+  body.dark-theme .p-toast {
+    .toast-title {
+      color: var(--cor-texto-clara) !important;
+    }
+
+    .toast-message {
+      color: var(--cor-texto-clara) !important;
+    }
+
+    .p-toast-message-success {
+      background: linear-gradient(135deg, #1a3d2e 0%, #0f281f 100%) !important;
+
+      .toast-title {
+        color: var(--cor-sucesso) !important;
+      }
+    }
+
+    .p-toast-message-error {
+      background: linear-gradient(135deg, #3d1a1a 0%, #280f0f 100%) !important;
+
+      .toast-title {
+        color: var(--cor-erro) !important;
+      }
+    }
+
+    .p-toast-message-warn {
+      background: linear-gradient(135deg, #3d2e1a 0%, #281f0f 100%) !important;
+
+      .toast-title {
+        color: var(--cor-alerta) !important;
+      }
+    }
+
+    .p-toast-message-info {
+      background: linear-gradient(135deg, #1a2a3d 0%, #0f1a28 100%) !important;
+
+      .toast-title {
+        color: var(--cor-primaria-clara) !important;
+      }
+    }
+  }
+
   // Animations
   @keyframes slideInRight {
     from {
@@ -294,6 +338,21 @@
   .p-dialog-content {
     overflow-x: hidden !important;
     border-radius: 0px;
+  }
+
+  html[data-theme="dark"] .p-dialog,
+  html.dark-theme .p-dialog,
+  body.dark-theme .p-dialog {
+    background: var(--cor-card-background-dark) !important;
+
+    .p-dialog-content {
+      background: var(--cor-card-background-dark) !important;
+      color: var(--cor-texto-clara) !important;
+
+      * {
+        color: var(--cor-texto-clara) !important;
+      }
+    }
   }
 
   .p-drawer {

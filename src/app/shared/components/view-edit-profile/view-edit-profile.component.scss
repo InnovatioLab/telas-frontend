@@ -265,3 +265,24 @@
   margin-top: 0.5rem;
   border-radius: var(--borda-raio-pequeno);
 }
+
+html[data-theme="dark"] :host,
+html.dark-theme :host,
+body.dark-theme :host {
+  color: var(--cor-texto-clara) !important;
+
+  .profile-title,
+  .section-title {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  label {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  p,
+  span,
+  div {
+    color: var(--cor-texto-clara) !important;
+  }
+}

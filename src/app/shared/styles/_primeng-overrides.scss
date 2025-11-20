@@ -436,6 +436,34 @@ textarea {
     }
   }
 
+  html[data-theme="dark"] &,
+  html.dark-theme &,
+  body.dark-theme & {
+    background-color: var(--cor-card-background-dark) !important;
+
+    .p-datatable-tbody {
+      > tr.ng-star-inserted {
+        background-color: var(--cor-card-background-dark) !important;
+
+        &:nth-child(even) {
+          background-color: var(--cor-cinza-fundo-dark) !important;
+        }
+
+        &:hover {
+          background-color: var(--cor-cinza-medio-dark) !important;
+        }
+
+        > td {
+          color: var(--cor-texto-clara) !important;
+
+          * {
+            color: var(--cor-texto-clara) !important;
+          }
+        }
+      }
+    }
+  }
+
   &.p-datatable-sm {
     .p-datatable-thead th {
       padding: var(--espacamento-pequeno) var(--espacamento-padrao);
@@ -470,6 +498,29 @@ textarea {
   .p-paginator-current {
     color: var(--cor-legenda);
     margin-right: var(--espacamento-medio);
+  }
+
+  html[data-theme="dark"] &,
+  html.dark-theme &,
+  body.dark-theme & {
+    background-color: var(--cor-card-background-dark) !important;
+    background: var(--cor-card-background-dark) !important;
+
+    .p-paginator-current {
+      color: var(--cor-texto-clara) !important;
+    }
+
+    .p-paginator-page,
+    .p-paginator-first,
+    .p-paginator-prev,
+    .p-paginator-next,
+    .p-paginator-last {
+      color: var(--cor-texto-clara) !important;
+
+      .pi {
+        color: var(--cor-icone-clara) !important;
+      }
+    }
   }
 
   .p-paginator-page,
@@ -775,6 +826,28 @@ textarea {
 ::ng-deep th.p-datatable-column-sorted {
   background-color: var(--cor-primaria) !important;
   color: #fff !important;
+}
+
+html[data-theme="dark"] ::ng-deep .p-datatable-thead th,
+html[data-theme="dark"] ::ng-deep .p-datatable-thead > tr > th,
+html[data-theme="dark"] ::ng-deep .p-datatable .p-datatable-thead th,
+html[data-theme="dark"] ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+html[data-theme="dark"] ::ng-deep th.p-datatable-sortable-column,
+html[data-theme="dark"] ::ng-deep th.p-datatable-column-sorted,
+html.dark-theme ::ng-deep .p-datatable-thead th,
+html.dark-theme ::ng-deep .p-datatable-thead > tr > th,
+html.dark-theme ::ng-deep .p-datatable .p-datatable-thead th,
+html.dark-theme ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+html.dark-theme ::ng-deep th.p-datatable-sortable-column,
+html.dark-theme ::ng-deep th.p-datatable-column-sorted,
+body.dark-theme ::ng-deep .p-datatable-thead th,
+body.dark-theme ::ng-deep .p-datatable-thead > tr > th,
+body.dark-theme ::ng-deep .p-datatable .p-datatable-thead th,
+body.dark-theme ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+body.dark-theme ::ng-deep th.p-datatable-sortable-column,
+body.dark-theme ::ng-deep th.p-datatable-column-sorted {
+  background-color: var(--cor-primaria-dark) !important;
+  color: var(--cor-texto-clara) !important;
 }
 
 @include responsive("mobile") {

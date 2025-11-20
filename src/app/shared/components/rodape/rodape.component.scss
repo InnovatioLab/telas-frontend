@@ -9,8 +9,94 @@
   h3,
   h4,
   li,
-  a {
-    color: var(--cor-branca);
+  a,
+  div {
+    color: #ffffff;
+  }
+}
+
+html[data-theme="dark"] .rodape-container,
+html.dark-theme .rodape-container,
+body.dark-theme .rodape-container {
+  background-color: var(--cor-primaria-escura-dark);
+
+  span,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  li,
+  a,
+  div {
+    color: #ffffff !important;
+  }
+
+  * {
+    color: #ffffff !important;
+  }
+
+  .text-primary-light {
+    color: var(--cor-primaria-clara) !important;
+  }
+
+  app-icon-mail,
+  app-icon-phone {
+    color: #ffffff !important;
+
+    ::ng-deep svg,
+    svg {
+      fill: #ffffff !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .footer-link {
+    color: #ffffff !important;
+
+    &:hover {
+      color: var(--cor-primaria-clara) !important;
+    }
+  }
+
+  .footer-bottom {
+    border-top-color: var(--cor-cinza-medio) !important;
+
+    p,
+    span,
+    * {
+      color: #ffffff !important;
+    }
+  }
+
+  a[href^="mailto:"],
+  a[href^="tel:"] {
+    color: #ffffff !important;
+
+    &:hover {
+      color: var(--cor-primaria-clara) !important;
+    }
+  }
+
+  .footer-brand p,
+  .footer-grid h4,
+  .footer-grid p,
+  .footer-grid li,
+  .footer-grid a,
+  .footer-grid span,
+  .footer-grid div {
+    color: #ffffff !important;
+  }
+
+  .social-icon {
+    color: #ffffff !important;
+    background-color: var(--cor-primaria-clara-dark) !important;
+
+    &:hover {
+      background-color: var(--cor-primaria-clara) !important;
+    }
   }
 }
 

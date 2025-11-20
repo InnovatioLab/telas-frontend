@@ -28,6 +28,7 @@ import { IconsModule } from '@app/shared/icons/icons.module';
       padding: 8px;
       border-radius: 4px;
       transition: background-color 0.2s;
+      color: var(--cor-texto-clara);
     }
     
     .menu-trigger:hover {
@@ -41,6 +42,18 @@ import { IconsModule } from '@app/shared/icons/icons.module';
     .menu-trigger:focus {
       outline: 2px solid #007bff;
       outline-offset: 2px;
+    }
+
+    .menu-trigger ::ng-deep svg,
+    .menu-trigger svg {
+      fill: currentColor;
+      color: currentColor;
+    }
+
+    html[data-theme="dark"] .menu-trigger,
+    html.dark-theme .menu-trigger,
+    body.dark-theme .menu-trigger {
+      color: var(--cor-icone-clara) !important;
     }
   `]
 })
