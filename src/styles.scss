@@ -32,6 +32,53 @@ body.dark-theme {
     color: #ffffff !important;
   }
 
+  ::ng-deep .p-datatable-thead th,
+  ::ng-deep .p-datatable .p-datatable-thead th,
+  ::ng-deep th.p-datatable-sortable-column,
+  ::ng-deep th.p-datatable-column-sorted,
+  .p-datatable-thead th,
+  .p-datatable .p-datatable-thead th,
+  th.p-datatable-sortable-column,
+  th.p-datatable-column-sorted {
+    color: #ffffff !important;
+
+    &,
+    &::before,
+    &::after {
+      color: #ffffff !important;
+    }
+
+    *,
+    *::before,
+    *::after {
+      color: #ffffff !important;
+    }
+
+    span,
+    div,
+    p,
+    text {
+      color: #ffffff !important;
+    }
+
+    p-sorticon,
+    p-sorticon *,
+    .p-sortable-column-icon,
+    .p-sortable-column-icon *,
+    svg,
+    svg *,
+    .p-icon,
+    .p-icon * {
+      color: #ffffff !important;
+      fill: #ffffff !important;
+    }
+
+    svg path,
+    svg g path {
+      fill: #ffffff !important;
+    }
+  }
+
   .material-icons,
   .material-symbols-outlined,
   .pi,
@@ -2369,9 +2416,30 @@ img {
   }
 }
 
-.p-paginator-rpp-dropdown.p-select {
+.p-paginator-rpp-dropdown.p-select,
+.p-paginator p-select.p-paginator-rpp-dropdown,
+.p-paginator .p-paginator-rpp-dropdown,
+.p-paginator .p-paginator-rpp-dropdown.p-select {
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  display: inline-flex !important;
+  float: none !important;
+  clear: none !important;
+  width: 4.5rem !important;
+  min-width: 4.5rem !important;
+  max-width: 4.5rem !important;
+  box-sizing: border-box !important;
+
   .p-select-label {
     padding-left: 10px;
+  }
+}
+
+.p-select {
+  &.p-paginator-rpp-dropdown {
+    width: 4.5rem !important;
+    min-width: 4.5rem !important;
+    max-width: 4.5rem !important;
   }
 }
 

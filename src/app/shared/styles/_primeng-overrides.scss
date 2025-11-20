@@ -406,6 +406,22 @@ textarea {
       border: none;
       transition: var(--transicao-rapida);
 
+      * {
+        color: #fff !important;
+      }
+
+      p-sorticon,
+      .p-sortable-column-icon,
+      svg,
+      .p-icon {
+        color: #fff !important;
+        fill: #fff !important;
+
+        path {
+          fill: #fff !important;
+        }
+      }
+
       &:hover {
         background-color: var(--cor-primaria) !important;
       }
@@ -441,6 +457,51 @@ textarea {
   body.dark-theme & {
     background-color: var(--cor-card-background-dark) !important;
 
+    .p-datatable-thead {
+      background-color: var(--cor-primaria-dark) !important;
+
+      th {
+        background-color: var(--cor-primaria-dark) !important;
+        color: #ffffff !important;
+
+        &,
+        &::before,
+        &::after {
+          color: #ffffff !important;
+        }
+
+        *,
+        *::before,
+        *::after {
+          color: #ffffff !important;
+        }
+
+        span,
+        div,
+        p,
+        text {
+          color: #ffffff !important;
+        }
+
+        p-sorticon,
+        p-sorticon *,
+        .p-sortable-column-icon,
+        .p-sortable-column-icon *,
+        svg,
+        svg *,
+        .p-icon,
+        .p-icon * {
+          color: #ffffff !important;
+          fill: #ffffff !important;
+        }
+
+        svg path,
+        svg g path {
+          fill: #ffffff !important;
+        }
+      }
+    }
+
     .p-datatable-tbody {
       > tr.ng-star-inserted {
         background-color: var(--cor-card-background-dark) !important;
@@ -453,6 +514,53 @@ textarea {
           background-color: var(--cor-cinza-medio-dark) !important;
         }
 
+        > td {
+          color: var(--cor-texto-clara) !important;
+
+          * {
+            color: var(--cor-texto-clara) !important;
+          }
+
+          span,
+          div,
+          p,
+          a,
+          button,
+          label {
+            color: var(--cor-texto-clara) !important;
+          }
+
+          .p-badge {
+            color: var(--cor-texto-clara) !important;
+
+            * {
+              color: var(--cor-texto-clara) !important;
+            }
+          }
+        }
+      }
+
+      > tr {
+        > td {
+          color: var(--cor-texto-clara) !important;
+
+          * {
+            color: var(--cor-texto-clara) !important;
+          }
+
+          span,
+          div,
+          p,
+          a,
+          button,
+          label {
+            color: var(--cor-texto-clara) !important;
+          }
+        }
+      }
+
+      > tr.empty,
+      > tr[class*="empty"] {
         > td {
           color: var(--cor-texto-clara) !important;
 
@@ -472,6 +580,29 @@ textarea {
     .p-datatable-tbody td {
       padding: var(--espacamento-pequeno) var(--espacamento-padrao);
     }
+
+    html[data-theme="dark"] &,
+    html.dark-theme &,
+    body.dark-theme & {
+      .p-datatable-tbody {
+        > tr > td {
+          color: var(--cor-texto-clara) !important;
+
+          * {
+            color: var(--cor-texto-clara) !important;
+          }
+
+          span,
+          div,
+          p,
+          a,
+          button,
+          label {
+            color: var(--cor-texto-clara) !important;
+          }
+        }
+      }
+    }
   }
 
   .p-datatable-table-container {
@@ -490,14 +621,22 @@ textarea {
   background: var(--cor-branca) !important;
   padding: var(--espacamento-padrao);
   border-top: var(--borda-padrao);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  row-gap: 1rem;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--espacamento-pequeno) !important;
+
+  > * {
+    flex-shrink: 0 !important;
+  }
 
   .p-paginator-current {
     color: var(--cor-legenda);
     margin-right: var(--espacamento-medio);
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
   }
 
   html[data-theme="dark"] &,
@@ -519,6 +658,15 @@ textarea {
 
       .pi {
         color: var(--cor-icone-clara) !important;
+      }
+    }
+
+    .p-paginator-rpp-dropdown {
+      background-color: var(--cor-card-background-dark) !important;
+      border-color: var(--cor-cinza-medio-dark) !important;
+
+      .p-select-label {
+        color: var(--cor-texto-clara) !important;
       }
     }
   }
@@ -551,15 +699,42 @@ textarea {
     }
   }
 
-  .p-paginator-rpp-dropdown {
-    margin-left: var(--espacamento-medio);
-    width: 4.5rem;
-    padding: 8px 0px;
+  .p-paginator-rpp-dropdown,
+  p-select.p-paginator-rpp-dropdown,
+  .p-paginator p-select.p-paginator-rpp-dropdown,
+  .p-paginator .p-paginator-rpp-dropdown.p-select {
+    margin-left: var(--espacamento-medio) !important;
+    width: 4.5rem !important;
+    min-width: 4.5rem !important;
+    max-width: 4.5rem !important;
+    padding: 8px 0px !important;
     background-color: var(--cor-branca);
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    order: 999 !important;
+    float: none !important;
+    clear: none !important;
+    box-sizing: border-box !important;
 
     .p-select-label {
       font-size: var(--fonte-tamanho-pequeno);
     }
+  }
+
+  .p-paginator-pages {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: var(--espacamento-pequeno) !important;
+    flex-shrink: 0 !important;
+  }
+
+  p-select,
+  .p-select {
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
   }
 }
 
@@ -847,7 +1022,38 @@ body.dark-theme ::ng-deep .p-datatable .p-datatable-thead > tr > th,
 body.dark-theme ::ng-deep th.p-datatable-sortable-column,
 body.dark-theme ::ng-deep th.p-datatable-column-sorted {
   background-color: var(--cor-primaria-dark) !important;
-  color: var(--cor-texto-clara) !important;
+  color: #ffffff !important;
+
+  &,
+  *,
+  span,
+  div,
+  p {
+    color: #ffffff !important;
+  }
+
+  p-sorticon,
+  p-sorticon *,
+  .p-sortable-column-icon,
+  .p-sortable-column-icon *,
+  svg,
+  svg *,
+  .p-icon,
+  .p-icon * {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+  }
+
+  svg path,
+  svg g path {
+    fill: #ffffff !important;
+  }
+}
+
+html[data-theme="dark"] ::ng-deep .p-datatable .p-datatable-thead th *,
+html.dark-theme ::ng-deep .p-datatable .p-datatable-thead th *,
+body.dark-theme ::ng-deep .p-datatable .p-datatable-thead th * {
+  color: #ffffff !important;
 }
 
 @include responsive("mobile") {
@@ -868,23 +1074,35 @@ body.dark-theme ::ng-deep th.p-datatable-column-sorted {
   }
 
   ::ng-deep .p-paginator {
-    flex-wrap: wrap;
-    gap: var(--espacamento-pequeno);
+    flex-wrap: nowrap !important;
+    flex-direction: row !important;
+    gap: var(--espacamento-pequeno) !important;
     background-color: var(--cor-branca) !important;
+    overflow-x: auto !important;
+    font-size: var(--fonte-tamanho-pequeno);
+
+    > * {
+      flex-shrink: 0 !important;
+    }
 
     .p-paginator-current {
-      width: 100%;
+      flex-shrink: 0 !important;
+      white-space: nowrap !important;
       text-align: center;
-      margin-right: 0;
-      margin-bottom: var(--espacamento-pequeno);
+      margin-right: var(--espacamento-pequeno) !important;
+      margin-bottom: 0 !important;
+    }
+
+    .p-paginator-rpp-dropdown {
+      flex-shrink: 0 !important;
+      display: inline-flex !important;
+      margin-left: var(--espacamento-pequeno) !important;
     }
 
     .p-paginator-prev,
     .p-paginator-next {
       display: none;
     }
-
-    font-size: var(--fonte-tamanho-pequeno);
   }
 }
 
