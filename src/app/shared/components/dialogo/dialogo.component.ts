@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  OnInit,
   OnDestroy,
   Output,
 } from "@angular/core";
@@ -19,7 +20,7 @@ import { IconAtencaoComponent } from "../../icons/atencao.icon";
   styleUrls: ["./dialogo.component.scss"],
   imports: [CommonModule, PrimengModule, IconAtencaoComponent],
 })
-export class DialogoComponent implements AfterViewInit, OnDestroy {
+export class DialogoComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() onChange = new EventEmitter<any>();
 
   data: IConfigDialogo = {
@@ -46,20 +47,26 @@ export class DialogoComponent implements AfterViewInit, OnDestroy {
     this.data = this.config.data;
   }
 
-  ngAfterViewInit() {
-    this.exibir = true;
-
+  ngOnInit() {
     if (this.data.descricao) {
       this.data.descricao = this.data.descricao
         .replace(/<s>/g, '<span class="font-semibold">')
         .replace(/<\/s>/g, "</span>");
     }
+    this.exibir = true;
+    this.cdr.markForCheck();
+  }
 
+  ngAfterViewInit() {
     this.cdr.detectChanges();
 
     if (!document.querySelector(".sidebar-carrinho")) {
       document.body.style.overflow = "hidden";
     }
+
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   ngOnChanges() {}
