@@ -28,32 +28,46 @@ import { IconsModule } from '@app/shared/icons/icons.module';
       padding: 8px;
       border-radius: 4px;
       transition: background-color 0.2s;
-      color: var(--cor-texto-clara);
+      color: #ffffff !important;
     }
     
     .menu-trigger:hover {
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: rgba(255, 255, 255, 0.15);
     }
     
     .menu-trigger.active {
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: rgba(255, 255, 255, 0.2);
     }
     
     .menu-trigger:focus {
-      outline: 2px solid #007bff;
+      outline: 2px solid rgba(255, 255, 255, 0.5);
       outline-offset: 2px;
+    }
+
+    .menu-trigger app-icon-bars {
+      color: #ffffff !important;
     }
 
     .menu-trigger ::ng-deep svg,
     .menu-trigger svg {
-      fill: currentColor;
-      color: currentColor;
+      fill: #ffffff !important;
+      color: #ffffff !important;
     }
 
     html[data-theme="dark"] .menu-trigger,
     html.dark-theme .menu-trigger,
     body.dark-theme .menu-trigger {
       color: var(--cor-icone-clara) !important;
+
+      app-icon-bars {
+        color: var(--cor-icone-clara) !important;
+      }
+
+      ::ng-deep svg,
+      svg {
+        fill: var(--cor-icone-clara) !important;
+        color: var(--cor-icone-clara) !important;
+      }
     }
   `]
 })

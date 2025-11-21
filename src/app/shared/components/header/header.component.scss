@@ -324,18 +324,18 @@ header {
   transition: all var(--animation-duration-default) var(--animation-ease-in-out);
 
   i {
-    color: var(--cor-texto-clara);
+    color: #ffffff !important;
     font-size: 20px;
     transition: all var(--animation-duration-default) var(--animation-ease-in-out);
   }
 
   app-icon-bars {
-    color: var(--cor-texto-clara);
+    color: #ffffff !important;
 
     ::ng-deep svg,
     svg {
-      fill: currentColor;
-      color: currentColor;
+      fill: #ffffff !important;
+      color: #ffffff !important;
     }
   }
 

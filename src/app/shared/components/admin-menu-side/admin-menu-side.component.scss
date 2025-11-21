@@ -96,11 +96,21 @@
   .close-btn {
     background: transparent;
     border: none;
-    color: var(--cor-branca);
+    color: #ffffff !important;
     cursor: pointer;
     padding: 5px;
     border-radius: 50%;
     transition: all 0.2s ease;
+
+    app-icon-close {
+      color: #ffffff !important;
+
+      ::ng-deep svg,
+      svg {
+        fill: #ffffff !important;
+        color: #ffffff !important;
+      }
+    }
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
