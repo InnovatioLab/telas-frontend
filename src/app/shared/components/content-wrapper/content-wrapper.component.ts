@@ -38,7 +38,6 @@ import { LayoutService } from "@app/core/service/state/layout.service";
         margin: 0 auto;
         width: 100%;
         box-sizing: border-box;
-        /* Remove altura fixa para permitir altura natural do conteúdo */
         min-height: inherit;
       }
 
@@ -86,6 +85,5 @@ export class ContentWrapperComponent {
   isMobile = this.layoutService.isMobile;
   isMobileCompact = this.layoutService.isMobileCompact;
 
-  // Computed property para calcular o padding baseado no estado do layout
   contentPadding = this.layoutService.contentMargin;
 }
