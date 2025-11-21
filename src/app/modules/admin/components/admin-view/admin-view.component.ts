@@ -8,6 +8,7 @@ import {
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Subscription } from "rxjs";
+import * as L from "leaflet";
 import { GoogleMapsService } from "../../../../core/service/api/google-maps.service";
 import { ZipCodeService } from "../../../../core/service/api/zipcode.service";
 import { Authentication } from "../../../../core/service/auth/autenthication";
@@ -121,7 +122,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   monitors: MapPoint[] = [];
   mapCenter: { lat: number; lng: number } | null = null;
-  private map: google.maps.Map | null = null;
+  private map: L.Map | null = null;
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
@@ -196,7 +197,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  onMapInitialized(map: google.maps.Map): void {
+  onMapInitialized(map: L.Map): void {
     this.map = map;
   }
 
@@ -204,11 +205,7 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.googleMapsService.selectPoint(point);
 
     if (this.map) {
-      this.map.setCenter({
-        lat: point.latitude,
-        lng: point.longitude,
-      });
-      this.map.setZoom(16);
+      this.map.setView([point.latitude, point.longitude], 16);
     }
   }
 

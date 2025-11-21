@@ -6,6 +6,79 @@
 @use "./app/shared/styles/custom-dark-colors" as *;
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
+@import "leaflet/dist/leaflet.css";
+
+.custom-cluster-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.leaflet-container {
+  font-family: var(--fonte-familia);
+}
+
+.leaflet-tile-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.leaflet-tile-container img {
+  display: block;
+  border: 0;
+  filter: brightness(0.8) contrast(1.1);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.leaflet-tile {
+  display: block;
+  border: 0;
+  pointer-events: none;
+}
+
+html[data-theme="dark"] .leaflet-container,
+html.dark-theme .leaflet-container,
+body.dark-theme .leaflet-container {
+  background-color: var(--cor-cinza-fundo-dark) !important;
+}
+
+html[data-theme="dark"] .leaflet-tile-container img,
+html.dark-theme .leaflet-tile-container img,
+body.dark-theme .leaflet-tile-container img {
+  filter: brightness(0.6) contrast(1.2);
+}
+
+.leaflet-pane {
+  z-index: 400;
+}
+
+.leaflet-tile-pane {
+  z-index: 200;
+}
+
+.leaflet-overlay-pane {
+  z-index: 400;
+}
+
+.leaflet-shadow-pane {
+  z-index: 500;
+}
+
+.leaflet-marker-pane {
+  z-index: 600;
+}
+
+.leaflet-tooltip-pane {
+  z-index: 650;
+}
+
+.leaflet-popup-pane {
+  z-index: 700;
+}
 
 html,
 body {
