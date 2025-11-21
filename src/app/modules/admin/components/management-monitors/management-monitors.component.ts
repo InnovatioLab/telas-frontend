@@ -233,21 +233,17 @@ export class ManagementMonitorsComponent implements OnInit {
             summary: "Success",
             detail: "Screen created successfully!",
           });
+          this.closeModal();
+          this.loadMonitors();
         }
       },
       error: (error) => {
-        this.closeModal();
         this.messageService.add({
-          severity: "warn",
-          summary: "Warning",
+          severity: "error",
+          summary: "Error",
           detail:
             "An error occurred while creating the screen. Please check the data and try again.",
         });
-        this.loadMonitors();
-      },
-      complete: () => {
-        this.closeModal();
-        this.loadMonitors();
       },
     });
   }

@@ -60,6 +60,22 @@ interface MonitorCluster {
         box-sizing: border-box;
         overflow: hidden;
       }
+
+      div ::ng-deep .leaflet-container {
+        border-radius: 0 !important;
+      }
+
+      div ::ng-deep .leaflet-tile-container {
+        border-radius: 0 !important;
+      }
+
+      div ::ng-deep .leaflet-tile-container img {
+        border-radius: 0 !important;
+      }
+
+      div ::ng-deep .leaflet-tile {
+        border-radius: 0 !important;
+      }
     `,
   ],
 })

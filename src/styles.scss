@@ -26,6 +26,7 @@
 .leaflet-tile-container img {
   display: block;
   border: 0;
+  border-radius: 0 !important;
   filter: brightness(0.8) contrast(1.1);
   image-rendering: -webkit-optimize-contrast;
   image-rendering: -moz-crisp-edges;
@@ -37,7 +38,16 @@
 .leaflet-tile {
   display: block;
   border: 0;
+  border-radius: 0 !important;
   pointer-events: none;
+}
+
+.leaflet-tile-container {
+  border-radius: 0 !important;
+}
+
+.leaflet-tile-container .leaflet-tile {
+  border-radius: 0 !important;
 }
 
 html[data-theme="dark"] .leaflet-container,
