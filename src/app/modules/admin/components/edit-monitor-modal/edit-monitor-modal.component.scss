@@ -1,10 +1,14 @@
 :host {
-  color: var(--cor-branca);
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--cor-branca);
+  
   .edit-monitor-modal {
     width: 100%;
     max-width: 800px;
     height: 100%;
-    background: white;
+    background-color: var(--cor-branca);
     border-radius: 8px;
     overflow: hidden;
 
@@ -156,7 +160,7 @@
   border: var(--borda-padrao);
   font-size: 1rem;
   color: var(--cor-cinza-escuro);
-  background: #fff;
+  background-color: var(--cor-branca);
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
@@ -198,3 +202,39 @@
     }
   }
 }
+
+html[data-theme="dark"] .edit-monitor-modal,
+html.dark-theme .edit-monitor-modal,
+body.dark-theme .edit-monitor-modal {
+  .modal-header {
+    border-bottom-color: var(--cor-cinza-medio) !important;
+  }
+
+  .modal-content {
+    .form-section {
+      border-color: var(--cor-cinza-medio) !important;
+
+      h3 {
+        border-bottom-color: var(--cor-cinza-medio) !important;
+      }
+
+      .address-group {
+        background-color: var(--cor-cinza-fundo) !important;
+        border-color: var(--cor-cinza-medio) !important;
+      }
+    }
+  }
+}
+
+html[data-theme="dark"] .edit-monitor-modal .status-label,
+html.dark-theme .edit-monitor-modal .status-label,
+body.dark-theme .edit-monitor-modal .status-label {
+  &[style*="#388e3c"] {
+    color: var(--cor-sucesso) !important;
+  }
+
+  &[style*="#d32f2f"] {
+    color: var(--cor-erro) !important;
+  }
+}
+

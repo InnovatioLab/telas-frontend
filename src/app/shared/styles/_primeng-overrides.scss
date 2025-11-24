@@ -429,25 +429,49 @@ textarea {
   }
 
   .p-datatable-tbody {
-    > tr.ng-star-inserted {
+    > tr {
       border-bottom: var(--borda-padrao);
-      background-color: var(--cor-branca);
+      background-color: var(--cor-branca) !important;
       transition: var(--transicao-rapida);
 
       &:nth-child(even) {
-        background-color: var(--cor-cinza-fundo);
+        background-color: #f8f9fa !important;
       }
 
       &:hover {
-        background-color: var(--cor-cinza-medio);
+        background-color: #e9ecef !important;
       }
 
       > td {
         padding: var(--espacamento-padrao);
         border-bottom: var(--borda-padrao);
         font-size: var(--fonte-tamanho-padrao);
-        color: var(--cor-cinza-escuro);
+        color: var(--cor-cinza-escuro) !important;
         text-align: center;
+        background-color: transparent !important;
+      }
+    }
+
+    > tr.ng-star-inserted {
+      border-bottom: var(--borda-padrao);
+      background-color: var(--cor-branca) !important;
+      transition: var(--transicao-rapida);
+
+      &:nth-child(even) {
+        background-color: #f8f9fa !important;
+      }
+
+      &:hover {
+        background-color: #e9ecef !important;
+      }
+
+      > td {
+        padding: var(--espacamento-padrao);
+        border-bottom: var(--borda-padrao);
+        font-size: var(--fonte-tamanho-padrao);
+        color: var(--cor-cinza-escuro) !important;
+        text-align: center;
+        background-color: transparent !important;
       }
     }
   }
@@ -577,28 +601,61 @@ textarea {
       padding: var(--espacamento-pequeno) var(--espacamento-padrao);
     }
 
-    .p-datatable-tbody td {
-      padding: var(--espacamento-pequeno) var(--espacamento-padrao);
+    .p-datatable-tbody {
+      > tr {
+        background-color: var(--cor-branca) !important;
+
+        &:nth-child(even) {
+          background-color: #f8f9fa !important;
+        }
+
+        &:hover {
+          background-color: #e9ecef !important;
+        }
+
+        > td {
+          padding: var(--espacamento-pequeno) var(--espacamento-padrao);
+          color: var(--cor-cinza-escuro) !important;
+          background-color: transparent !important;
+
+          * {
+            color: var(--cor-cinza-escuro) !important;
+          }
+        }
+      }
     }
 
     html[data-theme="dark"] &,
     html.dark-theme &,
     body.dark-theme & {
       .p-datatable-tbody {
-        > tr > td {
-          color: var(--cor-texto-clara) !important;
+        > tr {
+          background-color: var(--cor-card-background-dark) !important;
 
-          * {
-            color: var(--cor-texto-clara) !important;
+          &:nth-child(even) {
+            background-color: var(--cor-cinza-fundo-dark) !important;
           }
 
-          span,
-          div,
-          p,
-          a,
-          button,
-          label {
+          &:hover {
+            background-color: var(--cor-cinza-medio-dark) !important;
+          }
+
+          > td {
             color: var(--cor-texto-clara) !important;
+            background-color: transparent !important;
+
+            * {
+              color: var(--cor-texto-clara) !important;
+            }
+
+            span,
+            div,
+            p,
+            a,
+            button,
+            label {
+              color: var(--cor-texto-clara) !important;
+            }
           }
         }
       }
@@ -617,8 +674,11 @@ textarea {
 ::ng-deep div.p-paginator.p-component,
 ::ng-deep [data-pc-section="root"].p-paginator,
 ::ng-deep [data-pc-section="root"].p-paginator.p-component {
+  --p-paginator-background: var(--cor-branca) !important;
+  --p-paginator-color: var(--cor-cinza-escuro) !important;
   background-color: var(--cor-branca) !important;
   background: var(--cor-branca) !important;
+  color: var(--cor-cinza-escuro) !important;
   padding: var(--espacamento-padrao);
   border-top: var(--borda-padrao);
   display: flex !important;
@@ -633,7 +693,7 @@ textarea {
   }
 
   .p-paginator-current {
-    color: var(--cor-legenda);
+    color: var(--cor-legenda) !important;
     margin-right: var(--espacamento-medio);
     flex-shrink: 0 !important;
     white-space: nowrap !important;
@@ -642,8 +702,11 @@ textarea {
   html[data-theme="dark"] &,
   html.dark-theme &,
   body.dark-theme & {
+    --p-paginator-background: var(--cor-card-background-dark) !important;
+    --p-paginator-color: var(--cor-texto-clara) !important;
     background-color: var(--cor-card-background-dark) !important;
     background: var(--cor-card-background-dark) !important;
+    color: var(--cor-texto-clara) !important;
 
     .p-paginator-current {
       color: var(--cor-texto-clara) !important;
@@ -680,22 +743,41 @@ textarea {
     height: 2.5rem;
     margin: 0 var(--espacamento-pequeno);
     border-radius: var(--borda-raio-circular);
-    color: var(--cor-primaria);
-    background-color: transparent;
+    color: var(--cor-primaria) !important;
+    background-color: transparent !important;
     transition: var(--transicao-rapida);
 
+    svg,
+    .p-icon {
+      color: var(--cor-primaria) !important;
+      fill: var(--cor-primaria) !important;
+    }
+
     &:hover:not(.p-disabled):not(.p-highlight) {
-      background-color: var(--cor-cinza-medio);
+      background-color: #e9ecef !important;
     }
 
     &.p-highlight {
-      background-color: var(--cor-primaria);
-      color: var(--cor-branca);
+      background-color: var(--cor-primaria) !important;
+      color: var(--cor-branca) !important;
+
+      svg,
+      .p-icon {
+        color: var(--cor-branca) !important;
+        fill: var(--cor-branca) !important;
+      }
     }
 
     &.p-disabled {
       opacity: 0.5;
       cursor: default;
+      color: var(--cor-legenda) !important;
+
+      svg,
+      .p-icon {
+        color: var(--cor-legenda) !important;
+        fill: var(--cor-legenda) !important;
+      }
     }
   }
 
@@ -708,7 +790,8 @@ textarea {
     min-width: 4.5rem !important;
     max-width: 4.5rem !important;
     padding: 8px 0px !important;
-    background-color: var(--cor-branca);
+    background-color: var(--cor-branca) !important;
+    border-color: var(--cor-cinza-medio) !important;
     flex-shrink: 0 !important;
     flex-grow: 0 !important;
     display: inline-flex !important;
@@ -720,6 +803,17 @@ textarea {
 
     .p-select-label {
       font-size: var(--fonte-tamanho-pequeno);
+      color: var(--cor-cinza-escuro) !important;
+    }
+
+    .p-select-dropdown {
+      color: var(--cor-cinza-escuro) !important;
+
+      svg,
+      .p-icon {
+        color: var(--cor-cinza-escuro) !important;
+        fill: var(--cor-cinza-escuro) !important;
+      }
     }
   }
 
@@ -997,8 +1091,7 @@ textarea {
 ::ng-deep .p-datatable-thead > tr > th,
 ::ng-deep .p-datatable .p-datatable-thead th,
 ::ng-deep .p-datatable .p-datatable-thead > tr > th,
-::ng-deep th.p-datatable-sortable-column,
-::ng-deep th.p-datatable-column-sorted {
+::ng-deep th.p-datatable-sortable-column {
   background-color: var(--cor-primaria) !important;
   color: #fff !important;
 }
@@ -1008,19 +1101,16 @@ html[data-theme="dark"] ::ng-deep .p-datatable-thead > tr > th,
 html[data-theme="dark"] ::ng-deep .p-datatable .p-datatable-thead th,
 html[data-theme="dark"] ::ng-deep .p-datatable .p-datatable-thead > tr > th,
 html[data-theme="dark"] ::ng-deep th.p-datatable-sortable-column,
-html[data-theme="dark"] ::ng-deep th.p-datatable-column-sorted,
 html.dark-theme ::ng-deep .p-datatable-thead th,
 html.dark-theme ::ng-deep .p-datatable-thead > tr > th,
 html.dark-theme ::ng-deep .p-datatable .p-datatable-thead th,
 html.dark-theme ::ng-deep .p-datatable .p-datatable-thead > tr > th,
 html.dark-theme ::ng-deep th.p-datatable-sortable-column,
-html.dark-theme ::ng-deep th.p-datatable-column-sorted,
 body.dark-theme ::ng-deep .p-datatable-thead th,
 body.dark-theme ::ng-deep .p-datatable-thead > tr > th,
 body.dark-theme ::ng-deep .p-datatable .p-datatable-thead th,
 body.dark-theme ::ng-deep .p-datatable .p-datatable-thead > tr > th,
-body.dark-theme ::ng-deep th.p-datatable-sortable-column,
-body.dark-theme ::ng-deep th.p-datatable-column-sorted {
+body.dark-theme ::ng-deep th.p-datatable-sortable-column {
   background-color: var(--cor-primaria-dark) !important;
   color: #ffffff !important;
 

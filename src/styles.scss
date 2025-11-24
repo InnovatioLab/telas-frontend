@@ -118,11 +118,9 @@ body.dark-theme {
   ::ng-deep .p-datatable-thead th,
   ::ng-deep .p-datatable .p-datatable-thead th,
   ::ng-deep th.p-datatable-sortable-column,
-  ::ng-deep th.p-datatable-column-sorted,
   .p-datatable-thead th,
   .p-datatable .p-datatable-thead th,
-  th.p-datatable-sortable-column,
-  th.p-datatable-column-sorted {
+  th.p-datatable-sortable-column {
     color: #ffffff !important;
 
     &,
@@ -188,6 +186,99 @@ body.dark-theme {
   .p-multiselect-label,
   .p-select-label {
     color: var(--cor-texto-clara) !important;
+  }
+}
+
+::ng-deep .p-datatable-tbody > tr,
+::ng-deep .p-datatable .p-datatable-tbody > tr,
+::ng-deep .p-datatable-tbody > tr.ng-star-inserted,
+::ng-deep .p-datatable .p-datatable-tbody > tr.ng-star-inserted {
+  background-color: var(--cor-branca) !important;
+
+  &:nth-child(even) {
+    background-color: #f8f9fa !important;
+  }
+
+  &:hover {
+    background-color: #e9ecef !important;
+  }
+
+  > td {
+    color: var(--cor-cinza-escuro) !important;
+    background-color: transparent !important;
+
+    * {
+      color: var(--cor-cinza-escuro) !important;
+    }
+  }
+}
+
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr,
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr.ng-star-inserted {
+  background-color: var(--cor-branca) !important;
+
+  &:nth-child(even) {
+    background-color: #f8f9fa !important;
+  }
+
+  &:hover {
+    background-color: #e9ecef !important;
+  }
+
+  > td {
+    color: var(--cor-cinza-escuro) !important;
+    background-color: transparent !important;
+
+    * {
+      color: var(--cor-cinza-escuro) !important;
+    }
+  }
+}
+
+::ng-deep .p-paginator,
+::ng-deep .p-paginator.p-component,
+::ng-deep [data-pc-section="root"].p-paginator {
+  --p-paginator-background: var(--cor-branca) !important;
+  --p-paginator-color: var(--cor-cinza-escuro) !important;
+  background-color: var(--cor-branca) !important;
+  background: var(--cor-branca) !important;
+  color: var(--cor-cinza-escuro) !important;
+
+  .p-paginator-current {
+    color: var(--cor-legenda) !important;
+  }
+
+  .p-paginator-page,
+  .p-paginator-first,
+  .p-paginator-prev,
+  .p-paginator-next,
+  .p-paginator-last {
+    color: var(--cor-primaria) !important;
+
+    svg,
+    .p-icon {
+      color: var(--cor-primaria) !important;
+      fill: var(--cor-primaria) !important;
+    }
+  }
+
+  .p-paginator-rpp-dropdown {
+    background-color: var(--cor-branca) !important;
+    border-color: var(--cor-cinza-medio) !important;
+
+    .p-select-label {
+      color: var(--cor-cinza-escuro) !important;
+    }
+
+    .p-select-dropdown {
+      color: var(--cor-cinza-escuro) !important;
+
+      svg,
+      .p-icon {
+        color: var(--cor-cinza-escuro) !important;
+        fill: var(--cor-cinza-escuro) !important;
+      }
+    }
   }
 }
 
@@ -2796,6 +2887,18 @@ body.dark-theme {
 
     * {
       color: var(--cor-texto-clara) !important;
+    }
+  }
+
+  .p-datatable-tbody > tr {
+    background-color: var(--cor-card-background-dark) !important;
+
+    &:nth-child(even) {
+      background-color: var(--cor-cinza-fundo-dark) !important;
+    }
+
+    &:hover {
+      background-color: var(--cor-cinza-medio-dark) !important;
     }
   }
 
