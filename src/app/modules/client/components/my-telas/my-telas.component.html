@@ -182,7 +182,7 @@
         <div class="request-ad-section">
           <div class="w-full m-auto">
             <h5 class="mb-5">
-              Combine file upload and slogan field in one view.
+              Combine file upload and slogan/message field in one view
             </h5>
           </div>
 
@@ -248,7 +248,7 @@
             <div class="form-actions">
               <button
                 pButton
-                label="Submit"
+                label="Send Ad Request"
                 icon="pi pi-send"
                 (click)="submitAdRequest()"
                 [disabled]="requestAdForm.invalid || myTelasService.isLoading()"
@@ -268,7 +268,7 @@
           <div class="active-request-info flex gap-3">
             <span class="pi pi-check-circle"></span>
             <div class="message-content">
-              <h4>Ad Request Already Submitted</h4>
+              <h4>Ad Request Submitted</h4>
               <p>
                 You have already created an ad request. Please wait for the
                 admin to create your ad so you can validate it.

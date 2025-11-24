@@ -1,7 +1,7 @@
+import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { IconsModule } from '@app/shared/icons/icons.module';
-import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-banner',
