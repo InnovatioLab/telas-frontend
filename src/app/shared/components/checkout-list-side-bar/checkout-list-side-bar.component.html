@@ -66,6 +66,7 @@
                   [options]="blockQuantityOptions"
                   [ngModel]="item.blockQuantity || 1"
                   (ngModelChange)="onBlockQuantityChange(item, $event)"
+                  (click)="onBlockQuantityClick($event)"
                   [disabled]="false"
                   optionLabel="label"
                   optionValue="value"

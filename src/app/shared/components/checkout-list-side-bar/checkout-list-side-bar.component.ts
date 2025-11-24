@@ -283,7 +283,10 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   }
 
   onDropdownClick(event: Event): void {
-    // Previne que o clique no dropdown feche a sidebar
+    event.stopPropagation();
+  }
+
+  onBlockQuantityClick(event: Event): void {
     event.stopPropagation();
   }
 

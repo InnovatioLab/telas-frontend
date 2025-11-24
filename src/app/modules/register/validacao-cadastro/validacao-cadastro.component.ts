@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { Role } from "@app/model/client";
+import { Client, Role } from "@app/model/client";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
 import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -115,7 +115,8 @@ export class ValidacaoCadastroComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           if (response && response.client) {
-            // login já sincronizou o estado global; apenas navega
+            this.clientService.setClientAtual(response.client as Client);
+            this.authentication.updateClientData(response.client as Client);
             this.handleNavigation();
           }
         },

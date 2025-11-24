@@ -72,9 +72,20 @@ export class TermsOfServiceComponent implements OnInit {
     this.aceitandoTermos = true;
     this.clientService.aceitarTermosDeCondicao().subscribe({
       next: () => {
-        this.aceitandoTermos = false;
-        this.toastService.sucesso("Terms accepted!");
-        this.navigateAfterAccept();
+        this.clientService.getAuthenticatedClient().subscribe({
+          next: (updatedClient) => {
+            this.clientService.setClientAtual(updatedClient as any);
+            this.authentication.updateClientData(updatedClient as any);
+            this.client = updatedClient;
+            this.aceitandoTermos = false;
+            this.toastService.sucesso("Terms accepted!");
+            this.navigateAfterAccept();
+          },
+          error: (error) => {
+            this.aceitandoTermos = false;
+            this.handleError("Error loading updated client data.", error);
+          },
+        });
       },
       error: (error) => {
         this.aceitandoTermos = false;
