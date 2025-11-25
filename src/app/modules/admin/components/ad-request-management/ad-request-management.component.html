@@ -41,24 +41,26 @@
   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} ad requests"
   paginatorDropdownAppendTo="body"
   (onPage)="onPageChange($event)"
+  (onSort)="onSort($event)"
+  [sortField]="currentFilters?.sortBy || 'createdAt'"
+  [sortOrder]="currentFilters?.sortDir === 'asc' ? 1 : -1"
 >
   <ng-template pTemplate="header">
     <tr>
       <th scope="col" pSortableColumn="clientName">
         Client Name <p-sortIcon field="clientName"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="clientRole">
-        Role <p-sortIcon field="clientRole"></p-sortIcon>
+      <th scope="col" pSortableColumn="role">
+        Role <p-sortIcon field="role"></p-sortIcon>
       </th>
       <th scope="col" pSortableColumn="slogan">
         Slogan <p-sortIcon field="slogan"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="submissionDate">
-        Submission Date <p-sortIcon field="submissionDate"></p-sortIcon>
+      <th scope="col" pSortableColumn="createdAt">
+        Submission Date <p-sortIcon field="createdAt"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="waitingDays">
-        Waiting Days <p-sortIcon field="waitingDays"></p-sortIcon>
-      </th>
+      <th scope="col">Brand Guideline</th>
+      <th scope="col">Waiting Days</th>
       <th scope="col" class="actions">Actions</th>
     </tr>
   </ng-template>
@@ -75,17 +77,24 @@
       </td>
       <td>{{ adRequest.slogan | sliceString: 75 }}</td>
       <td>{{ adRequest.submissionDate | date: "MM/dd/yyyy" }}</td>
+      <td>
+        <ng-container *ngIf="adRequest.brandGuidelineUrl; else noUrl">
+          <a
+            [href]="getAbsoluteUrl(adRequest.brandGuidelineUrl)"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Link</a
+          >
+        </ng-container>
+        <ng-template #noUrl>N/A</ng-template>
+      </td>
       <td>{{ adRequest.waitingDays }} days</td>
       <td class="actions">
         <div class="action-buttons">
           <button
             pButton
             pRipple
-            *ngIf="
-              adRequest.slogan ||
-              adRequest.brandGuidelineUrl ||
-              (adRequest.attachments && adRequest.attachments.length > 0)
-            "
+            *ngIf="adRequest.attachments && adRequest.attachments.length > 0"
             icon="pi pi-eye"
             class="p-button-rounded p-button-info p-button-text"
             (click)="openViewDetailsDialog(adRequest)"
@@ -139,7 +148,7 @@
     <div *ngIf="selectedAdRequest.brandGuidelineUrl" class="detail-row">
       <strong>Brand Guideline URL:</strong>
       <a
-        [href]="selectedAdRequest.brandGuidelineUrl"
+        [href]="getAbsoluteUrl(selectedAdRequest.brandGuidelineUrl)"
         target="_blank"
         rel="noopener noreferrer"
         >Link</a

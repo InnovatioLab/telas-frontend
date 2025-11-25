@@ -1,3 +1,13 @@
+a {
+  color: blue !important;
+  margin-left: 0.25rem;
+
+  &:hover {
+    color: blue !important;
+    text-decoration: underline !important;
+  }
+}
+
 .action-buttons {
   display: flex;
   gap: 0.5rem;

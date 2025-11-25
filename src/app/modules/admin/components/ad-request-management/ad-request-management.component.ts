@@ -7,6 +7,7 @@ import { ClientService } from "@app/core/service/api/client.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Role } from "@app/model/client";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
+import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { AdRequestResponseDto } from "@app/model/dto/response/ad-request-response.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -32,6 +33,7 @@ export class AdRequestManagementComponent implements OnInit {
   totalRecords = 0;
   currentPage = 1;
   pageSize = 10;
+  private isSorting = false;
 
   showViewDetailsDialog = false;
   showUploadAdDialog = false;
@@ -43,6 +45,13 @@ export class AdRequestManagementComponent implements OnInit {
 
   maxFileSize = 10 * 1024 * 1024;
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
+
+  currentFilters: FilterBoxRequestDto = {
+    page: 1,
+    size: 10,
+    sortBy: "createdAt",
+    sortDir: "desc",
+  };
 
   constructor(
     private readonly clientService: ClientService,
@@ -56,8 +65,8 @@ export class AdRequestManagementComponent implements OnInit {
 
   loadAdRequests(): void {
     this.loading = true;
-
     const filters = {
+      ...this.currentFilters,
       page: this.currentPage,
       size: this.pageSize,
       genericFilter: this.searchTerm,
@@ -68,11 +77,12 @@ export class AdRequestManagementComponent implements OnInit {
         this.adRequests = response.list || [];
         this.totalRecords = response.totalElements || 0;
         this.loading = false;
+        this.isSorting = false;
       },
       error: (error) => {
-        
         this.toastService.erro("Failed to load ad requests");
         this.loading = false;
+        this.isSorting = false;
       },
     });
   }
@@ -85,6 +95,27 @@ export class AdRequestManagementComponent implements OnInit {
   onPageChange(event: any): void {
     this.currentPage = event.page + 1;
     this.pageSize = event.rows;
+    this.loadAdRequests();
+  }
+
+  onSort(event: any): void {
+    if (this.isSorting || this.loading) {
+      return;
+    }
+
+    const newSortBy = event.field;
+    const newSortDir = event.order === 1 ? "asc" : "desc";
+
+    if (
+      this.currentFilters.sortBy === newSortBy &&
+      this.currentFilters.sortDir === newSortDir
+    ) {
+      return;
+    }
+
+    this.isSorting = true;
+    this.currentFilters.sortBy = event.field;
+    this.currentFilters.sortDir = event.order === 1 ? "asc" : "desc";
     this.loadAdRequests();
   }
 
@@ -136,7 +167,6 @@ export class AdRequestManagementComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch((error) => {
-          
           this.toastService.erro("Error validating image file");
         });
     }
@@ -163,7 +193,6 @@ export class AdRequestManagementComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch((error) => {
-          
           this.toastService.erro("Error validating image file");
         });
     }
@@ -233,11 +262,10 @@ export class AdRequestManagementComponent implements OnInit {
           next: () => {
             this.toastService.sucesso("Ad uploaded successfully");
             this.closeUploadAdDialog();
-            this.loadAdRequests(); // Recarregar dados
+            this.loadAdRequests(); 
             this.loadingUpload = false;
           },
           error: (error) => {
-            
             this.toastService.erro("Failed to upload ad");
             this.loadingUpload = false;
           },
@@ -267,6 +295,13 @@ export class AdRequestManagementComponent implements OnInit {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }
+
+  getAbsoluteUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    const trimmed = url.trim();
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed)) return trimmed;
+    return `https://${trimmed.replace(/^\/+/, "")}`;
   }
 
   getPartnerStatusSeverity(
