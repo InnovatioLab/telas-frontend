@@ -411,7 +411,15 @@
       }
 
       .btn-upload-ads {
-        background: rgba(99, 102, 241, 0.1);
+        background: transparent;
+
+        &:hover:not(:disabled) {
+          background: rgba(99, 102, 241, 0.1);
+        }
+      }
+
+      .btn-upload-ads-icon {
+        color: #6366f1;
       }
 
       .btn-delete-screen {
@@ -522,5 +530,27 @@
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
+  }
+}
+
+html[data-theme="dark"],
+html.dark-theme,
+body.dark-theme {
+  ::ng-deep {
+    .btn-upload-ads {
+      background: transparent !important;
+
+      &:hover:not(:disabled) {
+        background: rgba(99, 102, 241, 0.2) !important;
+      }
+    }
+
+    .btn-upload-ads-icon,
+    .btn-upload-ads-icon svg,
+    .btn-upload-ads app-icon-upload,
+    .btn-upload-ads app-icon-upload svg {
+      color: #a5b4fc !important;
+      fill: #a5b4fc !important;
+    }
   }
 }

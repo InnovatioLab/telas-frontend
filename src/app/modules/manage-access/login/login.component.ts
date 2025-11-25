@@ -95,6 +95,7 @@ export class LoginComponent implements OnInit {
       )
       .subscribe((response) => {
         if (response && response.client) {
+          this.clientService.setClientAtual(response.client as any);
           this.authentication.updateClientData(response.client as any);
 
           if (response.client.termAccepted) {

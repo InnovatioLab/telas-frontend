@@ -4,8 +4,9 @@
       <div class="banner-header">
         <h2 class="banner-title">See Your Ads Come to Life</h2>
         <p class="banner-description">
-          Experience how your advertisements will look on our premium digital screens. 
-          High-quality displays in strategic locations ensure maximum visibility and impact.
+          Experience how your advertisements will look on our premium digital
+          screens. High-quality displays in strategic locations ensure maximum
+          visibility and impact.
         </p>
       </div>
       <!-- Main Banner Display -->
@@ -19,7 +20,9 @@
                   <div class="banner-screen-content group">
                     <div class="banner-screen-text">
                       <h3 class="banner-screen-title">Your Business Here</h3>
-                      <p class="banner-screen-subtitle">Premium Digital Advertising</p>
+                      <p class="banner-screen-subtitle">
+                        Premium Digital Advertising
+                      </p>
                       <div class="banner-screen-cta">
                         Call Now: (555) 123-4567
                       </div>
@@ -35,82 +38,78 @@
                 </div>
                 <!-- Screen Info -->
                 <div class="banner-screen-info">
-                  <p class="banner-screen-size">55" 4K Ultra HD Display</p>
-                  <p class="banner-screen-location">Downtown Shopping Mall - Screen #1</p>
+                  <p class="banner-screen-size">50" 4K Display</p>
                 </div>
               </div>
             </div>
-            <!-- Ad Performance Stats -->
             <div class="banner-stats">
-              <div class="banner-stats-header">
-                <h3 class="banner-stats-title">Real-Time Performance</h3>
-                <p class="banner-stats-description">Track your ad performance with detailed analytics and insights.</p>
-              </div>
               <div class="banner-stats-grid">
                 <div class="banner-stats-card">
                   <div class="banner-stats-card-content">
                     <app-icon-olho class="banner-stats-icon"></app-icon-olho>
-                    <p class="banner-stats-value">2.5K</p>
-                    <p class="banner-stats-label">Daily Views</p>
+                    <p class="banner-stats-value">450</p>
+                    <p class="banner-stats-label">Ads runs per day</p>
                   </div>
                 </div>
                 <div class="banner-stats-card">
                   <div class="banner-stats-card-content">
                     <app-icon-clock class="banner-stats-icon"></app-icon-clock>
-                    <p class="banner-stats-value">15s</p>
-                    <p class="banner-stats-label">Display Time</p>
+                    <p class="banner-stats-value">Proximally 36h</p>
+                    <p class="banner-stats-label">Of Ad display per month</p>
                   </div>
                 </div>
                 <div class="banner-stats-card">
                   <div class="banner-stats-card-content">
-                    <app-icon-tv-display class="banner-stats-icon"></app-icon-tv-display>
-                    <p class="banner-stats-value">HD</p>
+                    <app-icon-tv-display
+                      class="banner-stats-icon"
+                    ></app-icon-tv-display>
+                    <p class="banner-stats-value">4K</p>
                     <p class="banner-stats-label">Quality</p>
                   </div>
                 </div>
                 <div class="banner-stats-card">
                   <div class="banner-stats-card-content">
                     <app-icon-play class="banner-stats-icon"></app-icon-play>
-                    <p class="banner-stats-value">24/7</p>
-                    <p class="banner-stats-label">Active</p>
+                    <p class="banner-stats-value">5s</p>
+                    <p class="banner-stats-label">Ad Display Time</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>      
+      </div>
       <!-- Interactive Ad Examples -->
       <div class="banner-examples">
         @for (ad of adExamples; track $index) {
-        <div class="banner-example group">
-          <div class="banner-example-card group">
-            <div class="banner-example-aspect group" [ngClass]="ad.gradient">
-              <div class="banner-example-content group">
-                <h4 class="banner-example-title">{{ad.title}}</h4>
-                <p class="banner-example-subtitle">{{ad.subtitle}}</p>
-                <div class="banner-example-cta">
-                  {{ad.cta}}
+          <div class="banner-example group">
+            <div class="banner-example-card group">
+              <div class="banner-example-aspect group" [ngClass]="ad.gradient">
+                <div class="banner-example-content group">
+                  <!-- <h4 class="banner-example-title">{{ ad.title }}</h4> -->
+                  <!-- <p class="banner-example-subtitle">{{ ad.subtitle }}</p> -->
+                  <div class="banner-example-cta">
+                    <!-- {{ ad.cta }} -->
+                  </div>
                 </div>
+                <div class="banner-example-glow"></div>
+                <div class="banner-example-ping"></div>
               </div>
-              <div class="banner-example-glow"></div>
-              <div class="banner-example-ping"></div>
             </div>
+            <h3 class="banner-example-category">
+              <!-- {{ ad.category }} -->
+            </h3>
+            <p class="banner-example-description">
+              Text here
+            </p>
           </div>
-          <h3 class="banner-example-category">
-            {{ad.category}}
-          </h3>
-          <p class="banner-example-description">Perfect for {{ad.category.toLowerCase()}} promotions</p>
-        </div>
         }
       </div>
       <!-- Call to Action -->
       <div class="banner-cta">
         <div class="banner-cta-card">
           <h3 class="banner-cta-title">Ready to Launch Your Campaign?</h3>
-          <p class="banner-cta-description">Join thousands of businesses already advertising on our premium digital network.</p>
-          <button class="banner-cta-btn"
-            (click)="onStartAdvertising()">
+          <button class="banner-cta-btn" (click)="onStartAdvertising()">
             Start Advertising Today
           </button>
         </div>

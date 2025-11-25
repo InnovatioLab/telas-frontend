@@ -431,22 +431,12 @@ textarea {
   .p-datatable-tbody {
     > tr {
       border-bottom: var(--borda-padrao);
-      background-color: var(--cor-branca) !important;
       transition: var(--transicao-rapida);
-
-      &:nth-child(even) {
-        background-color: #f8f9fa !important;
-      }
-
-      &:hover {
-        background-color: #e9ecef !important;
-      }
 
       > td {
         padding: var(--espacamento-padrao);
         border-bottom: var(--borda-padrao);
         font-size: var(--fonte-tamanho-padrao);
-        color: var(--cor-cinza-escuro) !important;
         text-align: center;
         background-color: transparent !important;
       }
@@ -454,24 +444,51 @@ textarea {
 
     > tr.ng-star-inserted {
       border-bottom: var(--borda-padrao);
-      background-color: var(--cor-branca) !important;
       transition: var(--transicao-rapida);
-
-      &:nth-child(even) {
-        background-color: #f8f9fa !important;
-      }
-
-      &:hover {
-        background-color: #e9ecef !important;
-      }
 
       > td {
         padding: var(--espacamento-padrao);
         border-bottom: var(--borda-padrao);
         font-size: var(--fonte-tamanho-padrao);
-        color: var(--cor-cinza-escuro) !important;
         text-align: center;
         background-color: transparent !important;
+      }
+    }
+  }
+
+  html:not([data-theme="dark"]):not(.dark-theme) &,
+  body:not(.dark-theme) & {
+    .p-datatable-tbody {
+      > tr {
+        background-color: var(--cor-branca) !important;
+
+        &:nth-child(even) {
+          background-color: #f8f9fa !important;
+        }
+
+        &:hover {
+          background-color: #e9ecef !important;
+        }
+
+        > td {
+          color: var(--cor-cinza-escuro) !important;
+        }
+      }
+
+      > tr.ng-star-inserted {
+        background-color: var(--cor-branca) !important;
+
+        &:nth-child(even) {
+          background-color: #f8f9fa !important;
+        }
+
+        &:hover {
+          background-color: #e9ecef !important;
+        }
+
+        > td {
+          color: var(--cor-cinza-escuro) !important;
+        }
       }
     }
   }
@@ -786,9 +803,9 @@ textarea {
   .p-paginator p-select.p-paginator-rpp-dropdown,
   .p-paginator .p-paginator-rpp-dropdown.p-select {
     margin-left: var(--espacamento-medio) !important;
-    width: 4.5rem !important;
-    min-width: 4.5rem !important;
-    max-width: 4.5rem !important;
+    width: 6rem !important;
+    min-width: 6rem !important;
+    max-width: 6rem !important;
     padding: 8px 0px !important;
     background-color: var(--cor-branca) !important;
     border-color: var(--cor-cinza-medio) !important;

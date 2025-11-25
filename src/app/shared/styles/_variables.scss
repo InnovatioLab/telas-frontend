@@ -264,5 +264,9 @@ $modal: (
 
   // PrimeNG specific
   --p-datatable-header-cell-background: var(--cor-primaria);
-  --p-datatable-header-cell-color: #fff;
+  --p-datatable-header-cell-color: #ffffff;
+  --p-datatable-row-background: #ffffff;
+  --p-datatable-row-alt-background: #f8f9fa;
+  --p-datatable-row-hover-background: #e9ecef;
+  --p-datatable-row-color: var(--cor-cinza-escuro);
 }

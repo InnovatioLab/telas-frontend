@@ -69,6 +69,8 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   ];
   monitorDetailsVisible: boolean = false;
   dropdownOpen: boolean = false;
+  blockQuantityInteracting: boolean = false;
+  private pendingBlockQuantityUpdates: Map<string, number> = new Map();
 
   locationInfo: Map<string, { name: string; description: string }> = new Map();
   loadingLocationInfo: Map<string, boolean> = new Map();
@@ -92,6 +94,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
           this.cart = cart;
           if (cart) {
             this.selectedRecurrence = cart.recurrence;
+            this.applyPendingBlockQuantityUpdates();
             this.ensureBlockQuantityDefaults();
           }
         },
@@ -104,6 +107,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     this.cart = this.cartService.currentCart;
     if (this.cart) {
       this.selectedRecurrence = this.cart.recurrence;
+      this.applyPendingBlockQuantityUpdates();
       this.ensureBlockQuantityDefaults();
     }
   }
@@ -254,6 +258,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
       newValue = 2;
     }
 
+    this.pendingBlockQuantityUpdates.set(item.monitorId, newValue);
     item.blockQuantity = newValue;
 
     const cartRequest: CartRequestDto = {
@@ -266,11 +271,26 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     this.cartService.update(cartRequest, this.cart.id).subscribe({
       next: () => {
+        setTimeout(() => {
+          this.pendingBlockQuantityUpdates.delete(item.monitorId);
+        }, 500);
       },
       error: (error) => {
         this.toastService.erro("Error updating block quantity");
+        this.pendingBlockQuantityUpdates.delete(item.monitorId);
         item.blockQuantity = item.blockQuantity === 1 ? 2 : 1;
       },
+    });
+  }
+
+  private applyPendingBlockQuantityUpdates(): void {
+    if (!this.cart || this.pendingBlockQuantityUpdates.size === 0) return;
+
+    this.cart.items.forEach((item) => {
+      const pendingValue = this.pendingBlockQuantityUpdates.get(item.monitorId);
+      if (pendingValue !== undefined && item.blockQuantity !== pendingValue) {
+        item.blockQuantity = pendingValue;
+      }
     });
   }
 
@@ -283,7 +303,20 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   }
 
   onDropdownClick(event: Event): void {
-    // Previne que o clique no dropdown feche a sidebar
+    event.stopPropagation();
+  }
+
+  onBlockQuantityMouseDown(): void {
+    this.blockQuantityInteracting = true;
+  }
+
+  onBlockQuantityMouseUp(): void {
+    setTimeout(() => {
+      this.blockQuantityInteracting = false;
+    }, 100);
+  }
+
+  onBlockQuantityClick(event: Event): void {
     event.stopPropagation();
   }
 

@@ -1,5 +1,5 @@
 import { HttpClient, HttpBackend } from "@angular/common/http";
-import { Injectable, signal, Injector, inject } from "@angular/core";
+import { Injectable, signal, Injector, inject, Optional } from "@angular/core";
 import { Client } from "@app/model/client";
 import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
 import { SenhaUpdate } from "@app/model/dto/request/senha-update.request";
@@ -10,6 +10,7 @@ import { environment } from "src/environments/environment";
 import { AuthenticationStorage } from "../auth/authentication-storage";
 import { ClientService } from "./client.service";
 import { AuthService } from "../auth/auth.service";
+import { Authentication } from "../auth/autenthication";
 
 @Injectable({ providedIn: "root" })
 export class AutenticacaoService {
@@ -20,7 +21,8 @@ export class AutenticacaoService {
   constructor(
     private readonly httpClient: HttpClient,
     private readonly clientService: ClientService,
-    private readonly injector: Injector
+    private readonly injector: Injector,
+    @Optional() private readonly authentication?: Authentication
   ) {
     this.httpBackend = new HttpClient(inject(HttpBackend));
   }
@@ -107,6 +109,10 @@ export class AutenticacaoService {
           tap((client) => {
             AuthenticationStorage.setDataUser(JSON.stringify(client));
             this._loggedClientSignal.set(client);
+            this.clientService.setClientAtual(client as Client);
+            if (this.authentication) {
+              this.authentication.updateClientData(client as Client);
+            }
           }),
           map((client) => ({ token, client }))
         );

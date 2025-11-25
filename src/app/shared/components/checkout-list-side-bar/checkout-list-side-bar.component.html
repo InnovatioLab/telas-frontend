@@ -3,7 +3,7 @@
     [showCloseIcon]="false"
     [(visible)]="visibilidadeSidebar"
     position="right"
-    [dismissible]="!dropdownOpen"
+      [dismissible]="!dropdownOpen && !blockQuantityInteracting"
     (onHide)="fecharSidebar()"
     [blockScroll]="false"
     [closeOnEscape]="!dropdownOpen"
@@ -60,7 +60,12 @@
             <div
               class="item-actions flex flex-column justify-content-center align-items-end gap-2"
             >
-              <div class="block-quantity-selector">
+              <div 
+                class="block-quantity-selector"
+                (mousedown)="onBlockQuantityMouseDown()"
+                (mouseup)="onBlockQuantityMouseUp()"
+                (click)="onBlockQuantityClick($event)"
+              >
                 <label class="block text-xs font-medium mb-1">Blocks:</label>
                 <p-selectButton
                   [options]="blockQuantityOptions"
