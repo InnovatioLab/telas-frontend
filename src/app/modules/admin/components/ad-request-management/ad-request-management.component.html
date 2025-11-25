@@ -81,6 +81,11 @@
           <button
             pButton
             pRipple
+            *ngIf="
+              adRequest.slogan ||
+              adRequest.brandGuidelineUrl ||
+              (adRequest.attachments && adRequest.attachments.length > 0)
+            "
             icon="pi pi-eye"
             class="p-button-rounded p-button-info p-button-text"
             (click)="openViewDetailsDialog(adRequest)"
@@ -132,9 +137,15 @@
       <strong>Slogan:</strong> {{ selectedAdRequest.slogan }}
     </div>
     <div *ngIf="selectedAdRequest.brandGuidelineUrl" class="detail-row">
-      <strong>Brand Guideline URL:</strong> {{ selectedAdRequest.brandGuidelineUrl }}
+      <strong>Brand Guideline URL:</strong>
+      <a
+        [href]="selectedAdRequest.brandGuidelineUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Link</a
+      >
     </div>
-    
+
     <div
       class="detail-row"
       *ngIf="
