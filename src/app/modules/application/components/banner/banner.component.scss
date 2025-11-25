@@ -39,10 +39,18 @@
 }
 
 .banner-main-bg {
-  background: linear-gradient(135deg, var(--cor-cinza-escuro) 0%, var(--cor-primaria-escura) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--cor-cinza-escuro) 0%,
+    var(--cor-primaria-escura) 100%
+  );
   border-radius: var(--borda-raio-padrao);
   padding: var(--espacamento-grande);
   box-shadow: var(--sombra-hover);
+
+  @media (max-width: 600px) {
+    padding: var(--espacamento-padrao);
+  }
 }
 
 .banner-main-grid {
@@ -64,9 +72,11 @@
   background: var(--cor-preto-claro);
   border-radius: var(--borda-raio-pequeno);
   padding: var(--espacamento-padrao);
-  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.5);
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  transition: transform 0.5s, box-shadow 0.5s;
+  transition:
+    transform 0.5s,
+    box-shadow 0.5s;
 
   &:hover {
     transform: scale(1.05);
@@ -78,13 +88,21 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16/9;
-  background: linear-gradient(90deg, var(--cor-primaria), var(--cor-primaria-clara));
+  background: linear-gradient(
+    90deg,
+    var(--cor-primaria),
+    var(--cor-primaria-clara)
+  );
   border-radius: var(--borda-raio-pequeno);
   overflow: hidden;
   transition: background 0.7s;
 
   .group:hover & {
-    background: linear-gradient(90deg, #a21caf, #ec4899); // Mantido para efeito especial
+    background: linear-gradient(
+      90deg,
+      #a21caf,
+      #ec4899
+    ); // Mantido para efeito especial
   }
 }
 
@@ -128,7 +146,7 @@
   transition: background 0.3s;
 
   &:hover {
-    background: rgba(255,255,255,0.9);
+    background: rgba(255, 255, 255, 0.9);
   }
 }
 
@@ -136,10 +154,14 @@
   position: absolute;
   top: var(--espacamento-padrao);
   right: var(--espacamento-padrao);
+
+  @media (max-width: 475px) {
+    display: none;
+  }
 }
 
 .banner-screen-views-content {
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   color: var(--cor-branca);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
@@ -158,10 +180,17 @@
 .banner-screen-glow {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, var(--cor-branca), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--cor-branca),
+    transparent
+  );
   opacity: 0;
   transform: skewX(-12deg) translateX(-100%);
-  transition: opacity 1s, transform 1s;
+  transition:
+    opacity 1s,
+    transform 1s;
 
   .group:hover & {
     opacity: 0.1;
@@ -187,6 +216,7 @@
 
 .banner-stats {
   display: flex;
+  height: 100%;
   flex-direction: column;
   gap: var(--espacamento-medio);
   color: var(--cor-branca);
@@ -210,6 +240,7 @@
 
 .banner-stats-grid {
   display: grid;
+  height: 100%;
   grid-template-columns: 1fr 1fr;
   gap: var(--espacamento-padrao);
 
@@ -219,19 +250,25 @@
 }
 
 .banner-stats-card {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--cor-branca);
   border-radius: var(--borda-raio-pequeno);
-  transition: background 0.3s, transform 0.3s;
+  transition:
+    background 0.3s,
+    transform 0.3s;
 
   &:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
   }
 }
 
 .banner-stats-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
   padding: var(--espacamento-padrao);
   text-align: center;
 }
@@ -239,18 +276,25 @@
 .banner-stats-icon {
   width: 2rem;
   height: 2rem;
-  margin: 0 auto 0.5rem auto;
   color: var(--cor-primaria-clara);
 }
 
 .banner-stats-value {
   font-size: var(--fonte-tamanho-grande);
   font-weight: var(--fonte-peso-negrito);
+
+  @media (max-width: 600px) {
+    font-size: var(--fonte-tamanho-pequeno);
+  }
 }
 
 .banner-stats-label {
   font-size: var(--fonte-tamanho-padrao);
   opacity: 0.75;
+
+  @media (max-width: 600px) {
+    font-size: var(--fonte-tamanho-pequeno);
+  }
 }
 
 .banner-examples {
@@ -276,7 +320,9 @@
   margin-bottom: var(--espacamento-pequeno);
   box-shadow: var(--sombra-padrao);
   cursor: pointer;
-  transition: transform 0.5s, box-shadow 0.5s;
+  transition:
+    transform 0.5s,
+    box-shadow 0.5s;
 
   &:hover {
     transform: scale(1.1) rotate(1deg);
@@ -346,10 +392,17 @@
 .banner-example-glow {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, var(--cor-branca), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--cor-branca),
+    transparent
+  );
   opacity: 0;
   transform: skewX(-12deg) translateX(-100%);
-  transition: opacity 1s, transform 1s;
+  transition:
+    opacity 1s,
+    transform 1s;
 
   .group:hover & {
     opacity: 0.2;
@@ -399,7 +452,9 @@
   border-radius: var(--borda-raio-padrao);
   padding: var(--espacamento-grande);
   box-shadow: var(--sombra-padrao);
-  transition: box-shadow 0.3s, transform 0.3s;
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
 
   &:hover {
     box-shadow: var(--sombra-hover);
@@ -437,11 +492,23 @@
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes ping {
-  0% { transform: scale(1); opacity: 1; }
-  75%, 100% { transform: scale(2); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
