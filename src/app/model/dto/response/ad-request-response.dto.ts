@@ -5,9 +5,9 @@ export interface AdRequestResponseDto {
   clientId: string;
   message: string;
   clientName: string;
+  slogan?: string;
+  brandGuidelineUrl?: string;
   clientRole: Role;
-  phone?: string;
-  email?: string;
   isActive: boolean;
   submissionDate: string;
   waitingDays: number;

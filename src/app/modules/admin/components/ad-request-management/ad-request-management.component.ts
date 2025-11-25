@@ -89,6 +89,7 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   openViewDetailsDialog(adRequest: AdRequestResponseDto): void {
+    console.log(adRequest);
     this.selectedAdRequest = adRequest;
     this.showViewDetailsDialog = true;
   }

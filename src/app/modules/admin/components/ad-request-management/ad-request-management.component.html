@@ -50,8 +50,8 @@
       <th scope="col" pSortableColumn="clientRole">
         Role <p-sortIcon field="clientRole"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="message">
-        Message <p-sortIcon field="message"></p-sortIcon>
+      <th scope="col" pSortableColumn="slogan">
+        Slogan <p-sortIcon field="slogan"></p-sortIcon>
       </th>
       <th scope="col" pSortableColumn="submissionDate">
         Submission Date <p-sortIcon field="submissionDate"></p-sortIcon>
@@ -73,7 +73,7 @@
         >
         </p-badge>
       </td>
-      <td>{{ adRequest.message | sliceString: 100 }}</td>
+      <td>{{ adRequest.slogan | sliceString: 75 }}</td>
       <td>{{ adRequest.submissionDate | date: "MM/dd/yyyy" }}</td>
       <td>{{ adRequest.waitingDays }} days</td>
       <td class="actions">
@@ -122,22 +122,19 @@
   [modal]="true"
   [closable]="true"
   [dismissableMask]="true"
-  [style]="{ width: '90%', maxWidth: '650px' }"
+  [style]="{ width: '50vw', maxWidth: '1000px' }"
+  [breakpoints]="{ '1199px': '60vw', '575px': '90vw' }"
   [draggable]="false"
   [resizable]="false"
 >
   <div *ngIf="selectedAdRequest" class="details-content">
-    <div class="detail-row">
-      <strong>Message:</strong> {{ selectedAdRequest.message }}
+    <div *ngIf="selectedAdRequest.slogan" class="detail-row">
+      <strong>Slogan:</strong> {{ selectedAdRequest.slogan }}
     </div>
-    <div class="detail-row" *ngIf="selectedAdRequest.phone">
-      <strong>Phone:</strong> {{ selectedAdRequest.phone }}
+    <div *ngIf="selectedAdRequest.brandGuidelineUrl" class="detail-row">
+      <strong>Brand Guideline URL:</strong> {{ selectedAdRequest.brandGuidelineUrl }}
     </div>
-    <div class="detail-row" *ngIf="selectedAdRequest.email">
-      <strong>Email:</strong> {{ selectedAdRequest.email }}
-    </div>
-
-    <!-- Attachments -->
+    
     <div
       class="detail-row"
       *ngIf="
@@ -146,7 +143,7 @@
       "
     >
       <strong>Attachments:</strong>
-      <div class="attachments-container">
+      <div class="attachments-container mt-2">
         <div
           *ngFor="let attachment of selectedAdRequest.attachments"
           class="attachment-item"
