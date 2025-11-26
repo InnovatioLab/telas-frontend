@@ -7,8 +7,19 @@ export class GlobalErrorHandler implements ErrorHandler {
   private readonly toastService = inject(ToastService);
 
   handleError(error: any): void {
+    if ((error as any)?.handled) {
+      this.logError(error);
+      return;
+    }
+    
     const errorMessage = this.extractErrorMessage(error);
-    this.toastService.erro(errorMessage);
+    
+    if (errorMessage === 'You do not have permission to perform this operation.') {
+      this.toastService.aviso(errorMessage);
+    } else {
+      this.toastService.erro(errorMessage);
+    }
+    
     this.logError(error);
   }
 
