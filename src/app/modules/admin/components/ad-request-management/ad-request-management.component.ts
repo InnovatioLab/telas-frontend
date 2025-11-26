@@ -7,10 +7,14 @@ import { ClientService } from "@app/core/service/api/client.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Role } from "@app/model/client";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
+import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { AdRequestResponseDto } from "@app/model/dto/response/ad-request-response.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
+import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
+import { PdfViewerModule } from "ng2-pdf-viewer";
 
 @Component({
   selector: "app-ad-request-management",
@@ -21,6 +25,7 @@ import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.uti
     FormsModule,
     SliceStringPipe,
     IconsModule,
+    PdfViewerModule,
   ],
   templateUrl: "./ad-request-management.component.html",
   styleUrls: ["./ad-request-management.component.scss"],
@@ -32,6 +37,7 @@ export class AdRequestManagementComponent implements OnInit {
   totalRecords = 0;
   currentPage = 1;
   pageSize = 10;
+  private isSorting = false;
 
   showViewDetailsDialog = false;
   showUploadAdDialog = false;
@@ -44,10 +50,18 @@ export class AdRequestManagementComponent implements OnInit {
   maxFileSize = 10 * 1024 * 1024;
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
 
+  currentFilters: FilterBoxRequestDto = {
+    page: 1,
+    size: 10,
+    sortBy: "createdAt",
+    sortDir: "desc",
+  };
+
   constructor(
     private readonly clientService: ClientService,
     private readonly adService: AdService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly pdfViewerService: PdfViewerService
   ) {}
 
   ngOnInit(): void {
@@ -56,8 +70,8 @@ export class AdRequestManagementComponent implements OnInit {
 
   loadAdRequests(): void {
     this.loading = true;
-
     const filters = {
+      ...this.currentFilters,
       page: this.currentPage,
       size: this.pageSize,
       genericFilter: this.searchTerm,
@@ -68,11 +82,12 @@ export class AdRequestManagementComponent implements OnInit {
         this.adRequests = response.list || [];
         this.totalRecords = response.totalElements || 0;
         this.loading = false;
+        this.isSorting = false;
       },
       error: (error) => {
-        
         this.toastService.erro("Failed to load ad requests");
         this.loading = false;
+        this.isSorting = false;
       },
     });
   }
@@ -88,7 +103,29 @@ export class AdRequestManagementComponent implements OnInit {
     this.loadAdRequests();
   }
 
+  onSort(event: any): void {
+    if (this.isSorting || this.loading) {
+      return;
+    }
+
+    const newSortBy = event.field;
+    const newSortDir = event.order === 1 ? "asc" : "desc";
+
+    if (
+      this.currentFilters.sortBy === newSortBy &&
+      this.currentFilters.sortDir === newSortDir
+    ) {
+      return;
+    }
+
+    this.isSorting = true;
+    this.currentFilters.sortBy = event.field;
+    this.currentFilters.sortDir = event.order === 1 ? "asc" : "desc";
+    this.loadAdRequests();
+  }
+
   openViewDetailsDialog(adRequest: AdRequestResponseDto): void {
+    console.log(adRequest);
     this.selectedAdRequest = adRequest;
     this.showViewDetailsDialog = true;
   }
@@ -135,7 +172,6 @@ export class AdRequestManagementComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch((error) => {
-          
           this.toastService.erro("Error validating image file");
         });
     }
@@ -162,7 +198,6 @@ export class AdRequestManagementComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch((error) => {
-          
           this.toastService.erro("Error validating image file");
         });
     }
@@ -232,17 +267,24 @@ export class AdRequestManagementComponent implements OnInit {
           next: () => {
             this.toastService.sucesso("Ad uploaded successfully");
             this.closeUploadAdDialog();
-            this.loadAdRequests(); // Recarregar dados
+            this.loadAdRequests(); 
             this.loadingUpload = false;
           },
           error: (error) => {
-            
             this.toastService.erro("Failed to upload ad");
             this.loadingUpload = false;
           },
         });
     };
     reader.readAsDataURL(this.selectedFile);
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 
   isDataPdf(preview: string | null): boolean {
@@ -255,7 +297,15 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   viewAttachment(link: string): void {
-    window.open(link, "_blank");
+    if (isPdfFile(link)) {
+      this.pdfViewerService.openPdf(link, 'Attachment');
+    } else {
+      window.open(link, "_blank");
+    }
+  }
+
+  isPdfAttachment(link: string): boolean {
+    return isPdfFile(link);
   }
 
   downloadAttachment(link: string): void {
@@ -266,6 +316,13 @@ export class AdRequestManagementComponent implements OnInit {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }
+
+  getAbsoluteUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    const trimmed = url.trim();
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed)) return trimmed;
+    return `https://${trimmed.replace(/^\/+/, "")}`;
   }
 
   getPartnerStatusSeverity(

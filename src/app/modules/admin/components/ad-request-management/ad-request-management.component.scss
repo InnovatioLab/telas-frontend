@@ -1,41 +1,10 @@
-.p-card-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--espacamento-padrao);
+a {
+  color: blue !important;
+  margin-left: 0.25rem;
 
-  .p-input-icon-left {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    position: relative;
-
-    app-icon-search {
-      position: absolute;
-      left: 0.75rem;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    app-icon-search ::ng-deep svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-
-    input {
-      width: 100%;
-      padding-left: 2.5rem;
-    }
-
-    .search-input-width {
-      width: 100% !important;
-    }
+  &:hover {
+    color: blue !important;
+    text-decoration: underline !important;
   }
 }
 
@@ -50,9 +19,10 @@
   width: 120px;
 }
 
-// Dialog styles
 .details-content {
   max-height: 80vh;
+  padding-bottom: 1rem;
+  height: 100%;
   overflow-y: auto;
 }
 
@@ -67,25 +37,51 @@
 }
 
 .attachments-container {
-  // display: flex;
-  // flex-wrap: wrap;
-  // gap: 1rem;
-  // margin-top: 0.5rem;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 
 .attachment-item {
   .attachment-image {
-    // max-width: 150px;
-    // max-height: 150px;
-    // border-radius: 4px;
-    // border: 1px solid #ddd;
     width: 100%;
     height: 100%;
     object-fit: contain;
     object-position: center;
+  }
+
+  .pdf-preview-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    width: 100%;
+    background: var(--cor-cinza-fundo);
+    border: 1px solid var(--cor-cinza-medio);
+    border-radius: var(--borda-raio-pequeno);
+    padding: var(--espacamento-padrao);
+    gap: var(--espacamento-pequeno);
+
+    .pdf-preview-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pdf-preview-name {
+      font-size: var(--fonte-tamanho-pequeno);
+      color: var(--cor-primaria);
+      text-align: center;
+      word-break: break-word;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
   }
 }
 
@@ -123,17 +119,68 @@
   }
 }
 
-.file-preview {
-  background: #f8f9fa;
-  border-radius: 4px;
-  
-  
-  
-  .preview-image {
-    max-width: 100%;
-    max-height: 300px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
+.upload-content {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .file-preview {
+    width: 100%;
+    padding: var(--espacamento-padrao);
+
+    h4 {
+      margin: 0 0 var(--espacamento-padrao) 0;
+      color: var(--cor-primaria);
+      font-size: var(--fonte-tamanho-medio);
+      font-weight: var(--fonte-peso-medio);
+    }
+
+    .preview-image {
+      max-width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: var(--borda-raio-pequeno);
+      border: 1px solid var(--cor-cinza-medio);
+      box-shadow: var(--sombra-padrao);
+    }
+
+    .pdf-preview-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      background: var(--cor-branca);
+      border: 1px solid var(--cor-cinza-medio);
+      border-radius: var(--borda-raio-padrao);
+      overflow: hidden;
+      box-shadow: var(--sombra-padrao);
+
+      pdf-viewer {
+        background: var(--cor-cinza-fundo);
+        border-bottom: 1px solid var(--cor-cinza-medio);
+      }
+
+      .pdf-preview-info {
+        padding: var(--espacamento-padrao);
+        background: var(--cor-branca);
+        border-top: 1px solid var(--cor-cinza-medio);
+
+        .pdf-preview-name {
+          font-size: var(--fonte-tamanho-padrao);
+          font-weight: var(--fonte-peso-medio);
+          color: var(--cor-primaria);
+          margin: 0 0 var(--espacamento-pequeno) 0;
+          word-break: break-word;
+        }
+
+        .pdf-preview-size {
+          font-size: var(--fonte-tamanho-pequeno);
+          color: var(--cor-cinza-escuro);
+          margin: 0;
+        }
+      }
+    }
   }
 }
 

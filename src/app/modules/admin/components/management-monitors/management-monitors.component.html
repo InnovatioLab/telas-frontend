@@ -354,6 +354,8 @@
     [closable]="true"
     [dismissableMask]="true"
     [style]="{ width: '95vw', maxWidth: '600px' }"
+    [draggable]="false"
+    [resizable]="false"
   >
     <form (ngSubmit)="createAdvertisement()" #adForm="ngForm">
       <input
@@ -366,17 +368,41 @@
         required
       />
 
-      <div *ngIf="uploadAdPreview" class="w-full">
-        <img
-          *ngIf="selectedFile?.type.startsWith('image/')"
-          [src]="uploadAdPreview"
-          [alt]="selectedFile?.name"
-        />
-      </div>
-      <div *ngIf="selectedFile" class="w-full flex justify-content-center mt-2">
-        <p class="mb-0">
-          {{ selectedFile.name }}
-        </p>
+      <div class="upload-content">
+        <!-- File Preview -->
+        <div
+          *ngIf="uploadAdPreview && selectedFile"
+          class="file-preview flex flex-column align-items-center gap-3"
+        >
+          <h4 class="align-self-start">Selected File Preview:</h4>
+          
+          <!-- PDF Preview -->
+          <div *ngIf="isPdfFile(selectedFile.name)" class="pdf-preview-container">
+            <pdf-viewer
+              [src]="uploadAdPreview"
+              [render-text]="true"
+              [original-size]="false"
+              [show-all]="false"
+              [fit-to-page]="true"
+              [zoom]="0.8"
+              [zoom-scale]="'page-width'"
+              [stick-to-page]="true"
+              style="display: block; width: 100%; min-height: 400px; max-height: 500px;"
+            ></pdf-viewer>
+            <div class="pdf-preview-info">
+              <p class="pdf-preview-name">{{ selectedFile.name }}</p>
+              <p class="pdf-preview-size">{{ formatFileSize(selectedFile.size) }}</p>
+            </div>
+          </div>
+
+          <!-- Image Preview -->
+          <img
+            *ngIf="!isPdfFile(selectedFile.name)"
+            [src]="uploadAdPreview"
+            [alt]="selectedFile.name"
+            class="preview-image"
+          />
+        </div>
       </div>
 
       <div

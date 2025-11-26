@@ -42,24 +42,26 @@
   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} ad requests"
   paginatorDropdownAppendTo="body"
   (onPage)="onPageChange($event)"
+  (onSort)="onSort($event)"
+  [sortField]="currentFilters?.sortBy || 'createdAt'"
+  [sortOrder]="currentFilters?.sortDir === 'asc' ? 1 : -1"
 >
   <ng-template pTemplate="header">
     <tr>
       <th scope="col" pSortableColumn="clientName">
         Client Name <p-sortIcon field="clientName"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="clientRole">
-        Role <p-sortIcon field="clientRole"></p-sortIcon>
+      <th scope="col" pSortableColumn="role">
+        Role <p-sortIcon field="role"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="message">
-        Message <p-sortIcon field="message"></p-sortIcon>
+      <th scope="col" pSortableColumn="slogan">
+        Slogan <p-sortIcon field="slogan"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="submissionDate">
-        Submission Date <p-sortIcon field="submissionDate"></p-sortIcon>
+      <th scope="col" pSortableColumn="createdAt">
+        Submission Date <p-sortIcon field="createdAt"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="waitingDays">
-        Waiting Days <p-sortIcon field="waitingDays"></p-sortIcon>
-      </th>
+      <th scope="col">Brand Guideline</th>
+      <th scope="col">Waiting Days</th>
       <th scope="col" class="actions">Actions</th>
     </tr>
   </ng-template>
@@ -74,14 +76,26 @@
         >
         </p-badge>
       </td>
-      <td>{{ adRequest.message | sliceString: 100 }}</td>
+      <td>{{ adRequest.slogan | sliceString: 75 }}</td>
       <td>{{ adRequest.submissionDate | date: "MM/dd/yyyy" }}</td>
+      <td>
+        <ng-container *ngIf="adRequest.brandGuidelineUrl; else noUrl">
+          <a
+            [href]="getAbsoluteUrl(adRequest.brandGuidelineUrl)"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Link</a
+          >
+        </ng-container>
+        <ng-template #noUrl>N/A</ng-template>
+      </td>
       <td>{{ adRequest.waitingDays }} days</td>
       <td class="actions">
         <div class="action-buttons">
           <button
             pButton
             pRipple
+            *ngIf="adRequest.attachments && adRequest.attachments.length > 0"
             icon="pi pi-eye"
             class="p-button-rounded p-button-info p-button-text"
             (click)="openViewDetailsDialog(adRequest)"
@@ -123,22 +137,25 @@
   [modal]="true"
   [closable]="true"
   [dismissableMask]="true"
-  [style]="{ width: '90%', maxWidth: '650px' }"
+  [style]="{ width: '50vw', maxWidth: '1000px' }"
+  [breakpoints]="{ '1199px': '60vw', '575px': '90vw' }"
   [draggable]="false"
   [resizable]="false"
 >
   <div *ngIf="selectedAdRequest" class="details-content">
-    <div class="detail-row">
-      <strong>Message:</strong> {{ selectedAdRequest.message }}
+    <div *ngIf="selectedAdRequest.slogan" class="detail-row">
+      <strong>Slogan:</strong> {{ selectedAdRequest.slogan }}
     </div>
-    <div class="detail-row" *ngIf="selectedAdRequest.phone">
-      <strong>Phone:</strong> {{ selectedAdRequest.phone }}
-    </div>
-    <div class="detail-row" *ngIf="selectedAdRequest.email">
-      <strong>Email:</strong> {{ selectedAdRequest.email }}
+    <div *ngIf="selectedAdRequest.brandGuidelineUrl" class="detail-row">
+      <strong>Brand Guideline URL:</strong>
+      <a
+        [href]="getAbsoluteUrl(selectedAdRequest.brandGuidelineUrl)"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Link</a
+      >
     </div>
 
-    <!-- Attachments -->
     <div
       class="detail-row"
       *ngIf="
@@ -147,12 +164,24 @@
       "
     >
       <strong>Attachments:</strong>
-      <div class="attachments-container">
+      <div class="attachments-container mt-2">
         <div
           *ngFor="let attachment of selectedAdRequest.attachments"
           class="attachment-item"
         >
+          <div *ngIf="isPdfAttachment(attachment.attachmentLink)" class="pdf-preview-card">
+            <div class="pdf-preview-icon">
+              <span
+                class="pi pi-file-pdf"
+                style="font-size: 48px; color: var(--cor-erro)"
+              ></span>
+            </div>
+            <div class="pdf-preview-name">
+              {{ attachment.attachmentName || 'PDF Document' }}
+            </div>
+          </div>
           <img
+            *ngIf="!isPdfAttachment(attachment.attachmentLink)"
             [src]="attachment.attachmentLink"
             alt="Attachment"
             class="attachment-image"
@@ -244,19 +273,37 @@
   <div class="upload-content">
     <!-- File Preview -->
     <div
-      *ngIf="filePreview"
+      *ngIf="filePreview && selectedFile"
       class="file-preview flex flex-column align-items-center gap-3"
     >
       <h4 class="align-self-start">Selected File Preview:</h4>
-      <ng-container *ngIf="isDataPdf(filePreview); else imgPreview">
-        <!-- <pdf-viewer
+      
+      <!-- PDF Preview -->
+      <div *ngIf="isPdfAttachment(selectedFile.name)" class="pdf-preview-container">
+        <pdf-viewer
           [src]="filePreview"
-          style="width: 100%; height: 400px"
-        ></pdf-viewer> -->
-      </ng-container>
-      <ng-template #imgPreview>
-        <img [src]="filePreview" alt="File Preview" class="preview-image" />
-      </ng-template>
+          [render-text]="true"
+          [original-size]="false"
+          [show-all]="false"
+          [fit-to-page]="true"
+          [zoom]="0.8"
+          [zoom-scale]="'page-width'"
+          [stick-to-page]="true"
+          style="display: block; width: 100%; min-height: 400px; max-height: 500px;"
+        ></pdf-viewer>
+        <div class="pdf-preview-info">
+          <p class="pdf-preview-name">{{ selectedFile.name }}</p>
+          <p class="pdf-preview-size">{{ formatFileSize(selectedFile.size) }}</p>
+        </div>
+      </div>
+
+      <!-- Image Preview -->
+      <img
+        *ngIf="!isPdfAttachment(selectedFile.name)"
+        [src]="filePreview"
+        alt="File Preview"
+        class="preview-image"
+      />
     </div>
   </div>
 

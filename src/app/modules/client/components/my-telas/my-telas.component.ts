@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import {
   FormGroup,
   FormsModule,
@@ -13,7 +14,10 @@ import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { ErrorComponent } from "@app/shared/components";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
+import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
+import { PdfViewerModule } from "ng2-pdf-viewer";
 import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
 import { MyTelasService } from "../../services/my-telas.service";
@@ -32,12 +36,13 @@ import { AdItemComponent } from "../ad-item/ad-item.component";
     ErrorComponent,
     IconsModule,
     AdItemComponent,
+    PdfViewerModule,
   ],
 })
 export class MyTelasComponent implements OnInit, OnDestroy {
   @ViewChild("adFileUpload") fileUploadComponent: FileUpload;
   @ViewChild("attachmentFileUpload") attachmentFileUploadComponent: FileUpload;
-  @ViewChild("singleReplaceInput") singleReplaceInput: any;
+  @ViewChild("singleReplaceInput") singleReplaceInput: ElementRef<HTMLInputElement> | undefined;
 
   // Attachment selecionado para substituição
   attachmentToReplaceId: string | null = null;
@@ -70,7 +75,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   constructor(
     public readonly myTelasService: MyTelasService,
     private readonly toastService: ToastService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly pdfViewerService: PdfViewerService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly sanitizer: DomSanitizer
   ) {
     this.requestAdForm = this.myTelasService.createRequestAdForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
@@ -81,12 +89,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.checkRouteParams();
-  }
-
-  ngOnDestroy(): void {
-    if (this.routeParamsSubscription) {
-      this.routeParamsSubscription.unsubscribe();
-    }
   }
 
   checkRouteParams(): void {
@@ -118,7 +120,21 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       this.uploadPreviews = [];
 
       const validateFiles = async () => {
+        const existingAttachments = this.myTelasService.clientAttachments();
+        
         for (const file of files) {
+          const isDuplicate = existingAttachments.some(
+            attachment => attachment.attachmentName === file.name
+          );
+
+          if (isDuplicate) {
+            this.toastService.erro(`File "${file.name}" already exists. Please choose a different file.`);
+            if (this.attachmentFileUploadComponent) {
+              this.attachmentFileUploadComponent.clear();
+            }
+            return;
+          }
+
           const validation =
             await this.myTelasService.validateAttachmentFile(file);
 
@@ -157,26 +173,26 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   onUpdateAttachmentClick(attachmentId: string): void {
     this.attachmentToReplaceId = attachmentId;
-    try {
-      if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
-        this.singleReplaceInput.nativeElement.value = "";
-        this.singleReplaceInput.nativeElement.click();
+    // Use setTimeout to ensure the ViewChild is available after change detection
+    setTimeout(() => {
+      const input = this.singleReplaceInput?.nativeElement;
+      if (input) {
+        input.value = "";
+        input.click();
       } else {
-        const el = document.querySelector(
-          "input[type=file][#singleReplaceInput]"
-        ) as HTMLInputElement;
-        if (el) {
-          el.value = "";
-          el.click();
-        }
+        console.warn('singleReplaceInput not found for replacement.');
       }
-    } catch (err) {
-    }
+    }, 100);
   }
 
   async onUpdateAttachmentFile(event: any): Promise<void> {
     const file: File | undefined = event?.target?.files?.[0];
+    const input = this.singleReplaceInput?.nativeElement;
+    
     if (!file) {
+      if (input) {
+        input.value = "";
+      }
       return;
     }
 
@@ -184,14 +200,17 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       const validation = await this.myTelasService.validateAttachmentFile(file);
       if (!validation.isValid) {
         validation.errors.forEach((error) => this.toastService.erro(error));
-        if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
-          this.singleReplaceInput.nativeElement.value = "";
+        if (input) {
+          input.value = "";
         }
         return;
       }
 
       if (!this.attachmentToReplaceId) {
         this.toastService.erro("No attachment selected to replace");
+        if (input) {
+          input.value = "";
+        }
         return;
       }
 
@@ -200,14 +219,16 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         file
       );
 
-      if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
-        this.singleReplaceInput.nativeElement.value = "";
+      if (input) {
+        input.value = "";
       }
       this.attachmentToReplaceId = null;
       await this.loadClientData();
     } catch (err) {
-      if (this.singleReplaceInput && this.singleReplaceInput.nativeElement) {
-        this.singleReplaceInput.nativeElement.value = "";
+      console.error('Error replacing attachment:', err);
+      this.toastService.erro("Erro ao substituir arquivo");
+      if (input) {
+        input.value = "";
       }
       this.attachmentToReplaceId = null;
     }
@@ -232,10 +253,50 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   cancelUpload(): void {
     this.clearUploadData();
-    // Limpar também o componente de upload de attachments
     if (this.attachmentFileUploadComponent) {
       this.attachmentFileUploadComponent.clear();
     }
+  }
+
+  previewSelectedFile(file: File): void {
+    if (isPdfFile(file.name)) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const blobUrl = reader.result as string;
+        this.pdfViewerService.openPdf(blobUrl, file.name);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imageUrl = reader.result as string;
+        window.open(imageUrl, '_blank');
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeSelectedFile(file: File): void {
+    const index = this.selectedFiles.findIndex(f => f.name === file.name && f.size === file.size);
+    if (index > -1) {
+      this.selectedFiles.splice(index, 1);
+      this.uploadPreviews.splice(index, 1);
+    }
+    if (this.attachmentFileUploadComponent) {
+      const files = (this.attachmentFileUploadComponent as any).files || [];
+      const fileIndex = files.findIndex((f: File) => f.name === file.name && f.size === file.size);
+      if (fileIndex > -1) {
+        (this.attachmentFileUploadComponent as any).remove(null, fileIndex);
+      }
+    }
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 
   clearUploadData(): void {
@@ -364,8 +425,13 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     return form.get(campo)?.invalid && form.get(campo)?.touched;
   }
 
-  viewAttachment(link: string): void {
-    window.open(link, "_blank");
+  viewAttachment(link: string, attachmentName?: string): void {
+    if (isPdfFile(link)) {
+      const title = attachmentName || 'Visualizar PDF';
+      this.pdfViewerService.openPdf(link, title);
+    } else {
+      window.open(link, "_blank");
+    }
   }
 
   downloadAttachment(link: string): void {
@@ -519,11 +585,16 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   }
 
   isPdfLink(link?: string | null): boolean {
-    if (!link) return false;
-    try {
-      return /\.pdf(\?|$)/i.test(link);
-    } catch (err) {
-      return false;
+    return isPdfFile(link);
+  }
+
+  getSafePdfUrl(url: string): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url + '#view=FitH');
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeParamsSubscription) {
+      this.routeParamsSubscription.unsubscribe();
     }
   }
 }

@@ -141,12 +141,12 @@ export class ManagementBoxesComponent implements OnInit {
     if (this.loadingMonitors) {
       return; // Evitar múltiplas chamadas simultâneas
     }
-    
+
     this.loadingMonitors = true;
     this.boxService.getAvailableMonitors().subscribe({
       next: (monitors) => {
         this.availableMonitors = [];
-        
+
         if (monitors && Array.isArray(monitors)) {
           monitors.forEach((monitor) => {
             if (monitor && monitor.id && monitor.fullAddress) {
@@ -157,14 +157,17 @@ export class ManagementBoxesComponent implements OnInit {
             }
           });
         }
-        
+
         // Quando estiver editando, selecionar o primeiro monitorId da box atual
-        if (this.selectedBoxForEdit && this.selectedBoxForEdit.monitorIds?.length > 0) {
+        if (
+          this.selectedBoxForEdit &&
+          this.selectedBoxForEdit.monitorIds?.length > 0
+        ) {
           this.selectedMonitorIdEdit = this.selectedBoxForEdit.monitorIds[0];
         } else {
           this.selectedMonitorIdEdit = null;
         }
-        
+
         this.loadingMonitors = false;
       },
       error: (error) => {
@@ -177,7 +180,7 @@ export class ManagementBoxesComponent implements OnInit {
         if (this.loadingMonitors) {
           this.loadingMonitors = false;
         }
-      }
+      },
     });
   }
 

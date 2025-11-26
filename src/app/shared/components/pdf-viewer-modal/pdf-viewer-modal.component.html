@@ -1,0 +1,33 @@
+<div class="pdf-viewer-container">
+  <div class="pdf-viewer-header">
+    <h2 class="pdf-viewer-title" *ngIf="title">{{ title }}</h2>
+    <button class="pdf-viewer-close-button" (click)="close()" type="button" aria-label="Fechar">
+      <app-icon-fechar></app-icon-fechar>
+    </button>
+  </div>
+  <div class="pdf-viewer-content">
+    <div *ngIf="isLoading && !hasError" class="pdf-loading">
+      <div class="loading-spinner">
+        <span class="pi pi-spin pi-spinner" style="font-size: 48px; color: var(--cor-primaria)"></span>
+        <p>Carregando PDF...</p>
+      </div>
+    </div>
+    
+    <div *ngIf="hasError" class="pdf-error">
+      <span class="pi pi-exclamation-triangle" style="font-size: 48px; color: var(--cor-erro)"></span>
+      <p>{{ errorMessage }}</p>
+      <button class="error-close-button" (click)="close()" type="button">Fechar</button>
+    </div>
+
+    <iframe
+      *ngIf="!hasError"
+      [src]="pdfSrc"
+      class="pdf-viewer-iframe"
+      title="PDF Viewer"
+      (load)="onLoadComplete()"
+      (error)="onError($event)"
+      type="application/pdf"
+    ></iframe>
+  </div>
+</div>
+
