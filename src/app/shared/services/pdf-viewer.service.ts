@@ -28,14 +28,17 @@ export class PdfViewerService {
           data: data,
           showHeader: false,
           width: LayoutUtils.getWidth(),
+          height: '90vh',
           modal: true,
           closable: false,
           closeOnEscape: true,
           baseZIndex: 10000,
           contentStyle: {
             overflow: 'hidden',
-            padding: '0'
-          }
+            padding: '0',
+            height: '100%'
+          },
+          styleClass: 'pdf-viewer-dialog'
         }
       );
 
