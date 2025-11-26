@@ -1,42 +1,74 @@
-// Estilos para o tooltip customizado do mapa
 ::ng-deep {
-  // Tooltip customizado - maior especificidade
-  .custom-map-tooltip {
-    background: var(--cor-branca) !important;
-    border-radius: var(--borda-raio-pequeno) !important;
-    padding: 0.5rem 1rem !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
-    min-width: 120px !important;
-    max-width: 240px !important;
-    box-sizing: border-box !important;
-    overflow: visible !important;
-    max-height: none !important;
-    height: auto !important;
+  .leaflet-tooltip.custom-monitor-tooltip {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
     margin: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .leaflet-tooltip.custom-monitor-tooltip::before {
+    display: none !important;
+  }
+
+  .custom-tooltip-content {
+    display: block !important;
+    border-radius: 12px !important;
+    padding: 10px 14px !important;
+    min-width: 140px !important;
+    max-width: 280px !important;
+    box-sizing: border-box !important;
+    pointer-events: auto !important;
+    animation: tooltipFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transform-origin: center bottom !important;
+    backdrop-filter: blur(8px) !important;
+    position: relative !important;
+    z-index: 1000 !important;
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
     
     .tooltip-title {
-      font-weight: var(--fonte-peso-semibold) !important;
-      font-size: var(--fonte-tamanho-padrao) !important;
-      color: var(--cor-primaria) !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+      color: #111519 !important;
       margin: 0 !important;
       padding: 0 !important;
-      line-height: 1.4 !important;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      display: block;
+      line-height: 1.5 !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      display: block !important;
+      letter-spacing: -0.01em !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
     }
-    
-    .tooltip-description {
-      font-size: var(--fonte-tamanho-pequeno) !important;
-      color: var(--cor-cinza-escuro) !important;
-      line-height: 1.4 !important;
-      margin: 0 !important;
-      margin-top: 0.25rem !important;
-      padding: 0 !important;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      display: block;
+  }
+
+  @keyframes tooltipFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .leaflet-tooltip.custom-monitor-tooltip.leaflet-tooltip-fade {
+    animation: tooltipFadeOut 0.15s ease-in forwards;
+  }
+
+  @keyframes tooltipFadeOut {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(4px) scale(0.96);
     }
   }
   

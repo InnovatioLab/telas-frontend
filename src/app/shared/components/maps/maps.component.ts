@@ -107,6 +107,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
   private monitorIcon: L.Icon | null = null;
   private redMarkerIcon: L.Icon | null = null;
+  private monitorMarkers: Map<L.Marker, MapPoint> = new Map();
 
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -155,7 +156,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private createMonitorIcon(): L.Icon {
     const svg = `
       <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z" fill="#111519" stroke="#FFFFFF" stroke-width="2"/>
+        <rect x="3" y="4" width="18" height="12" rx="1.5" fill="#049dd9"/>
+        <rect x="5" y="6" width="14" height="8" rx="0.5" fill="#0d0d0d"/>
+        <rect x="7" y="8" width="10" height="4" fill="#1a1a1a"/>
+        <path d="M9 18h6" stroke="#049dd9" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="20" r="1.5" fill="#049dd9"/>
       </svg>
     `;
     const svgBlob = new Blob([svg], { type: "image/svg+xml" });
@@ -163,7 +168,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     return L.icon({
       iconUrl: svgUrl,
       iconSize: [32, 32],
-      iconAnchor: [16, 16],
+      iconAnchor: [16, 24],
     });
   }
 
@@ -395,9 +400,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private createMarker(point: MapPoint, lat: number, lng: number): void {
     if (!this._map) return;
 
+    const isMonitor = point.category === "MONITOR" || point.type === "MONITOR";
     let icon: L.Icon;
 
-    if (point.category === "MONITOR" || point.type === "MONITOR") {
+    if (isMonitor) {
       icon = this.monitorIcon!;
     } else {
       icon = this.redMarkerIcon!;
@@ -405,8 +411,17 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     const marker = L.marker([lat, lng], {
       icon: icon,
-      title: point.title || "",
     });
+
+    if (isMonitor) {
+      this.bindCustomTooltip(marker, point);
+    } else {
+      marker.bindTooltip(point.title || "", {
+        permanent: false,
+        direction: "top",
+        offset: [0, -10],
+      });
+    }
 
     marker.on("click", () => {
       this.ngZone.run(() => {
@@ -422,7 +437,104 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     marker.addTo(this._map);
     this.markers.push(marker);
+
+    if (isMonitor) {
+      this.monitorMarkers.set(marker, point);
+      marker.on("remove", () => {
+        this.monitorMarkers.delete(marker);
+      });
+    }
   }
+
+  private bindCustomTooltip(marker: L.Marker, point: MapPoint): void {
+    const tooltipElement = this.createTooltipElement(point);
+    
+    marker.bindTooltip(tooltipElement, {
+      className: "custom-monitor-tooltip",
+      permanent: false,
+      direction: "top",
+      offset: [0, -12],
+      opacity: 1,
+      interactive: false,
+    });
+
+    marker.on("tooltipopen", () => {
+      setTimeout(() => {
+        this.updateTooltipContent(marker, point);
+      }, 10);
+    });
+  }
+
+  private createTooltipElement(point: MapPoint): HTMLElement {
+    const container = L.DomUtil.create("div", "custom-tooltip-content");
+    container.classList.add("light-theme");
+    container.setAttribute("data-theme", "light");
+    
+    container.style.setProperty('display', 'block', 'important');
+    container.style.setProperty('background', '#ffffff', 'important');
+    container.style.setProperty('background-color', '#ffffff', 'important');
+    container.style.setProperty('border', '1px solid rgba(0, 0, 0, 0.08)', 'important');
+    container.style.setProperty('box-shadow', '0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)', 'important');
+    container.style.setProperty('border-radius', '12px', 'important');
+    container.style.setProperty('padding', '10px 14px', 'important');
+    container.style.setProperty('min-width', '140px', 'important');
+    container.style.setProperty('max-width', '280px', 'important');
+    container.style.setProperty('box-sizing', 'border-box', 'important');
+
+    const title = L.DomUtil.create("div", "tooltip-title", container);
+    title.textContent = point.addressLocationName || point.title || "Monitor";
+    (title as HTMLElement).style.setProperty('color', '#111519', 'important');
+    (title as HTMLElement).style.setProperty('font-weight', '600', 'important');
+    (title as HTMLElement).style.setProperty('font-size', '14px', 'important');
+    (title as HTMLElement).style.setProperty('margin', '0', 'important');
+    (title as HTMLElement).style.setProperty('padding', '0', 'important');
+    (title as HTMLElement).style.setProperty('line-height', '1.5', 'important');
+    (title as HTMLElement).style.setProperty('white-space', 'nowrap', 'important');
+    (title as HTMLElement).style.setProperty('overflow', 'hidden', 'important');
+    (title as HTMLElement).style.setProperty('text-overflow', 'ellipsis', 'important');
+
+    return container;
+  }
+
+  private applyInlineStyles(element: HTMLElement): void {
+    if (!element) return;
+    
+    element.style.setProperty('display', 'block', 'important');
+    element.style.setProperty('background', '#ffffff', 'important');
+    element.style.setProperty('background-color', '#ffffff', 'important');
+    element.style.setProperty('border', '1px solid rgba(0, 0, 0, 0.08)', 'important');
+    element.style.setProperty('box-shadow', '0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)', 'important');
+    element.style.setProperty('border-radius', '12px', 'important');
+    element.style.setProperty('padding', '10px 14px', 'important');
+    element.style.setProperty('min-width', '140px', 'important');
+    element.style.setProperty('max-width', '280px', 'important');
+    element.style.setProperty('box-sizing', 'border-box', 'important');
+    
+    const titleElement = element.querySelector('.tooltip-title') as HTMLElement;
+    if (titleElement) {
+      titleElement.style.setProperty('color', '#111519', 'important');
+    }
+  }
+
+  private updateTooltipContent(marker: L.Marker, point: MapPoint): void {
+    const tooltip = marker.getTooltip();
+    if (!tooltip) return;
+
+    const container = tooltip.getElement();
+    if (!container) return;
+
+    container.classList.remove("dark-theme");
+    container.classList.add("light-theme");
+    container.setAttribute("data-theme", "light");
+    this.applyInlineStyles(container);
+
+    const titleElement = container.querySelector(".tooltip-title");
+    if (titleElement) {
+      titleElement.textContent = point.addressLocationName || point.title || "Monitor";
+      (titleElement as HTMLElement).style.setProperty('color', '#111519', 'important');
+    }
+  }
+
 
   public setMapPoints(points: MapPoint[]): void {
     this.points = points;
@@ -658,6 +770,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       }
     });
     this.clusterMarkers = [];
+    this.monitorMarkers.clear();
   }
 
   private updateMapDimensions(): void {
