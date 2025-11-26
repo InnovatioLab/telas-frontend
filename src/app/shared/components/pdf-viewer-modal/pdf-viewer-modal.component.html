@@ -1,0 +1,23 @@
+<div class="pdf-viewer-container">
+  <div class="pdf-viewer-header">
+    <h2 class="pdf-viewer-title" *ngIf="title">{{ title }}</h2>
+    <button class="pdf-viewer-close-button" (click)="close()" type="button" aria-label="Fechar">
+      <app-icon-fechar></app-icon-fechar>
+    </button>
+  </div>
+  <div class="pdf-viewer-content">
+    <pdf-viewer
+      [src]="pdfSrc"
+      [render-text]="true"
+      [original-size]="false"
+      [show-all]="false"
+      [fit-to-page]="true"
+      [zoom]="1"
+      [zoom-scale]="'page-width'"
+      [stick-to-page]="true"
+      (error)="onError($event)"
+      style="display: block; width: 100%; height: 100%;"
+    ></pdf-viewer>
+  </div>
+</div>
+
