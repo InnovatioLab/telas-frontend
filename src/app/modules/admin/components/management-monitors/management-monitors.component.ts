@@ -24,8 +24,10 @@ import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { MessageService } from "primeng/api";
+import { PdfViewerModule } from "ng2-pdf-viewer";
 import { GalleriaModule } from "primeng/galleria";
 import { OrderListModule } from "primeng/orderlist";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
@@ -55,6 +57,7 @@ interface Ad {
     GalleriaModule,
     OrderListModule,
     ProgressSpinnerModule,
+    PdfViewerModule,
   ],
   templateUrl: "./management-monitors.component.html",
   styleUrls: ["./management-monitors.component.scss"],
@@ -630,6 +633,18 @@ export class ManagementMonitorsComponent implements OnInit {
           this.toastService.erro("Error validating image file");
         });
     }
+  }
+
+  isPdfFile(fileName: string): boolean {
+    return isPdfFile(fileName);
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 
   createAdvertisement(): void {

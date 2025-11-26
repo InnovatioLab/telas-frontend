@@ -30,6 +30,34 @@
             [showUploadButton]="selectedFiles.length > 0"
             [showCancelButton]="selectedFiles.length > 0"
           >
+            <ng-template pTemplate="file" let-file>
+              <div class="p-fileupload-file">
+                <div class="p-fileupload-file-info">
+                  <div class="p-fileupload-file-name">{{ file.name }}</div>
+                  <span class="p-fileupload-file-size">{{ formatFileSize(file.size) }}</span>
+                </div>
+                <div class="p-fileupload-file-actions">
+                  <p-button
+                    icon="pi pi-eye"
+                    (onClick)="previewSelectedFile(file)"
+                    [text]="true"
+                    [rounded]="true"
+                    severity="info"
+                    pTooltip="Preview"
+                    tooltipPosition="top"
+                  ></p-button>
+                  <p-button
+                    icon="pi pi-times"
+                    (onClick)="removeSelectedFile(file)"
+                    [text]="true"
+                    [rounded]="true"
+                    severity="danger"
+                    pTooltip="Remove"
+                    tooltipPosition="top"
+                  ></p-button>
+                </div>
+              </div>
+            </ng-template>
           </p-fileUpload>
         }
 
@@ -76,11 +104,27 @@
                 </div>
                 <div class="attachment-preview">
                   @if (isPdfLink(attachment.attachmentLink)) {
-                    <!-- <pdf-viewer
-                      [src]="attachment.attachmentLink"
-                      class="attachment-pdf-viewer"
-                      style="height: 160px; width: 100%"
-                    ></pdf-viewer> -->
+                    <div class="pdf-preview-container">
+                      <div class="pdf-preview-content">
+                        <iframe
+                          [src]="getSafePdfUrl(attachment.attachmentLink)"
+                          class="pdf-preview-iframe"
+                          title="PDF Preview"
+                          loading="lazy"
+                          allow="fullscreen"
+                        ></iframe>
+                        <div class="pdf-preview-fallback">
+                          <span class="pi pi-file-pdf pdf-preview-icon"></span>
+                          <p class="pdf-preview-placeholder-text">PDF Document</p>
+                          <p class="pdf-preview-placeholder-subtext">Click "View" to open</p>
+                        </div>
+                      </div>
+                      <div class="pdf-preview-info">
+                        <p class="pdf-preview-name">
+                          {{ attachment.attachmentName || 'PDF Document' }}
+                        </p>
+                      </div>
+                    </div>
                   }
 
                   @if (!isPdfLink(attachment.attachmentLink)) {
@@ -104,7 +148,7 @@
                 <div class="attachment-actions">
                   <p-button
                     icon="pi pi-eye"
-                    (onClick)="viewAttachment(attachment.attachmentLink)"
+                    (onClick)="viewAttachment(attachment.attachmentLink, attachment.attachmentName)"
                     [disabled]="myTelasService.isLoading()"
                     severity="info"
                     [text]="true"
@@ -128,13 +172,6 @@
                     [text]="true"
                     pTooltip="Replace"
                   >
-                    <input
-                      type="file"
-                      #singleReplaceInput
-                      style="display: none"
-                      (change)="onUpdateAttachmentFile($event)"
-                      [accept]="acceptedFileTypes"
-                    />
                   </p-button>
                 </div>
               </div>
@@ -434,3 +471,12 @@
     </div>
   </ng-template>
 </p-dialog>
+
+<!-- Hidden file input for replacing attachments -->
+<input
+  type="file"
+  #singleReplaceInput
+  style="display: none"
+  (change)="onUpdateAttachmentFile($event)"
+  [accept]="acceptedFileTypes"
+/>

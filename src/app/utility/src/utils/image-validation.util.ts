@@ -125,12 +125,13 @@ export class ImageValidationUtil {
     maxSizeInMB: number = 10,
     maxNameLength: number = 255
   ): Promise<FileValidationResult> {
-    // Basic validations
+    const isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+
     if (!this.isValidFileType(file)) {
       return {
         isValid: false,
         errors: [
-          `File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, and TIFF formats are allowed.`,
+          `File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, TIFF formats or PDF files are allowed.`,
         ],
       };
     }
@@ -148,6 +149,13 @@ export class ImageValidationUtil {
         errors: [
           `File name "${file.name}" is too long. Maximum of ${maxNameLength} characters allowed.`,
         ],
+      };
+    }
+
+    if (isPdf) {
+      return {
+        isValid: true,
+        errors: [],
       };
     }
 
@@ -191,6 +199,8 @@ export class ImageValidationUtil {
         return "image/bmp";
       case "tiff":
         return "image/tiff";
+      case "pdf":
+        return "application/pdf";
       default:
         return "image/jpeg";
     }

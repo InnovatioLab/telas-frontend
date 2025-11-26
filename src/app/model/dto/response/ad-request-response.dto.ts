@@ -30,6 +30,7 @@ export interface PendingAdAdminValidationResponseDto {
 
 export interface LinkResponseDto {
   attachmentId: string;
+  attachmentName: string;
   attachmentLink: string;
 }
 

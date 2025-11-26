@@ -11,7 +11,10 @@ import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.d
 import { AdRequestResponseDto } from "@app/model/dto/response/ad-request-response.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
+import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
+import { PdfViewerModule } from "ng2-pdf-viewer";
 
 @Component({
   selector: "app-ad-request-management",
@@ -22,6 +25,7 @@ import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.uti
     FormsModule,
     SliceStringPipe,
     IconsModule,
+    PdfViewerModule,
   ],
   templateUrl: "./ad-request-management.component.html",
   styleUrls: ["./ad-request-management.component.scss"],
@@ -56,7 +60,8 @@ export class AdRequestManagementComponent implements OnInit {
   constructor(
     private readonly clientService: ClientService,
     private readonly adService: AdService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly pdfViewerService: PdfViewerService
   ) {}
 
   ngOnInit(): void {
@@ -274,6 +279,14 @@ export class AdRequestManagementComponent implements OnInit {
     reader.readAsDataURL(this.selectedFile);
   }
 
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
   isDataPdf(preview: string | null): boolean {
     if (!preview) return false;
     try {
@@ -284,7 +297,15 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   viewAttachment(link: string): void {
-    window.open(link, "_blank");
+    if (isPdfFile(link)) {
+      this.pdfViewerService.openPdf(link, 'Attachment');
+    } else {
+      window.open(link, "_blank");
+    }
+  }
+
+  isPdfAttachment(link: string): boolean {
+    return isPdfFile(link);
   }
 
   downloadAttachment(link: string): void {
