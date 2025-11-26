@@ -85,7 +85,7 @@
     }
 
     .p-card-content {
-      @include responsive("mobile") {
+      @media (max-width: 767px) {
         flex-direction: column;
 
         .p-input-icon-left {
@@ -242,7 +242,7 @@
       }
     }
 
-    @include responsive("mobile") {
+    @media (max-width: 767px) {
       flex-direction: column;
 
       .p-input-icon-left {
@@ -517,7 +517,7 @@
             flex-shrink: 0;
           }
 
-          @include responsive("mobile") {
+          @media (max-width: 767px) {
             flex-direction: column;
 
             .ad-input,
@@ -588,7 +588,7 @@
   object-position: center center;
 }
 
-@include responsive("mobile") {
+@media (max-width: 767px) {
   .actions {
     flex-direction: column;
     align-items: stretch;
