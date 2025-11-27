@@ -15,8 +15,10 @@ import {
   ViewChild,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { GoogleMapsModule } from "@angular/google-maps";
+import { LeafletModule } from "@asymmetrik/ngx-leaflet";
+import * as L from "leaflet";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
+import { LeafletMapService } from "@app/core/service/api/leaflet-map.service";
 import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
@@ -40,7 +42,7 @@ interface MonitorCluster {
 @Component({
   selector: "app-maps",
   standalone: true,
-  imports: [CommonModule, GoogleMapsModule, FormsModule, IconsModule],
+  imports: [CommonModule, LeafletModule, FormsModule, IconsModule],
   template: `
     <div #mapContainer [style.width]="width" [style.height]="height"></div>
   `,
@@ -57,6 +59,22 @@ interface MonitorCluster {
         border-radius: 8px;
         box-sizing: border-box;
         overflow: hidden;
+      }
+
+      div ::ng-deep .leaflet-container {
+        border-radius: 0 !important;
+      }
+
+      div ::ng-deep .leaflet-tile-container {
+        border-radius: 0 !important;
+      }
+
+      div ::ng-deep .leaflet-tile-container img {
+        border-radius: 0 !important;
+      }
+
+      div ::ng-deep .leaflet-tile {
+        border-radius: 0 !important;
       }
     `,
   ],
@@ -76,30 +94,29 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     point: MapPoint;
     event: MouseEvent;
   }>();
-  @Output() mapInitialized = new EventEmitter<google.maps.Map>();
+  @Output() mapInitialized = new EventEmitter<L.Map>();
   @Output() markerClicked = new EventEmitter<MapPoint>();
   @Output() mapReady = new EventEmitter<boolean>();
   @Output() mapError = new EventEmitter<string>();
 
-  private _map: google.maps.Map | null = null;
-  private markers: google.maps.Marker[] = [];
-  private clusterMarkers: google.maps.Marker[] = [];
+  private _map: L.Map | null = null;
+  private markers: L.Marker[] = [];
+  private clusterMarkers: L.Marker[] = [];
   private readonly subscriptions: Subscription[] = [];
-  private _apiLoaded = false;
   private _mapReady = false;
-  private markerPositions: google.maps.LatLngLiteral[] = [];
-  private markersConfig: {
-    position: google.maps.LatLngLiteral;
-    options: google.maps.MarkerOptions;
-  }[] = [];
   private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
+  private monitorIcon: L.Icon | null = null;
+  private redMarkerIcon: L.Icon | null = null;
+  private monitorMarkers: Map<L.Marker, MapPoint> = new Map();
 
   constructor(
     private readonly mapsService: GoogleMapsService,
+    private readonly leafletMapService: LeafletMapService,
     private readonly sidebarService: SidebarService,
     private readonly ngZone: NgZone,
     private readonly loadingService: LoadingService
   ) {
+    this.initializeIcons();
     effect(() => {
       const isVisible = this.sidebarService.visibilidade();
       const tipo = this.sidebarService.tipo();
@@ -131,32 +148,67 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     });
   }
 
+  private initializeIcons(): void {
+    this.monitorIcon = this.createMonitorIcon();
+    this.redMarkerIcon = this.createRedMarkerIcon();
+  }
+
+  private createMonitorIcon(): L.Icon {
+    const svg = `
+      <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="4" width="18" height="12" rx="1.5" fill="#049dd9"/>
+        <rect x="5" y="6" width="14" height="8" rx="0.5" fill="#0d0d0d"/>
+        <rect x="7" y="8" width="10" height="4" fill="#1a1a1a"/>
+        <path d="M9 18h6" stroke="#049dd9" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="20" r="1.5" fill="#049dd9"/>
+      </svg>
+    `;
+    const svgBlob = new Blob([svg], { type: "image/svg+xml" });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    return L.icon({
+      iconUrl: svgUrl,
+      iconSize: [32, 32],
+      iconAnchor: [16, 24],
+    });
+  }
+
+  private createRedMarkerIcon(): L.Icon {
+    const svg = `
+      <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8" cy="8" r="8" fill="#FF0000" stroke="#FFFFFF" stroke-width="1"/>
+      </svg>
+    `;
+    const svgBlob = new Blob([svg], { type: "image/svg+xml" });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    return L.icon({
+      iconUrl: svgUrl,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
+    });
+  }
+
   public reloadMapApi(): void {
-    this.mapsService.initGoogleMapsApi();
+    this.forceReinitialize();
   }
 
   public forceReinitialize(): void {
     if (this._map) {
+      this._map.remove();
       this._map = null;
     }
 
     this.clearMarkers();
-
-    this._apiLoaded = false;
     this._mapReady = false;
-
-    this.loadGoogleMapsScript();
+    this.initializeMap();
   }
 
   public ensureMapInitialized(): void {
-    if (!this._apiLoaded) {
-      this.loadGoogleMapsScript();
-    } else if (!this._map) {
+    if (!this._map) {
       this.initializeMap();
     } else if (!this._mapReady) {
       setTimeout(() => {
         if (this._map) {
-          google.maps.event.trigger(this._map, "resize");
+          this._map.invalidateSize();
           this.ngZone.run(() => {
             this._mapReady = true;
             this.mapReady.emit(true);
@@ -171,12 +223,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   ngOnInit() {
-    this.loadGoogleMapsScript();
+    this.initializeMap();
     this.setupEventListeners();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['center'] && changes['center'].currentValue) {
+    if (changes['center'] && changes['center'].currentValue && this._map) {
       this.updateMapCenter(changes['center'].currentValue);
     }
     
@@ -186,7 +238,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   ngAfterViewInit(): void {
-    if (this._apiLoaded && !this._map && this.mapContainer?.nativeElement) {
+    if (!this._map && this.mapContainer?.nativeElement) {
       setTimeout(() => {
         this.initializeMap();
       }, 100);
@@ -198,197 +250,13 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     this.clearMarkers();
 
     if (this._map) {
+      this._map.remove();
       this._map = null;
     }
   }
 
-  private loadGoogleMapsScript(): void {
-    this.loadingService.setLoading(true, "load-google-maps");
-
-    if (typeof google !== "undefined" && google.maps) {
-      this._apiLoaded = true;
-      this.loadingService.setLoading(false, "load-google-maps");
-      this.initializeMap();
-      return;
-    }
-
-    this.mapsService.initGoogleMapsApi();
-
-    const subscription = this.mapsService.apiLoaded$.subscribe(
-      (loaded: boolean) => {
-        if (loaded) {
-          this._apiLoaded = true;
-          this.loadingService.setLoading(false, "load-google-maps");
-
-          setTimeout(() => {
-            this.initializeMap();
-          }, 100);
-        }
-      }
-    );
-
-    const errorSubscription = this.mapsService.apiError$.subscribe((error) => {
-      if (error) {
-        this.ngZone.run(() => {
-          this.mapError.emit(error);
-        });
-        this.loadingService.setLoading(false, "load-google-maps");
-      }
-    });
-
-    this.subscriptions.push(subscription, errorSubscription);
-  }
-
-  private setupEventListeners(): void {
-    window.addEventListener("zipcode-location-found", ((e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (customEvent.detail?.location) {
-        const location = customEvent.detail.location;
-        if (this._map && location.latitude && location.longitude) {
-          this.ngZone.run(() => {
-            const newCenter = {
-              lat: location.latitude,
-              lng: location.longitude,
-            };
-            this._map?.setCenter(newCenter);
-            this._map?.setZoom(15);
-
-            this.clearMarkers();
-            const marker = new google.maps.Marker({
-              position: newCenter,
-              map: this._map,
-              title: location.title ?? "Localização do CEP",
-              icon: this.mapsService.createRedMarkerIcon(),
-            });
-            this.markers.push(marker);
-          });
-        }
-      }
-    }) as EventListener);
-
-    window.addEventListener("user-coordinates-updated", ((e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (customEvent.detail?.latitude && customEvent.detail?.longitude) {
-        const newCenter = {
-          lat: customEvent.detail.latitude,
-          lng: customEvent.detail.longitude,
-        };
-
-        if (this._map) {
-          this.ngZone.run(() => {
-            this._map?.setCenter(newCenter);
-            this._map?.setZoom(15);
-
-            this.clearMarkers();
-            const marker = new google.maps.Marker({
-              position: newCenter,
-              map: this._map,
-              title: "Localização atual",
-              icon: this.mapsService.createRedMarkerIcon(),
-            });
-            this.markers.push(marker);
-          });
-        }
-      }
-    }) as EventListener);
-
-    window.addEventListener("focus", () => {
-      if (this._apiLoaded && !this._map) {
-        setTimeout(() => {
-          this.initializeMap();
-        }, 500);
-      }
-    });
-
-    window.addEventListener("pageshow", (event) => {
-      if (event.persisted) {
-        setTimeout(() => {
-          this.ensureMapInitialized();
-        }, 1000);
-      }
-    });
-
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && this._apiLoaded && !this._map) {
-        setTimeout(() => {
-          this.initializeMap();
-        }, 500);
-      }
-    });
-
-    window.addEventListener("admin-menu-pin-changed", () => {
-      const isMenuFixed = document.body.classList.contains("menu-fixed");
-      setTimeout(() => {
-        this.updateMapDimensions();
-      }, 300);
-    });
-
-    window.addEventListener("admin-sidebar-pin-changed", (event: any) => {
-      const isPinned = event.detail?.pinned;
-      setTimeout(() => {
-        this.updateMapDimensions();
-      }, 300);
-    });
-
-    window.addEventListener("admin-menu-loaded", () => {
-      const isMenuFixed = document.body.classList.contains("menu-fixed");
-      setTimeout(() => {
-        this.updateMapDimensions();
-      }, 300);
-    });
-
-    window.addEventListener("admin-menu-closed", () => {
-      const isMenuFixed = document.body.classList.contains("menu-fixed");
-      setTimeout(() => {
-        this.updateMapDimensions();
-      }, 300);
-    });
-
-    const userCoordsSub = this.mapsService.savedPoints$.subscribe(
-      (points: MapPoint[]) => {
-        if (this._map && points.length > 0) {
-          this.addMapPoints(points);
-        }
-      }
-    );
-
-    const monitorsSub = this.mapsService.nearestMonitors$.subscribe(
-      (monitors: MapPoint[]) => {
-        if (this._map && monitors.length > 0) {
-          this.addMapPoints(monitors);
-        }
-      }
-    );
-
-    window.addEventListener("monitors-found", ((e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (customEvent.detail?.monitors) {
-        const monitors: MapPoint[] = customEvent.detail.monitors;
-        if (this._map) {
-          this.setMapPoints(monitors);
-        } else {
-          setTimeout(() => {
-            if (this._map) {
-              this.setMapPoints(monitors);
-            }
-          }, 1000);
-        }
-      }
-    }) as EventListener);
-
-    this.subscriptions.push(userCoordsSub, monitorsSub);
-  }
-
-  private initializeMap(): void {
+  private async initializeMap(): Promise<void> {
     if (!this.mapContainer?.nativeElement) {
-      return;
-    }
-
-    if (!this._apiLoaded) {
-      return;
-    }
-
-    if (typeof google === "undefined" || !google.maps) {
       return;
     }
 
@@ -400,19 +268,17 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       const defaultCenter = { lat: 30.3322, lng: -81.6557 };
       const center = this.center || defaultCenter;
 
-      this._map = new google.maps.Map(this.mapContainer.nativeElement, {
+      this._map = await this.leafletMapService.initializeMap(
+        this.mapContainer.nativeElement,
         center,
-        zoom: this.zoom,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-      });
+        this.zoom
+      );
 
       this.ngZone.run(() => {
-        this.mapInitialized.emit(this._map);
+        this.mapInitialized.emit(this._map!);
       });
 
-      this._map.addListener("zoom_changed", () => {
+      this._map.on("zoomend", () => {
         if (this._map && this.points && this.points.length > 0) {
           this.updateMarkersBasedOnZoom();
         }
@@ -424,7 +290,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
       setTimeout(() => {
         if (this._map) {
-          google.maps.event.trigger(this._map, "resize");
+          this._map.invalidateSize();
           this.ngZone.run(() => {
             this._mapReady = true;
             this.mapReady.emit(true);
@@ -437,23 +303,18 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
           "Falha ao inicializar o mapa. Por favor, tente novamente."
         );
       });
-      this._apiLoaded = false;
       this._mapReady = false;
     }
   }
 
   public isMapReady(): boolean {
-    return this._mapReady && this._apiLoaded && !!this._map;
+    return this._mapReady && !!this._map;
   }
 
   public checkMapState(): void {
-    if (this._apiLoaded && !this._map && this.mapContainer?.nativeElement) {
+    if (!this._map && this.mapContainer?.nativeElement) {
       this.initializeMap();
     }
-  }
-
-  private forceMapResize(): void {
-    window.dispatchEvent(new Event("resize"));
   }
 
   private hasExplicitCoordinates(): boolean {
@@ -467,8 +328,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     if (this.hasExplicitCoordinates()) {
       this.center = {
-        lat: this.latitude,
-        lng: this.longitude,
+        lat: this.latitude!,
+        lng: this.longitude!,
       };
       return;
     }
@@ -537,25 +398,34 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   private createMarker(point: MapPoint, lat: number, lng: number): void {
-    let icon: google.maps.Symbol;
+    if (!this._map) return;
 
-    if (point.category === "MONITOR" || point.type === "MONITOR") {
-      icon = this.mapsService.createMonitorIcon();
+    const isMonitor = point.category === "MONITOR" || point.type === "MONITOR";
+    let icon: L.Icon;
+
+    if (isMonitor) {
+      icon = this.monitorIcon!;
     } else {
-      icon = this.mapsService.createRedMarkerIcon();
+      icon = this.redMarkerIcon!;
     }
 
-    const marker = new google.maps.Marker({
-      position: { lat, lng },
-      map: this._map,
-      title: point.title || "",
+    const marker = L.marker([lat, lng], {
       icon: icon,
     });
 
-    marker.addListener("click", () => {
+    if (isMonitor) {
+      this.bindCustomTooltip(marker, point);
+    } else {
+      marker.bindTooltip(point.title || "", {
+        permanent: false,
+        direction: "top",
+        offset: [0, -10],
+      });
+    }
+
+    marker.on("click", () => {
       this.ngZone.run(() => {
         this.markerClicked.emit(point);
-
         this.mapsService.selectPoint(point);
 
         const customEvent = new CustomEvent("monitor-marker-clicked", {
@@ -565,12 +435,109 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       });
     });
 
+    marker.addTo(this._map);
     this.markers.push(marker);
+
+    if (isMonitor) {
+      this.monitorMarkers.set(marker, point);
+      marker.on("remove", () => {
+        this.monitorMarkers.delete(marker);
+      });
+    }
   }
+
+  private bindCustomTooltip(marker: L.Marker, point: MapPoint): void {
+    const tooltipElement = this.createTooltipElement(point);
+    
+    marker.bindTooltip(tooltipElement, {
+      className: "custom-monitor-tooltip",
+      permanent: false,
+      direction: "top",
+      offset: [0, -12],
+      opacity: 1,
+      interactive: false,
+    });
+
+    marker.on("tooltipopen", () => {
+      setTimeout(() => {
+        this.updateTooltipContent(marker, point);
+      }, 10);
+    });
+  }
+
+  private createTooltipElement(point: MapPoint): HTMLElement {
+    const container = L.DomUtil.create("div", "custom-tooltip-content");
+    container.classList.add("light-theme");
+    container.setAttribute("data-theme", "light");
+    
+    container.style.setProperty('display', 'block', 'important');
+    container.style.setProperty('background', '#ffffff', 'important');
+    container.style.setProperty('background-color', '#ffffff', 'important');
+    container.style.setProperty('border', '1px solid rgba(0, 0, 0, 0.08)', 'important');
+    container.style.setProperty('box-shadow', '0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)', 'important');
+    container.style.setProperty('border-radius', '12px', 'important');
+    container.style.setProperty('padding', '10px 14px', 'important');
+    container.style.setProperty('min-width', '140px', 'important');
+    container.style.setProperty('max-width', '280px', 'important');
+    container.style.setProperty('box-sizing', 'border-box', 'important');
+
+    const title = L.DomUtil.create("div", "tooltip-title", container);
+    title.textContent = point.addressLocationName || point.title || "Monitor";
+    (title as HTMLElement).style.setProperty('color', '#111519', 'important');
+    (title as HTMLElement).style.setProperty('font-weight', '600', 'important');
+    (title as HTMLElement).style.setProperty('font-size', '14px', 'important');
+    (title as HTMLElement).style.setProperty('margin', '0', 'important');
+    (title as HTMLElement).style.setProperty('padding', '0', 'important');
+    (title as HTMLElement).style.setProperty('line-height', '1.5', 'important');
+    (title as HTMLElement).style.setProperty('white-space', 'nowrap', 'important');
+    (title as HTMLElement).style.setProperty('overflow', 'hidden', 'important');
+    (title as HTMLElement).style.setProperty('text-overflow', 'ellipsis', 'important');
+
+    return container;
+  }
+
+  private applyInlineStyles(element: HTMLElement): void {
+    if (!element) return;
+    
+    element.style.setProperty('display', 'block', 'important');
+    element.style.setProperty('background', '#ffffff', 'important');
+    element.style.setProperty('background-color', '#ffffff', 'important');
+    element.style.setProperty('border', '1px solid rgba(0, 0, 0, 0.08)', 'important');
+    element.style.setProperty('box-shadow', '0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)', 'important');
+    element.style.setProperty('border-radius', '12px', 'important');
+    element.style.setProperty('padding', '10px 14px', 'important');
+    element.style.setProperty('min-width', '140px', 'important');
+    element.style.setProperty('max-width', '280px', 'important');
+    element.style.setProperty('box-sizing', 'border-box', 'important');
+    
+    const titleElement = element.querySelector('.tooltip-title') as HTMLElement;
+    if (titleElement) {
+      titleElement.style.setProperty('color', '#111519', 'important');
+    }
+  }
+
+  private updateTooltipContent(marker: L.Marker, point: MapPoint): void {
+    const tooltip = marker.getTooltip();
+    if (!tooltip) return;
+
+    const container = tooltip.getElement();
+    if (!container) return;
+
+    container.classList.remove("dark-theme");
+    container.classList.add("light-theme");
+    container.setAttribute("data-theme", "light");
+    this.applyInlineStyles(container);
+
+    const titleElement = container.querySelector(".tooltip-title");
+    if (titleElement) {
+      titleElement.textContent = point.addressLocationName || point.title || "Monitor";
+      (titleElement as HTMLElement).style.setProperty('color', '#111519', 'important');
+    }
+  }
+
 
   public setMapPoints(points: MapPoint[]): void {
     this.points = points;
-
     this.addMapPoints(points);
 
     if (points.length > 0) {
@@ -578,54 +545,15 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     }
   }
 
-  private updateMapPoints(): void {
-    if (!this.points || this.points.length === 0) return;
-
-    this.markerPositions = this.mapsService.convertToMarkerPositions(
-      this.points
-    );
-
-    this.markersConfig = this.points.map((point, index) => {
-      point.icon ??= this.mapsService.createRedMarkerIcon() as any;
-
-      point.id ??= `point-${index}`;
-
-      return {
-        position: {
-          lat: point.latitude,
-          lng: point.longitude,
-        },
-        options: this.mapsService.createMarkerOptions(point),
-      };
-    });
-  }
-
   public onMarkerClick(
     point: MapPoint,
-    event: google.maps.MapMouseEvent
+    event: MouseEvent
   ): void {
-    if (event?.domEvent) {
-      if (event.domEvent instanceof MouseEvent) {
-        this.pointClick.emit({ point, event: event.domEvent });
-      } else {
-        const clientX = (event.domEvent as any)?.clientX ?? 0;
-        const clientY = (event.domEvent as any)?.clientY ?? 0;
-        const syntheticEvent = new MouseEvent("click", {
-          clientX,
-          clientY,
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        });
-        this.pointClick.emit({ point, event: syntheticEvent });
-      }
-    }
+    this.pointClick.emit({ point, event });
   }
 
   public clearMapPoints(): void {
     this.points = [];
-    this.markerPositions = [];
-    this.markersConfig = [];
   }
 
   private updateMarkersBasedOnZoom(): void {
@@ -718,38 +646,25 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     return clusters;
   }
 
-  private calculateDistance(
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number
-  ): number {
-    const dLat = Math.abs(lat1 - lat2);
-    const dLng = Math.abs(lng1 - lng2);
-    return Math.sqrt(dLat * dLat + dLng * dLng);
-  }
-
   private createClusterMarker(cluster: MonitorCluster): void {
     if (!this._map) return;
 
     const clusterIcon = this.createClusterIcon(cluster.count, cluster.monitors);
 
-    const clusterMarker = new google.maps.Marker({
-      position: cluster.position,
-      map: this._map,
-      title: `${cluster.count} monitores neste local`,
+    const clusterMarker = L.marker([cluster.position.lat, cluster.position.lng], {
       icon: clusterIcon,
-      zIndex: 1000,
+      title: `${cluster.count} monitores neste local`,
+      zIndexOffset: 1000,
     });
 
-    clusterMarker.addListener("click", () => {
+    clusterMarker.on("click", () => {
       this.ngZone.run(() => {
         if (this._map) {
           const currentZoom = this._map.getZoom() || 15;
 
           if (currentZoom < 16) {
             this._map.setZoom(16);
-            this._map.setCenter(cluster.position);
+            this._map.setView([cluster.position.lat, cluster.position.lng]);
           } else {
             this.showClusterDetails(cluster);
           }
@@ -757,6 +672,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       });
     });
 
+    clusterMarker.addTo(this._map);
     this.clusterMarkers.push(clusterMarker);
   }
 
@@ -778,7 +694,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private createClusterIcon(
     count: number,
     monitors: MapPoint[]
-  ): google.maps.Icon {
+  ): L.DivIcon {
     const size = Math.min(50 + count * 4, 80);
 
     let fillColor = "#FF6B35";
@@ -795,33 +711,66 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       fillColor = "#6c757d";
     }
 
-    const svg = `
-      <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="${size / 2 + 3}" cy="${size / 2 + 3}" r="${size / 2 - 3}" fill="rgba(0,0,0,0.3)"/>
-        <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 3}" fill="${fillColor}" stroke="#FFFFFF" stroke-width="4"/>
-        <rect x="${size / 2 - 8}" y="${size / 2 - 10}" width="16" height="10" rx="2" fill="#FFFFFF" opacity="0.9"/>
-        <rect x="${size / 2 - 7}" y="${size / 2 - 9}" width="14" height="8" rx="1" fill="${fillColor}"/>
-        <circle cx="${size / 2 + 12}" cy="${size / 2 - 12}" r="12" fill="#FFFFFF" stroke="${fillColor}" stroke-width="3"/>
-        <text x="${size / 2 + 12}" y="${size / 2 - 7}" text-anchor="middle" font-family="Arial, sans-serif" 
-              font-size="14" font-weight="bold" fill="${fillColor}">${count}</text>
-      </svg>
+    const html = `
+      <div style="
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 50%;
+        background-color: ${fillColor};
+        border: 4px solid #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFFFFF;
+        font-weight: bold;
+        font-size: ${Math.min(14 + count, 18)}px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        position: relative;
+      ">
+        <div style="
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background-color: #FFFFFF;
+          border: 3px solid ${fillColor};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: ${fillColor};
+          font-weight: bold;
+          font-size: 12px;
+        ">${count}</div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+          <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z"/>
+        </svg>
+      </div>
     `;
 
-    const svgBlob = new Blob([svg], { type: "image/svg+xml" });
-    const svgUrl = URL.createObjectURL(svgBlob);
-
-    return {
-      url: svgUrl,
-      scaledSize: new google.maps.Size(size, size),
-      anchor: new google.maps.Point(size / 2, size / 2),
-    };
+    return L.divIcon({
+      html: html,
+      className: "custom-cluster-icon",
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size / 2],
+    });
   }
 
   private clearMarkers(): void {
-    this.markers.forEach((marker) => marker.setMap(null));
+    this.markers.forEach((marker) => {
+      if (this._map) {
+        this._map.removeLayer(marker);
+      }
+    });
     this.markers = [];
-    this.clusterMarkers.forEach((marker) => marker.setMap(null));
+    this.clusterMarkers.forEach((marker) => {
+      if (this._map) {
+        this._map.removeLayer(marker);
+      }
+    });
     this.clusterMarkers = [];
+    this.monitorMarkers.clear();
   }
 
   private updateMapDimensions(): void {
@@ -829,10 +778,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       return;
     }
 
-    // Forçar o redimensionamento do mapa
     setTimeout(() => {
       if (this._map) {
-        google.maps.event.trigger(this._map, "resize");
+        this._map.invalidateSize();
       }
     }, 100);
   }
@@ -840,31 +788,27 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   public fitBoundsToPoints(points: MapPoint[]): void {
     if (!points || points.length === 0 || !this._map) return;
 
-    const bounds = new google.maps.LatLngBounds();
-    points.forEach((point: MapPoint) => {
-      bounds.extend({ lat: point.latitude, lng: point.longitude });
+    const bounds = L.latLngBounds(
+      points.map((point: MapPoint) => [point.latitude, point.longitude])
+    );
+
+    this._map.fitBounds(bounds, {
+      padding: [50, 50],
     });
 
-    this._map.fitBounds(bounds);
-
-    const listener = google.maps.event.addListener(
-      this._map,
-      "bounds_changed",
-      () => {
-        if (this._map) {
-          const currentZoom = this._map.getZoom();
-          if (currentZoom && currentZoom > 15) {
-            this._map.setZoom(15);
-          }
+    this._map.once("zoomend", () => {
+      if (this._map) {
+        const currentZoom = this._map.getZoom();
+        if (currentZoom && currentZoom > 15) {
+          this._map.setZoom(15);
         }
-        google.maps.event.removeListener(listener);
       }
-    );
+    });
   }
 
   public setMapCenter(center: { lat: number; lng: number }): void {
     if (this._map) {
-      this._map.setCenter(center);
+      this._map.setView([center.lat, center.lng], this._map.getZoom());
     }
   }
 
@@ -872,7 +816,139 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     this.center = center;
     
     if (this._map) {
-      this._map.setCenter(center);
+      this._map.setView([center.lat, center.lng], this._map.getZoom());
     }
+  }
+
+  private setupEventListeners(): void {
+    window.addEventListener("zipcode-location-found", ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.location) {
+        const location = customEvent.detail.location;
+        if (this._map && location.latitude && location.longitude) {
+          this.ngZone.run(() => {
+            const newCenter = {
+              lat: location.latitude,
+              lng: location.longitude,
+            };
+            this._map?.setView([newCenter.lat, newCenter.lng], 15);
+
+            this.clearMarkers();
+            const marker = L.marker([newCenter.lat, newCenter.lng], {
+              icon: this.redMarkerIcon!,
+              title: location.title ?? "Localização do CEP",
+            });
+            marker.addTo(this._map);
+            this.markers.push(marker);
+          });
+        }
+      }
+    }) as EventListener);
+
+    window.addEventListener("user-coordinates-updated", ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.latitude && customEvent.detail?.longitude) {
+        const newCenter = {
+          lat: customEvent.detail.latitude,
+          lng: customEvent.detail.longitude,
+        };
+
+        if (this._map) {
+          this.ngZone.run(() => {
+            this._map?.setView([newCenter.lat, newCenter.lng], 15);
+
+            this.clearMarkers();
+            const marker = L.marker([newCenter.lat, newCenter.lng], {
+              icon: this.redMarkerIcon!,
+              title: "Localização atual",
+            });
+            marker.addTo(this._map);
+            this.markers.push(marker);
+          });
+        }
+      }
+    }) as EventListener);
+
+    window.addEventListener("focus", () => {
+      if (!this._map) {
+        setTimeout(() => {
+          this.initializeMap();
+        }, 500);
+      }
+    });
+
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted) {
+        setTimeout(() => {
+          this.ensureMapInitialized();
+        }, 1000);
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && !this._map) {
+        setTimeout(() => {
+          this.initializeMap();
+        }, 500);
+      }
+    });
+
+    window.addEventListener("admin-menu-pin-changed", () => {
+      setTimeout(() => {
+        this.updateMapDimensions();
+      }, 300);
+    });
+
+    window.addEventListener("admin-sidebar-pin-changed", (event: any) => {
+      setTimeout(() => {
+        this.updateMapDimensions();
+      }, 300);
+    });
+
+    window.addEventListener("admin-menu-loaded", () => {
+      setTimeout(() => {
+        this.updateMapDimensions();
+      }, 300);
+    });
+
+    window.addEventListener("admin-menu-closed", () => {
+      setTimeout(() => {
+        this.updateMapDimensions();
+      }, 300);
+    });
+
+    const userCoordsSub = this.mapsService.savedPoints$.subscribe(
+      (points: MapPoint[]) => {
+        if (this._map && points.length > 0) {
+          this.addMapPoints(points);
+        }
+      }
+    );
+
+    const monitorsSub = this.mapsService.nearestMonitors$.subscribe(
+      (monitors: MapPoint[]) => {
+        if (this._map && monitors.length > 0) {
+          this.addMapPoints(monitors);
+        }
+      }
+    );
+
+    window.addEventListener("monitors-found", ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.monitors) {
+        const monitors: MapPoint[] = customEvent.detail.monitors;
+        if (this._map) {
+          this.setMapPoints(monitors);
+        } else {
+          setTimeout(() => {
+            if (this._map) {
+              this.setMapPoints(monitors);
+            }
+          }, 1000);
+        }
+      }
+    }) as EventListener);
+
+    this.subscriptions.push(userCoordsSub, monitorsSub);
   }
 }

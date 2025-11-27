@@ -1,3 +1,5 @@
+@use "../../styles/utilities" as *;
+
 $cor-primaria: var(--cor-primaria);
 $border-staly: var(--borda-padrao);
 $padding-small: var(--espacamento-padrao);
@@ -315,7 +317,7 @@ $background-cabecalho: var(--cor-cinza-fundo);
   }
 }
 
-@media screen and (max-width: 768px) {
+@include responsive("mobile") {
   .container-paginacao .desktop-paginator {
     display: none !important;
   }
@@ -400,6 +402,10 @@ $background-cabecalho: var(--cor-cinza-fundo);
     border: none;
     cursor: pointer;
     color: $cor-primaria;
+  }
+
+  .action-icon {
+    color: var(--cor-primaria-escura);
   }
 }
 

@@ -1,19 +1,21 @@
-.badge {
+@use "../../styles/utilities" as *;
+
+  .badge {
   position: absolute;
   top: 3px;
   right: 3px;
   background-color: var(--cor-erro);
-  color: white;
+  color: var(--cor-texto-clara);
   border-radius: 50%;
   width: 1rem;
   height: 1rem;
-  font-size: 12px !important;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
 
-  @media screen and (min-width: 769px) {
+  @include responsive("desktop") {
     top: -10px;
     right: -10px;
     width: 20px;
@@ -28,9 +30,9 @@
   justify-content: center;
 
   .header-logo {
-    max-height: 55px !important;
-    width: auto !important;
-    transition: all 0.3s ease;
+    max-height: 55px;
+    width: auto;
+    transition: all var(--animation-duration-default) var(--animation-ease-in-out);
     object-fit: cover;
 
     &:hover {
@@ -43,12 +45,12 @@
       border-radius: 4px;
     }
 
-    @media (max-width: 768px) {
-      max-height: 45px !important;
+    @include responsive("mobile") {
+      max-height: 45px;
     }
 
     @media (max-width: 360px) {
-      max-height: 35px !important;
+      max-height: 35px;
     }
   }
 }
@@ -67,7 +69,7 @@
 .search-container {
   width: 100%;
   max-width: 350px;
-  transition: margin-left 0.3s ease;
+  transition: margin-left var(--animation-duration-default) var(--animation-ease-in-out);
 }
 
 header {
@@ -75,9 +77,9 @@ header {
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 9999 !important;
   background-color: var(--cor-primaria);
-  color: white;
+  color: var(--cor-texto-clara);
 }
 
 /* Busca por endereço */
@@ -89,15 +91,15 @@ header {
     position: relative;
     display: flex;
     align-items: center;
-    color: var(--cor-primaria-escura) !important;
+    color: var(--cor-primaria-escura);
 
     input {
-      color: var(--cor-branca) !important;
+      color: var(--cor-branca);
       border: 1px solid var(--cor-primaria);
       max-height: 35px;
 
       &:focus {
-        border-color: var(--cor-branca) !important;
+        border-color: var(--cor-branca);
       }
 
       &::placeholder {
@@ -189,13 +191,13 @@ header {
           background: transparent;
           border: none;
           padding: 8px;
-          color: white;
+          color: var(--cor-texto-clara);
           position: relative;
           cursor: pointer;
 
           .material-symbols-outlined {
             font-size: 24px;
-            color: white;
+            color: var(--cor-texto-clara);
           }
         }
       }
@@ -286,24 +288,24 @@ header {
       font-size: 12px;
       font-weight: 500;
       line-height: 20px;
-      background: white;
+      background: var(--cor-branca);
       color: var(--cor-primaria);
       min-height: 48px;
       border: none;
-      transition: all 0.2s;
+      transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
       display: flex;
       align-items: center;
       justify-content: center;
 
       &:hover {
-        background: #f0f0f0;
+        background: var(--cor-cinza-fundo);
         opacity: 1;
       }
     }
 
     .icon {
       font-size: 25px;
-      color: white;
+      color: var(--cor-texto-clara);
     }
   }
 }
@@ -319,12 +321,22 @@ header {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--animation-duration-default) var(--animation-ease-in-out);
 
   i {
-    color: white;
+    color: #ffffff !important;
     font-size: 20px;
-    transition: all 0.3s ease;
+    transition: all var(--animation-duration-default) var(--animation-ease-in-out);
+  }
+
+  app-icon-bars {
+    color: #ffffff !important;
+
+    ::ng-deep svg,
+    svg {
+      fill: #ffffff !important;
+      color: #ffffff !important;
+    }
   }
 
   &:hover,
@@ -337,6 +349,24 @@ header {
 
     i {
       transform: rotate(90deg);
+    }
+  }
+}
+
+html[data-theme="dark"] .menu-trigger,
+html[data-theme="dark"] .menu-trigger-desktop,
+html.dark-theme .menu-trigger,
+html.dark-theme .menu-trigger-desktop,
+body.dark-theme .menu-trigger,
+body.dark-theme .menu-trigger-desktop {
+  i,
+  app-icon-bars {
+    color: var(--cor-icone-clara) !important;
+
+    ::ng-deep svg,
+    svg {
+      fill: var(--cor-icone-clara) !important;
+      color: var(--cor-icone-clara) !important;
     }
   }
 }
@@ -374,7 +404,7 @@ header {
 
   app-icon-shopping-basket {
     opacity: 0.4;
-    color: #ccc !important;
+    color: var(--cor-cinza-medio);
   }
 }
 
@@ -399,15 +429,15 @@ header {
   font-size: 14px;
 
   &.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: var(--cor-erro-claro);
+    color: var(--cor-erro-escuro);
+    border: 1px solid var(--cor-erro-claro);
   }
 
   &.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--cor-sucesso);
+    border: 1px solid rgba(40, 167, 69, 0.2);
   }
 }
 
@@ -454,7 +484,7 @@ header {
 }
 
 .alert-blinking {
-  animation: blinking 1.5s infinite;
+  animation: blinking var(--animation-duration-slow) infinite;
 
   &:hover,
   &:focus {
@@ -496,8 +526,7 @@ textarea::placeholder,
 
 /* ===== SEÇÃO DE MEDIA QUERIES ===== */
 
-/* DESKTOP (769px em diante) */
-@media screen and (min-width: 769px) {
+@include responsive("desktop") {
   /* Visibility controls */
   .mobile-only {
     display: none !important;
@@ -545,7 +574,7 @@ textarea::placeholder,
       border-radius: 4px;
       border: 1px solid var(--cor-primaria);
       background: transparent;
-      transition: all 0.2s;
+      transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
       height: 40px;
       min-width: 100px;
       display: flex;
@@ -560,12 +589,12 @@ textarea::placeholder,
     .btn-cadastrar {
       font-weight: 600;
       font-size: 14px;
-      color: white;
+      color: var(--cor-texto-clara);
       padding: 8px 24px;
       border-radius: 4px;
       background: var(--cor-primaria);
       border: 1px solid var(--cor-primaria);
-      transition: all 0.2s;
+      transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
       height: 40px;
       min-width: 150px;
       display: flex;
@@ -588,7 +617,7 @@ textarea::placeholder,
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      transition: all var(--animation-duration-fast) var(--animation-ease-in-out);
 
       &:hover {
         background: rgba(0, 0, 0, 0.04);
@@ -602,8 +631,7 @@ textarea::placeholder,
   }
 }
 
-/* MOBILE LARGE (até 768px) */
-@media screen and (max-width: 768px) {
+@include responsive("mobile") {
   /* Logo adjustments */
   .header-logo {
     max-height: 45px !important;
@@ -661,7 +689,7 @@ textarea::placeholder,
       min-width: 16px !important;
       border-radius: 50% !important;
       background-color: var(--cor-primaria) !important;
-      color: white !important;
+      color: var(--cor-texto-clara) !important;
       font-size: 9px !important;
       font-weight: bold !important;
       display: flex !important;
@@ -733,7 +761,7 @@ textarea::placeholder,
 
         .btn-cadastrar {
           background: var(--cor-primaria);
-          color: white;
+          color: var(--cor-texto-clara);
           border: none;
           padding: 6px 12px;
           border-radius: 20px;
@@ -750,13 +778,13 @@ textarea::placeholder,
         background: transparent;
         border: none;
         padding: 8px;
-        color: white;
+        color: var(--cor-texto-clara);
         position: relative;
         cursor: pointer;
 
         .material-symbols-outlined {
           font-size: 24px;
-          color: white;
+          color: var(--cor-texto-clara);
         }
       }
 
@@ -767,19 +795,17 @@ textarea::placeholder,
   }
 }
 
-/* MOBILE MEDIUM (até 600px) */
-@media screen and (max-width: 600px) {
+@media (max-width: 600px) {
   .search-container-desktop,
   .search-container {
     display: none;
   }
 }
 
-/* MOBILE VERY SMALL (até 530px) */
 @media (max-width: 530px) {
   .search-container-desktop,
   .search-container {
-    display: none !important;
+    display: none;
   }
 
   .botao-pesquisa {

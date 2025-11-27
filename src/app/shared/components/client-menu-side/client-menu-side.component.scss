@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 200px;
+  width: 240px;
   height: 100vh;
   background-color: var(--cor-branca);
   z-index: 1001;
@@ -84,14 +84,32 @@
     color: var(--cor-branca);
   }
 
+  html[data-theme="dark"] &,
+  html.dark-theme &,
+  body.dark-theme & {
+    .menu-title {
+      color: #ffffff !important;
+    }
+  }
+
   .close-btn {
     background: transparent;
     border: none;
-    color: var(--cor-branca);
+    color: #ffffff !important;
     cursor: pointer;
     padding: 5px;
     border-radius: 50%;
     transition: all 0.2s ease;
+
+    app-icon-close {
+      color: #ffffff !important;
+
+      ::ng-deep svg,
+      svg {
+        fill: #ffffff !important;
+        color: #ffffff !important;
+      }
+    }
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
@@ -212,6 +230,76 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+    }
+  }
+}
+
+html[data-theme="dark"] .menu-side-container,
+html.dark-theme .menu-side-container,
+body.dark-theme .menu-side-container {
+  .menu-header {
+    .menu-title {
+      color: #ffffff !important;
+    }
+  }
+
+  .menu-label {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  .menu-icon {
+    color: var(--cor-icone-clara) !important;
+
+    ::ng-deep svg,
+    svg {
+      fill: var(--cor-icone-clara) !important;
+      color: var(--cor-icone-clara) !important;
+    }
+
+    app-icon-help {
+      color: var(--cor-icone-clara) !important;
+
+      ::ng-deep svg,
+      svg {
+        fill: var(--cor-icone-clara) !important;
+        color: var(--cor-icone-clara) !important;
+      }
+    }
+  }
+
+  #menu-item-changePassword {
+    .menu-icon {
+      app-icon-help {
+        color: var(--cor-icone-clara) !important;
+
+        ::ng-deep svg,
+        svg {
+          fill: var(--cor-icone-clara) !important;
+          color: var(--cor-icone-clara) !important;
+        }
+      }
+    }
+  }
+
+  .close-btn {
+    color: var(--cor-texto-clara) !important;
+
+    app-icon-close {
+      color: var(--cor-texto-clara) !important;
+
+      ::ng-deep svg,
+      svg {
+        fill: var(--cor-texto-clara) !important;
+        color: var(--cor-texto-clara) !important;
+      }
+    }
+
+    ::ng-deep svg,
+    svg,
+    i,
+    .material-icons,
+    .material-symbols-outlined {
+      color: var(--cor-texto-clara) !important;
     }
   }
 }

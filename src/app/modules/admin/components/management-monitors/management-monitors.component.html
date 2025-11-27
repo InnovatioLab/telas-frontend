@@ -5,13 +5,12 @@
         <div class="w-full flex align-items-center gap-2">
           <span class="p-input-icon-left">
             <app-icon-search
-              style="color: #496382"
-              class="search-icon"
+              class="search-icon search-icon-color"
               (click)="onSearch()"
             ></app-icon-search>
             <input
               type="text"
-              style="width: 250px"
+              class="search-input-width"
               pInputText
               placeholder="Search Screens..."
               [(ngModel)]="searchTerm"
@@ -20,8 +19,7 @@
             />
           </span>
           <span
-            class="pi pi-info-circle"
-            style="color: var(--cor-primaria)"
+            class="pi pi-info-circle info-icon"
             pTooltip="Search by address, status, type or size"
             tooltipPosition="top"
           ></span>
@@ -88,49 +86,43 @@
               [disabled]="!shouldShowManageAdsButton(monitor)"
               pButton
               pRipple
-              class="p-button-rounded p-button-info p-button-text"
+              class="p-button-rounded p-button-info p-button-text btn-manage-ads"
               (click)="openAdsModal(monitor)"
               pTooltip="Manage Ads"
               tooltipPosition="top"
-              style="background: rgba(51, 153, 255, 0.1)"
             >
               <app-icon-tv-display
-                class="custom-icon"
-                style="color: #3399ff"
+                class="custom-icon btn-manage-ads-icon"
               ></app-icon-tv-display>
             </button>
             <button
               pButton
               pRipple
-              class="p-button-rounded p-button-success p-button-text"
+              class="p-button-rounded p-button-success p-button-text btn-edit-screen"
               (click)="onSelectMonitor(monitor)"
               pTooltip="Edit Screen"
               tooltipPosition="top"
-              style="background: rgba(34, 197, 94, 0.1)"
             >
               <app-icon-etiqueta
-                class="custom-icon"
-                style="color: #22c55e"
+                class="custom-icon btn-edit-screen-icon"
               ></app-icon-etiqueta>
             </button>
             <button
               pButton
               pRipple
-              class="p-button-rounded p-button-text"
+              class="p-button-rounded p-button-text btn-upload-ads"
               (click)="openUploadAdsModal(monitor)"
               pTooltip="Upload ads"
               tooltipPosition="top"
-              style="background: rgba(99, 102, 241, 0.1)"
             >
               <app-icon-upload
-                class="custom-icon"
-                fill="#6366f1"
+                class="custom-icon btn-upload-ads-icon"
               ></app-icon-upload>
             </button>
             <button
               pButton
               pRipple
-              class="p-button-rounded p-button-danger p-button-text"
+              class="p-button-rounded p-button-danger p-button-text btn-delete-screen"
               (click)="deleteMonitor(monitor)"
               [disabled]="!monitor.canBeDeleted"
               pTooltip="{{
@@ -139,11 +131,9 @@
                   : 'Delete Screen'
               }}"
               tooltipPosition="top"
-              style="background: rgba(244, 63, 94, 0.12)"
             >
               <app-icon-trash
-                class="custom-icon"
-                style="color: #f43f5e"
+                class="custom-icon btn-delete-screen-icon"
               ></app-icon-trash>
             </button>
           </div>
@@ -225,11 +215,10 @@
       <div
         *ngIf="!isAdsLoading"
         class="ads-content"
-        style="display: flex; gap: 2rem; flex-wrap: wrap"
       >
-        <div style="flex: 1; min-width: 300px">
+        <div class="ads-preview-container">
           <h5>Image Preview</h5>
-          <div style="margin-top: 0.5rem">
+          <div class="ads-preview-wrapper">
             <img
               *ngIf="orderedAdLinks[selectedAdIndex]"
               [src]="orderedAdLinks[selectedAdIndex].link"
@@ -238,21 +227,15 @@
             />
             <p
               *ngIf="!orderedAdLinks[selectedAdIndex]"
-              style="
-                text-align: center;
-                color: #9e9e9e;
-                padding: 2rem;
-                background: #f5f5f5;
-                border-radius: 8px;
-              "
+              class="ads-empty-preview"
             >
               Select an ad to preview
             </p>
           </div>
         </div>
-        <div style="flex: 1; min-width: 300px">
+        <div class="ads-sort-container">
           <h5>Sort Ads</h5>
-          <p style="margin: 0 0 0.75rem 0; color: #757575; font-size: 0.875rem">
+          <p class="ads-sort-description">
             Drag and drop to reorder ads
           </p>
           <p-orderList
@@ -323,11 +306,7 @@
       <div class="confirmation-content">
         <span
           class="pi pi-exclamation-triangle"
-          style="
-            color: #f44336;
-            font-size: 2rem !important;
-            margin-bottom: 1rem;
-          "
+          class="delete-warning-icon"
         ></span>
         <h4>Are you sure you want to delete this Screen?</h4>
         <p>
@@ -385,7 +364,7 @@
         type="file"
         (change)="onFileSelected($event)"
         [accept]="acceptedFileTypes"
-        style="display: none"
+        class="hidden-input"
         required
       />
 

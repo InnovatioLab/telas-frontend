@@ -1,3 +1,5 @@
+@use "./shared/styles/utilities" as *;
+
 ::ng-deep {
   .p-drawer-header {
     display: none !important;
@@ -46,7 +48,7 @@
   .p-toast {
     z-index: 9999;
 
-    @media (max-width: 768px) {
+    @include responsive("mobile") {
       width: 95% !important;
       max-width: 400px !important;
     }
@@ -65,9 +67,9 @@
     backdrop-filter: blur(10px);
     overflow: hidden;
     position: relative;
-    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideInRight var(--animation-duration-default) var(--animation-ease-out);
 
-    @media (max-width: 768px) {
+    @include responsive("mobile") {
       margin: 0 0 0.8rem 0;
       border-radius: 14px;
     }
@@ -93,7 +95,7 @@
     padding: 0.5rem;
     width: 100%;
 
-    @media (max-width: 768px) {
+    @include responsive("mobile") {
       gap: 12px;
     }
 
@@ -119,7 +121,7 @@
     justify-content: center;
     font-size: 1rem;
     font-weight: bold;
-    transition: all 0.3s ease;
+    transition: all var(--animation-duration-default) var(--animation-ease-in-out);
 
     @media (max-width: 480px) {
       width: 30px;
@@ -146,7 +148,7 @@
     margin-bottom: 4px;
     color: var(--cor-cinza-escuro);
 
-    @media (max-width: 768px) {
+    @include responsive("mobile") {
       font-size: 15px;
     }
 
@@ -162,7 +164,7 @@
     color: var(--cor-cinza);
     word-wrap: break-word;
 
-    @media (max-width: 768px) {
+    @include responsive("mobile") {
       font-size: 13px;
     }
 
@@ -231,6 +233,50 @@
     }
   }
 
+  html[data-theme="dark"] .p-toast,
+  html.dark-theme .p-toast,
+  body.dark-theme .p-toast {
+    .toast-title {
+      color: var(--cor-texto-clara) !important;
+    }
+
+    .toast-message {
+      color: var(--cor-texto-clara) !important;
+    }
+
+    .p-toast-message-success {
+      background: linear-gradient(135deg, #1a3d2e 0%, #0f281f 100%) !important;
+
+      .toast-title {
+        color: var(--cor-sucesso) !important;
+      }
+    }
+
+    .p-toast-message-error {
+      background: linear-gradient(135deg, #3d1a1a 0%, #280f0f 100%) !important;
+
+      .toast-title {
+        color: var(--cor-erro) !important;
+      }
+    }
+
+    .p-toast-message-warn {
+      background: linear-gradient(135deg, #3d2e1a 0%, #281f0f 100%) !important;
+
+      .toast-title {
+        color: var(--cor-alerta) !important;
+      }
+    }
+
+    .p-toast-message-info {
+      background: linear-gradient(135deg, #1a2a3d 0%, #0f1a28 100%) !important;
+
+      .toast-title {
+        color: var(--cor-primaria-clara) !important;
+      }
+    }
+  }
+
   // Animations
   @keyframes slideInRight {
     from {
@@ -258,7 +304,7 @@
   .p-toast .p-toast-message:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
+    transition: all var(--animation-duration-default) var(--animation-ease-in-out);
   }
 
   // Mobile Optimizations
@@ -294,22 +340,37 @@
     border-radius: 0px;
   }
 
+  html[data-theme="dark"] .p-dialog,
+  html.dark-theme .p-dialog,
+  body.dark-theme .p-dialog {
+    background: var(--cor-card-background-dark) !important;
+
+    .p-dialog-content {
+      background: var(--cor-card-background-dark) !important;
+      color: var(--cor-texto-clara) !important;
+
+      * {
+        color: var(--cor-texto-clara) !important;
+      }
+    }
+  }
+
   .p-drawer {
     background-color: var(--cor-branca) !important;
     border: none !important;
     height: 100vh !important;
     overflow: hidden !important;
-    color: #212529;
+    color: var(--cor-cinza-escuro);
     font-size: 1rem;
     font-weight: 400;
     width: 95% !important;
     max-width: 500px !important;
 
-    @media (min-width: 576px) {
+    @include responsive("tablet") {
       width: 95% !important;
     }
 
-    @media (min-width: 768px) {
+    @include responsive("desktop") {
       width: 400px !important;
     }
 

@@ -63,7 +63,7 @@
     font-size: 16px;
     color: var(--cor-primaria) !important;
     background-color: var(--cor-branca);
-    transition: all 0.3s ease;
+    transition: all var(--animation-duration-default) var(--animation-ease-in-out);
 
     &:focus {
       outline: none;
@@ -90,7 +90,7 @@
     align-items: center;
     justify-content: center;
     color: var(--cor-cinza) !important;
-    transition: all 0.3s ease;
+    transition: all var(--animation-duration-default) var(--animation-ease-in-out);
     min-width: 36px;
     height: 36px;
 
@@ -107,6 +107,87 @@
       color: inherit;
       font-size: 18px;
     }
+  }
+}
+
+::ng-deep {
+  html[data-theme="dark"],
+  html.dark-theme,
+  body.dark-theme {
+    .search-section {
+      background-color: var(--cor-cinza-fundo-dark);
+
+      .search-phrase h2 {
+        color: var(--cor-texto-clara);
+      }
+
+      .address-search-input {
+        input,
+        input.p-inputtext,
+        input.p-component,
+        #search-zipcode {
+          color: #ffffff !important;
+          background-color: var(--cor-cinza-medio-dark) !important;
+          border: 1px solid #ffffff !important;
+
+          &::placeholder {
+            color: #9ca3af !important;
+          }
+
+          &:focus {
+            color: #ffffff !important;
+            background-color: var(--cor-cinza-medio-dark) !important;
+            border: 1px solid #ffffff !important;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+          }
+        }
+
+        .search-button {
+          color: var(--cor-icone-clara) !important;
+
+          &:hover:not(:disabled) {
+            color: var(--cor-primaria-clara-dark) !important;
+          }
+        }
+      }
+    }
+
+    app-search-section .search-section .address-search-input input,
+    app-search-section .search-section .address-search-input #search-zipcode {
+      color: #ffffff !important;
+      background-color: var(--cor-cinza-medio-dark) !important;
+      border: 1px solid #ffffff !important;
+
+      &::placeholder {
+        color: #9ca3af !important;
+      }
+
+      &:focus {
+        color: #ffffff !important;
+        background-color: var(--cor-cinza-medio-dark) !important;
+        border: 1px solid #ffffff !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+      }
+    }
+  }
+}
+
+::ng-deep html[data-theme="dark"] #search-zipcode,
+::ng-deep html.dark-theme #search-zipcode,
+::ng-deep body.dark-theme #search-zipcode {
+  color: #ffffff !important;
+  background-color: var(--cor-cinza-medio-dark) !important;
+  border: 1px solid #ffffff !important;
+
+  &::placeholder {
+    color: #9ca3af !important;
+  }
+
+  &:focus {
+    color: #ffffff !important;
+    background-color: var(--cor-cinza-medio-dark) !important;
+    border: 1px solid #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
   }
 }
 

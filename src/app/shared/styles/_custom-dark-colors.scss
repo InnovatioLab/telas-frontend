@@ -1,44 +1,32 @@
-/* 
- * CONFIGURAÇÃO DE CORES PARA DARK MODE
- * 
- * Este arquivo será usado para definir as cores customizadas do dark mode
- * Substitua os valores abaixo pelas cores que serão fornecidas
- */
-
-/* ===== CORES BASE PARA DARK MODE ===== */
 :root {
-  /* Cores principais - SUBSTITUIR PELAS CORES FORNECIDAS */
-  --cor-primaria-dark: #1a1a1a;           /* Cor principal escura */
-  --cor-primaria-clara-dark: #2d2d2d;     /* Cor primária clara escura */
-  --cor-primaria-escura-dark: #0d0d0d;    /* Cor primária mais escura */
-  
-  /* Cores de fundo */
-  --cor-cinza-fundo-dark: #121212;        /* Fundo principal da página */
-  --cor-cinza-dark: #666666;              /* Cinza para textos secundários */
-  --cor-cinza-medio-dark: #333333;        /* Cinza médio para bordas */
-  --cor-cinza-escuro-dark: #e0e0e0;       /* Cinza escuro para textos principais */
-  
-  /* Cores de texto */
-  --cor-branca-dark: #ffffff;             /* Branco para textos em destaque */
-  --cor-preto-claro-dark: #f5f5f5;        /* Preto claro para textos */
-  --cor-legenda-dark: #999999;            /* Cor para legendas */
-  
-  /* Cores de estado */
-  --cor-sucesso-dark: #4caf50;            /* Verde para sucesso */
-  --cor-erro-dark: #f44336;               /* Vermelho para erro */
-  --cor-erro-claro-dark: #ffebee;         /* Vermelho claro para fundos */
-  --cor-erro-escuro-dark: #d32f2f;        /* Vermelho escuro */
-  --cor-alerta-dark: #ff9800;             /* Laranja para alertas */
-  --cor-desabilitado-dark: #666666cc;    /* Cinza para elementos desabilitados */
-  
-  /* Cores RGB para transparências */
-  --cor-erro-rgb-dark: 244, 67, 54;      /* RGB do erro */
-  --cor-primaria-rgb-dark: 26, 26, 26;    /* RGB da cor primária */
+  --cor-primaria-dark: #1a1a1a;
+  --cor-primaria-clara-dark: #049dd9;
+  --cor-primaria-escura-dark: #0d0d0d;
+  --cor-cinza-fundo-dark: #121212;
+  --cor-cinza-dark: #9ca3af;
+  --cor-cinza-medio-dark: #3a3a3a;
+  --cor-cinza-escuro-dark: #e5e7eb;
+  --cor-legenda-dark: #a1a1aa;
+  --cor-sucesso-dark: #4ade80;
+  --cor-erro-dark: #ef4444;
+  --cor-erro-claro-dark: #fee2e2;
+  --cor-erro-escuro-dark: #dc2626;
+  --cor-desabilitado-dark: #6b7280cc;
+  --cor-branca-dark: #1e1e1e;
+  --cor-card-background-dark: #1e1e1e;
+  --cor-preto-claro-dark: #f9fafb;
+  --cor-alerta-dark: #fbbf24;
+  --cor-texto-clara: #ffffff;
+  --cor-icone-clara: #e5e7eb;
+  --cor-erro-rgb-dark: 239, 68, 68;
+  --cor-primaria-rgb-dark: 26, 26, 26;
 }
 
-/* ===== APLICAÇÃO DAS CORES NO DARK MODE ===== */
-[data-theme="dark"] {
-  /* Aplicar as cores customizadas */
+html[data-theme="dark"],
+html.dark-theme,
+body.dark-theme,
+[data-theme="dark"],
+.dark-theme {
   --cor-primaria: var(--cor-primaria-dark);
   --cor-primaria-clara: var(--cor-primaria-clara-dark);
   --cor-primaria-escura: var(--cor-primaria-escura-dark);
@@ -46,7 +34,7 @@
   --cor-cinza: var(--cor-cinza-dark);
   --cor-cinza-medio: var(--cor-cinza-medio-dark);
   --cor-cinza-escuro: var(--cor-cinza-escuro-dark);
-  --cor-branca: var(--cor-branca-dark);
+  --cor-branca: var(--cor-card-background-dark);
   --cor-preto-claro: var(--cor-preto-claro-dark);
   --cor-legenda: var(--cor-legenda-dark);
   --cor-sucesso: var(--cor-sucesso-dark);
@@ -57,14 +45,29 @@
   --cor-desabilitado: var(--cor-desabilitado-dark);
   --cor-erro-rgb: var(--cor-erro-rgb-dark);
   --cor-primaria-rgb: var(--cor-primaria-rgb-dark);
+  --color-primary: var(--cor-primaria-dark);
+  --color-primary-light: var(--cor-primaria-clara-dark);
+  --color-primary-dark: var(--cor-primaria-escura-dark);
+  --color-gray-bg: var(--cor-cinza-fundo-dark);
+  --color-gray: var(--cor-cinza-dark);
+  --color-gray-medium: var(--cor-cinza-medio-dark);
+  --color-gray-dark: var(--cor-cinza-escuro-dark);
+  --color-legend: var(--cor-legenda-dark);
+  --color-success: var(--cor-sucesso-dark);
+  --color-error: var(--cor-erro-dark);
+  --color-error-claro: var(--cor-erro-claro-dark);
+  --color-error-escuro: var(--cor-erro-escuro-dark);
+  --color-disabled: var(--cor-desabilitado-dark);
+  --color-white: var(--cor-card-background-dark);
+  --color-black-light: var(--cor-preto-claro-dark);
+  --color-alerta: var(--cor-alerta-dark);
+  --p-datatable-header-cell-background: var(--cor-primaria-dark);
+  --p-datatable-header-cell-color: var(--cor-texto-clara);
+  --p-datatable-row-background: var(--cor-card-background-dark);
+  --p-datatable-row-alt-background: var(--cor-cinza-fundo-dark);
+  --p-datatable-row-hover-background: var(--cor-cinza-medio-dark);
+  --p-datatable-row-color: var(--cor-texto-clara);
+  --modal-header-bg: var(--cor-primaria-dark);
+  --modal-content-bg: var(--cor-card-background-dark);
+  --modal-footer-bg: var(--cor-card-background-dark);
 }
-
-
-
-
-
-
-
-
-
-

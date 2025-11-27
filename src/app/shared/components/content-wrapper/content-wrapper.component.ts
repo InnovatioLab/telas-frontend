@@ -27,9 +27,9 @@ import { LayoutService } from "@app/core/service/state/layout.service";
       .content-wrapper {
         width: 100%;
         transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: var(--cor-branca);
+        background-color: var(--cor-cinza-fundo);
         box-sizing: border-box;
-        min-height: calc(100vh - 70px); /* Header height */
+        min-height: calc(100vh - 70px);
       }
 
       .content-container {
@@ -38,7 +38,6 @@ import { LayoutService } from "@app/core/service/state/layout.service";
         margin: 0 auto;
         width: 100%;
         box-sizing: border-box;
-        /* Remove altura fixa para permitir altura natural do conteúdo */
         min-height: inherit;
       }
 
@@ -86,6 +85,5 @@ export class ContentWrapperComponent {
   isMobile = this.layoutService.isMobile;
   isMobileCompact = this.layoutService.isMobileCompact;
 
-  // Computed property para calcular o padding baseado no estado do layout
   contentPadding = this.layoutService.contentMargin;
 }

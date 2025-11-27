@@ -65,6 +65,15 @@ export function errorInterceptor(
 
       const errorMessage = ApiErrorHandler.handleApiError(httpError);
       
+      if (status === HttpStatusCode.Forbidden) {
+        toastService.aviso(errorMessage);
+        return throwError(() => {
+          const customError = new Error(errorMessage);
+          (customError as any).handled = true;
+          return customError;
+        });
+      }
+      
       if (status >= 500) {
         toastService.erro(errorMessage);
       } else if (status >= 400 && status !== HttpStatusCode.Unauthorized) {

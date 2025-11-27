@@ -157,7 +157,6 @@ export class CreateMonitorModalComponent implements OnInit {
       };
 
       this.monitorCreated.emit(monitorRequest);
-      this.closeModal();
     } else {
       Object.keys(this.monitorForm.controls).forEach((key) => {
         const control = this.monitorForm.get(key);

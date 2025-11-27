@@ -4,7 +4,7 @@ import { inputtext } from './components/inputtext';
 import { select } from './components/select';
 
 const colors = {
-  primary: '#232F3E',
+  primary: '#111519',
   primary_light: '#496382',
   primary_dark: '#131921',
   background_grey: '#f8f9fa',

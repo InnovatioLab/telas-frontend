@@ -1,7 +1,7 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router } from "@angular/router";
-import { catchError, map, of } from "rxjs";
-import { switchMap, take } from "rxjs/operators";
+import { catchError, map, of, shareReplay } from "rxjs";
+import { switchMap, take, tap } from "rxjs/operators";
 import { ClientService } from "../api/client.service";
 
 export const SubscriptionsGuard: CanActivateFn = () => {
@@ -15,14 +15,19 @@ export const SubscriptionsGuard: CanActivateFn = () => {
     ),
     map((client) => {
       if ((client as any).hasSubscription === false) {
-        router.navigate(["/client"]);
         return false;
       }
       return true;
     }),
+    tap((canActivate) => {
+      if (!canActivate) {
+        router.navigate(["/client"]);
+      }
+    }),
     catchError((error) => {
       router.navigate(["/client"]);
       return of(false);
-    })
+    }),
+    shareReplay(1)
   );
 };

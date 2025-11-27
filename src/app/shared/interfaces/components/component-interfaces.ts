@@ -1,4 +1,5 @@
 import { EventEmitter } from '@angular/core';
+import * as L from 'leaflet';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 
 /**
@@ -29,7 +30,7 @@ export interface IMapComponent {
   /**
    * Evento disparado quando o mapa é inicializado
    */
-  mapInitialized: EventEmitter<google.maps.Map>;
+  mapInitialized: EventEmitter<L.Map>;
 
   /**
    * Inicializa o mapa
@@ -270,6 +271,7 @@ export interface IPagination {
   total: number;
   totalPages: number;
 }
+
 
 
 

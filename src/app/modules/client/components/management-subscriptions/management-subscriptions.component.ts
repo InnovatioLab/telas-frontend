@@ -317,6 +317,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
       next: (portalUrl) => {
         if (!portalUrl) {
           this.toastService.aviso("No URL returned for customer portal.");
+          this.loading = false;
           return;
         }
         this.loading = false;
@@ -325,7 +326,14 @@ export class ManagementSubscriptionsComponent implements OnInit {
       },
       error: (error) => {
         this.loading = false;
-        this.toastService.erro(error);
+        if ((error as any)?.handled) {
+          return;
+        }
+        const errorMessage = typeof error === 'string' ? error : error?.message || 'An error occurred';
+        if (errorMessage.includes('permission') || errorMessage.includes('You do not have permission') || errorMessage === 'You do not have permission to perform this operation.') {
+          return;
+        }
+        this.toastService.erro(errorMessage);
       },
     });
   }
