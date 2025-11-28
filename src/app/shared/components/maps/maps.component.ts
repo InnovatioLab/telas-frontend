@@ -155,20 +155,18 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
   private createMonitorIcon(): L.Icon {
     const svg = `
-      <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="4" width="18" height="12" rx="1.5" fill="#049dd9"/>
-        <rect x="5" y="6" width="14" height="8" rx="0.5" fill="#0d0d0d"/>
-        <rect x="7" y="8" width="10" height="4" fill="#1a1a1a"/>
-        <path d="M9 18h6" stroke="#049dd9" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="12" cy="20" r="1.5" fill="#049dd9"/>
+      <svg width="40" height="40" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17Z" fill="#111519"/>
+        <path d="M6 7H18V15H6V7Z" fill="#111519"/>
       </svg>
     `;
     const svgBlob = new Blob([svg], { type: "image/svg+xml" });
     const svgUrl = URL.createObjectURL(svgBlob);
     return L.icon({
       iconUrl: svgUrl,
-      iconSize: [32, 32],
-      iconAnchor: [16, 24],
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
     });
   }
 
