@@ -185,10 +185,24 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
           };
 
           this.cartService.update(cartRequest, this.cart!.id).subscribe({
-            next: () => {
-              // O cart será atualizado automaticamente via stream
+            next: (updatedCart) => {
+              this.cart = updatedCart;
+              
+              this.cartService.refreshActiveCart().subscribe({
+                next: (refreshedCart) => {
+                  if (refreshedCart) {
+                    this.cart = refreshedCart;
+                    this.selectedRecurrence = refreshedCart.recurrence;
+                  }
+                },
+                error: () => {
+                },
+              });
             },
             error: (error) => {
+              if (error.status === 404) {
+                this.handleCartNotFound();
+              }
             },
           });
           this.dialogoRef?.close();
@@ -242,9 +256,26 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     };
 
     this.cartService.update(cartRequest, this.cart.id).subscribe({
-      next: () => {
+      next: (updatedCart) => {
+        this.cart = updatedCart;
+        
+        this.cartService.refreshActiveCart().subscribe({
+          next: (refreshedCart) => {
+            if (refreshedCart) {
+              this.cart = refreshedCart;
+              this.selectedRecurrence = refreshedCart.recurrence;
+            }
+          },
+          error: () => {
+          },
+        });
       },
       error: (error) => {
+        if (error.status === 404) {
+          this.handleCartNotFound(() => {
+            this.onRecurrenceChange();
+          });
+        }
       },
     });
   }
@@ -263,22 +294,57 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     const cartRequest: CartRequestDto = {
       recurrence: this.selectedRecurrence,
-      items: this.cart.items.map((cartItem) => ({
-        monitorId: cartItem.monitorId,
-        blockQuantity: cartItem.blockQuantity || 1,
-      })),
+      items: this.cart.items.map((cartItem) => {
+        const pendingValue = this.pendingBlockQuantityUpdates.get(cartItem.monitorId);
+        return {
+          monitorId: cartItem.monitorId,
+          blockQuantity: pendingValue !== undefined ? pendingValue : (cartItem.blockQuantity || 1),
+        };
+      }),
     };
 
     this.cartService.update(cartRequest, this.cart.id).subscribe({
-      next: () => {
-        setTimeout(() => {
+      next: (updatedCart) => {
+        this.cart = updatedCart;
+        
+        const updatedItem = updatedCart.items.find(i => i.monitorId === item.monitorId);
+        if (updatedItem && updatedItem.blockQuantity === newValue) {
           this.pendingBlockQuantityUpdates.delete(item.monitorId);
-        }, 500);
+        }
+        
+        this.cartService.refreshActiveCart().subscribe({
+          next: (refreshedCart) => {
+            if (refreshedCart) {
+              this.cart = refreshedCart;
+              this.selectedRecurrence = refreshedCart.recurrence;
+              
+              const refreshedItem = refreshedCart.items.find(i => i.monitorId === item.monitorId);
+              if (refreshedItem) {
+                if (refreshedItem.blockQuantity !== newValue) {
+                  refreshedItem.blockQuantity = newValue;
+                  this.pendingBlockQuantityUpdates.set(item.monitorId, newValue);
+                } else {
+                  this.pendingBlockQuantityUpdates.delete(item.monitorId);
+                }
+              }
+              
+              this.applyPendingBlockQuantityUpdates();
+            }
+          },
+          error: () => {
+          },
+        });
       },
       error: (error) => {
-        this.toastService.erro("Error updating block quantity");
-        this.pendingBlockQuantityUpdates.delete(item.monitorId);
-        item.blockQuantity = item.blockQuantity === 1 ? 2 : 1;
+        if (error.status === 404) {
+          this.handleCartNotFound(() => {
+            this.onBlockQuantityChange(item, newValue);
+          });
+        } else {
+          this.toastService.erro("Error updating block quantity");
+          this.pendingBlockQuantityUpdates.delete(item.monitorId);
+          item.blockQuantity = item.blockQuantity === 1 ? 2 : 1;
+        }
       },
     });
   }
@@ -347,13 +413,111 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     this.checkoutEmProgresso = true;
 
-    this.subscriptionService.checkout().subscribe({
-      next: (checkoutUrl) => {
-        this.checkoutEmProgresso = false;
-        window.location.href = checkoutUrl;
+    this.applyPendingBlockQuantityUpdates();
+
+    const cartRequest: CartRequestDto = {
+      recurrence: this.selectedRecurrence,
+      items: this.cart.items.map((item) => ({
+        monitorId: item.monitorId,
+        blockQuantity: item.blockQuantity || 1,
+      })),
+    };
+
+    this.cartService.update(cartRequest, this.cart.id).subscribe({
+      next: (updatedCart) => {
+        this.cart = updatedCart;
+        this.pendingBlockQuantityUpdates.clear();
+        
+        this.cartService.refreshActiveCart().subscribe({
+          next: (refreshedCart) => {
+            if (refreshedCart) {
+              this.cart = refreshedCart;
+              this.selectedRecurrence = refreshedCart.recurrence;
+            }
+            
+            this.subscriptionService.checkout().subscribe({
+              next: (checkoutUrl) => {
+                this.checkoutEmProgresso = false;
+                window.location.href = checkoutUrl;
+              },
+              error: (error) => {
+                this.toastService.erro(error);
+                this.checkoutEmProgresso = false;
+              },
+            });
+          },
+          error: (error) => {
+            this.subscriptionService.checkout().subscribe({
+              next: (checkoutUrl) => {
+                this.checkoutEmProgresso = false;
+                window.location.href = checkoutUrl;
+              },
+              error: (checkoutError) => {
+                this.toastService.erro(checkoutError);
+                this.checkoutEmProgresso = false;
+              },
+            });
+          },
+        });
       },
       error: (error) => {
-        this.toastService.erro(error);
+        if (error.status === 404) {
+          this.handleCartNotFound(() => {
+            this.iniciarCheckout();
+          });
+        } else {
+          this.toastService.erro("Error updating cart before checkout");
+          this.checkoutEmProgresso = false;
+        }
+      },
+    });
+  }
+
+  private handleCartNotFound(callback?: () => void): void {
+    this.cartService.refreshActiveCart().subscribe({
+      next: (refreshedCart) => {
+        if (refreshedCart) {
+          this.cart = refreshedCart;
+          this.selectedRecurrence = refreshedCart.recurrence;
+          this.applyPendingBlockQuantityUpdates();
+          this.ensureBlockQuantityDefaults();
+          
+          if (callback) {
+            callback();
+          }
+        } else {
+          if (this.cart && this.cart.items.length > 0) {
+            const cartRequest: CartRequestDto = {
+              recurrence: this.selectedRecurrence,
+              items: this.cart.items.map((item) => ({
+                monitorId: item.monitorId,
+                blockQuantity: item.blockQuantity || 1,
+              })),
+            };
+
+            this.cartService.addToCart(cartRequest).subscribe({
+              next: (newCart) => {
+                this.cart = newCart;
+                this.selectedRecurrence = newCart.recurrence;
+                this.pendingBlockQuantityUpdates.clear();
+                
+                if (callback) {
+                  callback();
+                }
+              },
+              error: (error) => {
+                this.toastService.erro("Error creating new cart");
+                this.checkoutEmProgresso = false;
+              },
+            });
+          } else {
+            this.toastService.erro("Cart not found and no items to recreate");
+            this.checkoutEmProgresso = false;
+          }
+        }
+      },
+      error: (error) => {
+        this.toastService.erro("Error refreshing cart");
         this.checkoutEmProgresso = false;
       },
     });
