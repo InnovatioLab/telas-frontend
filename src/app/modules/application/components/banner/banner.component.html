@@ -81,29 +81,33 @@
       </div>
       <!-- Interactive Ad Examples -->
       <div class="banner-examples">
-        @for (ad of adExamples; track $index) {
+        <ng-container
+          *ngFor="
+            let ad of adExamples | slice: 0 : 3;
+            let i = index;
+            trackBy: trackByIndex
+          "
+        >
           <div class="banner-example group">
             <div class="banner-example-card group">
-              <div class="banner-example-aspect group" [ngClass]="ad.gradient">
-                <div class="banner-example-content group">
-                  <!-- <h4 class="banner-example-title">{{ ad.title }}</h4> -->
-                  <!-- <p class="banner-example-subtitle">{{ ad.subtitle }}</p> -->
-                  <div class="banner-example-cta">
-                    <!-- {{ ad.cta }} -->
-                  </div>
-                </div>
+              <div class="banner-example-aspect group">
+                <img
+                  class="banner-example-img"
+                  [src]="ad.image"
+                  [alt]="ad.category"
+                />
                 <div class="banner-example-glow"></div>
                 <div class="banner-example-ping"></div>
               </div>
             </div>
             <h3 class="banner-example-category">
-              <!-- {{ ad.category }} -->
+              {{ ad.category }}
             </h3>
             <p class="banner-example-description">
-              Text here
+              Perfect for {{ ad.category.toLowerCase() }} promotions
             </p>
           </div>
-        }
+        </ng-container>
       </div>
       <!-- Call to Action -->
       <div class="banner-cta">
