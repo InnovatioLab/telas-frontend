@@ -26,6 +26,14 @@
   </div>
 </p-card>
 
+<input
+  #fileInput
+  type="file"
+  [accept]="acceptedFileTypes"
+  style="display: none"
+  (change)="onFileInputChange($event)"
+/>
+
 <p-table
   [value]="clients"
   [loading]="loading"
@@ -58,6 +66,7 @@
       <th scope="col" pSortableColumn="role">
         Role <p-sortIcon field="role"></p-sortIcon>
       </th>
+      <th scope="col">Ads</th>
       <th scope="col" pSortableColumn="createdAt">
         Created At <p-sortIcon field="createdAt"></p-sortIcon>
       </th>
@@ -89,6 +98,12 @@
         >
         </p-badge>
       </td>
+      <td class="text-center">
+        <span *ngIf="client.role === 'PARTNER'">
+          {{ client.ads?.length || 0 }} / {{ PARTNER_MAX_ADS }}
+        </span>
+        <span *ngIf="client.role !== 'PARTNER'">-</span>
+      </td>
       <td class="text-center">{{ client.createdAt | date: "MM/dd/yyyy" }}</td>
       <td class="text-center">
         <div class="action-buttons">
@@ -100,6 +115,15 @@
             class="p-button-rounded p-button-success p-button-text"
             (click)="makePartner(client)"
             pTooltip="Make Partner"
+          ></button>
+          <button
+            *ngIf="client.role === 'PARTNER'"
+            pButton
+            pRipple
+            icon="pi pi-upload"
+            class="p-button-rounded p-button-success p-button-text"
+            (click)="uploadAdForPartner(client)"
+            pTooltip="Upload Ad"
           ></button>
           <button
             pButton
@@ -116,7 +140,74 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="8" class="text-center">No clients found.</td>
+      <td colspan="9" class="text-center">No clients found.</td>
     </tr>
   </ng-template>
 </p-table>
+
+<!-- Upload Ad Dialog -->
+<p-dialog
+  header="Upload Ad"
+  [(visible)]="showUploadAdDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '90%', maxWidth: '700px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="upload-content">
+    <!-- File Preview -->
+    <div
+      *ngIf="filePreview && selectedFile"
+      class="file-preview flex flex-column align-items-center gap-3"
+    >
+      <h4 class="align-self-start">Selected File Preview:</h4>
+      
+      <!-- PDF Preview -->
+      <div *ngIf="isPdfAttachment(selectedFile.name)" class="pdf-preview-container">
+        <pdf-viewer
+          [src]="filePreview"
+          [render-text]="true"
+          [original-size]="false"
+          [show-all]="false"
+          [fit-to-page]="true"
+          [zoom]="0.8"
+          [zoom-scale]="'page-width'"
+          [stick-to-page]="true"
+          style="display: block; width: 100%; min-height: 400px; max-height: 500px;"
+        ></pdf-viewer>
+        <div class="pdf-preview-info">
+          <p class="pdf-preview-name">{{ selectedFile.name }}</p>
+          <p class="pdf-preview-size">{{ formatFileSize(selectedFile.size) }}</p>
+        </div>
+      </div>
+
+      <!-- Image Preview -->
+      <img
+        *ngIf="!isPdfAttachment(selectedFile.name)"
+        [src]="filePreview"
+        alt="File Preview"
+        class="preview-image"
+      />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="upload-dialog-footer w-full flex justify-content-center gap-3">
+      <button
+        pButton
+        id="btnSecundario"
+        label="Cancel"
+        (click)="closeUploadAdDialog()"
+      ></button>
+      <button
+        pButton
+        label="Upload"
+        (click)="uploadAd()"
+        [disabled]="!selectedFile || loadingUpload"
+        [loading]="loadingUpload"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

@@ -24,6 +24,7 @@ export interface ClientResponseDto {
   role?: any;
   createdAt?: string;
   updatedAt?: string;
+  ads?: any[];
 }
 
 @Injectable({
