@@ -74,17 +74,3 @@ export interface IBoxRepository {
    */
   findMonitorsByIp(ip: string): Observable<Monitor[]>;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

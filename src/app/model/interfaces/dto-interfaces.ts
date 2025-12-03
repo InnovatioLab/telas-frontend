@@ -362,20 +362,3 @@ export interface IErrorDto {
    */
   timestamp: string;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

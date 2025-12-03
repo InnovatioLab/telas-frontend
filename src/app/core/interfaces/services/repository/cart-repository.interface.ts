@@ -8,17 +8,3 @@ export interface ICartRepository {
   findById(id: string): Observable<CartResponseDto>;
   findLoggedUserCart(): Observable<CartResponseDto | null>;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

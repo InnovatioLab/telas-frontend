@@ -30,10 +30,3 @@ export interface IMapService {
 
   getMapInstance(): any;
 }
-
-
-
-
-
-
-

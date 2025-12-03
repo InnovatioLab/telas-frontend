@@ -7,6 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
+import { RouterModule } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { AdService } from "@app/core/service/api/ad.service";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
@@ -54,6 +55,7 @@ interface Ad {
     CreateMonitorModalComponent,
     EditMonitorModalComponent,
     IconTvDisplayComponent,
+    RouterModule,
     GalleriaModule,
     OrderListModule,
     ProgressSpinnerModule,
@@ -69,7 +71,6 @@ export class ManagementMonitorsComponent implements OnInit {
   @ViewChild("fileInput") fileInput!: ElementRef;
 
   monitors: Monitor[] = [];
-  selectedMonitorForAds: Monitor | null = null;
   selectedMonitorForEdit: Monitor | null = null;
   selectedMonitorForDelete: Monitor | null = null;
   loading = false;
@@ -77,16 +78,12 @@ export class ManagementMonitorsComponent implements OnInit {
   advertisements: Advertisement[] = [];
   createMonitorModalVisible = false;
   editMonitorModalVisible = false;
-  adsModalVisible = false;
   deleteConfirmModalVisible = false;
   searchTerm = "";
   totalRecords = 0;
   newAdLink = "";
   currentPage = 1;
   pageSize = 10;
-  orderedAdLinks: Ad[] = [];
-  galleryImages: any[] = [];
-  isAdsLoading = false;
   showCreateAdModal = false;
   loadingCreateAd = false;
   selectedFile: File | null = null;
@@ -99,7 +96,6 @@ export class ManagementMonitorsComponent implements OnInit {
     sortBy: "active",
     sortDir: "desc",
   };
-  selectedAdIndex: number = 0;
   authenticatedClient: AuthenticatedClientResponseDto | null = null;
 
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
@@ -365,132 +361,7 @@ export class ManagementMonitorsComponent implements OnInit {
     this.selectedMonitorForDelete = null;
   }
 
-  openAdsModal(monitor: Monitor): void {
-    this.selectedMonitorForAds = monitor;
-    this.orderedAdLinks = [];
-    this.galleryImages = [];
-    this.selectedAdIndex = 0;
-    this.adsModalVisible = true;
-    this.isAdsLoading = true;
-    this.loadValidAds(monitor.id);
-  }
-
-  loadValidAds(monitorId: string): void {
-    this.monitorService.getValidAds(monitorId).subscribe({
-      next: (validAds) => {
-        if (this.selectedMonitorForAds) {
-          this.selectedMonitorForAds.validAds = validAds;
-          this.orderedAdLinks = (validAds || []).map((ad: any) => ({
-            id: ad.id || "",
-            link: ad.link || "",
-            fileName: ad.fileName || "Unknown File",
-            isAttachedToMonitor: ad.isAttachedToMonitor || false,
-          }));
-          this.galleryImages = this.orderedAdLinks.map((ad) => ({
-            link: ad.link,
-            fileName: ad.fileName,
-          }));
-        }
-        this.selectedAdIndex = 0;
-        this.isAdsLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        this.toastService.erro("Error loading valid ads");
-        this.isAdsLoading = false;
-      },
-    });
-  }
-
-  closeAdsModal(): void {
-    this.ngZone.run(() => {
-      this.adsModalVisible = false;
-      this.selectedMonitorForAds = null;
-      this.orderedAdLinks = [];
-      this.galleryImages = [];
-      this.selectedAdIndex = 0;
-      this.cdr.detectChanges();
-    });
-  }
-
-  forceCloseAdsModal(): void {
-    this.adsModalVisible = false;
-    this.selectedMonitorForAds = null;
-    this.orderedAdLinks = [];
-    this.galleryImages = [];
-    this.selectedAdIndex = 0;
-    this.cdr.detectChanges();
-
-    setTimeout(() => {
-      this.ngZone.run(() => {
-        this.adsModalVisible = false;
-        this.cdr.detectChanges();
-      });
-    }, 50);
-  }
-
-  onAdsModalHide(): void {
-    this.selectedMonitorForAds = null;
-    this.orderedAdLinks = [];
-    this.galleryImages = [];
-    this.selectedAdIndex = 0;
-    this.isAdsLoading = false;
-  }
-
-  selectAd(index: number): void {
-    this.selectedAdIndex = index;
-  }
-
   addAdLink(): void {}
-
-  addValidAd(ad: Ad): void {
-    if (!this.orderedAdLinks.some((a) => a.id === ad.id)) {
-      this.orderedAdLinks.push(ad);
-      this.toastService.sucesso("Ad added. Save to apply changes.");
-    }
-  }
-
-  removeAdLink(adToRemove: Ad): void {
-    this.orderedAdLinks = this.orderedAdLinks.filter(
-      (ad) => ad.id !== adToRemove.id
-    );
-    this.toastService.sucesso("Ad removed temporarily. Save to apply changes.");
-  }
-
-  saveAdOrder(): void {
-    if (this.selectedMonitorForAds) {
-      const monitorId = this.selectedMonitorForAds.id;
-      const ads = this.orderedAdLinks.map((ad, idx) => ({
-        id: ad.id,
-        orderIndex: idx + 1,
-      }));
-
-      const payload = {
-        addressId: this.selectedMonitorForAds.address.id,
-        active: this.selectedMonitorForAds.active,
-        ads,
-      };
-
-      this.monitorService.updateMonitor(monitorId, payload).subscribe({
-        next: (response: any) => {
-          if (response) {
-            this.toastService.sucesso("Ad order saved!");
-          }
-        },
-        error: (error) => {
-          
-          this.toastService.erro("Failed to save ad order.");
-        },
-        complete: () => {
-          this.closeAdsModal();
-        },
-      });
-    }
-  }
-
-  onOrderListReorder(event: any): void {
-    this.selectedAdIndex = 0;
-  }
 
   getMonitorAddress(monitor: Monitor): string {
     if (!monitor.address) {

@@ -48,20 +48,3 @@ export interface AuthResponse {
   user: Client;
   expiresIn: number;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

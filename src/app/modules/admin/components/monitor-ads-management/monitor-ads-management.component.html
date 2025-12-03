@@ -1,0 +1,175 @@
+<div class="monitor-ads-management" *ngIf="!loading && monitor">
+  <div class="header">
+    <h2>Manage Ads for Screen</h2>
+    <p>{{ monitor.address?.coordinatesParams || monitor.address?.street }}</p>
+  </div>
+
+  <div class="content">
+    <div class="preview-wrapper">
+      <h3>Preview</h3>
+      <p class="subtitle">Click on an ad name to preview</p>
+
+      <div class="preview-area" *ngIf="selectedPreviewAd; else noPreview">
+        <ng-container *ngIf="isPdf(selectedPreviewAd); else imagePreview">
+          <iframe
+            class="pdf-iframe"
+            [src]="getPdfUrl(selectedPreviewAd)"
+          ></iframe>
+        </ng-container>
+        <ng-template #imagePreview>
+          <img
+            [src]="selectedPreviewAd.link"
+            [alt]="selectedPreviewAd.fileName"
+            class="preview-image"
+          />
+        </ng-template>
+        <div class="preview-info">
+          <span class="name">{{ selectedPreviewAd.fileName }}</span>
+        </div>
+      </div>
+
+      <ng-template #noPreview>
+        <div class="preview-empty">
+          Selecione um ad em qualquer lista para visualizar.
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="lists-container">
+      <div class="list-column">
+        <h3>Available Ads</h3>
+        <p class="subtitle">Ads valid for this screen</p>
+
+        <div class="block-summary block-summary-placeholder"></div>
+
+        <div class="list available-list">
+          <div
+            class="list-item"
+            *ngFor="let ad of validAds"
+            [class.selected]="selectedPreviewAd?.id === ad.id"
+          >
+            <div class="info" (click)="selectPreview(ad)">
+              <span class="name">{{ ad.fileName }}</span>
+            </div>
+            <div class="actions">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-plus"
+                class="p-button-rounded p-button-text"
+                type="button"
+                (click)="moveToMonitor(ad)"
+              ></button>
+            </div>
+          </div>
+          <p *ngIf="validAds.length === 0" class="empty-text">
+            No ads available for this screen.
+          </p>
+        </div>
+      </div>
+
+      <div class="list-column">
+        <h3>Screen Ads</h3>
+        <p class="subtitle">
+          Ordered list of ads displayed on this screen
+        </p>
+
+        <div class="block-summary" [class.error]="hasBlockError">
+          <span>Total blocks: {{ totalBlockSlots }} / 17</span>
+          <span *ngIf="hasBlockError" class="error-text">
+            Total blocks cannot be greater than 17.
+          </span>
+        </div>
+
+        <div class="list monitor-list">
+          <div
+            class="list-item"
+            *ngFor="let ad of monitorAds; let i = index"
+            [class.selected]="selectedPreviewAd?.id === ad.id"
+          >
+            <div class="info" (click)="selectPreview(ad)">
+              <span class="order">#{{ ad.orderIndex }}</span>
+              <span class="name">{{ ad.fileName }}</span>
+            </div>
+
+            <div class="block-select">
+              <span>Blocks</span>
+              <p-select
+                [options]="[1,2,3,4,5,6,7]"
+                [(ngModel)]="ad.blockQuantity"
+                [ngModelOptions]="{ standalone: true }"
+                (onChange)="changeBlockQuantity(ad, $event.value)"
+                [overlayOptions]="{ appendTo: 'body' }"
+              >
+              </p-select>
+            </div>
+
+            <div class="order-controls">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-chevron-up"
+                class="p-button-rounded p-button-text small-order-button"
+                type="button"
+                (click)="moveUp(i)"
+                [disabled]="i === 0"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-chevron-down"
+                class="p-button-rounded p-button-text small-order-button"
+                type="button"
+                (click)="moveDown(i)"
+                [disabled]="i === monitorAds.length - 1"
+              ></button>
+            </div>
+
+            <div class="actions">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-times"
+                class="p-button-rounded p-button-text p-button-danger"
+                type="button"
+                (click)="removeFromMonitor(ad)"
+              ></button>
+            </div>
+          </div>
+
+          <p *ngIf="monitorAds.length === 0" class="empty-text">
+            No ads selected for this screen.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <button
+      pButton
+      pRipple
+      type="button"
+      label="Back"
+      class="p-button-text"
+      (click)="cancelar()"
+      [disabled]="saving"
+    ></button>
+
+    <button
+      pButton
+      pRipple
+      type="button"
+      label="Save"
+      icon="pi pi-check"
+      (click)="salvar()"
+      [disabled]="saving || hasBlockError"
+    ></button>
+  </div>
+</div>
+
+<div class="loading-container" *ngIf="loading">
+  <p-progressSpinner></p-progressSpinner>
+</div>
+
+

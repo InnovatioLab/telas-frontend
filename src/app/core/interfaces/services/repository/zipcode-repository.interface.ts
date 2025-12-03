@@ -6,19 +6,3 @@ export interface IZipCodeRepository {
   saveAddress(address: AddressData): Observable<AddressData>;
   findAddressesByZipCode(zipCode: string): Observable<AddressData[]>;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

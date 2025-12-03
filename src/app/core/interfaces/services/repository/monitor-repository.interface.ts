@@ -12,17 +12,3 @@ export interface IMonitorRepository {
   delete(id: string): Observable<boolean>;
   findValidAds(monitorId: string): Observable<any[]>;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

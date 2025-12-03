@@ -87,19 +87,3 @@ export class HeaderStateService {
     this.setMobileMenuOpen(this.isMenuOpen() && newIsMobile);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -36,19 +36,3 @@ export interface IAuthService {
   setToken(token: string): void;
   clearToken(): void;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

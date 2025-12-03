@@ -68,18 +68,3 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
     return this.http.patch<void>(`${this.baseUrl}/partner/${clientId}`, {});
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

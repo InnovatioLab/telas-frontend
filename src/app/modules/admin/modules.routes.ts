@@ -9,6 +9,7 @@ import { ManagementAdvertisementsComponent } from "./components/management-adver
 import { ManagementBoxesComponent } from "./components/management-boxes/management-boxes.component";
 import { ManagementClientsComponent } from "./components/management-clients/management-clients.component";
 import { ManagementMonitorsComponent } from "./components/management-monitors/management-monitors.component";
+import { MonitorAdsManagementComponent } from "./components/monitor-ads-management/monitor-ads-management.component";
 import { AdminViewLayoutComponent } from "./pages/admin-view-layout/admin-view-layout.component";
 import { AdRequestManagementComponent } from "./components/ad-request-management/ad-request-management.component";
 
@@ -27,6 +28,11 @@ export const ROUTES: Route[] = [
         path: "screens",
         component: ManagementMonitorsComponent,
         title: "Screens Management",
+      },
+      {
+        path: "screens/:monitorId/manage-ads",
+        component: MonitorAdsManagementComponent,
+        title: "Manage Screen Ads",
       },
       {
         path: "profile",

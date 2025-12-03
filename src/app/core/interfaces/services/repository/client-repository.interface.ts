@@ -90,20 +90,3 @@ export interface IHttpConfig {
   retryAttempts: number;
   headers: Record<string, string>;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

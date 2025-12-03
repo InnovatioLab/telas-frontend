@@ -161,6 +161,3 @@ describe('AdRequestManagementComponent - PDF Functionality', () => {
     });
   });
 });
-
-
-

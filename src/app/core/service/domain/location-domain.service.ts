@@ -72,17 +72,3 @@ export class LocationDomainService {
     onLocationProcessed(mapPoint);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

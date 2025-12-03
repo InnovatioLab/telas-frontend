@@ -16,17 +16,3 @@ export class ZipCodeExtractor {
     return null;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

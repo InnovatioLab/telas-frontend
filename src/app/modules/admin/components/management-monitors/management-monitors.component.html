@@ -87,7 +87,7 @@
               pButton
               pRipple
               class="p-button-rounded p-button-info p-button-text btn-manage-ads"
-              (click)="openAdsModal(monitor)"
+              [routerLink]="['/admin/screens', monitor.id, 'manage-ads']"
               pTooltip="Manage Ads"
               tooltipPosition="top"
             >
@@ -195,101 +195,7 @@
     </app-edit-monitor-modal>
   </p-dialog>
 
-  <!-- Modal de gerenciamento de Ads -->
-  <p-dialog
-    header="Manage Screen Ads Display Order"
-    [(visible)]="adsModalVisible"
-    [style]="{ width: '95vw', maxWidth: '850px' }"
-    [modal]="true"
-    [draggable]="false"
-    [resizable]="false"
-    [closeOnEscape]="true"
-    [dismissableMask]="true"
-    (onHide)="onAdsModalHide()"
-    [contentStyle]="{ padding: '1.5rem' }"
-  >
-    <div class="ads-management" *ngIf="selectedMonitorForAds">
-      <div *ngIf="isAdsLoading" class="loading-spinner-container">
-        <p-progressSpinner></p-progressSpinner>
-      </div>
-      <div
-        *ngIf="!isAdsLoading"
-        class="ads-content"
-      >
-        <div class="ads-preview-container">
-          <h5>Image Preview</h5>
-          <div class="ads-preview-wrapper">
-            <img
-              *ngIf="orderedAdLinks[selectedAdIndex]"
-              [src]="orderedAdLinks[selectedAdIndex].link"
-              class="ad-preview-image"
-              [alt]="orderedAdLinks[selectedAdIndex].fileName"
-            />
-            <p
-              *ngIf="!orderedAdLinks[selectedAdIndex]"
-              class="ads-empty-preview"
-            >
-              Select an ad to preview
-            </p>
-          </div>
-        </div>
-        <div class="ads-sort-container">
-          <h5>Sort Ads</h5>
-          <p class="ads-sort-description">
-            Drag and drop to reorder ads
-          </p>
-          <p-orderList
-            [value]="orderedAdLinks"
-            (onReorder)="onOrderListReorder($event)"
-            [listStyle]="{ height: '300px' }"
-          >
-            <ng-template let-adLink let-i="index" pTemplate="item">
-              <div class="orderlist-item-content">
-                <span
-                  class="ad-filename"
-                  [pTooltip]="adLink.fileName"
-                  tooltipPosition="top"
-                  (click)="selectAd(i)"
-                  [class.selected]="selectedAdIndex === i"
-                >
-                  {{ adLink.fileName }}
-                </span>
-                <p-badge
-                  *ngIf="adLink.isAttachedToMonitor"
-                  value="Attached"
-                  severity="info"
-                  class="badge-attached"
-                ></p-badge>
-              </div>
-            </ng-template>
-          </p-orderList>
-        </div>
-      </div>
-    </div>
-    <ng-template pTemplate="footer">
-      <div
-        class="actions w-full flex justify-content-between align-items-center"
-      >
-        <button
-          pButton
-          pRipple
-          id="btnSecundario"
-          label="Cancel"
-          icon="pi pi-times"
-          class="p-button-text"
-          (click)="closeAdsModal()"
-        ></button>
-        <button
-          pButton
-          pRipple
-          label="Save"
-          icon="pi pi-check"
-          (click)="saveAdOrder()"
-          [disabled]="loading"
-        ></button>
-      </div>
-    </ng-template>
-  </p-dialog>
+  <!-- Modal de gerenciamento de Ads removido em favor da nova tela de gerenciamento -->
 
   <!-- Modal de confirmação de delete -->
   <p-dialog

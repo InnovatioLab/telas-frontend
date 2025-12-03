@@ -130,10 +130,3 @@ export class LeafletClusterService {
     };
   }
 }
-
-
-
-
-
-
-
