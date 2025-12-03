@@ -44,6 +44,7 @@ export class MonitorAdsManagementComponent implements OnInit {
   monitorAds: MonitorAdItem[] = [];
 
   selectedPreviewAd: MonitorAdItem | null = null;
+  availableAdsSearchTerm = "";
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -138,6 +139,16 @@ export class MonitorAdsManagementComponent implements OnInit {
 
   get hasBlockError(): boolean {
     return this.totalBlockSlots > 17;
+  }
+
+  get filteredValidAds(): MonitorAdItem[] {
+    const term = this.availableAdsSearchTerm.trim().toLowerCase();
+    if (!term) {
+      return this.validAds;
+    }
+    return this.validAds.filter((ad) =>
+      ad.fileName.toLowerCase().includes(term)
+    );
   }
 
   selectPreview(ad: MonitorAdItem): void {

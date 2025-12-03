@@ -42,10 +42,21 @@
 
         <div class="block-summary block-summary-placeholder"></div>
 
+        <div class="search-container">
+          <input
+            type="text"
+            pInputText
+            class="search-input"
+            placeholder="Search ads by name..."
+            [(ngModel)]="availableAdsSearchTerm"
+            [ngModelOptions]="{ standalone: true }"
+          />
+        </div>
+
         <div class="list available-list">
           <div
             class="list-item"
-            *ngFor="let ad of validAds"
+            *ngFor="let ad of filteredValidAds"
             [class.selected]="selectedPreviewAd?.id === ad.id"
           >
             <div class="info" (click)="selectPreview(ad)">
@@ -80,6 +91,8 @@
             Total blocks cannot be greater than 17.
           </span>
         </div>
+
+        <div class="search-container search-placeholder"></div>
 
         <div class="list monitor-list">
           <div
