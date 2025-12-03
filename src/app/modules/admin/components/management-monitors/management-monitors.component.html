@@ -93,6 +93,7 @@
             >
               <app-icon-tv-display
                 class="custom-icon btn-manage-ads-icon"
+                [fill]="'#3399ff'"
               ></app-icon-tv-display>
             </button>
             <button
@@ -105,6 +106,7 @@
             >
               <app-icon-etiqueta
                 class="custom-icon btn-edit-screen-icon"
+                [fill]="'#22c55e'"
               ></app-icon-etiqueta>
             </button>
             <button
@@ -117,6 +119,7 @@
             >
               <app-icon-upload
                 class="custom-icon btn-upload-ads-icon"
+                [fill]="'#6366f1'"
               ></app-icon-upload>
             </button>
             <button
@@ -134,6 +137,7 @@
             >
               <app-icon-trash
                 class="custom-icon btn-delete-screen-icon"
+                [fill]="'#f43f5e'"
               ></app-icon-trash>
             </button>
           </div>
@@ -281,9 +285,12 @@
           class="file-preview flex flex-column align-items-center gap-3"
         >
           <h4 class="align-self-start">Selected File Preview:</h4>
-          
+
           <!-- PDF Preview -->
-          <div *ngIf="isPdfFile(selectedFile.name)" class="pdf-preview-container">
+          <div
+            *ngIf="isPdfFile(selectedFile.name)"
+            class="pdf-preview-container"
+          >
             <pdf-viewer
               [src]="uploadAdPreview"
               [render-text]="true"
@@ -293,11 +300,18 @@
               [zoom]="0.8"
               [zoom-scale]="'page-width'"
               [stick-to-page]="true"
-              style="display: block; width: 100%; min-height: 400px; max-height: 500px;"
+              style="
+                display: block;
+                width: 100%;
+                min-height: 400px;
+                max-height: 500px;
+              "
             ></pdf-viewer>
             <div class="pdf-preview-info">
               <p class="pdf-preview-name">{{ selectedFile.name }}</p>
-              <p class="pdf-preview-size">{{ formatFileSize(selectedFile.size) }}</p>
+              <p class="pdf-preview-size">
+                {{ formatFileSize(selectedFile.size) }}
+              </p>
             </div>
           </div>
 

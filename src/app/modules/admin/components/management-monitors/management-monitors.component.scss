@@ -457,42 +457,6 @@
         color: var(--cor-primaria);
       }
 
-      .btn-manage-ads {
-        background: rgba(51, 153, 255, 0.1);
-      }
-
-      .btn-manage-ads-icon {
-        color: #3399ff;
-      }
-
-      .btn-edit-screen {
-        background: rgba(34, 197, 94, 0.1);
-      }
-
-      .btn-edit-screen-icon {
-        color: #22c55e;
-      }
-
-      .btn-upload-ads {
-        background: transparent;
-
-        &:hover:not(:disabled) {
-          background: rgba(99, 102, 241, 0.1);
-        }
-      }
-
-      .btn-upload-ads-icon {
-        color: #6366f1;
-      }
-
-      .btn-delete-screen {
-        background: rgba(244, 63, 94, 0.12);
-      }
-
-      .btn-delete-screen-icon {
-        color: #f43f5e;
-      }
-
       .hidden-input {
         display: none;
       }
@@ -596,24 +560,32 @@
   }
 }
 
-html[data-theme="dark"],
-html.dark-theme,
-body.dark-theme {
-  ::ng-deep {
-    .btn-upload-ads {
-      background: transparent !important;
-
-      &:hover:not(:disabled) {
-        background: rgba(99, 102, 241, 0.2) !important;
-      }
+::ng-deep {
+  .btn-manage-ads {
+    background: transparent !important;
+    &:hover:not(:disabled) {
+      background: rgba(51, 153, 255, 0.2) !important;
     }
+  }
 
-    .btn-upload-ads-icon,
-    .btn-upload-ads-icon svg,
-    .btn-upload-ads app-icon-upload,
-    .btn-upload-ads app-icon-upload svg {
-      color: #a5b4fc !important;
-      fill: #a5b4fc !important;
+  .btn-edit-screen {
+    background: transparent !important;
+    &:hover:not(:disabled) {
+      background: rgba(0, 255, 94, 0.9) !important;
+    }
+  }
+
+  .btn-delete-screen {
+    background: transparent !important;
+    &:hover:not(:disabled) {
+      background: rgba(244, 63, 94, 0.3) !important;
+    }
+  }
+
+  .btn-upload-ads {
+    background: transparent !important;
+    &:hover:not(:disabled) {
+      background: rgba(99, 101, 241, 0.434) !important;
     }
   }
 }

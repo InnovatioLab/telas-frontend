@@ -4,8 +4,7 @@
 @use "./app/shared/styles/ux-enhancements" as *;
 @use "./app/shared/styles/primeng-overrides" as *;
 @use "./app/shared/styles/custom-dark-colors" as *;
-@import "primeicons/primeicons.css";
-@import "primeflex/primeflex.css";
+/* primeicons and primeflex are loaded via CDN in index.html to avoid bundling large CSS files */
 @import "leaflet/dist/leaflet.css";
 
 .custom-cluster-icon {
@@ -165,7 +164,8 @@ body.dark-theme {
   justify-content: center !important;
   aspect-ratio: 1 / 1 !important;
   flex-shrink: 0 !important;
-  
+  border: none !important;
+
   &:enabled:hover,
   &:not(:disabled):hover {
     border-radius: 50% !important;
@@ -215,7 +215,21 @@ html.dark-theme,
 body.dark-theme {
   color: var(--cor-texto-clara);
 
-  p, span, div, h1, h2, h3, h4, h5, h6, label, td, th, li, a, button {
+  p,
+  span,
+  div,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  label,
+  td,
+  th,
+  li,
+  a,
+  button {
     color: var(--cor-texto-clara);
   }
 
@@ -286,7 +300,9 @@ body.dark-theme {
     color: var(--cor-icone-clara) !important;
   }
 
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     color: var(--cor-texto-clara);
   }
 
@@ -297,7 +313,6 @@ body.dark-theme {
     color: var(--cor-texto-clara) !important;
   }
 }
-
 
 ::ng-deep .p-paginator,
 ::ng-deep .p-paginator.p-component,
@@ -1899,7 +1914,16 @@ body.dark-theme .p-dialog {
     background-color: var(--cor-card-background-dark) !important;
     color: var(--cor-texto-clara) !important;
 
-    p, span, div, label, h1, h2, h3, h4, h5, h6 {
+    p,
+    span,
+    div,
+    label,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       color: var(--cor-texto-clara) !important;
     }
   }
@@ -1908,7 +1932,9 @@ body.dark-theme .p-dialog {
     background-color: var(--cor-card-background-dark) !important;
     border-top-color: var(--cor-cinza-medio-dark) !important;
 
-    button, span, p {
+    button,
+    span,
+    p {
       color: var(--cor-texto-clara) !important;
     }
   }
@@ -2049,7 +2075,6 @@ body.dark-theme .p-card.p-component {
   color: var(--cor-texto-clara);
 }
 
-
 .btn-danger {
   color: var(--cor-branca) !important;
   background-color: var(--cor-erro) !important;
@@ -2083,7 +2108,6 @@ body.dark-theme .p-card.p-component {
     }
   }
 }
-
 
 /* Filters and Search Bar */
 .filters {
@@ -2685,7 +2709,7 @@ html:not([data-theme="dark"]):not(.dark-theme) {
   p-select.p-paginator-rpp-dropdown {
     background-color: var(--cor-branca) !important;
     border: 1px solid var(--cor-cinza-medio) !important;
-    
+
     .p-select-label,
     span[role="combobox"] {
       color: var(--cor-cinza-escuro) !important;
@@ -2695,7 +2719,7 @@ html:not([data-theme="dark"]):not(.dark-theme) {
     &.p-disabled {
       opacity: 1 !important;
       background-color: var(--cor-branca) !important;
-      
+
       .p-select-label,
       span[role="combobox"] {
         color: var(--cor-cinza-escuro) !important;
@@ -3152,7 +3176,12 @@ body.dark-theme {
   }
 
   .section-header .titulo,
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: var(--cor-texto-clara) !important;
   }
 
@@ -3252,4 +3281,8 @@ body.dark-theme {
   .action-buttons .p-button .pi {
     color: var(--cor-icone-clara) !important;
   }
+}
+
+th, td {
+  text-align: center !important;
 }

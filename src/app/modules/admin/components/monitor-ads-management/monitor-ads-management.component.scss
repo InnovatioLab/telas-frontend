@@ -1,4 +1,4 @@
-@import "src/styles.scss";
+@use "../../../../shared/styles/variables" as *;
 
 .monitor-ads-management {
   padding: var(--espacamento-padrao);
@@ -83,7 +83,9 @@
   gap: 0.5rem;
   padding: 0.4rem 0.5rem;
   border-radius: var(--borda-raio-pequeno);
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .list-item:hover {
@@ -238,5 +240,3 @@
     grid-template-columns: 1fr;
   }
 }
-
-

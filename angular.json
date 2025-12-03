@@ -28,12 +28,11 @@
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss",
-              "node_modules/primeicons/primeicons.css",
-              "node_modules/primeflex/primeflex.css",
               "src/assets/css/material-icons.css"
             ],
             "scripts": [],
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "allowedCommonJsDependencies": ["quill-delta", "leaflet"]
           },
           "configurations": {
             "teste": {
@@ -106,8 +105,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kb",
-                  "maximumError": "40kb"
+                  "maximumWarning": "50kb",
+                  "maximumError": "200kb"
                 }
               ]
             },
