@@ -147,8 +147,8 @@
             icon="pi pi-trash"
             class="p-button-rounded p-button-danger p-button-text"
             (click)="cancelSubscription(subscription)"
-            [disabled]="subscription.status !== 'ACTIVE'"
-            [pTooltip]="subscription.status === 'ACTIVE' ? 'Cancel' : null"
+            [disabled]="!subscription.ableToCancel"
+            [pTooltip]="subscription.ableToCancel ? 'Cancel' : null"
             tooltipPosition="top"
           ></button>
         </div>
