@@ -75,7 +75,7 @@
 
   <ng-template pTemplate="body" let-subscription>
     <tr>
-      <td>{{ getSubscriptionLocations(subscription) }}</td>
+      <td [innerHTML]="getSubscriptionLocations(subscription)"></td>
       <td>
         <p-badge
           [value]="

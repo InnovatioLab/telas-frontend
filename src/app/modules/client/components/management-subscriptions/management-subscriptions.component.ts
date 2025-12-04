@@ -157,18 +157,19 @@ export class ManagementSubscriptionsComponent implements OnInit {
     });
   }
 
-  getSubscriptionLocations(subscription: SubscriptionMinResponseDto): string[] {
+  getSubscriptionLocations(subscription: SubscriptionMinResponseDto): string {
     if (
       !subscription ||
       !subscription.monitors ||
       subscription.monitors.length === 0
     ) {
-      return ["N/A"];
+      return "N/A";
     }
 
     return subscription.monitors
       .map((monitor) => monitor.addressData)
-      .filter((addr) => addr && addr.trim() !== "");
+      .filter((addr) => addr && addr.trim() !== "")
+      .join(" ");
   }
 
   getSubscriptionStatusSeverity(
@@ -329,8 +330,16 @@ export class ManagementSubscriptionsComponent implements OnInit {
         if ((error as any)?.handled) {
           return;
         }
-        const errorMessage = typeof error === 'string' ? error : error?.message || 'An error occurred';
-        if (errorMessage.includes('permission') || errorMessage.includes('You do not have permission') || errorMessage === 'You do not have permission to perform this operation.') {
+        const errorMessage =
+          typeof error === "string"
+            ? error
+            : error?.message || "An error occurred";
+        if (
+          errorMessage.includes("permission") ||
+          errorMessage.includes("You do not have permission") ||
+          errorMessage ===
+            "You do not have permission to perform this operation."
+        ) {
           return;
         }
         this.toastService.erro(errorMessage);

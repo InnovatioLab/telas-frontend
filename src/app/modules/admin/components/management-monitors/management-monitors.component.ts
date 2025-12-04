@@ -7,8 +7,8 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { RouterModule } from "@angular/router";
 import { FormsModule } from "@angular/forms";
+import { RouterModule } from "@angular/router";
 import { AdService } from "@app/core/service/api/ad.service";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
@@ -27,8 +27,8 @@ import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
-import { MessageService } from "primeng/api";
 import { PdfViewerModule } from "ng2-pdf-viewer";
+import { MessageService } from "primeng/api";
 import { GalleriaModule } from "primeng/galleria";
 import { OrderListModule } from "primeng/orderlist";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
