@@ -1,10 +1,5 @@
 ::ng-deep {
   .notification-sidebar {
-    div,
-    p,
-    .sidebar-title {
-      color: black !important;
-    }
 
     .p-drawer-content {
       overflow: auto !important;
@@ -16,13 +11,12 @@
       background: var(--cor-primaria) !important;
 
       h3 {
-        color: var(--cor-branca) !important;
         margin-bottom: 0px;
       }
     }
 
     a {
-      color: blue !important;
+      color: var(--cor-primaria-clara) !important;
       text-decoration: underline !important;
     }
 
@@ -168,6 +162,18 @@
         font-size: 12px !important;
       }
     }
+  }
+}
+
+html[data-theme="dark"],
+html.dark-theme,
+body.dark-theme {
+  ::ng-deep .notification-sidebar .sidebar-title {
+    color: var(--cor-texto-clara) !important;
+  }
+
+  ::ng-deep .notification-sidebar a {
+    color: var(--cor-primaria-clara) !important;
   }
 }
 
