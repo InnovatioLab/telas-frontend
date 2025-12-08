@@ -51,9 +51,6 @@
   padding: var(--espacamento-grande);
   text-align: center;
 
-  &:hover {
-    transform: scale(1.05);
-  }
 }
 
 .feature-card-icon-bg {
@@ -131,9 +128,6 @@
   font-size: var(--fonte-tamanho-grande);
   transition: all 0.2s;
 
-  &:hover {
-    transform: scale(1.05);
-  }
 }
 
 .feature-btn-outline {

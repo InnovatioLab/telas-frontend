@@ -90,12 +90,6 @@
 
 :host ::ng-deep {
   .formulario-login {
-    a {
-      &:hover {
-        text-decoration: underline !important;
-      }
-    }
-    
     .input-form {
       height: 45px;
       border-radius: 15px;

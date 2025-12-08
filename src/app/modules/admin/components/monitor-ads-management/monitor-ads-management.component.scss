@@ -149,6 +149,59 @@
   font-size: 0.75rem;
 }
 
+html:not([data-theme="dark"]):not(.dark-theme),
+body:not(.dark-theme) {
+  .actions .p-button-rounded.p-button-text:not(.p-button-danger) {
+    color: var(--cor-branca) !important;
+    
+    .p-button-icon,
+    .pi,
+    .pi.pi-plus,
+    span.p-button-icon,
+    span.p-button-icon.pi,
+    span.p-button-icon.pi.pi-plus,
+    * {
+      color: var(--cor-branca) !important;
+    }
+  }
+  
+  .actions .p-button-rounded.p-button-text.p-button-danger {
+    color: var(--cor-erro) !important;
+    
+    .p-button-icon,
+    .pi,
+    .pi.pi-times,
+    span.p-button-icon,
+    span.p-button-icon.pi,
+    span.p-button-icon.pi.pi-times,
+    * {
+      color: var(--cor-erro) !important;
+    }
+  }
+  
+  ::ng-deep .actions .p-button-rounded.p-button-text:not(.p-button-danger) {
+    color: var(--cor-branca) !important;
+    
+    .p-button-icon,
+    .pi,
+    .pi.pi-plus,
+    * {
+      color: var(--cor-branca) !important;
+    }
+  }
+  
+  ::ng-deep .actions .p-button-rounded.p-button-text.p-button-danger {
+    color: var(--cor-erro) !important;
+    
+    .p-button-icon,
+    .pi,
+    .pi.pi-times,
+    * {
+      color: var(--cor-erro) !important;
+    }
+  }
+}
+
 .small-order-button {
   width: 1.25rem;
   height: 1.25rem;

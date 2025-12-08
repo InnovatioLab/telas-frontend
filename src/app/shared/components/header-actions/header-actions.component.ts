@@ -66,19 +66,9 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
         color: #ffffff;
       }
 
-      .icon-button:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
-      }
-
       .icon-button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-        color: #ffffff;
-      }
-
-      .icon-button:disabled:hover {
-        background-color: transparent;
         color: #ffffff;
       }
     `,

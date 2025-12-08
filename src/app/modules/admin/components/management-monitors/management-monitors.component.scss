@@ -564,28 +564,28 @@
   .btn-manage-ads {
     background: transparent !important;
     &:hover:not(:disabled) {
-      background: rgba(51, 153, 255, 0.2) !important;
+      background: transparent !important;
     }
   }
 
   .btn-edit-screen {
     background: transparent !important;
     &:hover:not(:disabled) {
-      background: rgba(0, 255, 94, 0.9) !important;
+      background: transparent !important;
     }
   }
 
   .btn-delete-screen {
     background: transparent !important;
     &:hover:not(:disabled) {
-      background: rgba(244, 63, 94, 0.3) !important;
+      background: transparent !important;
     }
   }
 
   .btn-upload-ads {
     background: transparent !important;
     &:hover:not(:disabled) {
-      background: rgba(99, 101, 241, 0.434) !important;
+      background: transparent !important;
     }
   }
 }

@@ -302,7 +302,6 @@
 
   // Hover Effects
   .p-toast .p-toast-message:hover {
-    transform: translateY(-2px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     transition: all var(--animation-duration-default) var(--animation-ease-in-out);
   }

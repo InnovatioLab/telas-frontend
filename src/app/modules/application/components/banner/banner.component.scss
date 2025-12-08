@@ -74,12 +74,9 @@
   padding: var(--espacamento-padrao);
   box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  transition:
-    transform 0.5s,
-    box-shadow 0.5s;
+  transition: box-shadow 0.5s;
 
   &:hover {
-    transform: scale(1.05);
     box-shadow: var(--sombra-hover);
   }
 }
@@ -112,11 +109,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.5s;
-
-  .group:hover & {
-    transform: scale(1.1);
-  }
 }
 
 .banner-screen-text {
@@ -188,13 +180,10 @@
   );
   opacity: 0;
   transform: skewX(-12deg) translateX(-100%);
-  transition:
-    opacity 1s,
-    transform 1s;
+  transition: opacity 1s;
 
   .group:hover & {
     opacity: 0.1;
-    transform: skewX(-12deg) translateX(100%);
   }
 }
 
@@ -254,13 +243,10 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--cor-branca);
   border-radius: var(--borda-raio-pequeno);
-  transition:
-    background 0.3s,
-    transform 0.3s;
+  transition: background 0.3s;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
   }
 }
 
@@ -320,12 +306,9 @@
   margin-bottom: var(--espacamento-pequeno);
   box-shadow: var(--sombra-padrao);
   cursor: pointer;
-  transition:
-    transform 0.5s,
-    box-shadow 0.5s;
+  transition: box-shadow 0.5s;
 
   &:hover {
-    transform: scale(1.1) rotate(1deg);
     box-shadow: var(--sombra-hover);
   }
 }
@@ -365,24 +348,13 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  transition:
-    transform 0.5s,
-    opacity 0.5s;
-
-  .group:hover & {
-    transform: scale(1.03);
-  }
+  transition: opacity 0.5s;
 }
 
 .banner-example-content {
   color: var(--cor-branca);
   text-align: center;
   z-index: 10;
-  transition: transform 0.5s;
-
-  .group:hover & {
-    transform: scale(1.1);
-  }
 }
 
 .banner-example-title {
@@ -418,13 +390,10 @@
   );
   opacity: 0;
   transform: skewX(-12deg) translateX(-100%);
-  transition:
-    opacity 1s,
-    transform 1s;
+  transition: opacity 1s;
 
   .group:hover & {
     opacity: 0.2;
-    transform: skewX(-12deg) translateX(100%);
   }
 }
 
@@ -470,13 +439,10 @@
   border-radius: var(--borda-raio-padrao);
   padding: var(--espacamento-grande);
   box-shadow: var(--sombra-padrao);
-  transition:
-    box-shadow 0.3s,
-    transform 0.3s;
+  transition: box-shadow 0.3s;
 
   &:hover {
     box-shadow: var(--sombra-hover);
-    transform: scale(1.05);
   }
 }
 
@@ -501,11 +467,6 @@
   font-size: var(--fonte-tamanho-grande);
   font-weight: var(--fonte-peso-medio);
   cursor: pointer;
-  transition: transform 0.3s;
-
-  &:hover {
-    transform: scale(1.05);
-  }
 }
 
 /* Animations */

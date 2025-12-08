@@ -185,29 +185,14 @@
         
         &.p-button-success {
           color: var(--cor-sucesso) !important;
-          
-          &:enabled:hover {
-            background-color: rgba(40, 167, 69, 0.1) !important;
-            border-radius: 50% !important;
-          }
         }
         
         &.p-button-info {
           color: var(--cor-primaria) !important;
-          
-          &:enabled:hover {
-            background-color: rgba(35, 47, 62, 0.1) !important;
-            border-radius: 50% !important;
-          }
         }
         
         &.p-button-danger {
           color: var(--cor-erro) !important;
-          
-          &:enabled:hover {
-            background-color: rgba(220, 53, 69, 0.1) !important;
-            border-radius: 50% !important;
-          }
         }
       }
 

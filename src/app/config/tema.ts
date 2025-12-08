@@ -4,7 +4,7 @@ import { inputtext } from './components/inputtext';
 import { select } from './components/select';
 
 const colors = {
-  primary: '#111519',
+  primary: '#232F3E',
   primary_light: '#496382',
   primary_dark: '#131921',
   background_grey: '#f8f9fa',
@@ -101,7 +101,6 @@ export const MyPreset = definePreset(Aura, {
         primary: {
           color: '{primary.500}',
           inverseColor: colors.white,
-          hoverColor: '{primary.700}',
           activeColor: '{primary.600}',
         },
         highlight: {
@@ -193,10 +192,6 @@ export const MyPreset = definePreset(Aura, {
       primary: {
         background: '{primary.500}',
         color: '{text.button_primary} !important',
-        hover: {
-          background: '{primary.700}',
-          color: '{text.button_primary} !important',
-        },
         focus: {
           boxShadow: shadows.default,
         }
