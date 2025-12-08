@@ -75,39 +75,41 @@ export class MonitorAdsManagementComponent implements OnInit {
 
         this.monitor = monitor;
 
+        const currentMonitorAds: MonitorAdItem[] = (this.monitor?.adLinks || []).map((ad: any) => ({
+          id: ad.id || "",
+          fileName: ad.fileName || "Unknown file",
+          link: ad.link || "",
+          isAttachedToMonitor: true,
+          orderIndex: ad.orderIndex || 0,
+          blockQuantity: ad.blockQuantity || 1,
+        }));
+
+        const currentAdsIds = currentMonitorAds.map((ad) => ad.id);
+
         this.monitorService.getValidAds(this.monitorId).subscribe({
           next: (validAds) => {
-            const currentAdsIds =
-              (this.monitor?.adLinks || []).map((ad: any) => ad.id) ?? [];
-
-            const monitorAds: MonitorAdItem[] = [];
             const validAdsItems: MonitorAdItem[] = [];
 
             (validAds || []).forEach((ad: any, idx: number) => {
-              const isAttached =
-                ad.isAttachedToMonitor ||
-                currentAdsIds.includes(ad.id) ||
-                false;
+              const isAttached = currentAdsIds.includes(ad.id);
 
-              const baseItem: MonitorAdItem = {
-                id: ad.id || "",
-                fileName: ad.fileName || "Unknown file",
-                link: ad.link || "",
-                isAttachedToMonitor: !!isAttached,
-                orderIndex: ad.orderIndex || idx + 1,
-                blockQuantity: ad.blockQuantity || 1,
-              };
+              if (!isAttached) {
+                const baseItem: MonitorAdItem = {
+                  id: ad.id || "",
+                  fileName: ad.fileName || "Unknown file",
+                  link: ad.link || "",
+                  isAttachedToMonitor: false,
+                  orderIndex: ad.orderIndex || idx + 1,
+                  blockQuantity: ad.blockQuantity || 1,
+                };
 
-              validAdsItems.push({ ...baseItem, isAttachedToMonitor: false });
-
-              if (isAttached) {
-                monitorAds.push({ ...baseItem, isAttachedToMonitor: true });
+                validAdsItems.push(baseItem);
               }
             });
 
             this.validAds = validAdsItems;
 
-            this.monitorAds = monitorAds
+            this.monitorAds = currentMonitorAds
               .sort((a, b) => a.orderIndex - b.orderIndex)
               .map((ad, index) => ({
                 ...ad,
@@ -118,6 +120,14 @@ export class MonitorAdsManagementComponent implements OnInit {
             this.loading = false;
           },
           error: () => {
+            this.monitorAds = currentMonitorAds
+              .sort((a, b) => a.orderIndex - b.orderIndex)
+              .map((ad, index) => ({
+                ...ad,
+                orderIndex: index + 1,
+              }));
+
+            this.selectedPreviewAd = this.monitorAds[0] || null;
             this.toastService.erro("Error loading valid ads");
             this.loading = false;
           },
