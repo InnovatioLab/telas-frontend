@@ -2963,7 +2963,7 @@ html:not([data-theme="dark"]):not(.dark-theme),
 body:not(.dark-theme) {
   app-monitor-ads-management {
     .actions .p-button-rounded.p-button-text:not(.p-button-danger) {
-      color: #ffffff !important;
+      color: var(--cor-primaria) !important;
       
       .p-button-icon,
       .pi,
@@ -2972,7 +2972,7 @@ body:not(.dark-theme) {
       span.p-button-icon.pi,
       span.p-button-icon.pi.pi-plus,
       * {
-        color: #ffffff !important;
+        color: var(--cor-primaria) !important;
       }
     }
     
@@ -2993,7 +2993,7 @@ body:not(.dark-theme) {
   
   ::ng-deep app-monitor-ads-management {
     .actions .p-button-rounded.p-button-text:not(.p-button-danger) {
-      color: #ffffff !important;
+      color: var(--cor-primaria) !important;
       
       .p-button-icon,
       .pi,
@@ -3002,7 +3002,7 @@ body:not(.dark-theme) {
       span.p-button-icon.pi,
       span.p-button-icon.pi.pi-plus,
       * {
-        color: #ffffff !important;
+        color: var(--cor-primaria) !important;
       }
     }
     
