@@ -68,8 +68,8 @@ const shadows = {
 };
 
 const transitions = {
-  default: 'all 0.3s ease',
-  fast: 'all 0.15s ease',
+  default: 'all 0.3s ease-in-out',
+  fast: 'all 0.15s ease-in-out',
 };
 
 const primaryPalette = {

@@ -1,25 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-icon-close',
+  selector: "app-icon-close",
   standalone: true,
   template: `
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
-  </svg>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      [attr.width]="size"
+      [attr.height]="size"
+      viewBox="0 0 24 24"
+      [attr.fill]="fill"
+    >
+      <path
+        d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
+        [attr.fill]="fill"
+      />
+    </svg>
   `,
-  styles: [`
-    :host {
-      color: var(--cor-primaria);
-      display: inline-flex;
-    }
-
-    html[data-theme="dark"] :host,
-    html.dark-theme :host,
-    body.dark-theme :host {
-      color: var(--cor-icone-clara) !important;
-    }
-  `]
 })
 export class IconCloseComponent {
+  @Input() size: number | string = 24;
+  @Input() fill: string = "currentColor";
 }

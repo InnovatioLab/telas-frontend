@@ -141,7 +141,7 @@ textarea {
 
   &[readonly] {
     color: var(--cor-branca);
-    background-color: var(--cor-desabilitado);
+    background-color: var(--cor-desabilitado) !important;
     cursor: default;
   }
 }
@@ -1301,4 +1301,3 @@ body.dark-theme ::ng-deep .p-datatable .p-datatable-thead th * {
     }
   }
 }
-

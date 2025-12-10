@@ -1,11 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { AdService } from "@app/core/service/api/ad.service";
 import {
   ClientManagementService,
   FilterClientRequestDto,
 } from "@app/core/service/api/client-management.service";
-import { AdService } from "@app/core/service/api/ad.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Client, Role } from "@app/model/client";
@@ -15,9 +15,9 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
+import { PdfViewerModule } from "ng2-pdf-viewer";
 import { MessageService } from "primeng/api";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
-import { PdfViewerModule } from "ng2-pdf-viewer";
 import { EditClientModalComponent } from "../edit-client-modal/edit-client-modal.component";
 
 @Component({
