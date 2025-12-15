@@ -199,8 +199,19 @@
 </div>
 
 <!-- Preview Fullscreen -->
-<div class="preview-fullscreen" *ngIf="showPreviewFullscreen" [class.active]="showPreviewFullscreen">
-  <div class="preview-fullscreen-header">
+<p-galleria
+  [value]="previewImages"
+  [activeIndex]="currentPreviewIndex"
+  [numVisible]="0"
+  [showThumbnails]="false"
+  [showIndicators]="false"
+  [circular]="true"
+  [fullScreen]="true"
+  [visible]="showPreviewFullscreen"
+  [autoPlay]="false"
+  (visibleChange)="onPreviewVisibleChange($event)"
+>
+  <ng-template pTemplate="closeicon">
     <button
       pButton
       pRipple
@@ -211,39 +222,25 @@
       pTooltip="Fechar Preview"
       tooltipPosition="left"
     ></button>
-  </div>
-  
-  <div class="preview-fullscreen-content">
-    <p-galleria
-      [value]="previewImages"
-      [activeIndex]="currentPreviewIndex"
-      [numVisible]="0"
-      [showThumbnails]="false"
-      [showIndicators]="false"
-      [circular]="true"
-      [autoPlay]="false"
-      [showTransitionOptions]="'2000ms'"
-      [containerStyle]="{ width: '100%', height: '100%' }"
-    >
-      <ng-template pTemplate="item" let-item>
-        <div class="preview-item-container">
-          <ng-container *ngIf="isPdfPreview(item); else imagePreviewTemplate">
-            <iframe
-              class="preview-fullscreen-iframe"
-              [src]="getPdfUrl(item)"
-            ></iframe>
-          </ng-container>
-          <ng-template #imagePreviewTemplate>
-            <img
-              [src]="item.link"
-              [alt]="item.fileName"
-              class="preview-fullscreen-image"
-            />
-          </ng-template>
-        </div>
+  </ng-template>
+
+  <ng-template pTemplate="item" let-item>
+    <div class="preview-item-container">
+      <ng-container *ngIf="isPdfPreview(item); else imagePreviewTemplate">
+        <iframe
+          class="preview-fullscreen-iframe"
+          [src]="getPdfUrl(item)"
+        ></iframe>
+      </ng-container>
+      <ng-template #imagePreviewTemplate>
+        <img
+          [src]="item.link"
+          [alt]="item.fileName"
+          class="preview-fullscreen-image"
+        />
       </ng-template>
-    </p-galleria>
-  </div>
-</div>
+    </div>
+  </ng-template>
+</p-galleria>
 
 

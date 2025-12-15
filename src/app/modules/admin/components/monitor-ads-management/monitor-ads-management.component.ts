@@ -330,16 +330,13 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Ordenar os ads de acordo com orderIndex
     this.previewImages = [...this.monitorAds]
       .sort((a, b) => a.orderIndex - b.orderIndex);
 
     this.currentPreviewIndex = 0;
     this.showPreviewFullscreen = true;
 
-    // Aguardar um pequeno delay para garantir que o Galleria esteja renderizado
     setTimeout(() => {
-      // Iniciar o timer customizado
       this.startPreviewTimer();
     }, 100);
   }
@@ -347,6 +344,12 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
   closePreview(): void {
     this.showPreviewFullscreen = false;
     this.stopPreviewTimer();
+  }
+
+  onPreviewVisibleChange(visible: boolean): void {
+    if (!visible) {
+      this.closePreview();
+    }
   }
 
   private startPreviewTimer(): void {
@@ -360,14 +363,11 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     const displayTime = (currentAd.blockQuantity || 1) * 5000; // 5s por blockQuantity
     const transitionTime = 2000; // 2s de transição
 
-    // Criar um timer que avança após o tempo de exibição + transição
     const totalTime = displayTime + transitionTime;
 
     this.previewTimer = setTimeout(() => {
-      // Avançar para o próximo ad
       this.currentPreviewIndex = (this.currentPreviewIndex + 1) % this.previewImages.length;
       
-      // Reiniciar o timer com o novo tempo do próximo ad
       this.startPreviewTimer();
     }, totalTime);
   }
