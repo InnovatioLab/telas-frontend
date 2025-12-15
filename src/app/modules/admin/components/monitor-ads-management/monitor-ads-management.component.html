@@ -169,20 +169,81 @@
       [disabled]="saving"
     ></button>
 
-    <button
-      pButton
-      pRipple
-      type="button"
-      label="Save"
-      icon="pi pi-check"
-      (click)="salvar()"
-      [disabled]="saving || hasBlockError"
-    ></button>
+    <div class="footer-actions-right">
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Preview"
+        icon="pi pi-eye"
+        class="p-button-outlined"
+        (click)="openPreview()"
+        [disabled]="saving || hasBlockError || monitorAds.length === 0"
+      ></button>
+
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Save"
+        icon="pi pi-check"
+        (click)="salvar()"
+        [disabled]="saving || hasBlockError"
+      ></button>
+    </div>
   </div>
 </div>
 
 <div class="loading-container" *ngIf="loading">
   <p-progressSpinner></p-progressSpinner>
+</div>
+
+<!-- Preview Fullscreen -->
+<div class="preview-fullscreen" *ngIf="showPreviewFullscreen" [class.active]="showPreviewFullscreen">
+  <div class="preview-fullscreen-header">
+    <button
+      pButton
+      pRipple
+      type="button"
+      icon="pi pi-times"
+      class="p-button-rounded p-button-text p-button-danger preview-close-button"
+      (click)="closePreview()"
+      pTooltip="Fechar Preview"
+      tooltipPosition="left"
+    ></button>
+  </div>
+  
+  <div class="preview-fullscreen-content">
+    <p-galleria
+      [value]="previewImages"
+      [activeIndex]="currentPreviewIndex"
+      [numVisible]="0"
+      [showThumbnails]="false"
+      [showIndicators]="false"
+      [circular]="true"
+      [autoPlay]="false"
+      [showTransitionOptions]="'2000ms'"
+      [containerStyle]="{ width: '100%', height: '100%' }"
+    >
+      <ng-template pTemplate="item" let-item>
+        <div class="preview-item-container">
+          <ng-container *ngIf="isPdfPreview(item); else imagePreviewTemplate">
+            <iframe
+              class="preview-fullscreen-iframe"
+              [src]="getPdfUrl(item)"
+            ></iframe>
+          </ng-container>
+          <ng-template #imagePreviewTemplate>
+            <img
+              [src]="item.link"
+              [alt]="item.fileName"
+              class="preview-fullscreen-image"
+            />
+          </ng-template>
+        </div>
+      </ng-template>
+    </p-galleria>
+  </div>
 </div>
 
 

@@ -1,15 +1,15 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { ActivatedRoute, Router } from "@angular/router";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Monitor } from "@app/model/monitors";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
-import { isPdfFile } from "@app/shared/utils/file-type.utils";
-import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 
 interface MonitorAdItem {
   id: string;
@@ -33,7 +33,7 @@ interface MonitorAdItem {
   templateUrl: "./monitor-ads-management.component.html",
   styleUrls: ["./monitor-ads-management.component.scss"],
 })
-export class MonitorAdsManagementComponent implements OnInit {
+export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
   monitorId = "";
   monitor: Monitor | null = null;
 
@@ -45,6 +45,11 @@ export class MonitorAdsManagementComponent implements OnInit {
 
   selectedPreviewAd: MonitorAdItem | null = null;
   availableAdsSearchTerm = "";
+
+  showPreviewFullscreen = false;
+  previewImages: MonitorAdItem[] = [];
+  currentPreviewIndex = 0;
+  private previewTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -317,6 +322,69 @@ export class MonitorAdsManagementComponent implements OnInit {
         this.saving = false;
       },
     });
+  }
+
+  openPreview(): void {
+    if (this.monitorAds.length === 0) {
+      this.toastService.erro("Nenhum ad selecionado para preview");
+      return;
+    }
+
+    // Ordenar os ads de acordo com orderIndex
+    this.previewImages = [...this.monitorAds]
+      .sort((a, b) => a.orderIndex - b.orderIndex);
+
+    this.currentPreviewIndex = 0;
+    this.showPreviewFullscreen = true;
+
+    // Aguardar um pequeno delay para garantir que o Galleria esteja renderizado
+    setTimeout(() => {
+      // Iniciar o timer customizado
+      this.startPreviewTimer();
+    }, 100);
+  }
+
+  closePreview(): void {
+    this.showPreviewFullscreen = false;
+    this.stopPreviewTimer();
+  }
+
+  private startPreviewTimer(): void {
+    this.stopPreviewTimer();
+
+    if (this.previewImages.length === 0 || !this.showPreviewFullscreen) {
+      return;
+    }
+
+    const currentAd = this.previewImages[this.currentPreviewIndex];
+    const displayTime = (currentAd.blockQuantity || 1) * 5000; // 5s por blockQuantity
+    const transitionTime = 2000; // 2s de transição
+
+    // Criar um timer que avança após o tempo de exibição + transição
+    const totalTime = displayTime + transitionTime;
+
+    this.previewTimer = setTimeout(() => {
+      // Avançar para o próximo ad
+      this.currentPreviewIndex = (this.currentPreviewIndex + 1) % this.previewImages.length;
+      
+      // Reiniciar o timer com o novo tempo do próximo ad
+      this.startPreviewTimer();
+    }, totalTime);
+  }
+
+  private stopPreviewTimer(): void {
+    if (this.previewTimer) {
+      clearTimeout(this.previewTimer);
+      this.previewTimer = undefined;
+    }
+  }
+
+  isPdfPreview(ad: MonitorAdItem): boolean {
+    return this.isPdf(ad);
+  }
+
+  ngOnDestroy(): void {
+    this.stopPreviewTimer();
   }
 }
 
