@@ -176,7 +176,6 @@
         type="button"
         label="Preview"
         icon="pi pi-eye"
-        class="p-button-outlined"
         (click)="openPreview()"
         [disabled]="saving || hasBlockError || monitorAds.length === 0"
       ></button>
@@ -217,9 +216,9 @@
       pRipple
       type="button"
       icon="pi pi-times"
-      class="p-button-rounded p-button-text p-button-danger preview-close-button"
+      class="p-button-rounded preview-close-button"
       (click)="closePreview()"
-      pTooltip="Fechar Preview"
+      pTooltip="Close Preview"
       tooltipPosition="left"
     ></button>
   </ng-template>

@@ -153,7 +153,7 @@ html:not([data-theme="dark"]):not(.dark-theme),
 body:not(.dark-theme) {
   .actions .p-button-rounded.p-button-text:not(.p-button-danger) {
     color: var(--cor-primaria) !important;
-    
+
     .p-button-icon,
     .pi,
     .pi.pi-plus,
@@ -164,10 +164,10 @@ body:not(.dark-theme) {
       color: var(--cor-primaria) !important;
     }
   }
-  
+
   .actions .p-button-rounded.p-button-text.p-button-danger {
     color: var(--cor-erro) !important;
-    
+
     .p-button-icon,
     .pi,
     .pi.pi-times,
@@ -178,10 +178,10 @@ body:not(.dark-theme) {
       color: var(--cor-erro) !important;
     }
   }
-  
+
   ::ng-deep .actions .p-button-rounded.p-button-text:not(.p-button-danger) {
     color: var(--cor-primaria) !important;
-    
+
     .p-button-icon,
     .pi,
     .pi.pi-plus,
@@ -189,10 +189,10 @@ body:not(.dark-theme) {
       color: var(--cor-primaria) !important;
     }
   }
-  
+
   ::ng-deep .actions .p-button-rounded.p-button-text.p-button-danger {
     color: var(--cor-erro) !important;
-    
+
     .p-button-icon,
     .pi,
     .pi.pi-times,
@@ -298,17 +298,10 @@ body:not(.dark-theme) {
 .preview-close-button {
   background-color: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: #fff !important;
-  width: 3rem;
-  height: 3rem;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.2) !important;
     border-color: rgba(255, 255, 255, 0.5) !important;
-  }
-
-  ::ng-deep .p-button-icon {
-    font-size: 1.25rem;
   }
 }
 
@@ -344,11 +337,11 @@ body:not(.dark-theme) {
   }
 
   .preview-fullscreen-image {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 50vw;
+    max-height: 50vh;
     width: auto;
     height: auto;
-    object-fit: contain;
+    object-fit: cover;
   }
 
   .preview-fullscreen-iframe {
