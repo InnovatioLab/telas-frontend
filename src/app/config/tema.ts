@@ -2,6 +2,28 @@ import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
 import { inputtext } from './components/inputtext';
 import { select } from './components/select';
+import { password } from './components/password';
+import { button } from './components/button';
+import { dropdown } from './components/dropdown';
+import { multiselect } from './components/multiselect';
+import { dialog } from './components/dialog';
+import { checkbox } from './components/checkbox';
+import { datepicker } from './components/datepicker';
+import { card } from './components/card';
+import { toggleswitch } from './components/toggleswitch';
+import { listbox } from './components/listbox';
+import { paginator } from './components/paginator';
+import { datatable } from './components/datatable';
+import { autocomplete } from './components/autocomplete';
+import { badge } from './components/badge';
+import { calendar } from './components/calendar';
+import { cascadeselect } from './components/cascadeselect';
+import { dynamicdialog } from './components/dynamicdialog';
+import { inputmask } from './components/inputmask';
+import { inputnumber } from './components/inputnumber';
+import { orderlist } from './components/orderlist';
+import { sidebar } from './components/sidebar';
+import { tablist } from './components/tablist';
 
 const colors = {
   primary: '#232F3E',
@@ -183,42 +205,28 @@ export const MyPreset = definePreset(Aura, {
       `
     },
     inputtext,
-    button: {
-      root: {
-        height: dimensions.buttonHeight,
-        borderRadius: borders.defaultRadius,
-        transition: transitions.default,
-      },
-      primary: {
-        background: '{primary.500}',
-        color: '{text.button_primary} !important',
-        focus: {
-          boxShadow: shadows.default,
-        }
-      },
-    },
-    dropdown: {
-      root: {
-        height: dimensions.inputHeight,
-        borderRadius: borders.defaultRadius,
-      },
-      item: {
-        hover: {
-          background: '{primary.400}',
-          color: colors.white,
-        },
-        selected: {
-          background: '{primary.500}',
-          color: colors.white,
-        }
-      }
-    },
+    password,
+    button,
+    dropdown,
+    multiselect,
+    dialog,
+    checkbox,
+    datepicker,
+    card,
+    toggleswitch,
+    listbox,
+    paginator,
+    datatable,
     select,
-    inputmask: {
-      root: {
-        height: dimensions.inputHeight,
-        borderRadius: borders.defaultRadius,
-      }
-    },
+    autocomplete,
+    badge,
+    calendar,
+    cascadeselect,
+    dynamicdialog,
+    inputmask,
+    inputnumber,
+    orderlist,
+    sidebar,
+    tablist,
   }
 });

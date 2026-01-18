@@ -1,5 +1,8 @@
-export const inputtext = {
+export const calendar = {
   root: {
+    width: '100%',
+  },
+  input: {
     width: '100%',
     height: 'var(--altura-input)',
     border: '1px solid var(--cor-cinza-medio)',

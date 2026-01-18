@@ -1,7 +1,7 @@
-export const inputtext = {
+export const cascadeselect = {
   root: {
     width: '100%',
-    height: 'var(--altura-input)',
+    minHeight: 'var(--altura-input)',
     border: '1px solid var(--cor-cinza-medio)',
     borderRadius: 'var(--borda-raio-pequeno)',
     fontSize: 'var(--fonte-tamanho-padrao)',

@@ -1,40 +1,15 @@
-export const password: PasswordTokens = {
-
-}
-
-export type PasswordTokens = {
-  meter?: {
-    background?: string;
-    border?: {
-      radius?: string;
-    };
-    height?: string;
-  };
-  icon?: {
-    color?: string;
-  };
-  overlay?: {
-    background?: string;
-    border?: {
-      color?: string;
-      radius?: string;
-    };
-    color?: string;
-    padding?: string;
-    shadow?: string;
-  };
-  content?: {
-    gap?: string;
-  };
-  strength?: {
-    weak?: {
-      background?: string;
-    };
-    medium?: {
-      background?: string;
-    };
-    strong?: {
-      background?: string;
-    };
-  };
+export const password = {
+  input: {
+    width: '100%',
+    height: 'var(--altura-input)',
+    border: '1px solid var(--cor-cinza-medio)',
+    borderRadius: 'var(--borda-raio-pequeno)',
+    fontSize: 'var(--fonte-tamanho-padrao)',
+    fontWeight: 'var(--fonte-peso-regular)',
+    color: 'var(--cor-cinza-escuro)',
+    backgroundColor: 'transparent',
+    padding: 'var(--espacamento-pequeno) var(--espacamento-padrao)',
+    transition: 'border-color 0.2s',
+  },
 };
+

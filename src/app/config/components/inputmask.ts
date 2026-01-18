@@ -1,4 +1,4 @@
-export const inputtext = {
+export const inputmask = {
   root: {
     width: '100%',
     height: 'var(--altura-input)',
