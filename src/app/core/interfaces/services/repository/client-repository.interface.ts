@@ -1,64 +1,69 @@
 import { Observable } from 'rxjs';
 import { Client } from '@app/model/client';
 import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
+import { IRepository } from './repository.interface';
+import { IBaseFilterDto } from '@app/model/interfaces/dto-interfaces';
+import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
+import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
+import { Page } from '@app/model/dto/page.dto';
+import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
+import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
+import { AdRequestResponseDto, PendingAdAdminValidationResponseDto } from '@app/model/dto/response/ad-request-response.dto';
+import { WishlistResponseDto } from '@app/model/dto/response/wishlist-response.dto';
+import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
+import { AttachmentRequestDto } from '@app/model/dto/request/attachment-request.dto';
+import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
+import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
+import { FilterClientRequestDto } from '@app/core/service/api/client-management.service';
 
-/**
- * Interface para operações de repositório de Cliente
- * Implementa o padrão Repository para desacoplar a lógica de acesso a dados
- */
-export interface IClientRepository {
-  /**
-   * Busca um cliente por ID
-   * @param id - ID do cliente
-   * @returns Observable com o cliente encontrado
-   */
-  findById(id: string): Observable<Client>;
+export interface ClientFilterDto extends IBaseFilterDto {}
 
-  /**
-   * Busca todos os clientes
-   * @returns Observable com array de clientes
-   */
-  findAll(): Observable<Client[]>;
-
-  /**
-   * Salva um novo cliente
-   * @param client - Dados do cliente para salvar
-   * @returns Observable com o cliente salvo
-   */
+export interface IClientRepository extends IRepository<Client, ClientRequestDTO, Partial<ClientRequestDTO>, ClientFilterDto> {
   save(client: ClientRequestDTO): Observable<Client>;
 
-  /**
-   * Atualiza um cliente existente
-   * @param id - ID do cliente
-   * @param client - Dados do cliente para atualizar
-   * @returns Observable com o cliente atualizado
-   */
-  update(id: string, client: Partial<ClientRequestDTO>): Observable<Client>;
+  getAuthenticatedClient(): Observable<AuthenticatedClientResponseDto>;
 
-  /**
-   * Remove um cliente
-   * @param id - ID do cliente
-   * @returns Observable vazio
-   */
-  delete(id: string): Observable<void>;
-
-  /**
-   * Busca cliente autenticado
-   * @returns Observable com dados do cliente autenticado
-   */
-  getAuthenticatedClient(): Observable<any>;
-
-  /**
-   * Busca anúncios do cliente
-   * @returns Observable com array de anúncios
-   */
   getClientAds(): Observable<any[]>;
 
-  /**
-   * Busca anexos do cliente
-   * @returns Observable com array de anexos
-   */
   getClientAttachments(): Observable<any[]>;
+
+  saveWithLoadingOption(client: ClientRequestDTO, ignorarLoading?: boolean): Observable<any>;
+
+  editar(id: string, client: ClientRequestDTO): Observable<any>;
+
+  criarSenha(login: string, request: SenhaRequestDto): Observable<any>;
+
+  atualizardadosPerfil(id: string, client: ClientRequestDTO): Observable<any>;
+
+  reenvioCodigo(login: string): Observable<any>;
+
+  validarCodigo(login: string, code: string): Observable<any>;
+
+  aceitarTermosDeCondicao(): Observable<any>;
+
+  clientExistente(email: string): Observable<ClientResponseDTO>;
+
+  buscarClient<T>(idOuUID: string): Observable<T>;
+
+  buscaClientPorIdentificador(email: string): Observable<ClientResponseDTO>;
+
+  getAllAds(page?: number, size?: number): Observable<Page<AdResponseDto>>;
+
+  getAllAdRequests(filters?: FilterClientRequestDto): Observable<PaginationResponseDto<AdRequestResponseDto>>;
+
+  getPendingAds(filters?: FilterClientRequestDto): Observable<PaginationResponseDto<PendingAdAdminValidationResponseDto>>;
+
+  uploadAttachment(file: File, id?: string): Observable<any>;
+
+  uploadMultipleAttachments(files: File[]): Observable<any>;
+
+  createAdRequest(request: ClientAdRequestDto): Observable<any>;
+
+  validateAd(adId: string, validation: string, refusedData?: RefusedAdRequestDto): Observable<any>;
+
+  addToWishlist(monitorId: string): Observable<boolean>;
+
+  getWishlist(): Observable<WishlistResponseDto>;
 }
 
 /**

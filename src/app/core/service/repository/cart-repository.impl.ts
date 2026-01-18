@@ -1,48 +1,45 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
 import { ICartRepository } from '@app/core/interfaces/services/repository/cart-repository.interface';
 import { CartRequestDto } from '@app/model/dto/request/cart-request.dto';
 import { CartResponseDto } from '@app/model/dto/response/cart-response.dto';
+import { ResponseDTO } from '@app/model/dto/response.dto';
 import { ResponseDto } from '@app/model/dto/response/response.dto';
+import { BaseRepository } from './base.repository';
+import { ENVIRONMENT } from 'src/environments/environment-token';
 
 @Injectable({ providedIn: 'root' })
-export class CartRepositoryImpl implements ICartRepository {
-  private readonly baseUrl = `${environment.apiUrl}carts`;
-  private readonly storageName = 'telas_token';
-  private readonly token = localStorage.getItem(this.storageName);
-
-  private readonly headers = {
-    headers: {
-      Authorization: `Bearer ${this.token}`,
-    },
-  };
-
-  constructor(private readonly http: HttpClient) {}
-
-  create(request: CartRequestDto): Observable<CartResponseDto> {
-    return this.http
-      .post<ResponseDto<CartResponseDto>>(this.baseUrl, request, this.headers)
-      .pipe(map((response: ResponseDto<CartResponseDto>) => response.data));
+export class CartRepositoryImpl extends BaseRepository<CartResponseDto, CartRequestDto, CartRequestDto> implements ICartRepository {
+  constructor(
+    httpClient: HttpClient,
+    @Optional() @Inject(ENVIRONMENT) env?: any
+  ) {
+    super(httpClient, 'carts', env);
   }
 
-  update(request: CartRequestDto, id: string): Observable<CartResponseDto> {
+  override create(request: CartRequestDto): Observable<CartResponseDto> {
     return this.http
-      .put<ResponseDto<CartResponseDto>>(`${this.baseUrl}/${id}`, request, this.headers)
-      .pipe(map((response: ResponseDto<CartResponseDto>) => response.data));
+      .post<ResponseDTO<CartResponseDto> | ResponseDto<CartResponseDto>>(this.baseUrl, request, this.getHeaders())
+      .pipe(map((response) => this.extractData(response) as CartResponseDto));
   }
 
-  findById(id: string): Observable<CartResponseDto> {
+  override update(id: string, request: CartRequestDto): Observable<CartResponseDto> {
     return this.http
-      .get<ResponseDto<CartResponseDto>>(`${this.baseUrl}/${id}`, this.headers)
-      .pipe(map((response: ResponseDto<CartResponseDto>) => response.data));
+      .put<ResponseDTO<CartResponseDto> | ResponseDto<CartResponseDto>>(`${this.baseUrl}/${id}`, request, this.getHeaders())
+      .pipe(map((response) => this.extractData(response) as CartResponseDto));
+  }
+
+  override findById(id: string): Observable<CartResponseDto | null> {
+    return this.http
+      .get<ResponseDTO<CartResponseDto> | ResponseDto<CartResponseDto>>(`${this.baseUrl}/${id}`, this.getHeaders())
+      .pipe(map((response) => this.extractData(response) as CartResponseDto || null));
   }
 
   findLoggedUserCart(): Observable<CartResponseDto | null> {
     return this.http
-      .get<ResponseDto<CartResponseDto | null>>(this.baseUrl, this.headers)
-      .pipe(map((response: ResponseDto<CartResponseDto | null>) => response.data));
+      .get<ResponseDTO<CartResponseDto | null> | ResponseDto<CartResponseDto | null>>(this.baseUrl, this.getHeaders())
+      .pipe(map((response) => this.extractData(response) as CartResponseDto | null));
   }
 }

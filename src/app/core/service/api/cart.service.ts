@@ -46,7 +46,7 @@ export class CartService {
   }
 
   update(request: CartRequestDto, id: string): Observable<CartResponseDto> {
-    return this.repository.update(request, id).pipe(
+    return this.repository.update(id, request).pipe(
       tap((cart: CartResponseDto) => {
         this.cartUpdated$.next(cart);
         this.markAsModified();

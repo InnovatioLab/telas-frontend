@@ -9,6 +9,7 @@ import { MonitorsBoxMinResponseDto } from "@app/model/dto/response/monitor-box-m
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { Monitor } from "@app/model/monitors";
 import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -48,7 +49,7 @@ export class BoxService {
   }
 
   deleteBox(id: string): Observable<boolean> {
-    return this.repository.delete(id);
+    return this.repository.delete(id).pipe(map(result => typeof result === 'boolean' ? result : true));
   }
 
   getMonitorsAdsByIp(ip: string): Observable<Monitor[]> {

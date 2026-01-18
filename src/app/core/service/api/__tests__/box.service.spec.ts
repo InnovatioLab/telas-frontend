@@ -49,7 +49,7 @@ describe('BoxService', () => {
   } as Monitor;
 
   const mockMonitorsBoxMin: MonitorsBoxMinResponseDto = {
-    monitorIds: ['mon-1'],
+    id: 'mon-1',
     hasBox: false,
     fullAddress: 'Address 1'
   };
@@ -132,7 +132,7 @@ describe('BoxService', () => {
 
       service.getAvailableMonitors().subscribe((response) => {
         expect(response.length).toBe(1);
-        expect(response[0].monitorIds[0]).toBe('mon-1');
+        expect(response[0].id).toBe('mon-1');
         expect(mockRepository.findAvailableMonitors).toHaveBeenCalledTimes(1);
         done();
       });
@@ -287,7 +287,7 @@ describe('BoxService', () => {
     it('deve criar novo box', (done) => {
       const boxRequest: BoxRequestDto = {
         boxAddressId: 'addr-1',
-        monitorIds: ['mon-1', 'mon-2'],
+        monitorId: 'mon-1',
         active: true
       };
 
@@ -308,7 +308,7 @@ describe('BoxService', () => {
       const boxId = 'box-1';
       const boxRequest: BoxRequestDto = {
         boxAddressId: 'addr-1',
-        monitorIds: ['mon-1'],
+        monitorId: 'mon-1',
         active: false
       };
 

@@ -7,6 +7,7 @@ import { FilterMonitorRequestDto } from "@app/model/dto/request/filter-monitor.r
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { Monitor } from "@app/model/monitors";
 import { Observable, of } from "rxjs";
+import { map } from "rxjs/operators";
 import { IMonitorRepository } from "@app/core/interfaces/services/repository/monitor-repository.interface";
 import { MONITOR_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { IMonitorAlert } from "./interfaces/monitor";
@@ -37,7 +38,7 @@ export class MonitorService {
   }
 
   deleteMonitor(id: string): Observable<boolean> {
-    return this.repository.delete(id);
+    return this.repository.delete(id).pipe(map(result => typeof result === 'boolean' ? result : true));
   }
 
   getValidAds(monitorId: string): Observable<any[]> {

@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Client } from '@app/model/client';
 import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
 import { IClientDomainService } from '@app/core/interfaces/services/domain/client-domain-service.interface';
@@ -22,7 +23,7 @@ export class ClientDomainService implements IClientDomainService {
   }
 
   deleteClient(id: string): Observable<void> {
-    return this.repository.delete(id);
+    return this.repository.delete(id).pipe(map((): void => undefined));
   }
 
   validateClientData(clientData: ClientRequestDTO): boolean {

@@ -1,51 +1,45 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, Optional } from '@angular/core';
 import { IMonitorRepository } from '@app/core/interfaces/services/repository/monitor-repository.interface';
 import { CreateMonitorRequestDto, UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { MonitorResponseDto } from '@app/model/dto/response/monitor-response.dto';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
+import { ResponseDTO } from '@app/model/dto/response.dto';
 import { ResponseDto } from '@app/model/dto/response/response.dto';
 import { Monitor } from '@app/model/monitors';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { BaseRepository } from './base.repository';
+import { ENVIRONMENT } from 'src/environments/environment-token';
 import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
-export class MonitorRepositoryImpl implements IMonitorRepository {
-  private readonly baseUrl = `${environment.apiUrl}monitors`;
-  private readonly storageName = 'telas_token';
-  private readonly token = localStorage.getItem(this.storageName);
+export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitorRequestDto, UpdateMonitorRequestDto> implements IMonitorRepository {
+  constructor(
+    httpClient: HttpClient,
+    @Optional() @Inject(ENVIRONMENT) env?: any
+  ) {
+    super(httpClient, 'monitors', env);
+  }
 
-  private readonly headers = {
-    headers: {
-      Authorization: `Bearer ${this.token}`,
-    },
-  };
-
-  constructor(private readonly http: HttpClient) {}
-
-  findWithPagination(filters?: FilterMonitorRequestDto): Observable<PaginationResponseDto<Monitor>> {
-    let params = new HttpParams();
-
-    if (filters) {
-      if (filters.page) params = params.set('page', filters.page.toString());
-      if (filters.size) params = params.set('size', filters.size.toString());
-      if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
-      if (filters.sortDir) params = params.set('sortDir', filters.sortDir);
-      if (filters.genericFilter) params = params.set('genericFilter', filters.genericFilter);
-    }
-
+  override findWithPagination(filters?: FilterMonitorRequestDto): Observable<PaginationResponseDto<Monitor>> {
+    let params = this.createFilterParams(filters);
     params = params.set('_t', Date.now().toString());
 
     return this.http
-      .get<ResponseDto<PaginationResponseDto<MonitorResponseDto>>>(`${this.baseUrl}/filters`, { params })
+      .get<ResponseDTO<PaginationResponseDto<MonitorResponseDto>> | ResponseDto<PaginationResponseDto<MonitorResponseDto>>>(
+        `${this.baseUrl}/filters`,
+        { ...this.getHeaders(), params }
+      )
       .pipe(
-        map((response: ResponseDto<PaginationResponseDto<MonitorResponseDto>>) => {
-          if (response?.data) {
-            const mappedList = response.data.list.map(this.mapMonitorResponseToMonitor);
+        map((response) => {
+          const data = this.extractData(response);
+          if (data && typeof data === 'object' && 'list' in data) {
+            const paginatedData = data as PaginationResponseDto<MonitorResponseDto>;
+            const mappedList = paginatedData.list.map(this.mapMonitorResponseToMonitor);
             return {
-              ...response.data,
+              ...paginatedData,
               list: mappedList,
             };
           }
@@ -57,13 +51,21 @@ export class MonitorRepositoryImpl implements IMonitorRepository {
       );
   }
 
-  findById(id: string): Observable<Monitor | null> {
+  override findAll(): Observable<Monitor[]> {
+    return this.findWithPagination().pipe(
+      map((paginated) => paginated.list),
+      catchError(() => of([]))
+    );
+  }
+
+  override findById(id: string): Observable<Monitor | null> {
     return this.http
-      .get<ResponseDto<MonitorResponseDto>>(`${this.baseUrl}/${id}`, this.headers)
+      .get<ResponseDTO<MonitorResponseDto> | ResponseDto<MonitorResponseDto>>(`${this.baseUrl}/${id}`, this.getHeaders())
       .pipe(
-        map((response: ResponseDto<MonitorResponseDto>) => {
-          if (response?.data) {
-            return this.mapMonitorResponseToMonitor(response.data);
+        map((response) => {
+          const data = this.extractData(response);
+          if (data) {
+            return this.mapMonitorResponseToMonitor(data as MonitorResponseDto);
           }
           return null;
         }),
@@ -71,33 +73,33 @@ export class MonitorRepositoryImpl implements IMonitorRepository {
       );
   }
 
-  create(request: CreateMonitorRequestDto): Observable<boolean> {
+  override create(request: CreateMonitorRequestDto): Observable<boolean> {
     return this.http
-      .post<ResponseDto<void>>(this.baseUrl, request, this.headers)
+      .post<ResponseDTO<void> | ResponseDto<void>>(this.baseUrl, request, this.getHeaders())
       .pipe(
-        map((response: ResponseDto<any>) => {
+        map((response: ResponseDTO<any> | ResponseDto<any>) => {
           return !!response;
         }),
         catchError(() => of(false))
       );
   }
 
-  update(id: string, request: UpdateMonitorRequestDto): Observable<boolean> {
+  override update(id: string, request: UpdateMonitorRequestDto): Observable<boolean> {
     return this.http
-      .put<ResponseDto<void>>(`${this.baseUrl}/${id}`, request, this.headers)
+      .put<ResponseDTO<void> | ResponseDto<void>>(`${this.baseUrl}/${id}`, request, this.getHeaders())
       .pipe(
-        map((response: ResponseDto<any>) => {
+        map((response: ResponseDTO<any> | ResponseDto<any>) => {
           return !!response;
         }),
         catchError(() => of(false))
       );
   }
 
-  delete(id: string): Observable<boolean> {
+  override delete(id: string): Observable<boolean> {
     return this.http
-      .delete<ResponseDto<any>>(`${this.baseUrl}/${id}`, this.headers)
+      .delete<ResponseDTO<any> | ResponseDto<any>>(`${this.baseUrl}/${id}`, this.getHeaders())
       .pipe(
-        map((response: ResponseDto<any>) => {
+        map((response: ResponseDTO<any> | ResponseDto<any>) => {
           return !!response;
         }),
         catchError(() => of(false))
@@ -106,10 +108,11 @@ export class MonitorRepositoryImpl implements IMonitorRepository {
 
   findValidAds(monitorId: string): Observable<any[]> {
     return this.http
-      .get<ResponseDto<any[]>>(`${this.baseUrl}/valid-ads/${monitorId}`, this.headers)
+      .get<ResponseDTO<any[]> | ResponseDto<any[]>>(`${this.baseUrl}/valid-ads/${monitorId}`, this.getHeaders())
       .pipe(
-        map((response: ResponseDto<any[]>) => {
-          return response.data || [];
+        map((response) => {
+          const data = this.extractData(response);
+          return Array.isArray(data) ? data : [];
         }),
         catchError(() => of([]))
       );

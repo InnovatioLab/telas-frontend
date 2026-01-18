@@ -14,7 +14,7 @@ import { authInterceptor } from "@app/core/interceptor/autenticacao.interceptor"
 import { errorInterceptor } from "@app/core/interceptor/error.interceptor";
 import { loadingInterceptor } from "@app/core/interceptor/loading.interceptor";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { CLIENT_REPOSITORY_TOKEN, CLIENT_MANAGEMENT_REPOSITORY_TOKEN, SUBSCRIPTION_REPOSITORY_TOKEN, BOX_REPOSITORY_TOKEN, CART_REPOSITORY_TOKEN, MONITOR_REPOSITORY_TOKEN, ZIPCODE_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
+import { CLIENT_REPOSITORY_TOKEN, CLIENT_MANAGEMENT_REPOSITORY_TOKEN, SUBSCRIPTION_REPOSITORY_TOKEN, BOX_REPOSITORY_TOKEN, CART_REPOSITORY_TOKEN, MONITOR_REPOSITORY_TOKEN, ZIPCODE_REPOSITORY_TOKEN, AD_REPOSITORY_TOKEN, PRIVACY_POLICY_REPOSITORY_TOKEN, TERMS_CONDITIONS_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { ClientRepositoryImpl } from "@app/core/service/repository/client-repository.impl";
 import { ClientManagementRepositoryImpl } from "@app/core/service/repository/client-management-repository.impl";
 import { SubscriptionRepositoryImpl } from "@app/core/service/repository/subscription-repository.impl";
@@ -22,6 +22,9 @@ import { BoxRepositoryImpl } from "@app/core/service/repository/box-repository.i
 import { CartRepositoryImpl } from "@app/core/service/repository/cart-repository.impl";
 import { MonitorRepositoryImpl } from "@app/core/service/repository/monitor-repository.impl";
 import { ZipCodeRepositoryImpl } from "@app/core/service/repository/zipcode-repository.impl";
+import { AdRepositoryImpl } from "@app/core/service/repository/ad-repository.impl";
+import { PrivacyPolicyRepositoryImpl } from "@app/core/service/repository/privacy-policy-repository.impl";
+import { TermsConditionsRepositoryImpl } from "@app/core/service/repository/terms-conditions-repository.impl";
 import { provideEnvironmentNgxMask } from "ngx-mask";
 import { ConfirmationService, MessageService } from "primeng/api";
 import { providePrimeNG } from "primeng/config";
@@ -41,6 +44,9 @@ bootstrapApplication(AppComponent, {
     { provide: CART_REPOSITORY_TOKEN, useClass: CartRepositoryImpl },
     { provide: MONITOR_REPOSITORY_TOKEN, useClass: MonitorRepositoryImpl },
     { provide: ZIPCODE_REPOSITORY_TOKEN, useClass: ZipCodeRepositoryImpl },
+    { provide: AD_REPOSITORY_TOKEN, useClass: AdRepositoryImpl },
+    { provide: PRIVACY_POLICY_REPOSITORY_TOKEN, useClass: PrivacyPolicyRepositoryImpl },
+    { provide: TERMS_CONDITIONS_REPOSITORY_TOKEN, useClass: TermsConditionsRepositoryImpl },
     provideHttpClient(
       withInterceptors([errorInterceptor, loadingInterceptor, authInterceptor])
     ),

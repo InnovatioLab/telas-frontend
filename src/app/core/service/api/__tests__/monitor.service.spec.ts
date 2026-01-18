@@ -27,7 +27,6 @@ describe('MonitorService', () => {
   const mockMonitor: Monitor = {
     id: 'mon-1',
     active: true,
-    locationDescription: 'Test Location',
     fullAddress: '123 Test St, City, State 12345',
     address: {
       id: 'addr-1',

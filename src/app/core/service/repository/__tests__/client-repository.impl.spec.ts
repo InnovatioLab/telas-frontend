@@ -47,6 +47,7 @@ describe('ClientRepositoryImpl', () => {
       currentSubscriptionFlowStep: 0,
       hasSubscription: false,
       shouldDisplayAttachments: false,
+      hasAdRequest: false,
     };
 
     repository.getAuthenticatedClient().subscribe((res) => {

@@ -125,7 +125,7 @@ describe('CartService', () => {
         expect(response.items[0].blockQuantity).toBe(10);
         expect(service.currentCart).toEqual(updatedCartResponse);
         expect(mockRepository.update).toHaveBeenCalledTimes(1);
-        expect(mockRepository.update).toHaveBeenCalledWith(mockCartRequest, cartId);
+        expect(mockRepository.update).toHaveBeenCalledWith(cartId, mockCartRequest);
         done();
       });
     });
