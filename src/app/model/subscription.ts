@@ -12,7 +12,7 @@ export interface Subscription {
   status: SubscriptionStatus;
   upgrade?: boolean;
   client?: Client;
-  payments: Payment[];
+  payments?: Payment[];
   monitors: Monitor[];
   startedAt?: string;
   endsAt?: string;

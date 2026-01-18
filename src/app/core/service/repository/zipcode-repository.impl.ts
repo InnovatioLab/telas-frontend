@@ -100,7 +100,7 @@ export class ZipCodeRepositoryImpl extends BaseRepository<AddressData, AddressDa
     };
   }
 
-  private handleError(error: any): Observable<never> {
+  protected override handleError(error: any): Observable<never> {
     return throwError(() => new Error(error.message || 'Server error'));
   }
 }

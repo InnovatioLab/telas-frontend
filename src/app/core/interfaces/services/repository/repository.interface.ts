@@ -11,7 +11,7 @@ export interface IRepository<T, CreateDto = Partial<T>, UpdateDto = Partial<T>, 
   
   update(id: string, entity: UpdateDto): Observable<T>;
   
-  delete(id: string): Observable<void | boolean>;
+  delete(id: string): Observable<boolean>;
   
   findWithPagination(filters?: FilterDto): Observable<PaginationResponseDto<T>>;
 }

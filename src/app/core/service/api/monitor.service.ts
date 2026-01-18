@@ -30,11 +30,11 @@ export class MonitorService {
   }
 
   createMonitor(monitorRequest: CreateMonitorRequestDto): Observable<boolean> {
-    return this.repository.create(monitorRequest);
+    return this.repository.create(monitorRequest).pipe(map(monitor => !!monitor));
   }
 
   updateMonitor(id: string, monitorRequest: UpdateMonitorRequestDto): Observable<boolean> {
-    return this.repository.update(id, monitorRequest);
+    return this.repository.update(id, monitorRequest).pipe(map(monitor => !!monitor));
   }
 
   deleteMonitor(id: string): Observable<boolean> {

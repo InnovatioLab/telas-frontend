@@ -73,25 +73,25 @@ export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitor
       );
   }
 
-  override create(request: CreateMonitorRequestDto): Observable<boolean> {
+  override create(request: CreateMonitorRequestDto): Observable<Monitor> {
     return this.http
       .post<ResponseDTO<void> | ResponseDto<void>>(this.baseUrl, request, this.getHeaders())
       .pipe(
-        map((response: ResponseDTO<any> | ResponseDto<any>) => {
-          return !!response;
+        map(() => {
+          return {} as Monitor;
         }),
-        catchError(() => of(false))
+        catchError(() => of({} as Monitor))
       );
   }
 
-  override update(id: string, request: UpdateMonitorRequestDto): Observable<boolean> {
+  override update(id: string, request: UpdateMonitorRequestDto): Observable<Monitor> {
     return this.http
       .put<ResponseDTO<void> | ResponseDto<void>>(`${this.baseUrl}/${id}`, request, this.getHeaders())
       .pipe(
-        map((response: ResponseDTO<any> | ResponseDto<any>) => {
-          return !!response;
+        map(() => {
+          return {} as Monitor;
         }),
-        catchError(() => of(false))
+        catchError(() => of({} as Monitor))
       );
   }
 
