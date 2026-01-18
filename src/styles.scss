@@ -186,6 +186,22 @@ body.dark-theme {
   }
 }
 
+
+.p-input-icon-left {
+  position: relative;
+
+  .p-inputtext {
+    padding-left: 2.5rem;
+  }
+
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+  }
+}
+
 html,
 body {
   margin: 0;
@@ -426,6 +442,11 @@ td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.td-center {
+  text-align: center;
+  vertical-align: middle;
 }
 
 .w-full {
