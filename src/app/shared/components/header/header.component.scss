@@ -163,6 +163,12 @@ header {
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       gap: 8px;
 
+      /* Evita overflow quando há vários ícones à direita (ex.: admin + notificações) */
+      > section.flex {
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
       .menu-trigger {
         flex-shrink: 0;
       }
@@ -724,6 +730,11 @@ textarea::placeholder,
       justify-content: space-between;
       width: 100%;
       height: 48px;
+
+      > section.flex {
+        min-width: 0;
+        flex: 1 1 auto;
+      }
     }
 
     .btn-menu {

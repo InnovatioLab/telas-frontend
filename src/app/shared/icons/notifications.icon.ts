@@ -24,6 +24,12 @@ import { Component, Input } from "@angular/core";
         color: #6b7280;
       }
 
+      /* Header verde: ícone branco legível (evita cinza #6b7280 sobre fundo escuro) */
+      :host(.on-primary-header) {
+        color: #ffffff;
+        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+      }
+
       html[data-theme="dark"] :host,
       html.dark-theme :host,
       body.dark-theme :host {

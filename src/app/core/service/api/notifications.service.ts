@@ -31,6 +31,15 @@ export class NotificationsService {
     return Array.isArray(all) ? all.length : 0;
   });
 
+  /** Quantidade de notificações ainda não visualizadas (badge do header). */
+  public readonly unreadCount = computed(() => {
+    const all = this._allNotifications() || [];
+    if (!Array.isArray(all)) {
+      return 0;
+    }
+    return all.filter((n) => n && !n.visualized).length;
+  });
+
   public readonly hasMoreToLoad = computed(
     () => this._currentlyVisibleCount() < this.totalNotifications()
   );

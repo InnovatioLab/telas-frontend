@@ -86,7 +86,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly sidebarService: SidebarService,
     private readonly cdr: ChangeDetectorRef,
     private readonly toastService: ToastService,
-    private readonly notificationsService: NotificationsService,
+    readonly notificationsService: NotificationsService,
     private readonly toggleModeService: ToggleModeService,
     public readonly headerState: HeaderStateService,
     public readonly headerActions: HeaderActionsService
