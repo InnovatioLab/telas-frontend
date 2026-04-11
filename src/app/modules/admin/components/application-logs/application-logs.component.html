@@ -1,67 +1,87 @@
 <div class="content application-logs">
   <p-card styleClass="card-header">
     <div class="card-header-content">
-      <div class="filters-grid">
-        <div class="field">
-          <label for="src" class="block mb-1">Source</label>
-          <p-dropdown
-            inputId="src"
-            [options]="sourceOptions"
-            [(ngModel)]="filterSource"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="All sources"
-            styleClass="w-full"
-            appendTo="body"
-            [overlayOptions]="{ appendTo: 'body' }"
-          ></p-dropdown>
+      <div class="p-card-content filters-toolbar">
+        <div class="filters-grid">
+          <div class="field">
+            <label for="src" class="filter-label">Source</label>
+            <p-dropdown
+              inputId="src"
+              [options]="sourceOptions"
+              [(ngModel)]="filterSource"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="All sources"
+              styleClass="w-full"
+              appendTo="body"
+              [overlayOptions]="{ appendTo: 'body' }"
+            ></p-dropdown>
+          </div>
+          <div class="field">
+            <label for="lvl" class="filter-label">Level</label>
+            <p-dropdown
+              inputId="lvl"
+              [options]="levelOptions"
+              [(ngModel)]="filterLevel"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="All levels"
+              styleClass="w-full"
+              appendTo="body"
+              [overlayOptions]="{ appendTo: 'body' }"
+            ></p-dropdown>
+          </div>
+          <div class="field field-search">
+            <label for="q" class="filter-label">Message</label>
+            <span class="p-input-icon-left w-full block">
+              <app-icon-search
+                class="search-icon search-icon-color"
+                aria-hidden="true"
+              ></app-icon-search>
+              <input
+                id="q"
+                type="text"
+                pInputText
+                [(ngModel)]="filterQ"
+                placeholder="Search message or metadata"
+                class="w-full"
+              />
+            </span>
+          </div>
+          <div class="field">
+            <label for="from" class="filter-label">From</label>
+            <input
+              id="from"
+              type="text"
+              pInputText
+              [(ngModel)]="filterFrom"
+              placeholder="ISO-8601"
+              class="w-full"
+            />
+          </div>
+          <div class="field">
+            <label for="to" class="filter-label">To</label>
+            <input
+              id="to"
+              type="text"
+              pInputText
+              [(ngModel)]="filterTo"
+              placeholder="ISO-8601"
+              class="w-full"
+            />
+          </div>
+          <div class="field field-apply">
+            <span class="filter-label filter-label--spacer" aria-hidden="true"></span>
+            <button
+              pButton
+              type="button"
+              class="btn-apply-filters"
+              label="Apply filters"
+              icon="pi pi-filter"
+              (click)="applyFilters()"
+            ></button>
+          </div>
         </div>
-        <div class="field">
-          <label for="lvl" class="block mb-1">Level</label>
-          <p-dropdown
-            inputId="lvl"
-            [options]="levelOptions"
-            [(ngModel)]="filterLevel"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="All levels"
-            styleClass="w-full"
-            appendTo="body"
-            [overlayOptions]="{ appendTo: 'body' }"
-          ></p-dropdown>
-        </div>
-        <span class="p-input-icon-left flex-1">
-          <i class="pi pi-search"></i>
-          <input
-            id="q"
-            type="text"
-            pInputText
-            [(ngModel)]="filterQ"
-            placeholder="Search message or metadata"
-            class="w-full"
-          />
-        </span>
-        <input
-          type="text"
-          pInputText
-          [(ngModel)]="filterFrom"
-          placeholder="From (ISO-8601)"
-          class="w-full"
-        />
-        <input
-          type="text"
-          pInputText
-          [(ngModel)]="filterTo"
-          placeholder="To (ISO-8601)"
-          class="w-full"
-        />
-        <button
-          pButton
-          type="button"
-          label="Apply filters"
-          icon="pi pi-filter"
-          (click)="applyFilters()"
-        ></button>
       </div>
     </div>
   </p-card>

@@ -5,6 +5,7 @@ import {
   ApplicationLogEntry,
   MonitoringLogService,
 } from "@app/core/service/api/monitoring-log.service";
+import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TableLazyLoadEvent } from "primeng/table";
 
@@ -16,7 +17,7 @@ interface SelectOption {
 @Component({
   selector: "app-application-logs",
   standalone: true,
-  imports: [CommonModule, FormsModule, PrimengModule],
+  imports: [CommonModule, FormsModule, PrimengModule, IconsModule],
   templateUrl: "./application-logs.component.html",
   styleUrls: ["./application-logs.component.scss"],
 })

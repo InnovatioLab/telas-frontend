@@ -4,6 +4,8 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { ResponseDto } from "@app/model/dto/response/response.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
+import { Authentication } from "@app/core/service/auth/autenthication";
+import { AuthenticationStorage } from "@app/core/service/auth/authentication-storage";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
 
@@ -34,11 +36,10 @@ export interface MonitoringLogQuery {
   providedIn: "root",
 })
 export class MonitoringLogService {
-  private readonly storageName = "telas_token";
-
   constructor(
     private readonly http: HttpClient,
-    @Inject(ENVIRONMENT) private readonly env: Environment
+    @Inject(ENVIRONMENT) private readonly env: Environment,
+    private readonly authentication: Authentication
   ) {}
 
   getLogs(query: MonitoringLogQuery): Observable<PaginationResponseDto<ApplicationLogEntry>> {
@@ -96,7 +97,8 @@ export class MonitoringLogService {
   }
 
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem(this.storageName);
+    const token =
+      this.authentication.token ?? AuthenticationStorage.getToken();
     return {
       Authorization: `Bearer ${token || ""}`,
     };

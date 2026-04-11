@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
+import { Authentication } from "@app/core/service/auth/autenthication";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import {
   ApplicationLogEntry,
@@ -28,6 +29,10 @@ describe("MonitoringLogService", () => {
       providers: [
         MonitoringLogService,
         { provide: ENVIRONMENT, useValue: mockEnv },
+        {
+          provide: Authentication,
+          useValue: { token: "test-jwt" },
+        },
       ],
     });
     service = TestBed.inject(MonitoringLogService);

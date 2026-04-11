@@ -1,3 +1,5 @@
+import { apiBaseUrl } from './api-base-url';
+
 export interface Environment {
   production: boolean;
   apiUrl: string;
@@ -9,7 +11,7 @@ export interface Environment {
 
 export const environment: Environment = {
   production: true,
-  apiUrl: import.meta.env['NG_APP_API'],
+  apiUrl: apiBaseUrl(import.meta.env['NG_APP_API']),
   zipCodeApiKey: import.meta.env['NG_APP_ZIP_CODE_API_KEY'],
   googleMapsApiKey: import.meta.env['NG_APP_GOOGLE_MAPS_API_KEY'],
   nomeToken: 'diamond_blank_token',
