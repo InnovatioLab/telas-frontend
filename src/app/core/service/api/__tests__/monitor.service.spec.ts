@@ -202,7 +202,7 @@ describe('MonitorService', () => {
 
   describe('createMonitor', () => {
     it('deve criar novo monitor e retornar true', (done) => {
-      mockRepository.create.mockReturnValue(of(true));
+      mockRepository.create.mockReturnValue(of(mockMonitor));
 
       service.createMonitor(mockCreateRequest).subscribe((response) => {
         expect(response).toBe(true);
@@ -213,7 +213,7 @@ describe('MonitorService', () => {
     });
 
     it('deve retornar false quando criação falha', (done) => {
-      mockRepository.create.mockReturnValue(of(false));
+      mockRepository.create.mockReturnValue(of(null));
 
       service.createMonitor(mockCreateRequest).subscribe((response) => {
         expect(response).toBe(false);
@@ -226,7 +226,7 @@ describe('MonitorService', () => {
   describe('updateMonitor', () => {
     it('deve atualizar monitor existente e retornar true', (done) => {
       const monitorId = 'mon-1';
-      mockRepository.update.mockReturnValue(of(true));
+      mockRepository.update.mockReturnValue(of(mockMonitor));
 
       service.updateMonitor(monitorId, mockUpdateRequest).subscribe((response) => {
         expect(response).toBe(true);
@@ -238,7 +238,7 @@ describe('MonitorService', () => {
 
     it('deve retornar false quando atualização falha', (done) => {
       const monitorId = 'mon-1';
-      mockRepository.update.mockReturnValue(of(false));
+      mockRepository.update.mockReturnValue(of(null));
 
       service.updateMonitor(monitorId, mockUpdateRequest).subscribe((response) => {
         expect(response).toBe(false);
@@ -408,7 +408,7 @@ describe('MonitorService', () => {
 
   describe('acknowledgeAlert', () => {
     it('deve reconhecer alerta e retornar alerta atualizado', (done) => {
-      const alertId = 'alert-1';
+      const alertId = '550e8400-e29b-41d4-a716-446655440000';
       const reason = 'Under investigation';
 
       service.acknowledgeAlert(alertId, reason).subscribe((alert) => {
@@ -417,17 +417,65 @@ describe('MonitorService', () => {
         expect(alert.acknowledgeReason).toBe(reason);
         done();
       });
+      const req = httpMock.expectOne(
+        (r) =>
+          r.method === 'POST' &&
+          r.url.includes(
+            `monitoring/incidents/${encodeURIComponent(alertId)}/acknowledge`
+          )
+      );
+      expect(req.request.body).toEqual({ reason });
+      req.flush({
+        data: {
+          id: alertId,
+          incidentType: 'HEARTBEAT_STALE',
+          severity: 'WARNING',
+          monitorId: 'm1',
+          boxId: null,
+          openedAt: '2024-01-01T00:00:00.000Z',
+          closedAt: null,
+          acknowledgedAt: '2024-01-02T00:00:00.000Z',
+          acknowledgeReason: reason,
+          acknowledgedById: 'c1',
+          acknowledgedByEmail: 'admin@test.com',
+          detailsJson: {},
+        },
+        status: 200,
+        message: 'ok',
+      });
     });
   });
 
   describe('resolveAlert', () => {
     it('deve resolver alerta e retornar alerta atualizado', (done) => {
-      const alertId = 'alert-1';
+      const alertId = '550e8400-e29b-41d4-a716-446655440001';
 
       service.resolveAlert(alertId).subscribe((alert) => {
         expect(alert.id).toBe(alertId);
         expect(alert.status).toBe('resolved');
         done();
+      });
+      const req = httpMock.expectOne(
+        (r) =>
+          r.method === 'POST' &&
+          r.url.includes(
+            `monitoring/incidents/${encodeURIComponent(alertId)}/resolve`
+          )
+      );
+      expect(req.request.body).toBeNull();
+      req.flush({
+        data: {
+          id: alertId,
+          incidentType: 'OTHER',
+          severity: 'WARNING',
+          monitorId: 'm2',
+          boxId: null,
+          openedAt: '2024-01-01T00:00:00.000Z',
+          closedAt: '2024-01-03T00:00:00.000Z',
+          detailsJson: {},
+        },
+        status: 200,
+        message: 'ok',
       });
     });
   });

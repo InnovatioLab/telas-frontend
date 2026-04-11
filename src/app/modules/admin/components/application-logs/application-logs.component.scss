@@ -95,6 +95,37 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  :host ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+  :host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    vertical-align: middle;
+  }
+
+  .level-col {
+    text-align: center;
+    width: 6.5rem;
+  }
+
+  .level-cell {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .level-badge-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.75rem;
+  }
+
+  :host ::ng-deep .level-badge-wrap .p-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    padding-inline: 0.5rem;
+    padding-block: 0.2rem;
+  }
 }
 
 html[data-theme="dark"] .application-logs .search-icon-color,

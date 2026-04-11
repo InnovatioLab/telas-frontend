@@ -105,7 +105,7 @@
     <ng-template pTemplate="header">
       <tr>
         <th scope="col">When</th>
-        <th scope="col">Level</th>
+        <th scope="col" class="level-col">Level</th>
         <th scope="col">Source</th>
         <th scope="col">Box</th>
         <th scope="col">Message</th>
@@ -114,11 +114,13 @@
     <ng-template pTemplate="body" let-row>
       <tr>
         <td class="whitespace-nowrap">{{ row.createdAt | date : "short" }}</td>
-        <td>
-          <p-badge
-            [value]="row.level"
-            [severity]="levelSeverity(row.level)"
-          ></p-badge>
+        <td class="level-cell">
+          <span class="level-badge-wrap">
+            <p-badge
+              [value]="row.level"
+              [severity]="levelSeverity(row.level)"
+            ></p-badge>
+          </span>
         </td>
         <td>{{ row.source }}</td>
         <td class="metadata-cell">{{ boxAddressFromMetadata(row) }}</td>

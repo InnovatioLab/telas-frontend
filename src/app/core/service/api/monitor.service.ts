@@ -12,8 +12,13 @@ import { catchError, map } from "rxjs/operators";
 import { IMonitorRepository } from "@app/core/interfaces/services/repository/monitor-repository.interface";
 import { MONITOR_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { IMonitorAlert } from "./interfaces/monitor";
+import { IncidentApiDto } from "./interfaces/incident-api";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
+
+interface ApiEnvelope<T> {
+  data?: T;
+}
 
 @Injectable({
   providedIn: "root",
@@ -55,9 +60,9 @@ export class MonitorService {
   getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {
     const headers = this.getAuthHeaders();
     return this.http
-      .get<{
-        data?: { list?: unknown[] };
-      }>(`${this.env.apiUrl}monitoring/incidents`, {
+      .get<ApiEnvelope<PaginationResponseDto<IncidentApiDto>>>(
+        `${this.env.apiUrl}monitoring/incidents`,
+        {
         headers,
         params: {
           page: "0",
@@ -67,7 +72,7 @@ export class MonitorService {
       })
       .pipe(
         map((res) => {
-          const list = (res?.data?.list ?? []) as Record<string, unknown>[];
+          const list = res?.data?.list ?? [];
           const mapped = list.map((inc) => this.mapIncidentToAlert(inc));
           if (monitorId) {
             return mapped.filter((a) => a.monitorId === monitorId);
@@ -79,28 +84,33 @@ export class MonitorService {
   }
 
   acknowledgeAlert(alertId: string, reason: string): Observable<IMonitorAlert> {
-    return of({
-      id: alertId,
-      monitorId: "1",
-      title: "Alert Acknowledged",
-      description: "",
-      timestamp: new Date(),
-      status: "acknowledged",
-      deviceId: "n/a",
-      acknowledgeReason: reason,
-    });
+    const headers = this.getAuthHeaders();
+    return this.http
+      .post<ApiEnvelope<IncidentApiDto>>(
+        `${this.env.apiUrl}monitoring/incidents/${encodeURIComponent(alertId)}/acknowledge`,
+        { reason },
+        { headers }
+      )
+      .pipe(
+        map((res) =>
+          this.mapIncidentToAlert(this.requireIncidentPayload(res?.data))
+        )
+      );
   }
 
   resolveAlert(alertId: string): Observable<IMonitorAlert> {
-    return of({
-      id: alertId,
-      monitorId: "1",
-      title: "Alert Resolved",
-      description: "",
-      timestamp: new Date(),
-      status: "resolved",
-      deviceId: "n/a",
-    });
+    const headers = this.getAuthHeaders();
+    return this.http
+      .post<ApiEnvelope<IncidentApiDto>>(
+        `${this.env.apiUrl}monitoring/incidents/${encodeURIComponent(alertId)}/resolve`,
+        null,
+        { headers }
+      )
+      .pipe(
+        map((res) =>
+          this.mapIncidentToAlert(this.requireIncidentPayload(res?.data))
+        )
+      );
   }
 
   private getAuthHeaders(): HttpHeaders {
@@ -110,32 +120,50 @@ export class MonitorService {
     });
   }
 
-  private mapIncidentToAlert(inc: Record<string, unknown>): IMonitorAlert {
-    const midRaw = inc["monitorId"] ?? inc["boxId"];
+  private requireIncidentPayload(data: IncidentApiDto | undefined): IncidentApiDto {
+    if (data == null || typeof data !== "object") {
+      throw new Error("Invalid incident response payload");
+    }
+    return data;
+  }
+
+  private mapIncidentToAlert(inc: IncidentApiDto): IMonitorAlert {
+    const midRaw = inc.monitorId ?? inc.boxId;
     const mid =
       midRaw != null && String(midRaw).length > 0
         ? String(midRaw)
         : "unknown";
     return {
-      id: String(inc["id"] ?? ""),
+      id: String(inc.id ?? ""),
       monitorId: mid,
-      title: String(inc["incidentType"] ?? "Incident"),
+      title: String(inc.incidentType ?? "Incident"),
       description: this.formatIncidentDescription(inc),
-      timestamp: inc["openedAt"]
-        ? new Date(String(inc["openedAt"]))
+      timestamp: inc.openedAt
+        ? new Date(inc.openedAt)
         : new Date(),
-      status: this.mapSeverityToAlertStatus(String(inc["severity"] ?? "")),
+      status: this.mapIncidentToStatus(inc),
       deviceId: mid,
+      acknowledgeReason: inc.acknowledgeReason ?? undefined,
     };
   }
 
-  private formatIncidentDescription(inc: Record<string, unknown>): string {
+  private mapIncidentToStatus(inc: IncidentApiDto): IMonitorAlert["status"] {
+    if (inc.closedAt) {
+      return "resolved";
+    }
+    if (inc.acknowledgedAt) {
+      return "acknowledged";
+    }
+    return this.mapSeverityToAlertStatus(String(inc.severity ?? ""));
+  }
+
+  private formatIncidentDescription(inc: IncidentApiDto): string {
     const parts: string[] = [];
-    const sev = inc["severity"];
-    const typ = inc["incidentType"];
+    const sev = inc.severity;
+    const typ = inc.incidentType;
     if (sev) parts.push(String(sev));
     if (typ) parts.push(String(typ));
-    const det = inc["detailsJson"];
+    const det = inc.detailsJson;
     if (det && typeof det === "object") {
       try {
         parts.push(JSON.stringify(det));
