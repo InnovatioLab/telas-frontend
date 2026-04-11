@@ -15,7 +15,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { LeafletModule } from "@asymmetrik/ngx-leaflet";
+import { LeafletModule } from "@bluehalo/ngx-leaflet";
 import * as L from "leaflet";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { LeafletMapService } from "@app/core/service/api/leaflet-map.service";

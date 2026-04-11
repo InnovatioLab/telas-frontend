@@ -32,7 +32,7 @@
               <app-header-actions
                 [isAdministrator]="isAdministrador()"
                 [cartItemCount]="headerActions.cartItemCount()"
-                [notificationCount]="headerActions.notificationCount()"
+                [notificationCount]="notificationsService.unreadCount()"
                 [cartTooltip]="cartTooltip"
                 (checkoutClick)="onCheckoutClick()"
                 (notificationsClick)="onNotificationsClick()">
@@ -45,7 +45,7 @@
           <app-header-actions
             [isAdministrator]="isAdministrador()"
             [cartItemCount]="headerActions.cartItemCount()"
-            [notificationCount]="headerActions.notificationCount()"
+            [notificationCount]="notificationsService.unreadCount()"
             [cartTooltip]="cartTooltip"
             (checkoutClick)="onCheckoutClick()"
             (notificationsClick)="onNotificationsClick()">
@@ -75,9 +75,10 @@
               <app-header-actions
                 [isAdministrator]="isAdministrador()"
                 [cartItemCount]="headerActions.cartItemCount()"
-                [notificationCount]="headerActions.notificationCount()"
+                [notificationCount]="notificationsService.unreadCount()"
                 [cartTooltip]="cartTooltip"
-                (adminClick)="onAdminClick()">
+                (adminClick)="onAdminClick()"
+                (notificationsClick)="onNotificationsClick()">
               </app-header-actions>
             </div>
           </div>
@@ -108,7 +109,7 @@
           <app-header-actions
             [isAdministrator]="isAdministrador()"
             [cartItemCount]="headerActions.cartItemCount()"
-            [notificationCount]="headerActions.notificationCount()"
+            [notificationCount]="notificationsService.unreadCount()"
             [cartTooltip]="cartTooltip"
             (checkoutClick)="onCheckoutClick()"
             (adminClick)="onAdminClick()"

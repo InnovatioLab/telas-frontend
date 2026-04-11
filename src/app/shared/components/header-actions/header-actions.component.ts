@@ -32,14 +32,21 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
         <app-icon-settings class="icon cursor-pointer icon-fill"></app-icon-settings>
       </button>
 
-      <!-- Notifications Button (for non-admin users) -->
+      <!-- Notifications (all logged-in roles) -->
       <button
-        *ngIf="!isAdministrator"
+        type="button"
         (click)="onNotificationsClick()"
-        class="icon-button"
-        title="View notifications"
+        class="icon-button icon-button--notifications"
+        [attr.aria-label]="
+          notificationCount > 0
+            ? 'Notificações, ' + notificationCount + ' não lidas'
+            : 'Notificações'
+        "
+        title="Notificações"
       >
-        <app-icon-notifications class="icon cursor-pointer"></app-icon-notifications>
+        <app-icon-notifications
+          class="icon cursor-pointer on-primary-header"
+        ></app-icon-notifications>
         <app-header-badge [count]="notificationCount"></app-header-badge>
       </button>
     </div>
@@ -50,6 +57,8 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
         display: flex;
         align-items: center;
         gap: 8px;
+        flex-shrink: 0;
+        min-width: 0;
       }
 
       .icon-button {
@@ -64,12 +73,32 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
         align-items: center;
         justify-content: center;
         color: #ffffff;
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 400px) {
+        .header-actions {
+          gap: 4px;
+        }
+
+        .icon-button {
+          padding: 4px;
+        }
       }
 
       .icon-button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
         color: #ffffff;
+      }
+
+      .icon-button:not(:disabled):hover {
+        background-color: rgba(255, 255, 255, 0.14);
+      }
+
+      .icon-button:not(:disabled):focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.85);
+        outline-offset: 2px;
       }
     `,
   ]
