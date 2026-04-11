@@ -31,6 +31,7 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
   ],
   template: `
     <app-search-section
+      [useAdminMapSearch]="true"
       (monitorsFound)="onMonitorsFound($event.monitors, $event.zipCode)"
     ></app-search-section>
 

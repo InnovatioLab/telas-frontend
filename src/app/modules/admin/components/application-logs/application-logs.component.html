@@ -1,0 +1,114 @@
+<div class="content application-logs">
+  <p-card styleClass="card-header">
+    <div class="card-header-content">
+      <div class="filters-grid">
+        <div class="field">
+          <label for="src" class="block mb-1">Source</label>
+          <p-dropdown
+            inputId="src"
+            [options]="sourceOptions"
+            [(ngModel)]="filterSource"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All sources"
+            styleClass="w-full"
+            appendTo="body"
+            [overlayOptions]="{ appendTo: 'body' }"
+          ></p-dropdown>
+        </div>
+        <div class="field">
+          <label for="lvl" class="block mb-1">Level</label>
+          <p-dropdown
+            inputId="lvl"
+            [options]="levelOptions"
+            [(ngModel)]="filterLevel"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All levels"
+            styleClass="w-full"
+            appendTo="body"
+            [overlayOptions]="{ appendTo: 'body' }"
+          ></p-dropdown>
+        </div>
+        <span class="p-input-icon-left flex-1">
+          <i class="pi pi-search"></i>
+          <input
+            id="q"
+            type="text"
+            pInputText
+            [(ngModel)]="filterQ"
+            placeholder="Search message or metadata"
+            class="w-full"
+          />
+        </span>
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="filterFrom"
+          placeholder="From (ISO-8601)"
+          class="w-full"
+        />
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="filterTo"
+          placeholder="To (ISO-8601)"
+          class="w-full"
+        />
+        <button
+          pButton
+          type="button"
+          label="Apply filters"
+          icon="pi pi-filter"
+          (click)="applyFilters()"
+        ></button>
+      </div>
+    </div>
+  </p-card>
+
+  <p-table
+    [value]="logs"
+    [loading]="loading"
+    styleClass="p-datatable-sm"
+    [paginator]="true"
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [lazy]="true"
+    [rowsPerPageOptions]="[10, 20, 50, 100]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    paginatorDropdownAppendTo="body"
+    (onLazyLoad)="onLazyLoad($event)"
+    [first]="first"
+    responsiveLayout="scroll"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th scope="col">When</th>
+        <th scope="col">Level</th>
+        <th scope="col">Source</th>
+        <th scope="col">Box</th>
+        <th scope="col">Message</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td class="whitespace-nowrap">{{ row.createdAt | date : "short" }}</td>
+        <td>
+          <p-badge
+            [value]="row.level"
+            [severity]="levelSeverity(row.level)"
+          ></p-badge>
+        </td>
+        <td>{{ row.source }}</td>
+        <td class="metadata-cell">{{ boxAddressFromMetadata(row) }}</td>
+        <td class="message-cell">{{ row.message }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center p-4">No log entries.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

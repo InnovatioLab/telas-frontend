@@ -13,4 +13,6 @@ export interface MapPoint {
   type?: string;
   category?: string;
   hasAvailableSlots?: boolean;
+  /** true = OK (verde), false = problema (vermelho), omitido = ícone neutro (legado) */
+  healthOk?: boolean;
 }

@@ -1,0 +1,19 @@
+.application-logs {
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    align-items: end;
+  }
+
+  .message-cell {
+    max-width: 36rem;
+    word-break: break-word;
+  }
+
+  .metadata-cell {
+    max-width: 10rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

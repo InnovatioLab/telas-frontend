@@ -106,6 +106,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private _mapReady = false;
   private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
   private monitorIcon: L.Icon | null = null;
+  private monitorIconHealthy: L.Icon | null = null;
+  private monitorIconUnhealthy: L.Icon | null = null;
   private redMarkerIcon: L.Icon | null = null;
   private monitorMarkers: Map<L.Marker, MapPoint> = new Map();
 
@@ -150,14 +152,20 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
   private initializeIcons(): void {
     this.monitorIcon = this.createMonitorIcon();
+    this.monitorIconHealthy = this.createMonitorIconVariant("#1B5E20", "#A5D6A7");
+    this.monitorIconUnhealthy = this.createMonitorIconVariant("#B71C1C", "#EF9A9A");
     this.redMarkerIcon = this.createRedMarkerIcon();
   }
 
   private createMonitorIcon(): L.Icon {
+    return this.createMonitorIconVariant("#111519", "#111519");
+  }
+
+  private createMonitorIconVariant(frameColor: string, screenColor: string): L.Icon {
     const svg = `
       <svg width="40" height="40" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17Z" fill="#111519"/>
-        <path d="M6 7H18V15H6V7Z" fill="#111519"/>
+        <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17Z" fill="${frameColor}"/>
+        <path d="M6 7H18V15H6V7Z" fill="${screenColor}"/>
       </svg>
     `;
     const svgBlob = new Blob([svg], { type: "image/svg+xml" });
@@ -402,7 +410,13 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     let icon: L.Icon;
 
     if (isMonitor) {
-      icon = this.monitorIcon!;
+      if (point.healthOk === true) {
+        icon = this.monitorIconHealthy!;
+      } else if (point.healthOk === false) {
+        icon = this.monitorIconUnhealthy!;
+      } else {
+        icon = this.monitorIcon!;
+      }
     } else {
       icon = this.redMarkerIcon!;
     }
@@ -695,18 +709,24 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   ): L.DivIcon {
     const size = Math.min(50 + count * 4, 80);
 
-    let fillColor = "#FF6B35";
-    const availableCount = monitors.filter(
-      (m) => m.hasAvailableSlots === true
-    ).length;
-    const unavailableCount = monitors.filter(
-      (m) => m.hasAvailableSlots === false
-    ).length;
+    const anyUnhealthy = monitors.some((m) => m.healthOk === false);
 
-    if (availableCount === count) {
-      fillColor = "#28a745";
-    } else if (unavailableCount === count) {
-      fillColor = "#6c757d";
+    let fillColor = "#FF6B35";
+    if (anyUnhealthy) {
+      fillColor = "#C62828";
+    } else {
+      const availableCount = monitors.filter(
+        (m) => m.hasAvailableSlots === true
+      ).length;
+      const unavailableCount = monitors.filter(
+        (m) => m.hasAvailableSlots === false
+      ).length;
+
+      if (availableCount === count) {
+        fillColor = "#28a745";
+      } else if (unavailableCount === count) {
+        fillColor = "#6c757d";
+      }
     }
 
     const html = `

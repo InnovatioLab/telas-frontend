@@ -9,10 +9,11 @@ jest.mock('src/environments/environment', () => ({
   }
 }));
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { IMonitorRepository } from '@app/core/interfaces/services/repository/monitor-repository.interface';
 import { MONITOR_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
+import { ENVIRONMENT } from 'src/environments/environment-token';
 import { CreateMonitorRequestDto, UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
@@ -20,9 +21,21 @@ import { Monitor } from '@app/model/monitors';
 import { of, throwError } from 'rxjs';
 import { MonitorService } from '../monitor.service';
 
+const mockEnvironment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api/',
+  zipCodeApiKey: 'k',
+  googleMapsApiKey: 'k',
+  stripePublicKey: 'k',
+  stripePrivateKey: 'k',
+  nomeToken: 'telas_token',
+  nomeTokenRefresh: 'r',
+};
+
 describe('MonitorService', () => {
   let service: MonitorService;
   let mockRepository: jest.Mocked<IMonitorRepository>;
+  let httpMock: HttpTestingController;
 
   const mockMonitor: Monitor = {
     id: 'mon-1',
@@ -82,15 +95,18 @@ describe('MonitorService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         MonitorService,
-        { provide: MONITOR_REPOSITORY_TOKEN, useValue: mockRepository }
+        { provide: MONITOR_REPOSITORY_TOKEN, useValue: mockRepository },
+        { provide: ENVIRONMENT, useValue: mockEnvironment },
       ],
     });
 
     service = TestBed.inject(MonitorService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    httpMock.verify();
   });
 
   describe('Initialization', () => {
@@ -292,36 +308,101 @@ describe('MonitorService', () => {
   describe('getMonitorAlerts', () => {
     it('deve retornar todos os alertas quando monitorId não é fornecido', (done) => {
       service.getMonitorAlerts().subscribe((alerts) => {
-        expect(alerts.length).toBeGreaterThan(0);
-        expect(alerts[0].id).toBeDefined();
-        expect(alerts[0].monitorId).toBeDefined();
-        expect(alerts[0].title).toBeDefined();
-        expect(alerts[0].status).toBeDefined();
+        expect(alerts.length).toBe(2);
+        expect(alerts[0].id).toBe('a1');
+        expect(alerts[0].title).toBe('HEARTBEAT_STALE');
+        expect(alerts[0].status).toBe('critical');
         done();
+      });
+      const req = httpMock.expectOne((r) =>
+        r.url.includes('monitoring/incidents')
+      );
+      req.flush({
+        data: {
+          list: [
+            {
+              id: 'a1',
+              incidentType: 'HEARTBEAT_STALE',
+              severity: 'CRITICAL',
+              monitorId: 'm1',
+              boxId: null,
+              openedAt: '2024-01-01T00:00:00.000Z',
+              closedAt: null,
+              detailsJson: {},
+            },
+            {
+              id: 'a2',
+              incidentType: 'OTHER',
+              severity: 'WARNING',
+              monitorId: 'm2',
+              boxId: null,
+              openedAt: '2024-01-02T00:00:00.000Z',
+              closedAt: null,
+              detailsJson: {},
+            },
+          ],
+          totalRecords: 2,
+          totalPages: 1,
+          currentPage: 1,
+        },
+        status: 200,
+        message: 'ok',
       });
     });
 
     it('deve filtrar alertas por monitorId', (done) => {
-      const monitorId = '1';
+      const monitorId = 'm1';
 
       service.getMonitorAlerts(monitorId).subscribe((alerts) => {
-        expect(alerts.length).toBeGreaterThan(0);
-        alerts.forEach(alert => {
-          expect(alert.monitorId).toBe(monitorId);
-        });
+        expect(alerts.length).toBe(1);
+        expect(alerts[0].monitorId).toBe(monitorId);
         done();
+      });
+      const req = httpMock.expectOne((r) =>
+        r.url.includes('monitoring/incidents')
+      );
+      req.flush({
+        data: {
+          list: [
+            {
+              id: 'a1',
+              incidentType: 'X',
+              severity: 'CRITICAL',
+              monitorId: 'm1',
+              boxId: null,
+              openedAt: '2024-01-01T00:00:00.000Z',
+              closedAt: null,
+              detailsJson: {},
+            },
+            {
+              id: 'a2',
+              incidentType: 'Y',
+              severity: 'WARNING',
+              monitorId: 'm2',
+              boxId: null,
+              openedAt: '2024-01-02T00:00:00.000Z',
+              closedAt: null,
+              detailsJson: {},
+            },
+          ],
+          totalRecords: 2,
+          totalPages: 1,
+          currentPage: 1,
+        },
+        status: 200,
+        message: 'ok',
       });
     });
 
-    it('deve retornar alertas com diferentes status', (done) => {
+    it('deve retornar array vazio quando a API falha', (done) => {
       service.getMonitorAlerts().subscribe((alerts) => {
-        const statuses = alerts.map(alert => alert.status);
-        expect(statuses).toContain('critical');
-        expect(statuses).toContain('warning');
-        expect(statuses).toContain('resolved');
-        expect(statuses).toContain('acknowledged');
+        expect(alerts).toEqual([]);
         done();
       });
+      const req = httpMock.expectOne((r) =>
+        r.url.includes('monitoring/incidents')
+      );
+      req.flush('error', { status: 500, statusText: 'Server Error' });
     });
   });
 
