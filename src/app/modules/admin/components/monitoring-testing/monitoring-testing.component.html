@@ -1,0 +1,98 @@
+<div class="content monitoring-testing">
+  <p-card styleClass="card-header">
+    <div class="card-header-content toolbar">
+      <div>
+        <h2 class="page-title">Testing</h2>
+        <p class="page-subtitle">
+          Estado do heartbeat, monitores e tomadas (admin).
+        </p>
+      </div>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-refresh"
+        label="Atualizar"
+        class="p-button-outlined"
+        [disabled]="loading"
+        (click)="load()"
+      ></button>
+    </div>
+  </p-card>
+
+  <p-card styleClass="mt-3">
+    <p-table
+      [value]="rows"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="rowsPerPage"
+      [rowsPerPageOptions]="[10, 15, 25, 50]"
+      responsiveLayout="scroll"
+      styleClass="p-datatable-sm"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Box (IP)</th>
+          <th>Heartbeat</th>
+          <th>Monitor</th>
+          <th>Tomada</th>
+          <th class="col-actions">Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>
+            <span class="mono">{{ row.boxIp ?? "—" }}</span>
+            <span *ngIf="!row.boxActive" class="inactive-hint"> (inativa)</span>
+          </td>
+          <td>
+            <p-tag
+              [value]="heartbeatLabel(row.heartbeatStatus)"
+              [severity]="heartbeatSeverity(row)"
+            ></p-tag>
+          </td>
+          <td>
+            <ng-container *ngIf="row.monitorId; else noMonitor">
+              <div class="mono wrap">{{ row.monitorAddressSummary ?? "—" }}</div>
+              <small *ngIf="row.monitorActive === false" class="inactive-hint"
+                >monitor inativo</small
+              >
+            </ng-container>
+            <ng-template #noMonitor>—</ng-template>
+          </td>
+          <td>
+            <span class="mono wrap">{{ plugSummary(row) }}</span>
+          </td>
+          <td class="col-actions">
+            <button
+              pButton
+              type="button"
+              class="p-button-sm p-button-outlined mr-2"
+              label="Testar box"
+              [loading]="isCheckingBox(row)"
+              [disabled]="loading || isCheckingBox(row)"
+              (click)="testBox(row)"
+            ></button>
+            <button
+              pButton
+              type="button"
+              class="p-button-sm"
+              label="Testar tomada"
+              [loading]="isCheckingPlug(row)"
+              [disabled]="
+                loading ||
+                !row.smartPlugId ||
+                isCheckingPlug(row)
+              "
+              (click)="testPlug(row)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center">Sem dados.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>

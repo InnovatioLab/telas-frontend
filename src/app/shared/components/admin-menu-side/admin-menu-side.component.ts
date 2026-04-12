@@ -15,6 +15,7 @@ import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
 import { IconDocumentoComponent } from "@app/shared/icons/documento.icon";
 import { IconEtiquetaComponent } from "@app/shared/icons/etiqueta.icon";
+import { IconTestingComponent } from "@app/shared/icons/testing.icon";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogModule } from "primeng/dialog";
@@ -42,6 +43,7 @@ interface MenuItem {
     IconsModule,
     IconDocumentoComponent,
     IconEtiquetaComponent,
+    IconTestingComponent,
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: "./admin-menu-side.component.html",
@@ -76,6 +78,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     { id: "ads", label: "Ads", icon: "etiqueta" },
     { id: "clients", label: "Clients", icon: "user" },
     { id: "logs", label: "Logs", icon: "pi-file" },
+    { id: "testing", label: "Testing", icon: "testing" },
     {
       id: "changePassword",
       label: "Change Password",
@@ -180,6 +183,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "logs":
         this.navegarParaLogs();
         break;
+      case "testing":
+        this.navegarParaTesting();
+        break;
       case "alerts":
         this.toggleAdminSidebar();
         break;
@@ -253,6 +259,13 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
+  navegarParaTesting(): void {
+    this.router.navigate(["/admin/testing"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
+    }
+  }
+
   toggleAdminSidebar(): void {
     const event = new CustomEvent("toggle-admin-sidebar", {
       detail: { visible: true },
@@ -319,6 +332,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return "Manage clients";
       case "logs":
         return "Application and box telemetry logs";
+      case "testing":
+        return "Heartbeat, monitors and smart plug checks";
       case "alerts":
         return "View system alerts";
       case "profile":

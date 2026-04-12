@@ -13,6 +13,7 @@ import { MonitorAdsManagementComponent } from "./components/monitor-ads-manageme
 import { AdminViewLayoutComponent } from "./pages/admin-view-layout/admin-view-layout.component";
 import { AdRequestManagementComponent } from "./components/ad-request-management/ad-request-management.component";
 import { ApplicationLogsComponent } from "./components/application-logs/application-logs.component";
+import { MonitoringTestingComponent } from "./components/monitoring-testing/monitoring-testing.component";
 
 export const ROUTES: Route[] = [
   {
@@ -64,6 +65,11 @@ export const ROUTES: Route[] = [
         path: "logs",
         component: ApplicationLogsComponent,
         title: "Application logs",
+      },
+      {
+        path: "testing",
+        component: MonitoringTestingComponent,
+        title: "Monitoring testing",
       },
       {
         path: "privacy-policy",
