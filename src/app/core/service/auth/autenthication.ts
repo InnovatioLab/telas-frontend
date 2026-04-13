@@ -1,5 +1,5 @@
 import { computed, Injectable, signal, inject, Optional } from "@angular/core";
-import { Client, Role } from "@app/model/client";
+import { Client, isPrivilegedPanelRole, Role } from "@app/model/client";
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { BehaviorSubject, firstValueFrom } from "rxjs";
 import { ClientService } from "../api/client.service";
@@ -105,7 +105,7 @@ export class Authentication extends AuthenticationStorage {
       return this.authService.isAdministrador();
     }
     const client = this.client();
-    return client?.role === Role.ADMIN;
+    return isPrivilegedPanelRole(client?.role);
   }
 
   async pegarDadosAutenticado(): Promise<Client> {

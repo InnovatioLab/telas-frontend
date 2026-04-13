@@ -35,7 +35,7 @@ export class AdminAuthenticatedGuard implements CanActivate {
     );
     const userRole = authenticatedClient?.role;
 
-    if (userRole !== Role.ADMIN) {
+    if (userRole !== Role.ADMIN && userRole !== Role.DEVELOPER) {
       this.router.navigate(["/client"]);
       return false;
     }

@@ -1,5 +1,7 @@
 import { Route } from "@angular/router";
 import { AdminAuthenticatedGuard } from "@app/core/service/guard/admin-authenticated.guard";
+import { DeveloperGuard } from "@app/core/service/guard/developer.guard";
+import { MonitoringPermissionGuard } from "@app/core/service/guard/monitoring-permission.guard";
 import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
 import { ViewEditProfileComponent } from "../../shared/components/view-edit-profile/view-edit-profile.component";
 import { PrivacyPolicyComponent } from "../application/privacy-policy/privacy-policy.component";
@@ -14,6 +16,8 @@ import { AdminViewLayoutComponent } from "./pages/admin-view-layout/admin-view-l
 import { AdRequestManagementComponent } from "./components/ad-request-management/ad-request-management.component";
 import { ApplicationLogsComponent } from "./components/application-logs/application-logs.component";
 import { MonitoringTestingComponent } from "./components/monitoring-testing/monitoring-testing.component";
+import { DeveloperPermissionsComponent } from "./components/developer-permissions/developer-permissions.component";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 
 export const ROUTES: Route[] = [
   {
@@ -65,11 +69,21 @@ export const ROUTES: Route[] = [
         path: "logs",
         component: ApplicationLogsComponent,
         title: "Application logs",
+        canActivate: [MonitoringPermissionGuard],
+        data: { permission: MonitoringPermission.MONITORING_LOGS_VIEW },
       },
       {
         path: "testing",
         component: MonitoringTestingComponent,
         title: "Monitoring testing",
+        canActivate: [MonitoringPermissionGuard],
+        data: { permission: MonitoringPermission.MONITORING_TESTING_VIEW },
+      },
+      {
+        path: "access",
+        component: DeveloperPermissionsComponent,
+        title: "Permissions",
+        canActivate: [DeveloperGuard],
       },
       {
         path: "privacy-policy",

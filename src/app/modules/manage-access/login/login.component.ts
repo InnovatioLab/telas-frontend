@@ -110,7 +110,7 @@ export class LoginComponent implements OnInit {
   redirecionarParaHome(client: AuthenticatedClientResponseDto): void {
     this.loading = false;
 
-    if (client.role === Role.ADMIN) {
+    if (client.role === Role.ADMIN || client.role === Role.DEVELOPER) {
       this.router.navigate(["/admin"]);
     } else {
       if (client.hasSubscription && !client.hasAdRequest) {

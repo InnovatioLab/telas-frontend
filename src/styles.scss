@@ -753,6 +753,128 @@ body.dark-theme .section-header {
   }
 }
 
+html[data-theme="dark"],
+html.dark-theme,
+body.dark-theme {
+  .p-drawer.notification-sidebar {
+    background: #1e1e1e !important;
+    color: #e5e7eb !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .p-drawer.notification-sidebar .p-drawer-header {
+    background: var(--cor-primaria) !important;
+    color: #ffffff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  }
+
+  .p-drawer.notification-sidebar .p-drawer-content {
+    background-color: #1a1a1a !important;
+    color: #e5e7eb !important;
+  }
+
+  .p-drawer.notification-sidebar .p-drawer-footer {
+    background-color: #1a1a1a !important;
+    color: #e5e7eb !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  }
+
+  .p-drawer.notification-sidebar .sidebar-title {
+    color: #ffffff !important;
+  }
+
+  .p-drawer.notification-sidebar .notification-item:not(.visualized) {
+    background-color: #1e293b !important;
+    border-left: 4px solid #22d3ee !important;
+    color: #f1f5f9 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .p-drawer.notification-sidebar .notification-item:not(.visualized):hover {
+    background-color: #334155 !important;
+  }
+
+  .p-drawer.notification-sidebar .notification-item.visualized {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    border-left: 4px solid #64748b !important;
+    color: #cbd5e1 !important;
+  }
+
+  .p-drawer.notification-sidebar .notification-item.visualized:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .p-drawer.notification-sidebar .notification-item.visualized p,
+  .p-drawer.notification-sidebar .notification-item.visualized .field-label,
+  .p-drawer.notification-sidebar .notification-item.visualized .field-value {
+    color: #cbd5e1 !important;
+  }
+
+  .p-drawer.notification-sidebar .notification-item h4,
+  .p-drawer.notification-sidebar .notification-item .notification-title {
+    color: #f8fafc !important;
+  }
+
+  .p-drawer.notification-sidebar .notification-item p,
+  .p-drawer.notification-sidebar .notification-item .field-label,
+  .p-drawer.notification-sidebar .notification-item .field-value,
+  .p-drawer.notification-sidebar .notification-item .valor-campo,
+  .p-drawer.notification-sidebar .notification-item .label-campo,
+  .p-drawer.notification-sidebar .notification-item .informacoes {
+    color: #e2e8f0 !important;
+  }
+
+  .p-drawer.notification-sidebar .notification-item a,
+  .p-drawer.notification-sidebar .notification-item .link-text {
+    color: #7dd3fc !important;
+  }
+
+  .p-drawer.notification-sidebar .empty-state {
+    color: #94a3b8 !important;
+  }
+
+  .p-drawer.notification-sidebar .empty-state .empty-title,
+  .p-drawer.notification-sidebar .empty-state .empty-subtitle {
+    color: #e2e8f0 !important;
+  }
+
+  .p-datatable.developer-permissions-table {
+    .p-checkbox .p-checkbox-box {
+      border-width: 2px !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .p-checkbox:not(.p-disabled):hover .p-checkbox-box,
+    .p-checkbox:not(.p-disabled):focus-within .p-checkbox-box,
+    .p-checkbox:not(.p-disabled):has(.p-checkbox-input:hover) .p-checkbox-box {
+      border-color: #f8fafc !important;
+      background: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    .p-checkbox.p-checkbox-checked .p-checkbox-box,
+    .p-checkbox-checked .p-checkbox-box {
+      background: var(--cor-primaria, #049dd9) !important;
+      border-color: var(--cor-primaria, #049dd9) !important;
+      box-shadow: none !important;
+    }
+
+    .p-checkbox-checked:not(.p-disabled):hover .p-checkbox-box {
+      filter: brightness(1.08);
+    }
+
+    .p-checkbox .p-checkbox-icon {
+      color: #ffffff !important;
+    }
+
+    .p-checkbox.p-disabled .p-checkbox-box {
+      opacity: 0.45;
+    }
+  }
+}
+
 .p-dropdown,
 .p-multiselect,
 .p-password .p-inputtext,

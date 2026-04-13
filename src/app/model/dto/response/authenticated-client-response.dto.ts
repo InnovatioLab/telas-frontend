@@ -40,6 +40,7 @@ export interface AuthenticatedClientResponseDto {
   }>;
   ads: AdResponseDto[];
   termAccepted: boolean;
+  permissions?: string[];
   currentSubscriptionFlowStep: number;
   hasSubscription: boolean;
   shouldDisplayAttachments: boolean;

@@ -4,7 +4,7 @@ import { CartService } from '@app/core/service/api/cart.service';
 import { NotificationsService } from '@app/core/service/api/notifications.service';
 import { Authentication } from '@app/core/service/auth/autenthication';
 import { ToastService } from '@app/core/service/state/toast.service';
-import { Client } from '@app/model/client';
+import { Client, isPrivilegedPanelRole } from '@app/model/client';
 
 @Injectable({
   providedIn: 'root'
@@ -54,10 +54,8 @@ export class HeaderActionsService {
   }
 
   isAdministrator(): boolean {
-    return (
-      this.isLoggedIn() && 
-      this.authentication?._clientSignal()?.role === "ADMIN"
-    );
+    const role = this.authentication?._clientSignal()?.role;
+    return this.isLoggedIn() && isPrivilegedPanelRole(role);
   }
 
   getCurrentUser(): Client | null {

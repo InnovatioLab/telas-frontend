@@ -10,6 +10,8 @@ import {
 import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
+import { Role } from "@app/model/client";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { LayoutService } from "@app/core/service/state/layout.service";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
@@ -69,7 +71,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   isMobileCompact = this.layoutService.isMobileCompact;
   currentSidebarWidth = this.layoutService.currentSidebarWidth;
 
-  menuItems: MenuItem[] = [
+  readonly menuItems: MenuItem[] = [
     { id: "home", label: "Maps", icon: "dashboard" },
     { id: "profile", label: "Profile", icon: "pi-cog" },
 
@@ -79,6 +81,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     { id: "clients", label: "Clients", icon: "user" },
     { id: "logs", label: "Logs", icon: "pi-file" },
     { id: "testing", label: "Testing", icon: "testing" },
+    { id: "access", label: "Permissions", icon: "permissions" },
     {
       id: "changePassword",
       label: "Change Password",
@@ -86,6 +89,32 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
+
+  get filteredMenuItems(): MenuItem[] {
+    const c = this.authentication.client();
+    const role = c?.role;
+    const perms = c?.permissions ?? [];
+    const isDev = role === Role.DEVELOPER;
+
+    return this.menuItems.filter((item) => {
+      if (item.id === "logs") {
+        return (
+          isDev ||
+          perms.includes(MonitoringPermission.MONITORING_LOGS_VIEW)
+        );
+      }
+      if (item.id === "testing") {
+        return (
+          isDev ||
+          perms.includes(MonitoringPermission.MONITORING_TESTING_VIEW)
+        );
+      }
+      if (item.id === "access") {
+        return isDev;
+      }
+      return true;
+    });
+  }
 
   ngOnInit(): void {
     this.setupSubscriptions();
@@ -186,6 +215,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "testing":
         this.navegarParaTesting();
         break;
+      case "access":
+        this.navegarParaAccess();
+        break;
       case "alerts":
         this.toggleAdminSidebar();
         break;
@@ -266,6 +298,13 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
+  navegarParaAccess(): void {
+    this.router.navigate(["/admin/access"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
+    }
+  }
+
   toggleAdminSidebar(): void {
     const event = new CustomEvent("toggle-admin-sidebar", {
       detail: { visible: true },
@@ -334,6 +373,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return "Application and box telemetry logs";
       case "testing":
         return "Heartbeat, monitors and smart plug checks";
+      case "access":
+        return "Grant monitoring access to admin users";
       case "alerts":
         return "View system alerts";
       case "profile":

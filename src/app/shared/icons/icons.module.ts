@@ -43,6 +43,7 @@ import { IconUploadComponent } from "./upload.icon";
 import { IconUserComponent } from "./user.icon";
 import { IconWarningComponent } from "./warning.icon";
 import { IconWifiComponent } from "./wifi.icon";
+import { IconPermissionsComponent } from "./permissions.icon";
 import { IconTestingComponent } from "./testing.icon";
 import { IconTrashComponent } from './trash.icon';
 
@@ -94,6 +95,7 @@ import { IconTrashComponent } from './trash.icon';
   IconMailComponent,
     IconPhoneComponent,
     IconTestingComponent,
+    IconPermissionsComponent,
   ],
   exports: [
     IconArquivoComponent,
@@ -140,7 +142,8 @@ import { IconTrashComponent } from './trash.icon';
   IconTrashComponent,
   IconMailComponent,
   IconPhoneComponent,
-  IconTestingComponent
+    IconTestingComponent,
+    IconPermissionsComponent
   ],
   declarations: [],
 })

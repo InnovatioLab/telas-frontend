@@ -165,41 +165,25 @@
   }
 }
 
-html[data-theme="dark"],
-html.dark-theme,
-body.dark-theme {
-  ::ng-deep .notification-sidebar .sidebar-title {
-    color: var(--cor-texto-clara) !important;
-  }
-
-  ::ng-deep .notification-sidebar a {
-    color: var(--cor-primaria-clara) !important;
-  }
-}
-
 :host ::ng-deep {
   .notification-sidebar {
-    &.p-sidebar {
+    &.p-drawer {
       overflow-y: auto !important;
     }
 
-    .p-sidebar-header {
+    .p-drawer-header {
       padding: 1rem 1.5rem;
       border-bottom: 1px solid #dee2e6;
-    }
-
-    .p-sidebar-header {
-      padding: 0px;
+      padding-left: 15px;
       font-size: 20px;
       font-weight: 600;
-      padding-left: 15px;
     }
 
-    .p-sidebar-content {
+    .p-drawer-content {
       padding: 0;
     }
 
-    .p-sidebar-footer {
+    .p-drawer-footer {
       padding: 1rem 1.5rem;
       border-top: 1px solid #dee2e6;
     }

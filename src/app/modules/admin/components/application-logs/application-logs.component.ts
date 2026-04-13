@@ -5,6 +5,7 @@ import {
   ApplicationLogEntry,
   MonitoringLogService,
 } from "@app/core/service/api/monitoring-log.service";
+import { ToastService } from "@app/core/service/state/toast.service";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TableLazyLoadEvent } from "primeng/table";
@@ -50,7 +51,10 @@ export class ApplicationLogsComponent {
     { label: "TRACE", value: "TRACE" },
   ];
 
-  constructor(private readonly monitoringLogService: MonitoringLogService) {}
+  constructor(
+    private readonly monitoringLogService: MonitoringLogService,
+    private readonly toastService: ToastService
+  ) {}
 
   onLazyLoad(event: TableLazyLoadEvent): void {
     this.first = event.first ?? 0;
@@ -105,10 +109,13 @@ export class ApplicationLogsComponent {
           this.totalRecords = res.totalRecords ?? 0;
           this.loading = false;
         },
-        error: () => {
+        error: (err) => {
           this.logs = [];
           this.totalRecords = 0;
           this.loading = false;
+          if (err?.status === 403) {
+            this.toastService.erro("Não tem permissão para consultar os logs.");
+          }
         },
       });
   }

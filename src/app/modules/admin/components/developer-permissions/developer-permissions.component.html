@@ -1,0 +1,52 @@
+<div class="developer-permissions">
+<p-card styleClass="card-header">
+  <div class="card-header-content">
+    <div class="p-card-content">
+      <h2 class="m-0">Permissões de monitorização (admins)</h2>
+      <p class="text-muted mt-2 mb-0">
+        Marque quais administradores podem aceder a Logs, Testing e gestão de tomadas.
+      </p>
+    </div>
+  </div>
+</p-card>
+
+<p-table
+  [value]="rows"
+  [loading]="loading"
+  styleClass="p-datatable-sm mt-3 developer-permissions-table"
+  [paginator]="true"
+  [rows]="10"
+  responsiveLayout="scroll"
+  paginatorDropdownAppendTo="body"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th scope="col">Nome</th>
+      <th scope="col">Email</th>
+      <th scope="col" *ngFor="let code of catalog" class="perm-col">
+        {{ code }}
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>{{ row.businessName }}</td>
+      <td>{{ row.email }}</td>
+      <td *ngFor="let code of catalog" class="perm-col">
+        <p-checkbox
+          [binary]="true"
+          [ngModel]="isGranted(row, code)"
+          (ngModelChange)="toggle(row, code, $event)"
+          [disabled]="savingClientId === row.clientId"
+          [inputId]="row.clientId + '-' + code"
+        ></p-checkbox>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="2 + catalog.length">Sem dados.</td>
+    </tr>
+  </ng-template>
+</p-table>
+</div>

@@ -1,30 +1,35 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-icon-box',
+  selector: "app-icon-box",
   standalone: true,
   template: `
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      height="24px" 
-      viewBox="0 -960 960 960" 
-      width="24px" 
-      fill="currentColor">
-      <path d="M480-800 243-663l237 137 237-137-237-137ZM120-321v-318q0-22 10.5-40t29.5-29l280-161q10-5 19.5-8t20.5-3q11 0 21 3t19 8l280 161q19 11 29.5 29t10.5 40v159h-80v-116L479-434 200-596v274l240 139v92L160-252q-19-11-29.5-29T120-321ZM720-80q8 0 14-6t6-14q0-8-6-14t-14-6q-8 0-14 6t-6 14q0 8 6 14t14 6Zm-20-80h40v-160h-40v160ZM720 0q-83 0-141.5-58.5T520-200q0-83 58.5-141.5T720-400q83 0 141.5 58.5T920-200q0 83-58.5 141.5T720 0ZM480-491Z"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.09-.34.14-.53.14-.19 0-.37-.05-.53-.14l-7.9-4.44A.991.991 0 0 1 3 16.5v-9l8.05-4.52c.16-.09.34-.14.53-.14s.37.05.53.14L21 7.5v9zM12 4.15 5.81 5.1 12 8.85l6.19-3.75L12 4.15zM5 8.85l6.19 3.75L17 8.85v5.6l-5 2.81V11.1L5 9.29V8.85z"
+      />
     </svg>
   `,
-  styles: [`
-    :host {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    svg {
-      width: 100%;
-      height: 100%;
-      fill: currentColor;
-    }
-  `]
+  styles: [
+    `
+      :host {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+      }
+    `,
+  ],
 })
 export class IconBoxComponent {}

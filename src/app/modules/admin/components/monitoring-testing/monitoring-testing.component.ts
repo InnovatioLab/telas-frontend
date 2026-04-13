@@ -4,7 +4,10 @@ import {
   MonitoringTestingRow,
   MonitoringTestingService,
 } from "@app/core/service/api/monitoring-testing.service";
+import { Authentication } from "@app/core/service/auth/autenthication";
 import { ToastService } from "@app/core/service/state/toast.service";
+import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TagModule } from "primeng/tag";
@@ -25,8 +28,16 @@ export class MonitoringTestingComponent implements OnInit {
 
   constructor(
     private readonly monitoringTestingService: MonitoringTestingService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly authentication: Authentication
   ) {}
+
+  canExecuteActions(): boolean {
+    return hasMonitoringPermission(
+      this.authentication.client(),
+      MonitoringPermission.MONITORING_TESTING_EXECUTE
+    );
+  }
 
   ngOnInit(): void {
     this.load();
@@ -39,9 +50,13 @@ export class MonitoringTestingComponent implements OnInit {
         this.rows = data;
         this.loading = false;
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
-        this.toastService.erro("Não foi possível carregar o overview de monitorização.");
+        if (err?.status === 403) {
+          this.toastService.erro("Não tem permissão para ver o overview de monitorização.");
+        } else {
+          this.toastService.erro("Não foi possível carregar o overview de monitorização.");
+        }
       },
     });
   }

@@ -69,7 +69,7 @@
               class="p-button-sm p-button-outlined mr-2"
               label="Testar box"
               [loading]="isCheckingBox(row)"
-              [disabled]="loading || isCheckingBox(row)"
+              [disabled]="loading || isCheckingBox(row) || !canExecuteActions()"
               (click)="testBox(row)"
             ></button>
             <button
@@ -81,7 +81,8 @@
               [disabled]="
                 loading ||
                 !row.smartPlugId ||
-                isCheckingPlug(row)
+                isCheckingPlug(row) ||
+                !canExecuteActions()
               "
               (click)="testPlug(row)"
             ></button>
