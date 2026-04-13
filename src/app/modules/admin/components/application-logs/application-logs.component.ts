@@ -40,6 +40,7 @@ export class ApplicationLogsComponent {
     { label: "BOX", value: "BOX" },
     { label: "API", value: "API" },
     { label: "WORKER", value: "WORKER" },
+    { label: "EMAIL", value: "EMAIL" },
   ];
 
   readonly levelOptions: SelectOption[] = [
