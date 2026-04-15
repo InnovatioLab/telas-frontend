@@ -315,6 +315,26 @@ body.dark-theme {
   .p-select-label {
     color: var(--cor-texto-clara) !important;
   }
+
+  button.feature-btn-primary {
+    background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(15, 23, 42, 0.14) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+  }
+
+  button.feature-btn-primary:hover {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+    color: #0f172a !important;
+  }
+
+  button.feature-btn-primary .feature-btn-primary-label {
+    color: #0f172a !important;
+  }
+
+  button.feature-btn-primary:hover .feature-btn-primary-label {
+    color: #0f172a !important;
+  }
 }
 
 ::ng-deep .p-paginator,

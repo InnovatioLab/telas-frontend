@@ -70,4 +70,20 @@ body.dark-theme,
   --modal-header-bg: var(--cor-primaria-dark);
   --modal-content-bg: var(--cor-card-background-dark);
   --modal-footer-bg: var(--cor-card-background-dark);
+  --landing-bg-base: #0a0b0d;
+  --landing-bg-elevated: #12141a;
+  --landing-bg-section: #151820;
+  --text-on-dark-surface: #f1f5f9;
+  --text-on-dark-muted: #cbd5e1;
+  --landing-pill-bg: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+  --landing-pill-bg-hover: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  --landing-pill-fg: #0f172a;
+  --landing-pill-border: rgba(15, 23, 42, 0.14);
+}
+
+html[data-theme="dark"] body,
+html.dark-theme body,
+body.dark-theme {
+  background-color: var(--landing-bg-base);
+  color: var(--cor-cinza-escuro);
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { Router, RouterModule } from "@angular/router";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
@@ -10,6 +10,7 @@ import packageJson from "../../package.json";
 import { ClientService } from "./core/service/api/client.service";
 import { Authentication } from "./core/service/auth/autenthication";
 import { AuthenticationStorage } from "./core/service/auth/authentication-storage";
+import { ToggleModeService } from "./core/service/state/toggle-mode.service";
 import { Client } from "./model/client";
 import { DotsLoadingComponent } from "./shared/components/dots-loading/dots-loading.component";
 import { ToastComponent } from "./shared/components/toast/toast.component";
@@ -40,7 +41,9 @@ export class AppComponent implements OnInit {
     public dialogService: DialogService,
     private readonly authentication: Authentication,
     private readonly clientService: ClientService
-  ) {}
+  ) {
+    inject(ToggleModeService);
+  }
 
   ngOnInit(): void {
     this.verificarAutoLogin();

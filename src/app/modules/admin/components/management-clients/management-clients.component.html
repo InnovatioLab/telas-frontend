@@ -137,6 +137,15 @@
             (click)="editClient(client)"
             pTooltip="Edit Client"
           ></button>
+          <button
+            *ngIf="canDeactivateClient(client)"
+            pButton
+            pRipple
+            icon="pi pi-ban"
+            class="p-button-rounded p-button-warning p-button-text"
+            (click)="deactivateClient(client)"
+            pTooltip="Inactivate user"
+          ></button>
         </div>
       </td>
     </tr>

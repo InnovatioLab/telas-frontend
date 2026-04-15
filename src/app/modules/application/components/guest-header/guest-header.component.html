@@ -1,32 +1,81 @@
-<header>
-  <div class="container">
-    <div class="flex align-items-center justify-content-between">
-      <div class="logo-container">
-        <img src="assets/img/Logo-white.png" alt="Logo" class="header-logo" />
+<header class="guest-header">
+
+  @let theme = (toggleMode.theme$ | async) ?? "light";
+
+  <div class="guest-header-bar">
+
+    <div class="guest-header-main">
+
+      <div class="guest-header-row">
+
+        <div class="logo-container">
+
+          <img
+
+            [src]="toggleMode.logoSrc(theme)"
+
+            alt="Logo"
+
+            class="header-logo"
+
+          />
+
+        </div>
+
+
+
+        <nav
+
+          class="flex align-items-center justify-content-center gap-2 md:gap-3 lg:gap-6 text-center nav-container"
+
+        >
+
+          @for (link of navLinks; track $index) {
+
+            <a
+
+              href="{{ link.section }}"
+
+              class="text-gray-dark nav-link cursor-pointer hover:underline"
+
+            >
+
+              {{ link.label }}
+
+            </a>
+
+          }
+
+        </nav>
+
+        <div class="flex align-items-center gap-3 header-actions">
+
+          <button type="button" class="btn btn-outline guest-header-btn-outline" (click)="onLogin()">
+            <app-icon-logout width="18" height="18" class="icon mr-2"></app-icon-logout>
+            <span class="guest-header-btn-label">Login</span>
+          </button>
+
+          <button type="button" class="btn btn-primary" (click)="onRegister()">
+
+            <app-icon-user width="18" height="18" class="icon mr-2"></app-icon-user>
+
+            Sign Up
+
+          </button>
+
+        </div>
+
       </div>
 
-      <nav
-        class="flex align-items-center justify-content-center gap-2 md:gap-3 lg:gap-6 text-center nav-container"
-      >
-        @for (link of navLinks; track $index) {
-          <a
-            href="{{ link.section }}"
-            class="text-gray-dark nav-link cursor-pointer hover:underline"
-          >
-            {{ link.label }}
-          </a>
-        }
-      </nav>
-      <div class="flex align-items-center gap-3">
-        <button type="button" class="btn btn-outline" (click)="onLogin()">
-          <app-icon-logout width="18" height="18" class="icon mr-2"></app-icon-logout>
-          Login
-        </button>
-        <button type="button" class="btn btn-primary" (click)="onRegister()">
-          <app-icon-user width="18" height="18" class="icon mr-2"></app-icon-user>
-          Sign Up
-        </button>
-      </div>
     </div>
+
+    <div class="guest-header-theme-edge">
+
+      <ui-toggle />
+
+    </div>
+
   </div>
+
 </header>
+

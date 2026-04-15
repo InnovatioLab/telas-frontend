@@ -278,7 +278,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
 
     if (reservedCount > 1) {
       this.toastService.erro(
-        "Only one ad with partner reserved slots (7) is allowed per monitor."
+        "Only one ad with partner reserved slots (5) is allowed per monitor."
       );
       return;
     }

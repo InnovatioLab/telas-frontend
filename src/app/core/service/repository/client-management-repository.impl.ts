@@ -68,4 +68,8 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
   makePartner(clientId: string): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}/partner/${clientId}`, {});
   }
+
+  deactivateClient(clientId: string): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${clientId}/deactivate`, {});
+  }
 }

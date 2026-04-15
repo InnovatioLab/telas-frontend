@@ -10,7 +10,7 @@
   h4,
   li,
   a {
-    color: var(--cor-branca);
+    color: var(--cor-texto-clara);
   }
 }
 
@@ -42,7 +42,7 @@
   text-decoration: none;
 }
 .footer-link:hover {
-  color: var(--cor-branca);
+  color: var(--cor-primaria-clara);
 }
 
 .social-icon {
@@ -55,7 +55,7 @@
   justify-content: center;
   transition: background-color 0.2s;
   cursor: pointer;
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
   font-size: 1rem;
   text-decoration: none;
 }
