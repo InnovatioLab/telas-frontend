@@ -69,7 +69,7 @@
   top: -0.5rem;
   right: -0.5rem;
   background: var(--cor-primaria-escura);
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
   width: 2rem;
   height: 2rem;
   border-radius: 9999px;
@@ -120,7 +120,7 @@
 
 .how-cta-btn {
   background: var(--cor-primaria);
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
   border: none;
   border-radius: 9999px;
   padding: 0.75rem 2rem;
@@ -133,4 +133,30 @@
     background: var(--cor-primaria-escura);
     transform: scale(1.05);
   }
+}
+
+html[data-theme="dark"] .how-section,
+html.dark-theme .how-section,
+body.dark-theme .how-section {
+  background: linear-gradient(
+    180deg,
+    var(--landing-bg-section) 0%,
+    var(--landing-bg-base) 100%
+  );
+}
+
+html[data-theme="dark"] .how-cta-btn,
+html.dark-theme .how-cta-btn,
+body.dark-theme .how-cta-btn {
+  background: linear-gradient(180deg, #1e3a5f 0%, #131921 100%);
+  color: var(--cor-texto-clara);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+html[data-theme="dark"] .how-cta-card,
+html.dark-theme .how-cta-card,
+body.dark-theme .how-cta-card {
+  background: var(--landing-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 }

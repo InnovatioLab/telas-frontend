@@ -23,6 +23,12 @@ export class ToggleModeService {
     this.applyTheme(theme);
   }
 
+  public logoSrc(theme: string): string {
+    return theme === "dark"
+      ? "assets/img/Logo-black.png"
+      : "assets/img/Logo-white.png";
+  }
+
   private applyTheme(theme: string): void {
     // Remove classes de tema anteriores
     this.document.body.classList.remove("light-theme", "dark-theme");

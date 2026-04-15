@@ -22,13 +22,14 @@
     min-height: 35px;
     display: flex;
     align-items: center;
-    color: #16191b;
+    color: var(--cor-preto-claro);
   }
 
   .descricao {
     text-align: center;
     display: flex;
     align-items: center;
+    color: var(--cor-preto-claro);
   }
 
   .label-input {
@@ -40,7 +41,7 @@
     label {
       font-weight: 400;
       font-size: 16px;
-      color: var(--cor-cinza-claro);
+      color: var(--cor-legenda);
     }
   }
 
@@ -67,12 +68,13 @@
   .botao-entrar:disabled {
     background-color: var(--cor-desabilitado);
     border: none;
-    color: var(--cor-branca);
+    color: var(--cor-texto-clara);
+    opacity: 0.85;
   }
 
   .icon-custon {
     position: relative;
-    color: var(--cor-cinza-claro);
+    color: var(--cor-legenda);
     width: 24px;
     height: 24px;
     top: 4px;
@@ -114,7 +116,7 @@
     .p-card,
     .card .p-card .p-card-content {
       border-radius: 35px;
-      color: var(--cor-primaria);
+      color: var(--cor-cinza-escuro);
     }
 
     .card .p-card .p-card-content {
@@ -136,6 +138,31 @@
 #test-link-retomar-cadastro,
 #test-link-clique-aqui {
   color: var(--cor-primaria-escura);
+}
+
+#test-texto-esqueceu-senha,
+#test-texto-nao-possui-conta {
+  color: var(--cor-legenda);
+}
+
+:host-context(html[data-theme="dark"]) ::ng-deep .formulario-login .p-card,
+:host-context(html.dark-theme) ::ng-deep .formulario-login .p-card,
+:host-context(body.dark-theme) ::ng-deep .formulario-login .p-card {
+  background: var(--landing-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+}
+
+:host-context(html[data-theme="dark"]) #test-link-cadastre-se,
+:host-context(html[data-theme="dark"]) #test-link-retomar-cadastro,
+:host-context(html[data-theme="dark"]) #test-link-clique-aqui,
+:host-context(html.dark-theme) #test-link-cadastre-se,
+:host-context(html.dark-theme) #test-link-retomar-cadastro,
+:host-context(html.dark-theme) #test-link-clique-aqui,
+:host-context(body.dark-theme) #test-link-cadastre-se,
+:host-context(body.dark-theme) #test-link-retomar-cadastro,
+:host-context(body.dark-theme) #test-link-clique-aqui {
+  color: var(--cor-primaria-clara);
 }
 
 @media screen and (max-height: 800px) {

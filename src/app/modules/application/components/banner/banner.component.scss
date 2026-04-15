@@ -3,6 +3,31 @@
   background: var(--cor-cinza-fundo);
 }
 
+html[data-theme="dark"] .banner-section,
+html.dark-theme .banner-section,
+body.dark-theme .banner-section {
+  background: linear-gradient(
+    180deg,
+    var(--landing-bg-base) 0%,
+    var(--landing-bg-section) 50%,
+    var(--landing-bg-base) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .banner-screen-cta,
+html.dark-theme .banner-screen-cta,
+body.dark-theme .banner-screen-cta {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+html[data-theme="dark"] .banner-screen-cta:hover,
+html.dark-theme .banner-screen-cta:hover,
+body.dark-theme .banner-screen-cta:hover {
+  background: #f1f5f9;
+}
+
 .banner-container {
   max-width: 100vw;
   margin: 0 auto;
@@ -113,7 +138,7 @@
 
 .banner-screen-text {
   text-align: center;
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
 }
 
 .banner-screen-title {
@@ -154,7 +179,7 @@
 
 .banner-screen-views-content {
   background: rgba(0, 0, 0, 0.5);
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: var(--fonte-tamanho-padrao);
@@ -189,7 +214,7 @@
 
 .banner-screen-info {
   margin-top: var(--espacamento-padrao);
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
   text-align: center;
 }
 
@@ -208,7 +233,7 @@
   height: 100%;
   flex-direction: column;
   gap: var(--espacamento-medio);
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
 }
 
 .banner-stats-header {
@@ -219,12 +244,25 @@
   font-size: var(--fonte-tamanho-grande);
   font-weight: var(--fonte-peso-negrito);
   margin-bottom: var(--espacamento-padrao);
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
 }
 
 .banner-stats-description {
   color: var(--cor-cinza-medio);
   margin-bottom: var(--espacamento-medio);
+}
+
+html[data-theme="dark"] .banner-stats-description,
+html.dark-theme .banner-stats-description,
+body.dark-theme .banner-stats-description {
+  color: rgba(241, 245, 249, 0.88);
+}
+
+html[data-theme="dark"] .banner-stats-label,
+html.dark-theme .banner-stats-label,
+body.dark-theme .banner-stats-label {
+  color: rgba(226, 232, 240, 0.95);
+  opacity: 1;
 }
 
 .banner-stats-grid {
@@ -241,7 +279,7 @@
 .banner-stats-card {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
   border-radius: var(--borda-raio-pequeno);
   transition: background 0.3s;
 
@@ -352,7 +390,7 @@
 }
 
 .banner-example-content {
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
   text-align: center;
   z-index: 10;
 }
@@ -460,13 +498,48 @@
 
 .banner-cta-btn {
   background: var(--cor-primaria);
-  color: var(--cor-branca);
+  color: var(--cor-texto-clara);
   border: none;
   border-radius: var(--borda-raio-pequeno);
   padding: var(--espacamento-padrao) var(--espacamento-extra-grande);
   font-size: var(--fonte-tamanho-grande);
   font-weight: var(--fonte-peso-medio);
   cursor: pointer;
+}
+
+html[data-theme="dark"] .banner-cta-card,
+html.dark-theme .banner-cta-card,
+body.dark-theme .banner-cta-card {
+  background: var(--landing-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] .banner-cta-title,
+html.dark-theme .banner-cta-title,
+body.dark-theme .banner-cta-title {
+  color: var(--cor-texto-clara);
+}
+
+html[data-theme="dark"] .banner-cta-description,
+html.dark-theme .banner-cta-description,
+body.dark-theme .banner-cta-description {
+  color: var(--text-on-dark-muted);
+}
+
+html[data-theme="dark"] .banner-cta-btn,
+html.dark-theme .banner-cta-btn,
+body.dark-theme .banner-cta-btn {
+  background: linear-gradient(180deg, #1e3a5f 0%, #131921 100%);
+  color: var(--cor-texto-clara);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+html[data-theme="dark"] .banner-example-cta,
+html.dark-theme .banner-example-cta,
+body.dark-theme .banner-example-cta {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 /* Animations */

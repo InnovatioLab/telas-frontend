@@ -3,6 +3,12 @@
   padding: 5rem 2rem;
 }
 
+html[data-theme="dark"] .hero-section,
+html.dark-theme .hero-section,
+body.dark-theme .hero-section {
+  background: linear-gradient(135deg, #f9fafb 0%, #fff 100%);
+}
+
 .hero-container {
   margin-left: auto;
   margin-right: auto;
@@ -22,6 +28,11 @@
   max-width: 400px;
   margin: 0 auto;
   margin-bottom: 1.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-icon-wrapper {
@@ -39,7 +50,7 @@
 .hero-title {
   font-size: 3rem;
   font-weight: var(--fonte-peso-negrito);
-  color: var(--cor-cinza-escuro);
+  color: #111519 !important;
   margin-bottom: 1.5rem;
 }
 
@@ -55,7 +66,7 @@
 
 .hero-subtitle {
   font-size: 1.25rem;
-  color: var(--cor-cinza);
+  color: #4b5563 !important;
   margin-bottom: 2rem;
   max-width: 42rem;
   margin-left: auto;
@@ -130,7 +141,7 @@
 .hero-feature-title {
   font-size: var(--fonte-tamanho-grande);
   font-weight: 600;
-  color: var(--cor-cinza-escuro);
+  color: #111519 !important;
   margin-bottom: 0.5rem;
 }
 

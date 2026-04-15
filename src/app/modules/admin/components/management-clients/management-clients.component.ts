@@ -7,8 +7,9 @@ import {
   FilterClientRequestDto,
 } from "@app/core/service/api/client-management.service";
 import { ClientService } from "@app/core/service/api/client.service";
+import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { Client, Role } from "@app/model/client";
+import { Client, DefaultStatus, Role, isPrivilegedPanelRole } from "@app/model/client";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
 import { IconSearchComponent } from "@app/shared/icons/search.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -18,6 +19,9 @@ import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.uti
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { MessageService } from "primeng/api";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { EditClientModalComponent } from "../edit-client-modal/edit-client-modal.component";
 
 @Component({
@@ -50,7 +54,10 @@ export class ManagementClientsComponent implements OnInit {
   loadingUpload = false;
   maxFileSize = 10 * 1024 * 1024;
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
-  readonly PARTNER_MAX_ADS = 7;
+  readonly PARTNER_MAX_ADS = 5;
+
+  currentUserId: string | null = null;
+  private panelClient: Client | null = null;
 
   constructor(
     private readonly clientManagementService: ClientManagementService,
@@ -63,7 +70,38 @@ export class ManagementClientsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.clientService.clientAtual$
+      .pipe(
+        take(1),
+        switchMap((c) => (c ? of(c) : this.clientService.getAuthenticatedClient()))
+      )
+      .subscribe((client) => {
+        this.panelClient = (client as Client) ?? null;
+        this.currentUserId = client?.id ?? null;
+      });
     this.loadClients();
+  }
+
+  canDeactivateClient(client: Client): boolean {
+    if (
+      !client.id ||
+      !hasMonitoringPermission(
+        this.panelClient,
+        MonitoringPermission.ADMIN_CLIENTS_DEACTIVATE
+      )
+    ) {
+      return false;
+    }
+    if (client.id === this.currentUserId) {
+      return false;
+    }
+    if (isPrivilegedPanelRole(client.role)) {
+      return false;
+    }
+    if (client.status === DefaultStatus.INACTIVE) {
+      return false;
+    }
+    return true;
   }
 
   loadClients(): void {
@@ -223,22 +261,37 @@ export class ManagementClientsComponent implements OnInit {
     });
   }
 
-  async deleteClient(client: Client): Promise<void> {
+  async deactivateClient(client: Client): Promise<void> {
     const clientName = client.businessName ?? "Unknown";
 
     const confirmed = await this.confirmationDialogService.confirm({
-      title: "Delete Client",
-      message: `Are you sure you want to delete client ${clientName}?`,
-      confirmLabel: "Delete",
+      title: "Inactivate user",
+      message: `This will logically delete the account (status inactive). The user ${clientName} will not be able to sign in. Continue?`,
+      confirmLabel: "Inactivate",
       cancelLabel: "Cancel",
-      severity: "error",
+      severity: "warn",
     });
 
-    if (confirmed) {
-      this.toastService.sucesso(
-        "Delete client functionality will be implemented"
-      );
+    if (!confirmed || !client.id) {
+      return;
     }
+
+    this.loading = true;
+    this.clientManagementService.deactivateClient(client.id).subscribe({
+      next: () => {
+        this.toastService.sucesso("User inactivated successfully");
+        this.loadClients();
+      },
+      error: (error) => {
+        const msg =
+          error?.error?.message ||
+          error?.error?.data?.message ||
+          error?.message ||
+          "Failed to inactivate user";
+        this.toastService.erro(msg);
+        this.loading = false;
+      },
+    });
   }
 
   uploadAdForPartner(client: Client): void {

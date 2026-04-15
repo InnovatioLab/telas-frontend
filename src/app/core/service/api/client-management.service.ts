@@ -44,4 +44,8 @@ export class ClientManagementService {
   makePartner(clientId: string): Observable<void> {
     return this.repository.makePartner(clientId);
   }
+
+  deactivateClient(clientId: string): Observable<void> {
+    return this.repository.deactivateClient(clientId);
+  }
 } 

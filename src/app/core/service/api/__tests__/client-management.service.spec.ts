@@ -72,7 +72,8 @@ describe('ClientManagementService', () => {
   beforeEach(() => {
     mockRepository = {
       findWithPagination: jest.fn(),
-      makePartner: jest.fn()
+      makePartner: jest.fn(),
+      deactivateClient: jest.fn(),
     } as any;
 
     TestBed.configureTestingModule({

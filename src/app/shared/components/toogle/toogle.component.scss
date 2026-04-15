@@ -2,7 +2,6 @@
   display: inline-block;
   cursor: pointer;
   position: relative;
-  margin-right: 10px;
   vertical-align: middle;
 }
 
@@ -63,32 +62,41 @@
 
 .toggle-container.dark {
   .toggle-track {
-    background-color: var(--cor-primaria-escura);
-    border-color: var(--cor-cinza-medio);
+    background-color: rgba(148, 163, 184, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.25),
+      0 1px 2px rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      background-color: rgba(148, 163, 184, 0.28);
+      border-color: rgba(255, 255, 255, 0.38);
+    }
   }
-  
+
   .toggle-indicator {
     transform: translateX(26px);
-    background-color: var(--cor-primaria);
+    background-color: #f1f5f9;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
   }
 
   .toggle-icon {
-    color: var(--cor-icone-clara) !important;
+    color: #0f172a !important;
 
     app-icon-moon {
-      color: var(--cor-icone-clara) !important;
+      color: #0f172a !important;
 
       ::ng-deep svg,
       svg {
-        fill: var(--cor-icone-clara) !important;
-        color: var(--cor-icone-clara) !important;
+        fill: #0f172a !important;
+        color: #0f172a !important;
       }
     }
 
     ::ng-deep svg,
     svg {
-      fill: var(--cor-icone-clara) !important;
-      color: var(--cor-icone-clara) !important;
+      fill: #0f172a !important;
+      color: #0f172a !important;
     }
   }
 }
