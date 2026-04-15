@@ -10,6 +10,7 @@ export interface Client {
   termCondition?: TermCondition;
   verificationCode?: VerificationCode;
   contact?: Contact;
+  partnerAddressSummary?: string | null;
   socialMedia?: SocialMedia;
   addresses?: Address[];
   attachments?: Attachment[];

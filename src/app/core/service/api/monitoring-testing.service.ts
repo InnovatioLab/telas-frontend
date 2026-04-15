@@ -22,6 +22,10 @@ export interface MonitoringTestingRow {
   smartPlugMac: string | null;
   smartPlugVendor: string | null;
   smartPlugEnabled: boolean | null;
+  boxSmartPlugId: string | null;
+  boxSmartPlugMac: string | null;
+  boxSmartPlugVendor: string | null;
+  boxSmartPlugEnabled: boolean | null;
 }
 
 export interface BoxHeartbeatCheckResponse {

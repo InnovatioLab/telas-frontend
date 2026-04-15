@@ -34,7 +34,8 @@
           <th>Box (IP)</th>
           <th>Heartbeat</th>
           <th>Monitor</th>
-          <th>Tomada</th>
+          <th>Tomada (ecrã)</th>
+          <th>Tomada (box)</th>
           <th class="col-actions">Ações</th>
         </tr>
       </ng-template>
@@ -60,13 +61,18 @@
             <ng-template #noMonitor>—</ng-template>
           </td>
           <td>
-            <span class="mono wrap">{{ plugSummary(row) }}</span>
+            <span class="mono wrap">{{ plugSummaryMonitor(row) }}</span>
+          </td>
+          <td>
+            <span class="mono wrap">{{ plugSummaryBox(row) }}</span>
           </td>
           <td class="col-actions">
             <button
               pButton
+              pRipple
               type="button"
-              class="p-button-sm p-button-outlined mr-2"
+              class="p-button-sm p-button-outlined mr-2 monitoring-test-btn"
+              icon="pi pi-box"
               label="Testar box"
               [loading]="isCheckingBox(row)"
               [disabled]="loading || isCheckingBox(row) || !canExecuteActions()"
@@ -74,24 +80,42 @@
             ></button>
             <button
               pButton
+              pRipple
               type="button"
-              class="p-button-sm"
-              label="Testar tomada"
-              [loading]="isCheckingPlug(row)"
+              class="p-button-sm p-button-outlined mr-2 monitoring-test-btn"
+              icon="pi pi-power-off"
+              label="Tomada ecrã"
+              [loading]="isCheckingMonitorPlug(row)"
               [disabled]="
                 loading ||
                 !row.smartPlugId ||
-                isCheckingPlug(row) ||
+                isCheckingMonitorPlug(row) ||
                 !canExecuteActions()
               "
-              (click)="testPlug(row)"
+              (click)="testMonitorPlug(row)"
+            ></button>
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-sm monitoring-test-btn"
+              icon="pi pi-power-off"
+              label="Tomada box"
+              [loading]="isCheckingBoxPlug(row)"
+              [disabled]="
+                loading ||
+                !row.boxSmartPlugId ||
+                isCheckingBoxPlug(row) ||
+                !canExecuteActions()
+              "
+              (click)="testBoxPlug(row)"
             ></button>
           </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5" class="text-center">Sem dados.</td>
+          <td colspan="6" class="text-center">Sem dados.</td>
         </tr>
       </ng-template>
     </p-table>

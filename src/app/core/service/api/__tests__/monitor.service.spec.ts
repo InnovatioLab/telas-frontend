@@ -201,22 +201,22 @@ describe('MonitorService', () => {
   });
 
   describe('createMonitor', () => {
-    it('deve criar novo monitor e retornar true', (done) => {
+    it('deve criar novo monitor e retornar o monitor com id', (done) => {
       mockRepository.create.mockReturnValue(of(mockMonitor));
 
       service.createMonitor(mockCreateRequest).subscribe((response) => {
-        expect(response).toBe(true);
+        expect(response).toEqual(mockMonitor);
         expect(mockRepository.create).toHaveBeenCalledTimes(1);
         expect(mockRepository.create).toHaveBeenCalledWith(mockCreateRequest);
         done();
       });
     });
 
-    it('deve retornar false quando criação falha', (done) => {
-      mockRepository.create.mockReturnValue(of(null));
+    it('deve retornar null quando criação não devolve id', (done) => {
+      mockRepository.create.mockReturnValue(of({} as Monitor));
 
       service.createMonitor(mockCreateRequest).subscribe((response) => {
-        expect(response).toBe(false);
+        expect(response).toBeNull();
         expect(mockRepository.create).toHaveBeenCalledTimes(1);
         done();
       });
@@ -236,14 +236,20 @@ describe('MonitorService', () => {
       });
     });
 
-    it('deve retornar false quando atualização falha', (done) => {
+    it('deve propagar erro quando atualização falha', (done) => {
       const monitorId = 'mon-1';
-      mockRepository.update.mockReturnValue(of(null));
+      mockRepository.update.mockReturnValue(
+        throwError(() => new Error('Unprocessable'))
+      );
 
-      service.updateMonitor(monitorId, mockUpdateRequest).subscribe((response) => {
-        expect(response).toBe(false);
-        expect(mockRepository.update).toHaveBeenCalledTimes(1);
-        done();
+      service.updateMonitor(monitorId, mockUpdateRequest).subscribe({
+        next: () => {
+          fail('não devia emitir sucesso');
+        },
+        error: () => {
+          expect(mockRepository.update).toHaveBeenCalledTimes(1);
+          done();
+        },
       });
     });
   });

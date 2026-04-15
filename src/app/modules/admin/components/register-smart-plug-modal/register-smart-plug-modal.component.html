@@ -1,0 +1,141 @@
+<div class="register-smart-plug-modal">
+  <div class="modal-header">
+    <h2>Register smart plug</h2>
+    <button
+      pButton
+      pRipple
+      type="button"
+      icon="pi pi-times"
+      class="p-button-rounded p-button-text p-button-secondary close-btn"
+      (click)="cancel()"
+    ></button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="modal-content">
+    <div class="form-section">
+      <h3>Device</h3>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="plug-mac" class="required">MAC address</label>
+          <input
+            pInputText
+            id="plug-mac"
+            formControlName="macAddress"
+            class="w-full"
+            placeholder="e.g. AABBCCDDEEFF or AA:BB:CC:DD:EE:FF"
+            autocomplete="off"
+          />
+          <small class="error-message" *ngIf="fieldError('macAddress')">{{
+            fieldError("macAddress")
+          }}</small>
+        </div>
+        <div class="form-field">
+          <label for="plug-vendor" class="required">Vendor</label>
+          <p-dropdown
+            inputId="plug-vendor"
+            formControlName="vendor"
+            [options]="vendorOptions"
+            optionLabel="label"
+            optionValue="value"
+            [style]="{ width: '100%' }"
+          ></p-dropdown>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="plug-model">Model</label>
+          <input
+            pInputText
+            id="plug-model"
+            formControlName="model"
+            class="w-full"
+            maxlength="128"
+          />
+          <small class="error-message" *ngIf="fieldError('model')">{{
+            fieldError("model")
+          }}</small>
+        </div>
+        <div class="form-field">
+          <label for="plug-display">Display name</label>
+          <input
+            pInputText
+            id="plug-display"
+            formControlName="displayName"
+            class="w-full"
+            maxlength="255"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Credentials &amp; network</h3>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="plug-email">Account email</label>
+          <input
+            pInputText
+            id="plug-email"
+            type="email"
+            formControlName="accountEmail"
+            class="w-full"
+          />
+        </div>
+        <div class="form-field">
+          <label for="plug-password">Password</label>
+          <input
+            pInputText
+            id="plug-password"
+            type="password"
+            formControlName="password"
+            class="w-full"
+            autocomplete="new-password"
+          />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="plug-ip">Last seen IP</label>
+          <input
+            pInputText
+            id="plug-ip"
+            formControlName="lastSeenIp"
+            class="w-full"
+            placeholder="Optional"
+          />
+        </div>
+        <div class="form-field flex align-items-end">
+          <div class="w-full">
+            <label for="plug-enabled">Enabled</label>
+            <div class="flex align-items-center gap-2" style="margin-top: 0.5rem">
+              <p-inputSwitch
+                inputId="plug-enabled"
+                formControlName="enabled"
+              ></p-inputSwitch>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-buttons">
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Cancel"
+        class="p-button-outlined"
+        (click)="cancel()"
+        [disabled]="submitting"
+      ></button>
+      <button
+        pButton
+        pRipple
+        type="submit"
+        label="Save to inventory"
+        [disabled]="form.invalid || submitting"
+        [loading]="submitting"
+      ></button>
+    </div>
+  </form>
+</div>

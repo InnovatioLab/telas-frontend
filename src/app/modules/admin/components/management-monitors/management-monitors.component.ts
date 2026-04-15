@@ -13,6 +13,7 @@ import { AdService } from "@app/core/service/api/ad.service";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
+import { SmartPlugAdminService } from "@app/core/service/api/smart-plug-admin.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Advertisement, AdvertisementStatus } from "@app/model/advertisement";
 import {
@@ -21,6 +22,7 @@ import {
 } from "@app/model/dto/request/create-monitor.request.dto";
 import { FilterMonitorRequestDto } from "@app/model/dto/request/filter-monitor.request.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
+import { Role } from "@app/model/client";
 import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
@@ -32,10 +34,11 @@ import { MessageService } from "primeng/api";
 import { GalleriaModule } from "primeng/galleria";
 import { OrderListModule } from "primeng/orderlist";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
-import { of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { switchMap, take } from "rxjs/operators";
 import { CreateMonitorModalComponent } from "../create-monitor-modal/create-monitor-modal.component";
 import { EditMonitorModalComponent } from "../edit-monitor-modal/edit-monitor-modal.component";
+import { RegisterSmartPlugModalComponent } from "../register-smart-plug-modal/register-smart-plug-modal.component";
 
 interface Ad {
   id: string;
@@ -54,6 +57,7 @@ interface Ad {
     IconsModule,
     CreateMonitorModalComponent,
     EditMonitorModalComponent,
+    RegisterSmartPlugModalComponent,
     IconTvDisplayComponent,
     RouterModule,
     GalleriaModule,
@@ -78,6 +82,7 @@ export class ManagementMonitorsComponent implements OnInit {
   advertisements: Advertisement[] = [];
   createMonitorModalVisible = false;
   editMonitorModalVisible = false;
+  registerSmartPlugModalVisible = false;
   deleteConfirmModalVisible = false;
   searchTerm = "";
   totalRecords = 0;
@@ -108,12 +113,36 @@ export class ManagementMonitorsComponent implements OnInit {
     private readonly ngZone: NgZone,
     private readonly autenticacaoService: AutenticacaoService,
     private readonly adService: AdService,
-    private readonly clientService: ClientService
+    private readonly clientService: ClientService,
+    private readonly smartPlugAdmin: SmartPlugAdminService
   ) {}
 
   ngOnInit(): void {
     this.loadInitialData();
     this.loadAuthenticatedClient();
+  }
+
+  get isDeveloper(): boolean {
+    return this.authenticatedClient?.role === Role.DEVELOPER;
+  }
+
+  openRegisterSmartPlugModal(): void {
+    this.registerSmartPlugModalVisible = true;
+  }
+
+  onRegisterSmartPlugModalClose(): void {
+    this.registerSmartPlugModalVisible = false;
+  }
+
+  onSmartPlugRegisteredToInventory(): void {
+    this.messageService.add({
+      severity: "success",
+      summary: "Success",
+      detail: "Smart plug saved to inventory.",
+    });
+    this.registerSmartPlugModalVisible = false;
+    this.createMonitorModal?.reloadPlugOptions();
+    this.editMonitorModal?.reloadPlugOptions();
   }
 
   loadAuthenticatedClient(): void {
@@ -223,9 +252,36 @@ export class ManagementMonitorsComponent implements OnInit {
     this.createMonitorModalVisible = true;
   }
 
-  createMonitor(monitorRequest: CreateMonitorRequestDto): void {
+  createMonitor(
+    monitorRequest: CreateMonitorRequestDto,
+    smartPlugId?: string | null
+  ): void {
     this.monitorService.createMonitor(monitorRequest).subscribe({
       next: (newMonitor) => {
+        if (newMonitor?.id && smartPlugId) {
+          this.smartPlugAdmin.assign(smartPlugId, newMonitor.id).subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: "success",
+                summary: "Success",
+                detail: "Screen created and smart plug linked.",
+              });
+              this.closeModal();
+              this.loadMonitors();
+            },
+            error: () => {
+              this.messageService.add({
+                severity: "warn",
+                summary: "Partial success",
+                detail:
+                  "Screen was created but smart plug assignment failed. Link it from edit.",
+              });
+              this.closeModal();
+              this.loadMonitors();
+            },
+          });
+          return;
+        }
         if (newMonitor) {
           this.messageService.add({
             severity: "success",
@@ -236,7 +292,7 @@ export class ManagementMonitorsComponent implements OnInit {
           this.loadMonitors();
         }
       },
-      error: (error) => {
+      error: () => {
         this.messageService.add({
           severity: "error",
           summary: "Error",
@@ -255,8 +311,11 @@ export class ManagementMonitorsComponent implements OnInit {
     this.createMonitorModalVisible = false;
   }
 
-  onMonitorCreated(monitorRequest: CreateMonitorRequestDto): void {
-    this.createMonitor(monitorRequest);
+  onMonitorCreated(payload: {
+    request: CreateMonitorRequestDto;
+    smartPlugId: string | null;
+  }): void {
+    this.createMonitor(payload.request, payload.smartPlugId);
   }
 
   onSelectMonitor(monitor: Monitor): void {
@@ -267,21 +326,34 @@ export class ManagementMonitorsComponent implements OnInit {
   updateMonitor(updateData: {
     id: string;
     data: UpdateMonitorRequestDto;
+    smartPlugId: string | null;
+    initialSmartPlugId: string | null;
   }): void {
     this.loading = true;
 
     this.monitorService
       .updateMonitor(updateData.id, updateData.data)
+      .pipe(
+        switchMap(() =>
+          this.applySmartPlugSelection(
+            updateData.id,
+            updateData.smartPlugId,
+            updateData.initialSmartPlugId
+          )
+        )
+      )
       .subscribe({
-        next: (updatedMonitor) => {
+        next: () => {
           this.messageService.add({
             severity: "success",
             summary: "Success",
             detail: "Monitor updated successfully!",
           });
           this.onEditMonitorModalClose();
+          this.loadMonitors();
+          this.loading = false;
         },
-        error: (error) => {
+        error: () => {
           this.messageService.add({
             severity: "error",
             summary: "Error",
@@ -290,11 +362,31 @@ export class ManagementMonitorsComponent implements OnInit {
           });
           this.loading = false;
         },
-        complete: () => {
-          this.loadMonitors();
-          this.loading = false;
-        },
       });
+  }
+
+  private applySmartPlugSelection(
+    monitorId: string,
+    smartPlugId: string | null,
+    initialSmartPlugId: string | null
+  ): Observable<unknown> {
+    const next = smartPlugId ?? null;
+    const prev = initialSmartPlugId ?? null;
+    if (next === prev) {
+      return of(null);
+    }
+    let seq: Observable<unknown> = of(null);
+    if (prev && prev !== next) {
+      seq = seq.pipe(
+        switchMap(() => this.smartPlugAdmin.unassign(prev))
+      );
+    }
+    if (next && next !== prev) {
+      seq = seq.pipe(
+        switchMap(() => this.smartPlugAdmin.assign(next, monitorId))
+      );
+    }
+    return seq;
   }
 
   onEditMonitorModalClose(): void {
@@ -305,6 +397,8 @@ export class ManagementMonitorsComponent implements OnInit {
   onMonitorUpdated(updateData: {
     id: string;
     data: UpdateMonitorRequestDto;
+    smartPlugId: string | null;
+    initialSmartPlugId: string | null;
   }): void {
     this.updateMonitor(updateData);
   }

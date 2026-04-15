@@ -75,9 +75,13 @@ export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitor
 
   override create(request: CreateMonitorRequestDto): Observable<Monitor> {
     return this.http
-      .post<ResponseDTO<void> | ResponseDto<void>>(this.baseUrl, request, this.getHeaders())
+      .post<ResponseDTO<string> | ResponseDto<string>>(this.baseUrl, request, this.getHeaders())
       .pipe(
-        map(() => {
+        map((response) => {
+          const data = this.extractData(response);
+          if (data != null && data !== "") {
+            return { id: String(data) } as Monitor;
+          }
           return {} as Monitor;
         }),
         catchError(() => of({} as Monitor))
@@ -90,8 +94,7 @@ export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitor
       .pipe(
         map(() => {
           return {} as Monitor;
-        }),
-        catchError(() => of({} as Monitor))
+        })
       );
   }
 

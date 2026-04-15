@@ -1,8 +1,10 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import {
+  BoxHeartbeatCheckResponse,
   MonitoringTestingRow,
   MonitoringTestingService,
+  SmartPlugReadingResponse,
 } from "@app/core/service/api/monitoring-testing.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { ToastService } from "@app/core/service/state/toast.service";
@@ -24,7 +26,7 @@ export class MonitoringTestingComponent implements OnInit {
   loading = false;
   rowsPerPage = 15;
   checkingBoxId: string | null = null;
-  checkingPlugId: string | null = null;
+  checkingPlugKey: string | null = null;
 
   constructor(
     private readonly monitoringTestingService: MonitoringTestingService,
@@ -87,16 +89,36 @@ export class MonitoringTestingComponent implements OnInit {
     }
   }
 
-  plugSummary(row: MonitoringTestingRow): string {
-    if (!row.smartPlugId) {
+  plugSummaryMonitor(row: MonitoringTestingRow): string {
+    return this.formatPlugLine(
+      row.smartPlugId,
+      row.smartPlugMac,
+      row.smartPlugVendor
+    );
+  }
+
+  plugSummaryBox(row: MonitoringTestingRow): string {
+    return this.formatPlugLine(
+      row.boxSmartPlugId,
+      row.boxSmartPlugMac,
+      row.boxSmartPlugVendor
+    );
+  }
+
+  private formatPlugLine(
+    id: string | null | undefined,
+    mac: string | null | undefined,
+    vendor: string | null | undefined
+  ): string {
+    if (!id) {
       return "—";
     }
-    const mac = row.smartPlugMac?.trim() ?? "";
-    const vendor = row.smartPlugVendor?.trim() ?? "";
-    if (mac && vendor) {
-      return `${mac} · ${vendor}`;
+    const m = mac?.trim() ?? "";
+    const v = vendor?.trim() ?? "";
+    if (m && v) {
+      return `${m} · ${v}`;
     }
-    return mac || vendor || "—";
+    return m || v || "—";
   }
 
   testBox(row: MonitoringTestingRow): void {
@@ -104,12 +126,7 @@ export class MonitoringTestingComponent implements OnInit {
     this.monitoringTestingService.checkBox(row.boxId).subscribe({
       next: (r) => {
         this.checkingBoxId = null;
-        const st = this.heartbeatLabel(r.heartbeatStatus);
-        const age =
-          r.secondsSinceHeartbeat != null
-            ? ` · há ${r.secondsSinceHeartbeat}s`
-            : "";
-        this.toastService.info(`Box ${row.boxIp ?? row.boxId}: ${st}${age}.`);
+        this.toastBoxHeartbeat(row, r);
         this.load();
       },
       error: () => {
@@ -119,23 +136,38 @@ export class MonitoringTestingComponent implements OnInit {
     });
   }
 
-  testPlug(row: MonitoringTestingRow): void {
+  testBoxPlug(row: MonitoringTestingRow): void {
+    if (!row.boxSmartPlugId) {
+      return;
+    }
+    const key = `${row.boxId}:box:${row.boxSmartPlugId}`;
+    this.checkingPlugKey = key;
+    this.monitoringTestingService.testReadSmartPlug(row.boxSmartPlugId).subscribe({
+      next: (r) => {
+        this.checkingPlugKey = null;
+        this.toastPlugRead("Tomada (box)", r);
+      },
+      error: () => {
+        this.checkingPlugKey = null;
+        this.toastService.erro("Falha ao testar leitura da tomada da box.");
+      },
+    });
+  }
+
+  testMonitorPlug(row: MonitoringTestingRow): void {
     if (!row.smartPlugId) {
       return;
     }
-    this.checkingPlugId = row.smartPlugId;
+    const key = `${row.boxId}:${row.monitorId ?? "nom"}:mon:${row.smartPlugId}`;
+    this.checkingPlugKey = key;
     this.monitoringTestingService.testReadSmartPlug(row.smartPlugId).subscribe({
       next: (r) => {
-        this.checkingPlugId = null;
-        const detail = r.reachable
-          ? `reachable=${r.reachable}` +
-            (r.powerWatts != null ? ` · ${r.powerWatts} W` : "")
-          : (r.errorCode ?? "unreachable");
-        this.toastService.sucesso(`Tomada: ${detail}`);
+        this.checkingPlugKey = null;
+        this.toastPlugRead("Tomada (ecrã)", r);
       },
       error: () => {
-        this.checkingPlugId = null;
-        this.toastService.erro("Falha ao testar leitura da tomada.");
+        this.checkingPlugKey = null;
+        this.toastService.erro("Falha ao testar leitura da tomada do ecrã.");
       },
     });
   }
@@ -144,9 +176,80 @@ export class MonitoringTestingComponent implements OnInit {
     return this.checkingBoxId === row.boxId;
   }
 
-  isCheckingPlug(row: MonitoringTestingRow): boolean {
+  isCheckingBoxPlug(row: MonitoringTestingRow): boolean {
+    if (!row.boxSmartPlugId) {
+      return false;
+    }
     return (
-      row.smartPlugId != null && this.checkingPlugId === row.smartPlugId
+      this.checkingPlugKey ===
+      `${row.boxId}:box:${row.boxSmartPlugId}`
     );
+  }
+
+  isCheckingMonitorPlug(row: MonitoringTestingRow): boolean {
+    if (!row.smartPlugId) {
+      return false;
+    }
+    return (
+      this.checkingPlugKey ===
+      `${row.boxId}:${row.monitorId ?? "nom"}:mon:${row.smartPlugId}`
+    );
+  }
+
+  private toastBoxHeartbeat(
+    row: MonitoringTestingRow,
+    r: BoxHeartbeatCheckResponse
+  ): void {
+    const st = this.heartbeatLabel(this.normalizeHeartbeatStatus(r));
+    const age =
+      r.secondsSinceHeartbeat != null
+        ? ` · há ${r.secondsSinceHeartbeat}s`
+        : "";
+    const msg = `Box ${row.boxIp ?? row.boxId}: ${st}${age}.`;
+    const status = this.normalizeHeartbeatStatus(r);
+    if (r.heartbeatOnline === true && status === "ONLINE") {
+      this.toastService.sucesso(msg);
+      return;
+    }
+    if (status === "STALE") {
+      this.toastService.aviso(msg);
+      return;
+    }
+    this.toastService.erro(msg);
+  }
+
+  private normalizeHeartbeatStatus(r: BoxHeartbeatCheckResponse): string {
+    const raw = (r.heartbeatStatus ?? "").toString().trim().toUpperCase();
+    if (raw === "ONLINE" || raw === "STALE" || raw === "MISSING") {
+      return raw;
+    }
+    if (r.heartbeatOnline === true) {
+      return "ONLINE";
+    }
+    return raw.length > 0 ? raw : "MISSING";
+  }
+
+  private toastPlugRead(prefix: string, r: SmartPlugReadingResponse): void {
+    const errCode =
+      r.errorCode != null && String(r.errorCode).trim().length > 0
+        ? String(r.errorCode).trim()
+        : null;
+    if (!r.reachable || errCode != null) {
+      const err = errCode ?? "sem resposta";
+      this.toastService.erro(`${prefix}: ${err}`);
+      return;
+    }
+    const parts: string[] = [];
+    if (r.relayOn != null) {
+      parts.push(`relay=${r.relayOn}`);
+    }
+    if (r.powerWatts != null) {
+      parts.push(`${r.powerWatts} W`);
+    }
+    if (r.voltageVolts != null) {
+      parts.push(`${r.voltageVolts} V`);
+    }
+    const detail = parts.length > 0 ? parts.join(" · ") : "ligada";
+    this.toastService.sucesso(`${prefix}: ${detail}`);
   }
 }

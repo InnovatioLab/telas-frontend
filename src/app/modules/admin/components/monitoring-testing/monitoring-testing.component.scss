@@ -36,7 +36,13 @@
 
   .col-actions {
     white-space: nowrap;
-    min-width: 14rem;
+    min-width: 16rem;
+  }
+
+  .monitoring-test-btn {
+    .pi-power-off {
+      color: var(--yellow-500, #eab308);
+    }
   }
 
   .mt-3 {

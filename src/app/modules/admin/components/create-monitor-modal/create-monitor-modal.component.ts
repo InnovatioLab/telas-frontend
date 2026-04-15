@@ -6,9 +6,15 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
+import { ClientService } from "@app/core/service/api/client.service";
+import {
+  SmartPlugAdminDto,
+  SmartPlugAdminService,
+} from "@app/core/service/api/smart-plug-admin.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { AddressData } from "@app/model/dto/request/address-data-request";
 import { CreateMonitorRequestDto } from "@app/model/dto/request/create-monitor.request.dto";
+import { Role } from "@app/model/client";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import {
@@ -18,6 +24,7 @@ import {
   Observable,
   of,
   switchMap,
+  take,
 } from "rxjs";
 
 @Component({
@@ -29,18 +36,26 @@ import {
 })
 export class CreateMonitorModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
-  @Output() monitorCreated = new EventEmitter<CreateMonitorRequestDto>();
+  @Output() monitorCreated = new EventEmitter<{
+    request: CreateMonitorRequestDto;
+    smartPlugId: string | null;
+  }>();
 
   monitorForm: FormGroup;
 
   loadingZipCode = false;
+  isDeveloper = false;
+  plugOptions: { label: string; value: string }[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly zipCodeService: ZipCodeService
+    private readonly zipCodeService: ZipCodeService,
+    private readonly clientService: ClientService,
+    private readonly smartPlugAdmin: SmartPlugAdminService
   ) {
     this.monitorForm = this.fb.group({
       locationDescription: ["", [Validators.maxLength(200)]],
+      smartPlugId: [""],
       address: this.fb.group({
         street: [
           "",
@@ -68,6 +83,40 @@ export class CreateMonitorModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.setupZipCodeSearch();
+    this.clientService.clientAtual$
+      .pipe(take(1))
+      .subscribe((client) => {
+        this.isDeveloper = client?.role === Role.DEVELOPER;
+        if (this.isDeveloper) {
+          this.loadPlugOptions();
+        }
+      });
+  }
+
+  private loadPlugOptions(): void {
+    this.smartPlugAdmin.listUnassigned().subscribe({
+      next: (list) => {
+        this.plugOptions = [
+          { label: "Nenhuma", value: "" },
+          ...list.map((p) => ({
+            label: this.formatPlugLabel(p),
+            value: p.id,
+          })),
+        ];
+      },
+    });
+  }
+
+  reloadPlugOptions(): void {
+    if (!this.isDeveloper) {
+      return;
+    }
+    this.loadPlugOptions();
+  }
+
+  private formatPlugLabel(p: SmartPlugAdminDto): string {
+    const name = p.displayName?.trim() || p.macAddress;
+    return `${name} — ${p.vendor} (${p.macAddress})`;
   }
 
   private setupZipCodeSearch(): void {
@@ -156,7 +205,11 @@ export class CreateMonitorModalComponent implements OnInit {
         },
       };
 
-      this.monitorCreated.emit(monitorRequest);
+      const rawPlug = formValue.smartPlugId as string;
+      const smartPlugId =
+        this.isDeveloper && rawPlug && rawPlug.length > 0 ? rawPlug : null;
+
+      this.monitorCreated.emit({ request: monitorRequest, smartPlugId });
     } else {
       Object.keys(this.monitorForm.controls).forEach((key) => {
         const control = this.monitorForm.get(key);
@@ -184,6 +237,7 @@ export class CreateMonitorModalComponent implements OnInit {
   closeModal(): void {
     this.monitorForm.reset({
       locationDescription: "",
+      smartPlugId: "",
       address: {
         street: "",
         zipCode: "",

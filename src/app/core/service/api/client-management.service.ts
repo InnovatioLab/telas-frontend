@@ -21,6 +21,7 @@ export interface ClientResponseDto {
   contact?: {
     email?: string;
   };
+  partnerAddressSummary?: string | null;
   role?: any;
   createdAt?: string;
   updatedAt?: string;
