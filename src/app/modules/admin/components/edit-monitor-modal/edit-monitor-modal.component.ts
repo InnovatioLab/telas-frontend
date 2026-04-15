@@ -14,11 +14,18 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
+import { ClientService } from "@app/core/service/api/client.service";
+import {
+  SmartPlugAdminDto,
+  SmartPlugAdminService,
+} from "@app/core/service/api/smart-plug-admin.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { AddressData } from "@app/model/dto/request/address-data-request";
 import { UpdateMonitorRequestDto } from "@app/model/dto/request/create-monitor.request.dto";
+import { Role } from "@app/model/client";
 import { Monitor } from "@app/model/monitors";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { take } from "rxjs";
 
 @Component({
   selector: "app-edit-monitor-modal",
@@ -33,18 +40,26 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
   @Output() monitorUpdated = new EventEmitter<{
     id: string;
     data: UpdateMonitorRequestDto;
+    smartPlugId: string | null;
+    initialSmartPlugId: string | null;
   }>();
 
   monitorForm: FormGroup;
   loadingZipCode = false;
+  isDeveloper = false;
+  plugOptions: { label: string; value: string }[] = [];
+  initialSmartPlugId: string | null = null;
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly zipCodeService: ZipCodeService
+    private readonly zipCodeService: ZipCodeService,
+    private readonly clientService: ClientService,
+    private readonly smartPlugAdmin: SmartPlugAdminService
   ) {
     this.monitorForm = this.fb.group({
       active: [true, [Validators.required]],
       locationDescription: ["", [Validators.maxLength(200)]],
+      smartPlugId: [""],
       address: this.fb.group({
         id: [""],
         street: ["", [Validators.required, Validators.maxLength(100)]],
@@ -68,14 +83,22 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.setupZipCodeSearch();
-    if (this.monitor) {
-      this.populateForm();
-    }
+    this.clientService.clientAtual$
+      .pipe(take(1))
+      .subscribe((client) => {
+        this.isDeveloper = client?.role === Role.DEVELOPER;
+        if (this.monitor && this.isDeveloper) {
+          this.loadPlugOptions();
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["monitor"] && this.monitor && this.monitorForm) {
       this.populateForm();
+      if (this.isDeveloper) {
+        this.loadPlugOptions();
+      }
     }
   }
 
@@ -84,6 +107,9 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
 
     const formData = {
       active: this.monitor.active ?? true,
+      locationDescription:
+        (this.monitor as { locationDescription?: string }).locationDescription ??
+        "",
       address: {
         id: this.monitor.address?.id ?? "",
         street: this.monitor.address?.street ?? "",
@@ -99,6 +125,42 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
 
     this.monitorForm.patchValue(formData, { emitEvent: false });
     this.monitorForm.markAllAsTouched();
+  }
+
+  private loadPlugOptions(): void {
+    if (!this.isDeveloper || !this.monitor) {
+      return;
+    }
+    this.smartPlugAdmin.listUnassigned(this.monitor.id).subscribe({
+      next: (list) => {
+        const linked = list.find((p) => p.monitorId === this.monitor!.id);
+        this.initialSmartPlugId = linked?.id ?? null;
+        const selected = this.initialSmartPlugId ?? "";
+        this.plugOptions = [
+          { label: "Nenhuma", value: "" },
+          ...list.map((p) => ({
+            label: this.formatPlugLabel(p),
+            value: p.id,
+          })),
+        ];
+        this.monitorForm.patchValue(
+          { smartPlugId: selected },
+          { emitEvent: false }
+        );
+      },
+    });
+  }
+
+  reloadPlugOptions(): void {
+    if (!this.isDeveloper || !this.monitor) {
+      return;
+    }
+    this.loadPlugOptions();
+  }
+
+  private formatPlugLabel(p: SmartPlugAdminDto): string {
+    const name = p.displayName?.trim() || p.macAddress;
+    return `${name} — ${p.vendor} (${p.macAddress})`;
   }
 
   private setupZipCodeSearch(): void {
@@ -181,9 +243,15 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
         },
       };
 
+      const rawPlug = formValue.smartPlugId as string;
+      const smartPlugId =
+        this.isDeveloper && rawPlug && rawPlug.length > 0 ? rawPlug : null;
+
       this.monitorUpdated.emit({
         id: this.monitor.id,
         data: monitorRequest,
+        smartPlugId,
+        initialSmartPlugId: this.initialSmartPlugId,
       });
       this.closeModal();
     }

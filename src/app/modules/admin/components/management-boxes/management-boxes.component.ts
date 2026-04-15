@@ -1,8 +1,13 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { ClientService } from "@app/core/service/api/client.service";
 import { BoxService } from "@app/core/service/api/box.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
+import {
+  SmartPlugAdminDto,
+  SmartPlugAdminService,
+} from "@app/core/service/api/smart-plug-admin.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Box } from "@app/model/box";
 import { BoxAddress } from "@app/model/box-address";
@@ -11,6 +16,9 @@ import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.d
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { MessageService } from "primeng/api";
+import { Role } from "@app/model/client";
+import { Observable, of } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 
 @Component({
   selector: "app-management-boxes",
@@ -44,6 +52,11 @@ export class ManagementBoxesComponent implements OnInit {
   loadingMonitors = false;
   loadingBoxAddresses = false;
 
+  isDeveloper = false;
+  boxPlugOptions: { label: string; value: string }[] = [];
+  selectedBoxSmartPlugId = "";
+  initialBoxSmartPlugId: string | null = null;
+
   currentFilters: FilterBoxRequestDto = {
     page: 1,
     size: 10,
@@ -54,11 +67,16 @@ export class ManagementBoxesComponent implements OnInit {
   constructor(
     private readonly boxService: BoxService,
     private readonly monitorService: MonitorService,
+    private readonly clientService: ClientService,
+    private readonly smartPlugAdmin: SmartPlugAdminService,
     private readonly toastService: ToastService,
     private readonly messageService: MessageService
   ) {}
 
   ngOnInit(): void {
+    this.clientService.clientAtual$.pipe(take(1)).subscribe((client) => {
+      this.isDeveloper = client?.role === Role.DEVELOPER;
+    });
     this.loadInitialData();
   }
 
@@ -357,34 +375,93 @@ export class ManagementBoxesComponent implements OnInit {
   onSelectBox(box: Box): void {
     this.selectedBoxForEdit = { ...box };
     this.selectedBoxAddress = null;
+    this.selectedBoxSmartPlugId = "";
+    this.initialBoxSmartPlugId = null;
+    this.boxPlugOptions = [];
 
     // Carrega os endereços disponíveis incluindo o atual e define a seleção automaticamente
     this.loadAvailableBoxAddressesForEdit(box);
     this.loadAvailableMonitors();
+    this.clientService.clientAtual$.pipe(take(1)).subscribe((client) => {
+      this.isDeveloper = client?.role === Role.DEVELOPER;
+      if (this.isDeveloper && box.id) {
+        this.loadBoxPlugOptions(box.id);
+      }
+    });
 
     this.editBoxModalVisible = true;
   }
 
-  updateBox(updateData: { id: string; data: BoxRequestDto }): void {
-    this.boxService.updateBox(updateData.id, updateData.data).subscribe({
-      next: () => {
-        this.editBoxModalVisible = false;
-        this.selectedBoxForEdit = null;
-        this.messageService.add({
-          severity: "success",
-          summary: "Success",
-          detail: "Box updated successfully!",
-        });
-        this.loadBoxes();
-      },
-      error: () => {
-        this.messageService.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Error updating box. Please check the data and try again.",
-        });
+  private loadBoxPlugOptions(boxId: string): void {
+    this.smartPlugAdmin.listUnassigned(undefined, boxId).subscribe({
+      next: (list) => {
+        const linked = list.find((p) => p.boxId === boxId);
+        this.initialBoxSmartPlugId = linked?.id ?? null;
+        const selected = this.initialBoxSmartPlugId ?? "";
+        this.selectedBoxSmartPlugId = selected;
+        this.boxPlugOptions = [
+          { label: "Nenhuma", value: "" },
+          ...list.map((p) => ({
+            label: this.formatPlugLabel(p),
+            value: p.id,
+          })),
+        ];
       },
     });
+  }
+
+  private formatPlugLabel(p: SmartPlugAdminDto): string {
+    const name = p.displayName?.trim() || p.macAddress;
+    return `${name} — ${p.vendor} (${p.macAddress})`;
+  }
+
+  private applyBoxSmartPlugSelection(boxId: string): Observable<unknown> {
+    const next = this.selectedBoxSmartPlugId || null;
+    const prev = this.initialBoxSmartPlugId ?? null;
+    if (next === prev) {
+      return of(null);
+    }
+    let seq: Observable<unknown> = of(null);
+    if (prev && prev !== next) {
+      seq = seq.pipe(switchMap(() => this.smartPlugAdmin.unassign(prev)));
+    }
+    if (next && next !== prev) {
+      seq = seq.pipe(
+        switchMap(() => this.smartPlugAdmin.assignToBox(next, boxId))
+      );
+    }
+    return seq;
+  }
+
+  updateBox(updateData: { id: string; data: BoxRequestDto }): void {
+    this.boxService
+      .updateBox(updateData.id, updateData.data)
+      .pipe(
+        switchMap(() =>
+          this.isDeveloper
+            ? this.applyBoxSmartPlugSelection(updateData.id)
+            : of(null)
+        )
+      )
+      .subscribe({
+        next: () => {
+          this.editBoxModalVisible = false;
+          this.selectedBoxForEdit = null;
+          this.messageService.add({
+            severity: "success",
+            summary: "Success",
+            detail: "Box updated successfully!",
+          });
+          this.loadBoxes();
+        },
+        error: () => {
+          this.messageService.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Error updating box. Please check the data and try again.",
+          });
+        },
+      });
   }
 
   onEditBoxModalClose(): void {

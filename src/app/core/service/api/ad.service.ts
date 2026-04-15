@@ -1,80 +1,48 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { Page } from "@app/model/dto/page.dto";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
-import { ResponseDTO } from "@app/model/dto/response.dto";
 import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { environment } from "src/environments/environment";
+import { IAdRepository } from "@app/core/interfaces/services/repository/ad-repository.interface";
+import { AD_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 
 @Injectable({
   providedIn: "root",
 })
 export class AdService {
-  private readonly baseUrl = `${environment.apiUrl}ads`;
-
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    @Inject(AD_REPOSITORY_TOKEN) private readonly repository: IAdRepository
+  ) {}
 
   getPendingAds(
     page: number = 0,
     size: number = 10
   ): Observable<Page<AdResponseDto>> {
-    const params = new HttpParams()
-      .set("page", page.toString())
-      .set("size", size.toString());
-
-    return this.http
-      .get<
-        ResponseDTO<Page<AdResponseDto>>
-      >(`${this.baseUrl}/pending-ads`, { params })
-      .pipe(map((response) => response.data));
+    return this.repository.getPendingAds(page, size);
   }
 
   getApprovedAds(
     page: number = 0,
     size: number = 10
   ): Observable<Page<AdResponseDto>> {
-    const params = new HttpParams()
-      .set("page", page.toString())
-      .set("size", size.toString());
-
-    return this.http
-      .get<
-        ResponseDTO<Page<AdResponseDto>>
-      >(`${this.baseUrl}/approved-ads`, { params })
-      .pipe(map((response) => response.data));
+    return this.repository.getApprovedAds(page, size);
   }
 
   getRejectedAds(
     page: number = 0,
     size: number = 10
   ): Observable<Page<AdResponseDto>> {
-    const params = new HttpParams()
-      .set("page", page.toString())
-      .set("size", size.toString());
-
-    return this.http
-      .get<
-        ResponseDTO<Page<AdResponseDto>>
-      >(`${this.baseUrl}/rejected-ads`, { params })
-      .pipe(map((response) => response.data));
+    return this.repository.getRejectedAds(page, size);
   }
 
   getAllAds(
     page: number = 0,
     size: number = 10
   ): Observable<Page<AdResponseDto>> {
-    const params = new HttpParams()
-      .set("page", page.toString())
-      .set("size", size.toString());
-
-    return this.http
-      .get<ResponseDTO<Page<AdResponseDto>>>(`${this.baseUrl}/all`, { params })
-      .pipe(map((response) => response.data));
+    return this.repository.getAllAds(page, size);
   }
 
   createClientAd(clientId: string, dto: CreateClientAdDto): Observable<any> {
-    return this.http.post(`${environment.apiUrl}clients/ads/${clientId}`, dto);
+    return this.repository.createClientAd(clientId, dto);
   }
 }

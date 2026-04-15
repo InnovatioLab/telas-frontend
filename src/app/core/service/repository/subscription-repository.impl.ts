@@ -1,7 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, catchError, of } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { ISubscriptionRepository } from '@app/core/interfaces/services/repository/subscription-repository.interface';
 import { Subscription } from '@app/model/subscription';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
@@ -13,36 +12,25 @@ import { Payment } from '@app/model/payment';
 import { Monitor } from '@app/model/monitors';
 import { Recurrence } from '@app/model/enums/recurrence.enum';
 import { FilterSubscriptionRequestDto } from '@app/core/service/api/subscription.service';
+import { BaseRepository } from './base.repository';
+import { ENVIRONMENT } from 'src/environments/environment-token';
 
 @Injectable({ providedIn: 'root' })
-export class SubscriptionRepositoryImpl implements ISubscriptionRepository {
-  private readonly baseUrl = `${environment.apiUrl}subscriptions`;
-  private readonly storageName = 'telas_token';
-  private readonly token = localStorage.getItem(this.storageName);
+export class SubscriptionRepositoryImpl extends BaseRepository<Subscription, any, any> implements ISubscriptionRepository {
+  constructor(
+    httpClient: HttpClient,
+    @Optional() @Inject(ENVIRONMENT) env?: any
+  ) {
+    super(httpClient, 'subscriptions', env);
+  }
 
-  private readonly headers = {
-    headers: {
-      Authorization: `Bearer ${this.token}`,
-    },
-  };
-
-  constructor(private readonly http: HttpClient) {}
-
-  findWithPagination(filters?: FilterSubscriptionRequestDto): Observable<PaginationResponseDto<SubscriptionMinResponseDto>> {
-    let params = new HttpParams();
-
-    if (filters) {
-      if (filters.page) params = params.set('page', filters.page.toString());
-      if (filters.size) params = params.set('size', filters.size.toString());
-      if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
-      if (filters.sortDir) params = params.set('sortDir', filters.sortDir);
-      if (filters.genericFilter) params = params.set('genericFilter', filters.genericFilter);
-    }
+  override findWithPagination(filters?: FilterSubscriptionRequestDto): Observable<PaginationResponseDto<SubscriptionMinResponseDto>> {
+    const params = this.createFilterParams(filters);
 
     return this.http
       .get<ResponseDTO<PaginationResponseDto<SubscriptionMinResponseDto>>>(
         `${this.baseUrl}/filters`,
-        { params, ...this.headers }
+        { ...this.getHeaders(), params }
       )
       .pipe(
         map((response: ResponseDTO<PaginationResponseDto<SubscriptionMinResponseDto>>) => {
@@ -75,15 +63,16 @@ export class SubscriptionRepositoryImpl implements ISubscriptionRepository {
       );
   }
 
-  checkout(): Observable<string> {
-    return this.http
-      .post<ResponseDto<string>>(`${this.baseUrl}`, null, this.headers)
-      .pipe(map((response: ResponseDto<string>) => response.data));
+  override findAll(): Observable<Subscription[]> {
+    return this.findWithPagination().pipe(
+      map((paginated) => paginated.list as any),
+      catchError(() => of([]))
+    );
   }
 
-  findById(id: string): Observable<Subscription | null> {
+  override findById(id: string): Observable<Subscription | null> {
     return this.http
-      .get<ResponseDto<SubscriptionResponseDto>>(`${this.baseUrl}/${id}`, this.headers)
+      .get<ResponseDto<SubscriptionResponseDto>>(`${this.baseUrl}/${id}`, this.getHeaders())
       .pipe(
         map((response: ResponseDto<SubscriptionResponseDto>) => {
           return response.data
@@ -93,31 +82,9 @@ export class SubscriptionRepositoryImpl implements ISubscriptionRepository {
       );
   }
 
-  upgrade(id: string, recurrence: Recurrence): Observable<string> {
+  override delete(id: string): Observable<boolean> {
     return this.http
-      .patch<ResponseDto<string>>(
-        `${this.baseUrl}/upgrade/${id}?recurrence=${recurrence}`,
-        {},
-        this.headers
-      )
-      .pipe(map((response: ResponseDto<string>) => response.data));
-  }
-
-  renew(id: string): Observable<string> {
-    return this.http
-      .patch<ResponseDto<string>>(`${this.baseUrl}/renew/${id}`, {}, this.headers)
-      .pipe(map((response: ResponseDto<string>) => response.data));
-  }
-
-  getCustomerPortalUrl(): Observable<string> {
-    return this.http
-      .get<ResponseDto<string>>(`${this.baseUrl}/customer-portal`, this.headers)
-      .pipe(map((response: ResponseDto<string>) => response.data));
-  }
-
-  delete(id: string): Observable<boolean> {
-    return this.http
-      .delete<ResponseDto<any>>(`${this.baseUrl}/${id}`, this.headers)
+      .delete<ResponseDto<any>>(`${this.baseUrl}/${id}`, this.getHeaders())
       .pipe(
         map((response: ResponseDto<any>) => {
           if (response) {
@@ -129,6 +96,42 @@ export class SubscriptionRepositoryImpl implements ISubscriptionRepository {
           return of(false);
         })
       );
+  }
+
+  checkout(): Observable<string> {
+    return this.http
+      .post<ResponseDto<string>>(`${this.baseUrl}`, null, this.getHeaders())
+      .pipe(map((response: ResponseDto<string>) => response.data));
+  }
+
+  upgrade(id: string, recurrence: Recurrence): Observable<string> {
+    return this.http
+      .patch<ResponseDto<string>>(
+        `${this.baseUrl}/upgrade/${id}?recurrence=${recurrence}`,
+        {},
+        this.getHeaders()
+      )
+      .pipe(map((response: ResponseDto<string>) => response.data));
+  }
+
+  renew(id: string): Observable<string> {
+    return this.http
+      .patch<ResponseDto<string>>(`${this.baseUrl}/renew/${id}`, {}, this.getHeaders())
+      .pipe(map((response: ResponseDto<string>) => response.data));
+  }
+
+  getCustomerPortalUrl(): Observable<string> {
+    return this.http
+      .get<ResponseDto<string>>(`${this.baseUrl}/customer-portal`, this.getHeaders())
+      .pipe(map((response: ResponseDto<string>) => response.data));
+  }
+
+  override create(): Observable<Subscription> {
+    return this.checkout().pipe(map(() => ({} as Subscription)));
+  }
+
+  override update(): Observable<Subscription> {
+    return of({} as Subscription);
   }
 
   private mapSubscriptionResponseToSubscription(response: SubscriptionResponseDto): Subscription {

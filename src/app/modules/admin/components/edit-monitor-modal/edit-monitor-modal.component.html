@@ -171,6 +171,19 @@
             >{{ getFieldError("locationDescription") }}</small
           >
         </div>
+
+        <div class="form-field col-12" *ngIf="isDeveloper">
+          <label for="smartPlugEdit">Smart plug</label>
+          <p-dropdown
+            inputId="smartPlugEdit"
+            formControlName="smartPlugId"
+            [options]="plugOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Nenhuma"
+            [style]="{ width: '100%' }"
+          ></p-dropdown>
+        </div>
       </div>
     </div>
 

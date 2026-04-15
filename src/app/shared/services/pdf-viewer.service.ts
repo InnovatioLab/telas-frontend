@@ -35,8 +35,7 @@ export class PdfViewerService {
           baseZIndex: 10000,
           contentStyle: {
             overflow: 'hidden',
-            padding: '0',
-            height: '100%'
+            padding: '0'
           },
           styleClass: 'pdf-viewer-dialog'
         }

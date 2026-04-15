@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ClientService } from "@app/core/service/api/client.service";
-import { Role } from "@app/model/client";
+import { isPrivilegedPanelRole } from "@app/model/client";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { AdminMenuSideComponent } from "../admin-menu-side/admin-menu-side.component";
@@ -27,6 +27,6 @@ export class MenuComponent {
   // Authentication.updateClientData / pegarDadosAutenticado.
   readonly isAdministrador$: Observable<boolean> =
     this.clientService.clientAtual$.pipe(
-      map((client) => client?.role === Role.ADMIN)
+      map((client) => isPrivilegedPanelRole(client?.role))
     );
 }

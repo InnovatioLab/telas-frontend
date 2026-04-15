@@ -20,7 +20,15 @@ export class MonitorMapPointMapper {
       addressLocationName: monitor.addressLocationName,
       addressLocationDescription: monitor.addressLocationDescription,
       data: monitor,
+      healthOk: this.deriveHealthOk(monitor),
     };
+  }
+
+  private deriveHealthOk(m: MonitorMapsResponseDto): boolean {
+    if (m.boxActive === false) {
+      return false;
+    }
+    return !!m.active;
   }
 
 }

@@ -9,7 +9,6 @@ jest.mock('src/environments/environment', () => ({
   }
 }));
 
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { IClientRepository } from '@app/core/interfaces/services/repository/client-repository.interface';
 import { ClientDomainService } from '@app/core/service/domain/client.domain.service';
@@ -31,7 +30,6 @@ import { ClientService } from '../client.service';
 
 describe('ClientService', () => {
   let service: ClientService;
-  let httpMock: HttpTestingController;
   let mockRepository: jest.Mocked<IClientRepository>;
   let mockDomainService: jest.Mocked<ClientDomainService>;
 
@@ -57,6 +55,8 @@ describe('ClientService', () => {
     termAccepted: true,
     currentSubscriptionFlowStep: 0,
     hasSubscription: false,
+    shouldDisplayAttachments: false,
+    hasAdRequest: false,
   };
 
   beforeEach(() => {
@@ -71,7 +71,27 @@ describe('ClientService', () => {
       delete: jest.fn(),
       getAuthenticatedClient: jest.fn(),
       getClientAds: jest.fn(),
-      getClientAttachments: jest.fn()
+      getClientAttachments: jest.fn(),
+      saveWithLoadingOption: jest.fn(),
+      editar: jest.fn(),
+      criarSenha: jest.fn(),
+      atualizardadosPerfil: jest.fn(),
+      reenvioCodigo: jest.fn(),
+      validarCodigo: jest.fn(),
+      aceitarTermosDeCondicao: jest.fn(),
+      clientExistente: jest.fn(),
+      buscarClient: jest.fn(),
+      buscaClientPorIdentificador: jest.fn(),
+      getAllAds: jest.fn(),
+      getAllAdRequests: jest.fn(),
+      getPendingAds: jest.fn(),
+      uploadAttachment: jest.fn(),
+      uploadMultipleAttachments: jest.fn(),
+      createAdRequest: jest.fn(),
+      validateAd: jest.fn(),
+      addToWishlist: jest.fn(),
+      getWishlist: jest.fn(),
+      findWithPagination: jest.fn(),
     } as any;
 
     mockDomainService = {
@@ -81,7 +101,6 @@ describe('ClientService', () => {
     } as any;
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         ClientService,
         { provide: CLIENT_REPOSITORY_TOKEN, useValue: mockRepository },
@@ -90,11 +109,9 @@ describe('ClientService', () => {
     });
 
     service = TestBed.inject(ClientService);
-    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
-    httpMock.verify();
     jest.clearAllMocks();
   });
 
@@ -103,9 +120,6 @@ describe('ClientService', () => {
       expect(service).toBeTruthy();
     });
 
-    it('deve ter URL configurada corretamente', () => {
-      expect(service.url).toContain('clients');
-    });
 
     it('deve ter BehaviorSubject clientAtual$', () => {
       expect(service.clientAtual$).toBeDefined();
@@ -125,15 +139,12 @@ describe('ClientService', () => {
         addresses: []
       };
 
+      mockRepository.saveWithLoadingOption.mockReturnValue(of({}));
+
       service.save(clientRequest).subscribe(() => {
+        expect(mockRepository.saveWithLoadingOption).toHaveBeenCalledWith(clientRequest, false);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes('clients') && req.method === 'POST');
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(clientRequest);
-      expect(req.request.headers.has('Ignorar-Loading-Interceptor')).toBeFalsy();
-      req.flush({});
     });
 
     it('deve salvar cliente ignorando loading quando solicitado', (done) => {
@@ -143,14 +154,12 @@ describe('ClientService', () => {
         addresses: []
       };
 
+      mockRepository.saveWithLoadingOption.mockReturnValue(of({}));
+
       service.save(clientRequest, true).subscribe(() => {
+        expect(mockRepository.saveWithLoadingOption).toHaveBeenCalledWith(clientRequest, true);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes('clients') && req.method === 'POST');
-      expect(req.request.method).toBe('POST');
-      expect(req.request.headers.get('Ignorar-Loading-Interceptor')).toBe('true');
-      req.flush({});
     });
   });
 
@@ -163,14 +172,12 @@ describe('ClientService', () => {
         addresses: []
       };
 
+      mockRepository.editar.mockReturnValue(of({}));
+
       service.editar(id, clientRequest).subscribe(() => {
+        expect(mockRepository.editar).toHaveBeenCalledWith(id, clientRequest);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`clients/${id}`) && req.method === 'PUT');
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual(clientRequest);
-      req.flush({});
     });
   });
 
@@ -179,19 +186,17 @@ describe('ClientService', () => {
       const login = 'test@test.com';
       const senhaRequest = new SenhaRequestDto('newPassword123', 'newPassword123');
 
+      mockRepository.criarSenha.mockReturnValue(of({}));
+
       service.criarSenha(login, senhaRequest).subscribe(() => {
+        expect(mockRepository.criarSenha).toHaveBeenCalledWith(login, senhaRequest);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`create-password/${login}`));
-      expect(req.request.method).toBe('PATCH');
-      expect(req.request.body).toEqual(senhaRequest);
-      req.flush({});
     });
   });
 
   describe('atualizardadosPerfil', () => {
-    it('deve atualizar dados do perfil com headers de autorização', (done) => {
+    it('deve atualizar dados do perfil', (done) => {
       const id = '123';
       const clientRequest: ClientRequestDTO = {
         businessName: 'Updated Profile',
@@ -199,15 +204,12 @@ describe('ClientService', () => {
         addresses: []
       };
 
+      mockRepository.atualizardadosPerfil.mockReturnValue(of({}));
+
       service.atualizardadosPerfil(id, clientRequest).subscribe(() => {
+        expect(mockRepository.atualizardadosPerfil).toHaveBeenCalledWith(id, clientRequest);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`clients/${id}`) && req.method === 'PUT');
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual(clientRequest);
-      expect(req.request.headers.has('Authorization')).toBeTruthy();
-      req.flush({});
     });
   });
 
@@ -215,14 +217,12 @@ describe('ClientService', () => {
     it('deve reenviar código para login', (done) => {
       const login = 'test@test.com';
 
+      mockRepository.reenvioCodigo.mockReturnValue(of({}));
+
       service.reenvioCodigo(login).subscribe(() => {
+        expect(mockRepository.reenvioCodigo).toHaveBeenCalledWith(login);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`resend-code/${login}`));
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({});
-      req.flush({});
     });
   });
 
@@ -231,30 +231,23 @@ describe('ClientService', () => {
       const login = 'test@test.com';
       const code = '123456';
 
+      mockRepository.validarCodigo.mockReturnValue(of({}));
+
       service.validarCodigo(login, code).subscribe(() => {
+        expect(mockRepository.validarCodigo).toHaveBeenCalledWith(login, code);
         done();
       });
-
-      const req = httpMock.expectOne(req => 
-        req.url.includes(`validate-code/${login}`) &&
-        req.params.get('code') === code
-      );
-      expect(req.request.method).toBe('PATCH');
-      req.flush({});
     });
   });
 
   describe('aceitarTermosDeCondicao', () => {
     it('deve aceitar termos de condição', (done) => {
+      mockRepository.aceitarTermosDeCondicao.mockReturnValue(of({}));
+
       service.aceitarTermosDeCondicao().subscribe(() => {
+        expect(mockRepository.aceitarTermosDeCondicao).toHaveBeenCalledTimes(1);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes('accept-terms-conditions'));
-      expect(req.request.method).toBe('PATCH');
-      expect(req.request.body).toBeNull();
-      expect(req.request.headers.has('Authorization')).toBeTruthy();
-      req.flush({});
     });
   });
 
@@ -267,14 +260,13 @@ describe('ClientService', () => {
         contact: { email: 'test@test.com' }
       } as ClientResponseDTO;
 
+      mockRepository.clientExistente.mockReturnValue(of(mockResponse));
+
       service.clientExistente(email).subscribe((response) => {
         expect(response).toEqual(mockResponse);
+        expect(mockRepository.clientExistente).toHaveBeenCalledWith(email);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`identification/${email}`));
-      expect(req.request.method).toBe('GET');
-      req.flush({ data: mockResponse });
     });
   });
 
@@ -286,35 +278,42 @@ describe('ClientService', () => {
         businessName: 'Test Business'
       } as Client;
 
+      mockRepository.buscarClient.mockReturnValue(of(mockResponse));
+
       service.buscarClient<Client>(id).subscribe((response) => {
         expect(response).toEqual(mockResponse);
+        expect(mockRepository.buscarClient).toHaveBeenCalledWith(id);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`clients/${id}`));
-      expect(req.request.method).toBe('GET');
-      req.flush({ data: mockResponse });
     });
 
-    it('deve lançar erro quando ID não fornecido', () => {
-      expect(() => {
+    it('deve lançar erro quando ID não fornecido', (done) => {
+      const error = new Error('ID/UUID não fornecido');
+      mockRepository.buscarClient.mockImplementation(() => {
+        throw error;
+      });
+
+      try {
         service.buscarClient('');
-      }).toThrow('ID/UUID não fornecido');
+        fail('deveria ter lançado erro');
+      } catch (err: any) {
+        expect(err.message).toBe('ID/UUID não fornecido');
+        done();
+      }
     });
 
     it('deve lançar erro quando resposta inválida', (done) => {
       const id = '123';
+      const error = new Error('Dados do usuário não encontrados');
+      mockRepository.buscarClient.mockReturnValue(throwError(() => error));
 
       service.buscarClient<Client>(id).subscribe({
         next: () => fail('deveria ter lançado erro'),
-        error: (error) => {
-          expect(error.message).toBe('Dados do usuário não encontrados');
+        error: (err) => {
+          expect(err.message).toBe('Dados do usuário não encontrados');
           done();
         }
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`clients/${id}`));
-      req.flush({});
     });
   });
 
@@ -327,20 +326,28 @@ describe('ClientService', () => {
         contact: { email: 'test@test.com' }
       } as ClientResponseDTO;
 
+      mockRepository.buscaClientPorIdentificador.mockReturnValue(of(mockResponse));
+
       service.buscaClientPorIdentificador(email).subscribe((response) => {
         expect(response).toEqual(mockResponse);
+        expect(mockRepository.buscaClientPorIdentificador).toHaveBeenCalledWith(email);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`identification/${email}`));
-      expect(req.request.method).toBe('GET');
-      req.flush({ data: mockResponse });
     });
 
-    it('deve lançar erro quando email não fornecido', () => {
-      expect(() => {
+    it('deve lançar erro quando email não fornecido', (done) => {
+      const error = new Error('Email not provided');
+      mockRepository.buscaClientPorIdentificador.mockImplementation(() => {
+        throw error;
+      });
+
+      try {
         service.buscaClientPorIdentificador('');
-      }).toThrow('Email not provided');
+        fail('deveria ter lançado erro');
+      } catch (err: any) {
+        expect(err.message).toBe('Email not provided');
+        done();
+      }
     });
   });
 
@@ -397,18 +404,13 @@ describe('ClientService', () => {
         empty: true
       };
 
+      mockRepository.getAllAds.mockReturnValue(of(mockPage));
+
       service.getAllAds().subscribe((response) => {
         expect(response).toEqual(mockPage);
+        expect(mockRepository.getAllAds).toHaveBeenCalledWith(1, 10);
         done();
       });
-
-      const req = httpMock.expectOne(req => 
-        req.url.includes('ads-requests') &&
-        req.params.get('page') === '1' &&
-        req.params.get('size') === '10'
-      );
-      expect(req.request.method).toBe('GET');
-      req.flush({ data: mockPage });
     });
 
     it('deve buscar todos os ads com paginação customizada', (done) => {
@@ -435,17 +437,13 @@ describe('ClientService', () => {
         empty: true
       };
 
+      mockRepository.getAllAds.mockReturnValue(of(mockPage));
+
       service.getAllAds(page, size).subscribe((response) => {
         expect(response).toEqual(mockPage);
+        expect(mockRepository.getAllAds).toHaveBeenCalledWith(page, size);
         done();
       });
-
-      const req = httpMock.expectOne(req => 
-        req.url.includes('ads-requests') &&
-        req.params.get('page') === '2' &&
-        req.params.get('size') === '20'
-      );
-      req.flush({ data: mockPage });
     });
   });
 
@@ -461,17 +459,13 @@ describe('ClientService', () => {
         hasPrevious: false
       };
 
+      mockRepository.getAllAdRequests.mockReturnValue(of(mockResponse));
+
       service.getAllAdRequests().subscribe((response) => {
         expect(response).toEqual(mockResponse);
+        expect(mockRepository.getAllAdRequests).toHaveBeenCalledWith(undefined);
         done();
       });
-
-      const req = httpMock.expectOne(req => 
-        req.url.includes('ads-requests') &&
-        req.params.has('_t')
-      );
-      expect(req.request.method).toBe('GET');
-      req.flush({ data: mockResponse });
     });
 
     it('deve buscar ad requests com filtros', (done) => {
@@ -483,22 +477,20 @@ describe('ClientService', () => {
         genericFilter: 'test'
       };
 
+      mockRepository.getAllAdRequests.mockReturnValue(of({
+        list: [],
+        totalElements: 0,
+        totalPages: 0,
+        currentPage: 0,
+        size: 0,
+        hasNext: false,
+        hasPrevious: false
+      }));
+
       service.getAllAdRequests(filters).subscribe(() => {
+        expect(mockRepository.getAllAdRequests).toHaveBeenCalledWith(filters);
         done();
       });
-
-      const req = httpMock.expectOne(req => {
-        const url = req.url.includes('ads-requests');
-        const params = req.params;
-        return url &&
-          params.get('page') === '1' &&
-          params.get('size') === '10' &&
-          params.get('sortBy') === 'createdAt' &&
-          params.get('sortDir') === 'desc' &&
-          params.get('genericFilter') === 'test' &&
-          params.has('_t');
-      });
-      req.flush({ data: { list: [], totalElements: 0 } });
     });
   });
 
@@ -514,17 +506,13 @@ describe('ClientService', () => {
         hasPrevious: false
       };
 
+      mockRepository.getPendingAds.mockReturnValue(of(mockResponse));
+
       service.getPendingAds().subscribe((response) => {
         expect(response).toEqual(mockResponse);
+        expect(mockRepository.getPendingAds).toHaveBeenCalledWith(undefined);
         done();
       });
-
-      const req = httpMock.expectOne(req => 
-        req.url.includes('pending-ads') &&
-        req.params.has('_t')
-      );
-      expect(req.request.method).toBe('GET');
-      req.flush({ data: mockResponse });
     });
   });
 
@@ -532,36 +520,24 @@ describe('ClientService', () => {
     it('deve fazer upload de attachment sem ID', (done) => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
 
+      mockRepository.uploadAttachment.mockReturnValue(of({}));
+
       service.uploadAttachment(file).subscribe(() => {
+        expect(mockRepository.uploadAttachment).toHaveBeenCalledWith(file, undefined);
         done();
       });
-
-      setTimeout(() => {
-        const req = httpMock.expectOne(req => req.url.includes('/attachments'));
-        expect(req.request.method).toBe('POST');
-        expect(Array.isArray(req.request.body)).toBe(true);
-        expect(req.request.body[0].name).toBe('test.txt');
-        expect(req.request.body[0].type).toBe('text/plain');
-        expect(req.request.body[0].bytes).toBeDefined();
-        expect(req.request.body[0].id).toBeUndefined();
-        req.flush({});
-      }, 100);
     });
 
     it('deve fazer upload de attachment com ID', (done) => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
       const id = 'attachment-123';
 
+      mockRepository.uploadAttachment.mockReturnValue(of({}));
+
       service.uploadAttachment(file, id).subscribe(() => {
+        expect(mockRepository.uploadAttachment).toHaveBeenCalledWith(file, id);
         done();
       });
-
-      setTimeout(() => {
-        const req = httpMock.expectOne(req => req.url.includes('/attachments'));
-        expect(req.request.method).toBe('POST');
-        expect(req.request.body[0].id).toBe(id);
-        req.flush({});
-      }, 100);
     });
   });
 
@@ -572,17 +548,12 @@ describe('ClientService', () => {
         new File(['content2'], 'test2.txt', { type: 'text/plain' })
       ];
 
+      mockRepository.uploadMultipleAttachments.mockReturnValue(of({}));
+
       service.uploadMultipleAttachments(files).subscribe(() => {
+        expect(mockRepository.uploadMultipleAttachments).toHaveBeenCalledWith(files);
         done();
       });
-
-      setTimeout(() => {
-        const req = httpMock.expectOne(req => req.url.includes('/attachments'));
-        expect(req.request.method).toBe('POST');
-        expect(Array.isArray(req.request.body)).toBe(true);
-        expect(req.request.body.length).toBe(2);
-        req.flush({});
-      }, 100);
     });
   });
 
@@ -590,19 +561,14 @@ describe('ClientService', () => {
     it('deve criar ad request', (done) => {
       const adRequest: ClientAdRequestDto = {
         attachmentIds: ['1', '2'],
-        message: 'Test message',
-        email: 'test@test.com',
-        phone: '1234567890'
       };
 
+      mockRepository.createAdRequest.mockReturnValue(of({}));
+
       service.createAdRequest(adRequest).subscribe(() => {
+        expect(mockRepository.createAdRequest).toHaveBeenCalledWith(adRequest);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes('/request-ad'));
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(adRequest);
-      req.flush({});
     });
   });
 
@@ -611,17 +577,12 @@ describe('ClientService', () => {
       const adId = '123';
       const validation = 'APPROVED';
 
+      mockRepository.validateAd.mockReturnValue(of({}));
+
       service.validateAd(adId, validation).subscribe(() => {
+        expect(mockRepository.validateAd).toHaveBeenCalledWith(adId, validation, undefined);
         done();
       });
-
-      const req = httpMock.expectOne(req => 
-        req.url.includes(`/validate-ad/${adId}`) &&
-        req.url.includes('validation=APPROVED')
-      );
-      expect(req.request.method).toBe('PATCH');
-      expect(req.request.body).toEqual({});
-      req.flush({});
     });
 
     it('deve validar ad como REJECTED com refusedData', (done) => {
@@ -632,17 +593,12 @@ describe('ClientService', () => {
         description: 'Content does not meet standards'
       };
 
+      mockRepository.validateAd.mockReturnValue(of({}));
+
       service.validateAd(adId, validation, refusedData).subscribe(() => {
+        expect(mockRepository.validateAd).toHaveBeenCalledWith(adId, validation, refusedData);
         done();
       });
-
-      const req = httpMock.expectOne(req => 
-        req.url.includes(`/validate-ad/${adId}`) &&
-        req.url.includes('validation=REJECTED')
-      );
-      expect(req.request.method).toBe('PATCH');
-      expect(req.request.body).toEqual(refusedData);
-      req.flush({});
     });
   });
 
@@ -675,27 +631,24 @@ describe('ClientService', () => {
     it('deve adicionar monitor à wishlist', (done) => {
       const monitorId = 'monitor-123';
       
+      mockRepository.addToWishlist.mockReturnValue(of(true));
+
       service.addToWishlist(monitorId).subscribe((result) => {
         expect(result).toBe(true);
+        expect(mockRepository.addToWishlist).toHaveBeenCalledWith(monitorId);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`/wishlist/${monitorId}`));
-      expect(req.request.method).toBe('POST');
-      expect(req.request.headers.has('Authorization')).toBeTruthy();
-      req.flush({ success: true });
     });
 
     it('deve retornar false em caso de erro', (done) => {
       const monitorId = 'monitor-123';
 
+      mockRepository.addToWishlist.mockReturnValue(of(false));
+
       service.addToWishlist(monitorId).subscribe((result) => {
         expect(result).toBe(false);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes(`/wishlist/${monitorId}`));
-      req.error(new ErrorEvent('Network error'));
     });
   });
 
@@ -706,16 +659,14 @@ describe('ClientService', () => {
         monitors: []
       };
 
+      mockRepository.getWishlist.mockReturnValue(of(mockWishlist));
+
       service.getWishlist().subscribe((response) => {
         expect(response.id).toBe('wishlist-1');
         expect(response.monitors).toEqual([]);
+        expect(mockRepository.getWishlist).toHaveBeenCalledTimes(1);
         done();
       });
-
-      const req = httpMock.expectOne(req => req.url.includes('/wishlist'));
-      expect(req.request.method).toBe('GET');
-      expect(req.request.headers.has('Authorization')).toBeTruthy();
-      req.flush({ data: mockWishlist });
     });
   });
 });

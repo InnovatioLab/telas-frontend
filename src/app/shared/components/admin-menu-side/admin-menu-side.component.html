@@ -23,7 +23,7 @@
     <ul class="menu-list" role="menu">
       <li
         class="menu-item"
-        *ngFor="let item of menuItems"
+        *ngFor="let item of filteredMenuItems"
         (click)="selecionarOpcao(item)"
         (keydown.enter)="selecionarOpcao(item)"
         (keydown.space)="selecionarOpcao(item); $event.preventDefault()"
@@ -46,6 +46,9 @@
           <app-icon-documento
             *ngIf="item.icon === 'pi-file'"
           ></app-icon-documento>
+          <app-icon-testing
+            *ngIf="item.icon === 'testing'"
+          ></app-icon-testing>
           <app-icon-logout
             *ngIf="item.icon === 'pi-sign-out'"
           ></app-icon-logout>
@@ -56,6 +59,9 @@
           <app-icon-etiqueta
             *ngIf="item.icon === 'etiqueta'"
           ></app-icon-etiqueta>
+          <app-icon-permissions
+            *ngIf="item.icon === 'permissions'"
+          ></app-icon-permissions>
           <app-icon-sair *ngIf="item.icon === 'sair'"></app-icon-sair>
         </div>
         <span class="menu-label">{{ item.label }}</span>

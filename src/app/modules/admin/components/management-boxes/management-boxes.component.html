@@ -257,6 +257,24 @@
         >No monitors available. Please create monitors first.</small
       >
     </div>
+
+    <div class="form-group" *ngIf="isDeveloper">
+      <label for="editBoxSmartPlug">Tomada inteligente (box)</label>
+      <p-select
+        id="editBoxSmartPlug"
+        [options]="boxPlugOptions"
+        [(ngModel)]="selectedBoxSmartPlugId"
+        [ngModelOptions]="{ standalone: true }"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Nenhuma ou selecionar inventário"
+        class="w-full"
+        [overlayOptions]="{ appendTo: 'body' }"
+        appendTo="body"
+      >
+      </p-select>
+      <small class="help-text">Associa uma tomada Kasa/Tapo ao equipamento da box (DEVELOPER).</small>
+    </div>
   </div>
 
   <ng-template pTemplate="footer">

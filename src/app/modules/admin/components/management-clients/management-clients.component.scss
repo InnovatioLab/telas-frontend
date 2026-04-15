@@ -1,3 +1,10 @@
+.wrap-address {
+  max-width: 22rem;
+  white-space: normal;
+  text-align: left !important;
+  word-break: break-word;
+}
+
 ::ng-deep {
   .p-card-body {
     width: 100%;

@@ -9,10 +9,11 @@ jest.mock('src/environments/environment', () => ({
   }
 }));
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { IMonitorRepository } from '@app/core/interfaces/services/repository/monitor-repository.interface';
 import { MONITOR_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
+import { ENVIRONMENT } from 'src/environments/environment-token';
 import { CreateMonitorRequestDto, UpdateMonitorRequestDto } from '@app/model/dto/request/create-monitor.request.dto';
 import { FilterMonitorRequestDto } from '@app/model/dto/request/filter-monitor.request.dto';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
@@ -20,14 +21,25 @@ import { Monitor } from '@app/model/monitors';
 import { of, throwError } from 'rxjs';
 import { MonitorService } from '../monitor.service';
 
+const mockEnvironment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api/',
+  zipCodeApiKey: 'k',
+  googleMapsApiKey: 'k',
+  stripePublicKey: 'k',
+  stripePrivateKey: 'k',
+  nomeToken: 'telas_token',
+  nomeTokenRefresh: 'r',
+};
+
 describe('MonitorService', () => {
   let service: MonitorService;
   let mockRepository: jest.Mocked<IMonitorRepository>;
+  let httpMock: HttpTestingController;
 
   const mockMonitor: Monitor = {
     id: 'mon-1',
     active: true,
-    locationDescription: 'Test Location',
     fullAddress: '123 Test St, City, State 12345',
     address: {
       id: 'addr-1',
@@ -83,15 +95,18 @@ describe('MonitorService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         MonitorService,
-        { provide: MONITOR_REPOSITORY_TOKEN, useValue: mockRepository }
+        { provide: MONITOR_REPOSITORY_TOKEN, useValue: mockRepository },
+        { provide: ENVIRONMENT, useValue: mockEnvironment },
       ],
     });
 
     service = TestBed.inject(MonitorService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    httpMock.verify();
   });
 
   describe('Initialization', () => {
@@ -186,22 +201,22 @@ describe('MonitorService', () => {
   });
 
   describe('createMonitor', () => {
-    it('deve criar novo monitor e retornar true', (done) => {
-      mockRepository.create.mockReturnValue(of(true));
+    it('deve criar novo monitor e retornar o monitor com id', (done) => {
+      mockRepository.create.mockReturnValue(of(mockMonitor));
 
       service.createMonitor(mockCreateRequest).subscribe((response) => {
-        expect(response).toBe(true);
+        expect(response).toEqual(mockMonitor);
         expect(mockRepository.create).toHaveBeenCalledTimes(1);
         expect(mockRepository.create).toHaveBeenCalledWith(mockCreateRequest);
         done();
       });
     });
 
-    it('deve retornar false quando criação falha', (done) => {
-      mockRepository.create.mockReturnValue(of(false));
+    it('deve retornar null quando criação não devolve id', (done) => {
+      mockRepository.create.mockReturnValue(of({} as Monitor));
 
       service.createMonitor(mockCreateRequest).subscribe((response) => {
-        expect(response).toBe(false);
+        expect(response).toBeNull();
         expect(mockRepository.create).toHaveBeenCalledTimes(1);
         done();
       });
@@ -211,7 +226,7 @@ describe('MonitorService', () => {
   describe('updateMonitor', () => {
     it('deve atualizar monitor existente e retornar true', (done) => {
       const monitorId = 'mon-1';
-      mockRepository.update.mockReturnValue(of(true));
+      mockRepository.update.mockReturnValue(of(mockMonitor));
 
       service.updateMonitor(monitorId, mockUpdateRequest).subscribe((response) => {
         expect(response).toBe(true);
@@ -221,14 +236,20 @@ describe('MonitorService', () => {
       });
     });
 
-    it('deve retornar false quando atualização falha', (done) => {
+    it('deve propagar erro quando atualização falha', (done) => {
       const monitorId = 'mon-1';
-      mockRepository.update.mockReturnValue(of(false));
+      mockRepository.update.mockReturnValue(
+        throwError(() => new Error('Unprocessable'))
+      );
 
-      service.updateMonitor(monitorId, mockUpdateRequest).subscribe((response) => {
-        expect(response).toBe(false);
-        expect(mockRepository.update).toHaveBeenCalledTimes(1);
-        done();
+      service.updateMonitor(monitorId, mockUpdateRequest).subscribe({
+        next: () => {
+          fail('não devia emitir sucesso');
+        },
+        error: () => {
+          expect(mockRepository.update).toHaveBeenCalledTimes(1);
+          done();
+        },
       });
     });
   });
@@ -293,42 +314,107 @@ describe('MonitorService', () => {
   describe('getMonitorAlerts', () => {
     it('deve retornar todos os alertas quando monitorId não é fornecido', (done) => {
       service.getMonitorAlerts().subscribe((alerts) => {
-        expect(alerts.length).toBeGreaterThan(0);
-        expect(alerts[0].id).toBeDefined();
-        expect(alerts[0].monitorId).toBeDefined();
-        expect(alerts[0].title).toBeDefined();
-        expect(alerts[0].status).toBeDefined();
+        expect(alerts.length).toBe(2);
+        expect(alerts[0].id).toBe('a1');
+        expect(alerts[0].title).toBe('HEARTBEAT_STALE');
+        expect(alerts[0].status).toBe('critical');
         done();
+      });
+      const req = httpMock.expectOne((r) =>
+        r.url.includes('monitoring/incidents')
+      );
+      req.flush({
+        data: {
+          list: [
+            {
+              id: 'a1',
+              incidentType: 'HEARTBEAT_STALE',
+              severity: 'CRITICAL',
+              monitorId: 'm1',
+              boxId: null,
+              openedAt: '2024-01-01T00:00:00.000Z',
+              closedAt: null,
+              detailsJson: {},
+            },
+            {
+              id: 'a2',
+              incidentType: 'OTHER',
+              severity: 'WARNING',
+              monitorId: 'm2',
+              boxId: null,
+              openedAt: '2024-01-02T00:00:00.000Z',
+              closedAt: null,
+              detailsJson: {},
+            },
+          ],
+          totalRecords: 2,
+          totalPages: 1,
+          currentPage: 1,
+        },
+        status: 200,
+        message: 'ok',
       });
     });
 
     it('deve filtrar alertas por monitorId', (done) => {
-      const monitorId = '1';
+      const monitorId = 'm1';
 
       service.getMonitorAlerts(monitorId).subscribe((alerts) => {
-        expect(alerts.length).toBeGreaterThan(0);
-        alerts.forEach(alert => {
-          expect(alert.monitorId).toBe(monitorId);
-        });
+        expect(alerts.length).toBe(1);
+        expect(alerts[0].monitorId).toBe(monitorId);
         done();
+      });
+      const req = httpMock.expectOne((r) =>
+        r.url.includes('monitoring/incidents')
+      );
+      req.flush({
+        data: {
+          list: [
+            {
+              id: 'a1',
+              incidentType: 'X',
+              severity: 'CRITICAL',
+              monitorId: 'm1',
+              boxId: null,
+              openedAt: '2024-01-01T00:00:00.000Z',
+              closedAt: null,
+              detailsJson: {},
+            },
+            {
+              id: 'a2',
+              incidentType: 'Y',
+              severity: 'WARNING',
+              monitorId: 'm2',
+              boxId: null,
+              openedAt: '2024-01-02T00:00:00.000Z',
+              closedAt: null,
+              detailsJson: {},
+            },
+          ],
+          totalRecords: 2,
+          totalPages: 1,
+          currentPage: 1,
+        },
+        status: 200,
+        message: 'ok',
       });
     });
 
-    it('deve retornar alertas com diferentes status', (done) => {
+    it('deve retornar array vazio quando a API falha', (done) => {
       service.getMonitorAlerts().subscribe((alerts) => {
-        const statuses = alerts.map(alert => alert.status);
-        expect(statuses).toContain('critical');
-        expect(statuses).toContain('warning');
-        expect(statuses).toContain('resolved');
-        expect(statuses).toContain('acknowledged');
+        expect(alerts).toEqual([]);
         done();
       });
+      const req = httpMock.expectOne((r) =>
+        r.url.includes('monitoring/incidents')
+      );
+      req.flush('error', { status: 500, statusText: 'Server Error' });
     });
   });
 
   describe('acknowledgeAlert', () => {
     it('deve reconhecer alerta e retornar alerta atualizado', (done) => {
-      const alertId = 'alert-1';
+      const alertId = '550e8400-e29b-41d4-a716-446655440000';
       const reason = 'Under investigation';
 
       service.acknowledgeAlert(alertId, reason).subscribe((alert) => {
@@ -337,17 +423,65 @@ describe('MonitorService', () => {
         expect(alert.acknowledgeReason).toBe(reason);
         done();
       });
+      const req = httpMock.expectOne(
+        (r) =>
+          r.method === 'POST' &&
+          r.url.includes(
+            `monitoring/incidents/${encodeURIComponent(alertId)}/acknowledge`
+          )
+      );
+      expect(req.request.body).toEqual({ reason });
+      req.flush({
+        data: {
+          id: alertId,
+          incidentType: 'HEARTBEAT_STALE',
+          severity: 'WARNING',
+          monitorId: 'm1',
+          boxId: null,
+          openedAt: '2024-01-01T00:00:00.000Z',
+          closedAt: null,
+          acknowledgedAt: '2024-01-02T00:00:00.000Z',
+          acknowledgeReason: reason,
+          acknowledgedById: 'c1',
+          acknowledgedByEmail: 'admin@test.com',
+          detailsJson: {},
+        },
+        status: 200,
+        message: 'ok',
+      });
     });
   });
 
   describe('resolveAlert', () => {
     it('deve resolver alerta e retornar alerta atualizado', (done) => {
-      const alertId = 'alert-1';
+      const alertId = '550e8400-e29b-41d4-a716-446655440001';
 
       service.resolveAlert(alertId).subscribe((alert) => {
         expect(alert.id).toBe(alertId);
         expect(alert.status).toBe('resolved');
         done();
+      });
+      const req = httpMock.expectOne(
+        (r) =>
+          r.method === 'POST' &&
+          r.url.includes(
+            `monitoring/incidents/${encodeURIComponent(alertId)}/resolve`
+          )
+      );
+      expect(req.request.body).toBeNull();
+      req.flush({
+        data: {
+          id: alertId,
+          incidentType: 'OTHER',
+          severity: 'WARNING',
+          monitorId: 'm2',
+          boxId: null,
+          openedAt: '2024-01-01T00:00:00.000Z',
+          closedAt: '2024-01-03T00:00:00.000Z',
+          detailsJson: {},
+        },
+        status: 200,
+        message: 'ok',
       });
     });
   });

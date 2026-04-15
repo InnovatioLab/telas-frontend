@@ -17,8 +17,29 @@ describe('ClientDomainService', () => {
       delete: jest.fn(),
       getAuthenticatedClient: jest.fn(),
       getClientAds: jest.fn(),
-      getClientAttachments: jest.fn()
-    };
+      getClientAttachments: jest.fn(),
+      saveWithLoadingOption: jest.fn(),
+      editar: jest.fn(),
+      criarSenha: jest.fn(),
+      atualizardadosPerfil: jest.fn(),
+      reenvioCodigo: jest.fn(),
+      validarCodigo: jest.fn(),
+      aceitarTermosDeCondicao: jest.fn(),
+      clientExistente: jest.fn(),
+      buscarClient: jest.fn(),
+      buscaClientPorIdentificador: jest.fn(),
+      getAllAds: jest.fn(),
+      getAllAdRequests: jest.fn(),
+      getPendingAds: jest.fn(),
+      uploadAttachment: jest.fn(),
+      uploadMultipleAttachments: jest.fn(),
+      createAdRequest: jest.fn(),
+      validateAd: jest.fn(),
+      addToWishlist: jest.fn(),
+      getWishlist: jest.fn(),
+      findWithPagination: jest.fn(),
+      create: jest.fn(),
+    } as any;
     
     service = new ClientDomainService(mockRepository);
   });

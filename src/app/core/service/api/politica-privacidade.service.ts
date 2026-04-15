@@ -1,27 +1,16 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { ResponseDTO } from "@app/model/dto/response.dto";
+import { Inject, Injectable } from "@angular/core";
 import { PoliticaPrivacidade } from "@app/model/politica-privacidade";
-import { map } from "rxjs";
-import { ENVIRONMENT } from "src/environments/environment-token";
+import { Observable } from "rxjs";
+import { IPrivacyPolicyRepository } from "@app/core/interfaces/services/repository/privacy-policy-repository.interface";
+import { PRIVACY_POLICY_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 
 @Injectable({ providedIn: "root" })
 export class PoliticaPrivacidadeService {
-  baseUrl = inject(ENVIRONMENT).apiUrl + "privacy-policy";
-  httpClient: HttpClient;
-  headers = {
-    headers: {
-      Authorization: "",
-    },
-  };
+  constructor(
+    @Inject(PRIVACY_POLICY_REPOSITORY_TOKEN) private readonly repository: IPrivacyPolicyRepository
+  ) {}
 
-  constructor() {
-    this.httpClient = inject(HttpClient);
-  }
-
-  pegarPoliticaPrivacidade() {
-    return this.httpClient
-      .get<ResponseDTO<PoliticaPrivacidade>>(`${this.baseUrl}`)
-      .pipe(map((res: ResponseDTO<PoliticaPrivacidade>) => res.data));
+  pegarPoliticaPrivacidade(): Observable<PoliticaPrivacidade> {
+    return this.repository.pegarPoliticaPrivacidade();
   }
 }

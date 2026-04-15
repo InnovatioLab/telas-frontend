@@ -129,16 +129,7 @@ export class ManagementClientsComponent implements OnInit {
       this.clientManagementService.makePartner(client.id!).subscribe({
         next: () => {
           this.toastService.sucesso("Client successfully made partner");
-
-          const index = this.clients.findIndex((c) => c.id === client.id);
-
-          if (index !== -1) {
-            this.clients[index] = {
-              ...this.clients[index],
-              role: Role.PARTNER,
-            };
-          }
-          this.loading = false;
+          this.loadClients();
         },
         error: (error) => {
           

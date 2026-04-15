@@ -1,0 +1,49 @@
+.developer-permissions {
+  .text-muted {
+    opacity: 0.85;
+  }
+}
+
+:host ::ng-deep .developer-permissions-table {
+  table {
+    table-layout: fixed;
+  }
+
+  th.perm-col,
+  td.perm-col {
+    width: 6.75rem;
+    min-width: 5.5rem;
+    max-width: 10rem;
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 0.65rem 0.4rem !important;
+  }
+
+  th.perm-col {
+    font-size: 0.7rem;
+    line-height: 1.25;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  td.perm-col {
+    white-space: normal;
+  }
+
+  td.perm-col .p-checkbox {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .p-checkbox {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+
+  .p-checkbox .p-checkbox-box {
+    border-width: 2px;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}

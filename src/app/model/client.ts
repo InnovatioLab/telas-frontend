@@ -10,12 +10,14 @@ export interface Client {
   termCondition?: TermCondition;
   verificationCode?: VerificationCode;
   contact?: Contact;
+  partnerAddressSummary?: string | null;
   socialMedia?: SocialMedia;
   addresses?: Address[];
   attachments?: Attachment[];
   ads?: Ad[];
   notifications?: Notification[];
   currentSubscriptionFlowStep?: number;
+  permissions?: string[];
   cart?: CartResponse;
   createdAt?: string;
   updatedAt?: string;
@@ -92,6 +94,13 @@ export enum Role {
   CLIENT = "CLIENT",
   PARTNER = "PARTNER",
   ADMIN = "ADMIN",
+  DEVELOPER = "DEVELOPER",
+}
+
+export function isPrivilegedPanelRole(
+  role: Role | string | undefined | null
+): boolean {
+  return role === Role.ADMIN || role === Role.DEVELOPER;
 }
 
 export enum DefaultStatus {

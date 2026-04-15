@@ -1,0 +1,9 @@
+export const MonitoringPermission = {
+  MONITORING_LOGS_VIEW: "MONITORING_LOGS_VIEW",
+  MONITORING_TESTING_VIEW: "MONITORING_TESTING_VIEW",
+  MONITORING_TESTING_EXECUTE: "MONITORING_TESTING_EXECUTE",
+  MONITORING_SMART_PLUG_ADMIN: "MONITORING_SMART_PLUG_ADMIN",
+} as const;
+
+export type MonitoringPermissionCode =
+  (typeof MonitoringPermission)[keyof typeof MonitoringPermission];

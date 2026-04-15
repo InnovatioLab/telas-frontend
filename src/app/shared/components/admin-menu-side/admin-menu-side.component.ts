@@ -10,11 +10,14 @@ import {
 import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
+import { Role } from "@app/model/client";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { LayoutService } from "@app/core/service/state/layout.service";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
 import { IconDocumentoComponent } from "@app/shared/icons/documento.icon";
 import { IconEtiquetaComponent } from "@app/shared/icons/etiqueta.icon";
+import { IconTestingComponent } from "@app/shared/icons/testing.icon";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogModule } from "primeng/dialog";
@@ -42,6 +45,7 @@ interface MenuItem {
     IconsModule,
     IconDocumentoComponent,
     IconEtiquetaComponent,
+    IconTestingComponent,
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: "./admin-menu-side.component.html",
@@ -67,7 +71,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   isMobileCompact = this.layoutService.isMobileCompact;
   currentSidebarWidth = this.layoutService.currentSidebarWidth;
 
-  menuItems: MenuItem[] = [
+  readonly menuItems: MenuItem[] = [
     { id: "home", label: "Maps", icon: "dashboard" },
     { id: "profile", label: "Profile", icon: "pi-cog" },
 
@@ -75,6 +79,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     { id: "boxes", label: "Boxes", icon: "box" },
     { id: "ads", label: "Ads", icon: "etiqueta" },
     { id: "clients", label: "Clients", icon: "user" },
+    { id: "logs", label: "Logs", icon: "pi-file" },
+    { id: "testing", label: "Testing", icon: "testing" },
+    { id: "access", label: "Permissions", icon: "permissions" },
     {
       id: "changePassword",
       label: "Change Password",
@@ -82,6 +89,32 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     },
     { id: "logout", label: "Logout", icon: "pi-sign-out" },
   ];
+
+  get filteredMenuItems(): MenuItem[] {
+    const c = this.authentication.client();
+    const role = c?.role;
+    const perms = c?.permissions ?? [];
+    const isDev = role === Role.DEVELOPER;
+
+    return this.menuItems.filter((item) => {
+      if (item.id === "logs") {
+        return (
+          isDev ||
+          perms.includes(MonitoringPermission.MONITORING_LOGS_VIEW)
+        );
+      }
+      if (item.id === "testing") {
+        return (
+          isDev ||
+          perms.includes(MonitoringPermission.MONITORING_TESTING_VIEW)
+        );
+      }
+      if (item.id === "access") {
+        return isDev;
+      }
+      return true;
+    });
+  }
 
   ngOnInit(): void {
     this.setupSubscriptions();
@@ -176,6 +209,15 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "clients":
         this.navegarParaClients();
         break;
+      case "logs":
+        this.navegarParaLogs();
+        break;
+      case "testing":
+        this.navegarParaTesting();
+        break;
+      case "access":
+        this.navegarParaAccess();
+        break;
       case "alerts":
         this.toggleAdminSidebar();
         break;
@@ -237,6 +279,27 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaClients(): void {
     this.router.navigate(["/admin/clients"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaLogs(): void {
+    this.router.navigate(["/admin/logs"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaTesting(): void {
+    this.router.navigate(["/admin/testing"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaAccess(): void {
+    this.router.navigate(["/admin/access"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
@@ -306,6 +369,12 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return "Manage ads and requests";
       case "clients":
         return "Manage clients";
+      case "logs":
+        return "Application and box telemetry logs";
+      case "testing":
+        return "Heartbeat, monitors and smart plug checks";
+      case "access":
+        return "Grant monitoring access to admin users";
       case "alerts":
         return "View system alerts";
       case "profile":

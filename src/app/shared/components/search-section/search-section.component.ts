@@ -3,6 +3,7 @@ import {
   Component,
   EventEmitter,
   inject,
+  Input,
   OnDestroy,
   OnInit,
   Output,
@@ -34,6 +35,8 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   private readonly toastService = inject(ToastService);
 
   @Output() monitorsFound = new EventEmitter<{monitors: MapPoint[], zipCode: string}>();
+
+  @Input() useAdminMapSearch = false;
 
   searchText = "";
   isSearching = false;
@@ -200,8 +203,11 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     this.searchMonitorsService.clearError();
     this.isSearching = true;
 
-    this.searchMonitorsService
-      .findByZipCode(this.searchText)
+    const searchPromise = this.useAdminMapSearch
+      ? this.searchMonitorsService.findAdminMapByZipCode(this.searchText)
+      : this.searchMonitorsService.findByZipCode(this.searchText);
+
+    searchPromise
       .then((monitors: MapPoint[]) => {
         this.isSearching = false;
         this.monitorsFound.emit({monitors, zipCode: this.searchText});

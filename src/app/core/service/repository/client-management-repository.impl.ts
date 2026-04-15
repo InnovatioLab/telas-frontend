@@ -36,6 +36,7 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
             industry: clientDto.industry,
             status: clientDto.status,
             contact: clientDto.contact,
+            partnerAddressSummary: clientDto.partnerAddressSummary ?? null,
             role: clientDto.role as any,
             createdAt: clientDto.createdAt,
             updatedAt: clientDto.updatedAt

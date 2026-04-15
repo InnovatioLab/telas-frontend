@@ -19,6 +19,7 @@ export interface MonitorMapsResponseDto {
   addressLocationName?: string;
   addressLocationDescription?: string;
   photoUrl?: string;
+  boxActive?: boolean | null;
 }
 
 export interface NearestMonitorsResponse {
@@ -52,6 +53,36 @@ export class SearchMonitorsService {
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
+  }
+
+  public findAdminMapMonitors(zipCode: string): Observable<MonitorMapsResponseDto[]> {
+    this.loadingSubject.next(true);
+    this.errorSubject.next(null);
+
+    const url = `${this.env.apiUrl}monitors/admin/map-search`;
+    const headers = this.getAuthHeaders();
+
+    return this.http
+      .get<ApiResponseDto<MonitorMapsResponseDto[]>>(url, {
+        headers,
+        params: { zipCode },
+      })
+      .pipe(
+        map((response) => {
+          const monitors = response.data || [];
+          const allPoints = this.mapper.convertToMapPoints(monitors);
+          this.nearestMonitorsSubject.next(allPoints);
+          this.loadingSubject.next(false);
+          return monitors;
+        }),
+        catchError((error) => {
+          this.loadingSubject.next(false);
+          const errorMsg =
+            error.error?.message ?? "Error loading monitors for admin map";
+          this.errorSubject.next(errorMsg);
+          return of([]);
+        })
+      );
   }
 
   public findNearestMonitors(
@@ -90,6 +121,14 @@ export class SearchMonitorsService {
 
 
   public findByZipCode(zipCode: string): Promise<MapPoint[]> {
+    return this.loadByZipCode(zipCode, false);
+  }
+
+  public findAdminMapByZipCode(zipCode: string): Promise<MapPoint[]> {
+    return this.loadByZipCode(zipCode, true);
+  }
+
+  private loadByZipCode(zipCode: string, adminMap: boolean): Promise<MapPoint[]> {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
     if (!zipCode || zipCode.trim().length < 5) {
@@ -100,7 +139,11 @@ export class SearchMonitorsService {
 
     const cleanZipCode = zipCode.replace(/\D/g, "");
 
-    return this.findNearestMonitors(cleanZipCode)
+    const request$ = adminMap
+      ? this.findAdminMapMonitors(cleanZipCode)
+      : this.findNearestMonitors(cleanZipCode);
+
+    return request$
       .toPromise()
       .then(() => {
         const points = this.nearestMonitorsSubject.getValue();
@@ -111,7 +154,7 @@ export class SearchMonitorsService {
         }
         return points;
       })
-      .catch((error): MapPoint[] => {
+      .catch((): MapPoint[] => {
         this.errorSubject.next("Error searching monitors by zip code");
         return [];
       })

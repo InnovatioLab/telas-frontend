@@ -3,7 +3,7 @@ import { HttpClient, HttpBackend } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject, firstValueFrom } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { IAuthService } from '@app/core/interfaces/services/auth/auth-service.interface';
-import { Client, Role } from '@app/model/client';
+import { Client, isPrivilegedPanelRole } from '@app/model/client';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { SenhaUpdate } from '@app/model/dto/request/senha-update.request';
@@ -346,7 +346,7 @@ export class AuthService implements IAuthService {
 
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    return user?.role === Role.ADMIN;
+    return isPrivilegedPanelRole(user?.role);
   }
 
   isAdministrador(): boolean {

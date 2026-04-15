@@ -6,6 +6,9 @@ import { IBoxRepository } from '../interfaces/services/repository/box-repository
 import { ICartRepository } from '../interfaces/services/repository/cart-repository.interface';
 import { IMonitorRepository } from '../interfaces/services/repository/monitor-repository.interface';
 import { IZipCodeRepository } from '../interfaces/services/repository/zipcode-repository.interface';
+import { IAdRepository } from '../interfaces/services/repository/ad-repository.interface';
+import { IPrivacyPolicyRepository } from '../interfaces/services/repository/privacy-policy-repository.interface';
+import { ITermsConditionsRepository } from '../interfaces/services/repository/terms-conditions-repository.interface';
 
 export const CLIENT_REPOSITORY_TOKEN = new InjectionToken<IClientRepository>('CLIENT_REPOSITORY');
 export const CLIENT_MANAGEMENT_REPOSITORY_TOKEN = new InjectionToken<IClientManagementRepository>('CLIENT_MANAGEMENT_REPOSITORY');
@@ -14,5 +17,8 @@ export const BOX_REPOSITORY_TOKEN = new InjectionToken<IBoxRepository>('BOX_REPO
 export const CART_REPOSITORY_TOKEN = new InjectionToken<ICartRepository>('CART_REPOSITORY');
 export const MONITOR_REPOSITORY_TOKEN = new InjectionToken<IMonitorRepository>('MONITOR_REPOSITORY');
 export const ZIPCODE_REPOSITORY_TOKEN = new InjectionToken<IZipCodeRepository>('ZIPCODE_REPOSITORY');
+export const AD_REPOSITORY_TOKEN = new InjectionToken<IAdRepository>('AD_REPOSITORY');
+export const PRIVACY_POLICY_REPOSITORY_TOKEN = new InjectionToken<IPrivacyPolicyRepository>('PRIVACY_POLICY_REPOSITORY');
+export const TERMS_CONDITIONS_REPOSITORY_TOKEN = new InjectionToken<ITermsConditionsRepository>('TERMS_CONDITIONS_REPOSITORY');
 
 
