@@ -21,6 +21,7 @@ export interface Client {
   cart?: CartResponse;
   createdAt?: string;
   updatedAt?: string;
+  reactivatableByCurrentUser?: boolean;
 }
 
 export interface TermCondition {

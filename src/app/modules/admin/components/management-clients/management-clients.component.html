@@ -138,6 +138,15 @@
             pTooltip="Edit Client"
           ></button>
           <button
+            *ngIf="client.reactivatableByCurrentUser"
+            pButton
+            pRipple
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-success p-button-text"
+            (click)="reactivateClient(client)"
+            pTooltip="Reactivate user"
+          ></button>
+          <button
             *ngIf="canDeactivateClient(client)"
             pButton
             pRipple

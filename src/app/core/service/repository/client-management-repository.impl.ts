@@ -39,7 +39,8 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
             partnerAddressSummary: clientDto.partnerAddressSummary ?? null,
             role: clientDto.role as any,
             createdAt: clientDto.createdAt,
-            updatedAt: clientDto.updatedAt
+            updatedAt: clientDto.updatedAt,
+            reactivatableByCurrentUser: clientDto.reactivatableByCurrentUser,
           } as Client));
           
           return {
@@ -71,5 +72,9 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
 
   deactivateClient(clientId: string): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}/${clientId}/deactivate`, {});
+  }
+
+  reactivateClient(clientId: string): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${clientId}/reactivate`, {});
   }
 }

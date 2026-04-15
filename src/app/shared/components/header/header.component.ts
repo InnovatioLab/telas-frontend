@@ -254,10 +254,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onAdminClick(): void {
-    this.headerActions.navigateToAdminProfile();
-  }
-
   onNotificationsClick(): void {
     this.headerState.toggleNotificationsSidebar();
   }

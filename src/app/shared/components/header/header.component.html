@@ -77,7 +77,6 @@
                 [cartItemCount]="headerActions.cartItemCount()"
                 [notificationCount]="notificationsService.unreadCount()"
                 [cartTooltip]="cartTooltip"
-                (adminClick)="onAdminClick()"
                 (notificationsClick)="onNotificationsClick()">
               </app-header-actions>
             </div>
@@ -112,7 +111,6 @@
             [notificationCount]="notificationsService.unreadCount()"
             [cartTooltip]="cartTooltip"
             (checkoutClick)="onCheckoutClick()"
-            (adminClick)="onAdminClick()"
             (notificationsClick)="onNotificationsClick()">
           </app-header-actions>
         </section>

@@ -23,4 +23,6 @@ export interface IClientManagementRepository {
   makePartner(clientId: string): Observable<void>;
 
   deactivateClient(clientId: string): Observable<void>;
+
+  reactivateClient(clientId: string): Observable<void>;
 }

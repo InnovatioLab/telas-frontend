@@ -26,6 +26,7 @@ export interface ClientResponseDto {
   createdAt?: string;
   updatedAt?: string;
   ads?: any[];
+  reactivatableByCurrentUser?: boolean;
 }
 
 @Injectable({
@@ -47,5 +48,9 @@ export class ClientManagementService {
 
   deactivateClient(clientId: string): Observable<void> {
     return this.repository.deactivateClient(clientId);
+  }
+
+  reactivateClient(clientId: string): Observable<void> {
+    return this.repository.reactivateClient(clientId);
   }
 } 

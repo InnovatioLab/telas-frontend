@@ -261,6 +261,39 @@ export class ManagementClientsComponent implements OnInit {
     });
   }
 
+  async reactivateClient(client: Client): Promise<void> {
+    const clientName = client.businessName ?? "Unknown";
+
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Reactivate user",
+      message: `Reactivate the account ${clientName}? The user will be able to sign in again.`,
+      confirmLabel: "Reactivate",
+      cancelLabel: "Cancel",
+      severity: "info",
+    });
+
+    if (!confirmed || !client.id) {
+      return;
+    }
+
+    this.loading = true;
+    this.clientManagementService.reactivateClient(client.id).subscribe({
+      next: () => {
+        this.toastService.sucesso("User reactivated successfully");
+        this.loadClients();
+      },
+      error: (error) => {
+        const msg =
+          error?.error?.message ||
+          error?.error?.data?.message ||
+          error?.message ||
+          "Failed to reactivate user";
+        this.toastService.erro(msg);
+        this.loading = false;
+      },
+    });
+  }
+
   async deactivateClient(client: Client): Promise<void> {
     const clientName = client.businessName ?? "Unknown";
 

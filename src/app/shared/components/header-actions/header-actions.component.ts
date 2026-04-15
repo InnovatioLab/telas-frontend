@@ -22,16 +22,6 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
         <app-header-badge [count]="cartItemCount"></app-header-badge>
       </button>
 
-      <!-- Admin Settings Button -->
-      <button
-        *ngIf="isAdministrator"
-        class="icon-button"
-        (click)="onAdminClick()"
-        title="Admin settings"
-      >
-        <app-icon-settings class="icon cursor-pointer icon-fill"></app-icon-settings>
-      </button>
-
       <!-- Notifications (all logged-in roles) -->
       <button
         type="button"
@@ -109,7 +99,6 @@ export class HeaderActionsComponent {
   @Input() notificationCount = 0;
   @Input() cartTooltip = "";
   @Output() checkoutClick = new EventEmitter<void>();
-  @Output() adminClick = new EventEmitter<void>();
   @Output() notificationsClick = new EventEmitter<void>();
 
   get hasActiveCart(): boolean {
@@ -118,10 +107,6 @@ export class HeaderActionsComponent {
 
   onCheckoutClick(): void {
     this.checkoutClick.emit();
-  }
-
-  onAdminClick(): void {
-    this.adminClick.emit();
   }
 
   onNotificationsClick(): void {
