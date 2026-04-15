@@ -74,6 +74,7 @@ describe('ClientManagementService', () => {
       findWithPagination: jest.fn(),
       makePartner: jest.fn(),
       deactivateClient: jest.fn(),
+      reactivateClient: jest.fn(),
     } as any;
 
     TestBed.configureTestingModule({
