@@ -1,0 +1,19 @@
+name: Discord — deploy frontend
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Notificar Discord (deploy)
+        continue-on-error: true
+        env:
+          DISCORD_DEPLOY_WEBHOOK_URL: ${{ secrets.DISCORD_DEPLOY_WEBHOOK_URL }}
+          APP_NAME: frontend (Vercel)
+        run: bash .github/scripts/discord-notify.sh
