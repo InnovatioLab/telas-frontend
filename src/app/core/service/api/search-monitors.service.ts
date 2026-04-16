@@ -85,6 +85,32 @@ export class SearchMonitorsService {
       );
   }
 
+  public findMonitorsInViewport(params: {
+    minLat: number;
+    maxLat: number;
+    minLng: number;
+    maxLng: number;
+  }): Observable<MapPoint[]> {
+    const url = `${this.env.apiUrl}monitors/search/viewport`;
+    const headers = this.getAuthHeaders();
+    return this.http
+      .get<ApiResponseDto<MonitorMapsResponseDto[]>>(url, {
+        headers,
+        params: {
+          minLat: String(params.minLat),
+          maxLat: String(params.maxLat),
+          minLng: String(params.minLng),
+          maxLng: String(params.maxLng),
+        },
+      })
+      .pipe(
+        map((response) =>
+          this.mapper.convertToMapPoints(response.data ?? [])
+        ),
+        catchError(() => of([]))
+      );
+  }
+
   public findNearestMonitors(
     zipCode: string
   ): Observable<MonitorMapsResponseDto[]> {

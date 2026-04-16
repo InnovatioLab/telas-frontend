@@ -17,8 +17,8 @@
       [center]="clientViewService.mapCenter()"
       (pointClick)="handlePointClick($event)"
       (markerClicked)="handleMarkerClick($event)"
-      (mapInitialized)="onMapInitialized()"
-      (mapReady)="onMapReady()"
+      (mapInitialized)="onMapLeafletInitialized($event)"
+      (mapReady)="onMapReady($event)"
       (mapError)="onMapError($event)"
     >
     </app-maps>

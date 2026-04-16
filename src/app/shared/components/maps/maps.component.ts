@@ -96,7 +96,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }>();
   @Output() mapInitialized = new EventEmitter<L.Map>();
   @Output() markerClicked = new EventEmitter<MapPoint>();
-  @Output() mapReady = new EventEmitter<boolean>();
+  @Output() mapReady = new EventEmitter<L.Map>();
   @Output() mapError = new EventEmitter<string>();
 
   private _map: L.Map | null = null;
@@ -217,13 +217,15 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
           this._map.invalidateSize();
           this.ngZone.run(() => {
             this._mapReady = true;
-            this.mapReady.emit(true);
+            this.mapReady.emit(this._map);
           });
         }
       }, 200);
     } else if (this._mapReady) {
       this.ngZone.run(() => {
-        this.mapReady.emit(true);
+        if (this._map) {
+          this.mapReady.emit(this._map);
+        }
       });
     }
   }
@@ -299,7 +301,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
           this._map.invalidateSize();
           this.ngZone.run(() => {
             this._mapReady = true;
-            this.mapReady.emit(true);
+            this.mapReady.emit(this._map);
           });
         }
       }, 200);
@@ -548,13 +550,21 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
 
-  public setMapPoints(points: MapPoint[]): void {
+  public setMapPoints(
+    points: MapPoint[],
+    options?: { fitBounds?: boolean }
+  ): void {
+    const fitBounds = options?.fitBounds !== false;
     this.points = points;
     this.addMapPoints(points);
 
-    if (points.length > 0) {
+    if (points.length > 0 && fitBounds) {
       this.fitBoundsToPoints(points);
     }
+  }
+
+  public getLeafletMap(): L.Map | null {
+    return this._map;
   }
 
   public onMarkerClick(

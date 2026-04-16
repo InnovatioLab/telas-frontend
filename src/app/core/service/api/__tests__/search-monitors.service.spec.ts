@@ -473,5 +473,36 @@ describe('SearchMonitorsService', () => {
     });
 
   });
+
+  describe('findMonitorsInViewport', () => {
+    it('deve chamar GET monitors/search/viewport e mapear para MapPoint[]', (done) => {
+      const mockResponse: ApiResponseDto<MonitorMapsResponseDto[]> = {
+        data: [mockMonitorResponse],
+        status: 200,
+        message: 'Success',
+        timestamp: new Date().toISOString(),
+      };
+
+      service
+        .findMonitorsInViewport({
+          minLat: 25.0,
+          maxLat: 25.5,
+          minLng: -80.5,
+          maxLng: -80.0,
+        })
+        .subscribe((points) => {
+          expect(points.length).toBe(1);
+          expect(points[0].id).toBe('mon-1');
+          done();
+        });
+
+      const req = httpMock.expectOne((r) =>
+        r.url.includes('monitors/search/viewport')
+      );
+      expect(req.request.params.get('minLat')).toBe('25');
+      expect(req.request.params.get('maxLng')).toBe('-80');
+      req.flush(mockResponse);
+    });
+  });
 });
 

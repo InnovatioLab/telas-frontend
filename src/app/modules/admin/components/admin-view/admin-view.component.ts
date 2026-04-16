@@ -18,10 +18,12 @@ import { MapPoint } from "../../../../core/service/state/map-point.interface";
 import { MapsComponent } from "../../../../shared/components/maps/maps.component";
 import { SearchSectionComponent } from "../../../../shared/components/search-section/search-section.component";
 import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa/sidebar-mapa.component";
+import { MapViewportFacadeService } from "../../../client/services/map-viewport-facade.service";
 
 @Component({
   selector: "app-admin-view",
   standalone: true,
+  providers: [MapViewportFacadeService],
   imports: [
     CommonModule,
     FormsModule,
@@ -41,13 +43,13 @@ import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa
       <div class="map-container">
         <app-maps
           #mapsComponent
-          [points]="monitors"
           [center]="mapCenter"
           height="100%"
           width="100%"
           [zoom]="9"
           (markerClicked)="onMarkerClick($event)"
-          (mapInitialized)="onMapInitialized($event)"
+          (mapInitialized)="onMapLeafletInitialized($event)"
+          (mapReady)="onMapReady($event)"
         >
         </app-maps>
       </div>
@@ -131,37 +133,33 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly zipCodeService: ZipCodeService,
     private readonly authentication: Authentication,
     private readonly loadingService: LoadingService,
-    private readonly geolocationService: GeolocationService
+    private readonly geolocationService: GeolocationService,
+    private readonly viewportFacade: MapViewportFacadeService
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.requestUserLocation();
-    // Não buscar monitores automaticamente - apenas centralizar o mapa na localização do usuário
-    // Os monitores só serão buscados quando o usuário pesquisar por ZIP code
-    
     this.setupEventListeners();
   }
 
   ngAfterViewInit(): void {
+    this.viewportFacade.connect({
+      getMapsComponent: () => this.mapsComponent,
+      googleMapsService: this.googleMapsService,
+      ensureMapInitialized: () => this.mapsComponent?.ensureMapInitialized(),
+      onMarkersChanged: (points) => {
+        this.monitors = points;
+      },
+    });
     setTimeout(() => {
-      this.ensureMapInitialized();
-    }, 1000);
+      if (this.mapsComponent && !this.mapsComponent.isMapReady()) {
+        this.mapsComponent.forceReinitialize();
+      }
+    }, 2000);
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
-  }
-
-  private ensureMapInitialized(): void {
-    if (this.mapsComponent) {
-      this.mapsComponent.ensureMapInitialized();
-
-      setTimeout(() => {
-        if (!this.mapsComponent.isMapReady()) {
-          this.mapsComponent.forceReinitialize();
-        }
-      }, 2000);
-    }
   }
 
   private setupEventListeners(): void {
@@ -173,8 +171,6 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
             lat: lastPoint.latitude,
             lng: lastPoint.longitude,
           };
-          // Não buscar monitores automaticamente quando coordenadas são atualizadas
-          // Os monitores só serão buscados quando o usuário pesquisar por ZIP code
         }
       }
     );
@@ -198,8 +194,13 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  onMapInitialized(map: L.Map): void {
-    this.map = map;
+  onMapLeafletInitialized(leafletMap: L.Map): void {
+    this.map = leafletMap;
+    this.viewportFacade.onMapLeafletInitialized(leafletMap);
+  }
+
+  onMapReady(leafletMap: L.Map): void {
+    this.viewportFacade.onMapReady(leafletMap);
   }
 
   onMarkerClick(point: MapPoint): void {
@@ -222,10 +223,9 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onMonitorsFound(monitors: MapPoint[], zipCode?: string): void {
     if (monitors && monitors.length > 0) {
-      this.mapsComponent?.setMapPoints(monitors);
-      this.mapsComponent?.fitBoundsToPoints(monitors);
-      this.googleMapsService.updateNearestMonitors(monitors);
+      this.viewportFacade.onZipSearchWithResults(monitors, true);
     } else {
+      this.viewportFacade.onZipSearchEmpty();
       this.focusOnZipCodeLocation(zipCode);
     }
   }
@@ -258,6 +258,8 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
             this.mapsComponent?.setMapPoints([zipCodePoint]);
             this.mapsComponent?.fitBoundsToPoints([zipCodePoint]);
             this.googleMapsService.updateNearestMonitors([zipCodePoint]);
+            this.monitors = [zipCodePoint];
+            this.viewportFacade.triggerViewportFromMap();
           }
         })
         .catch((error) => {
