@@ -79,6 +79,11 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     { id: "boxes", label: "Boxes", icon: "box" },
     { id: "ads", label: "Ads", icon: "etiqueta" },
     { id: "clients", label: "Clients", icon: "user" },
+    {
+      id: "adOperations",
+      label: "Ads & subscriptions",
+      icon: "tv-display",
+    },
     { id: "logs", label: "Logs", icon: "pi-file" },
     { id: "testing", label: "Testing", icon: "testing" },
     { id: "access", label: "Permissions", icon: "permissions" },
@@ -209,6 +214,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "clients":
         this.navegarParaClients();
         break;
+      case "adOperations":
+        this.navegarParaAdOperations();
+        break;
       case "logs":
         this.navegarParaLogs();
         break;
@@ -279,6 +287,13 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaClients(): void {
     this.router.navigate(["/admin/clients"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaAdOperations(): void {
+    this.router.navigate(["/admin/ad-operations"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
@@ -369,6 +384,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return "Manage ads and requests";
       case "clients":
         return "Manage clients";
+      case "adOperations":
+        return "Operational view: ads, screens, subscriptions, reminders";
       case "logs":
         return "Application and box telemetry logs";
       case "testing":

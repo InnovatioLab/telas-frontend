@@ -17,6 +17,7 @@ import { AdRequestManagementComponent } from "./components/ad-request-management
 import { ApplicationLogsComponent } from "./components/application-logs/application-logs.component";
 import { MonitoringTestingComponent } from "./components/monitoring-testing/monitoring-testing.component";
 import { DeveloperPermissionsComponent } from "./components/developer-permissions/developer-permissions.component";
+import { AdminAdOperationsComponent } from "./components/admin-ad-operations/admin-ad-operations.component";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 
 export const ROUTES: Route[] = [
@@ -64,6 +65,11 @@ export const ROUTES: Route[] = [
         path: "clients",
         component: ManagementClientsComponent,
         title: "Clients Management",
+      },
+      {
+        path: "ad-operations",
+        component: AdminAdOperationsComponent,
+        title: "Ads & subscriptions",
       },
       {
         path: "logs",

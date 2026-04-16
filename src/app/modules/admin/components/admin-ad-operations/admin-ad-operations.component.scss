@@ -1,0 +1,56 @@
+.toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toolbar-filters-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+.export-csv-icon {
+  flex-shrink: 0;
+  color: #496382;
+}
+
+.wrap-address {
+  max-width: 280px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+::ng-deep .toolbar-filters-inline .validation-dropdown.p-select {
+  flex: 0 0 auto;
+  position: relative;
+
+  .p-select-dropdown {
+    flex-shrink: 0;
+    width: 2.5rem;
+    min-width: 2.5rem;
+  }
+
+  .p-select-clear-icon {
+    inset-inline-end: 2.75rem;
+  }
+
+  &:has(.p-select-clear-icon) .p-select-label {
+    padding-inline-end: 3.25rem !important;
+  }
+}
+
+.text-muted {
+  opacity: 0.85;
+}

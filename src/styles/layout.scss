@@ -2,7 +2,7 @@
   transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.menu-active {
-    padding-left: 200px;
+    padding-left: 216px;
   }
 
   &.mobile {
@@ -29,7 +29,7 @@ body {
 @media (max-width: 768px) {
   .content-wrapper {
     &.menu-active {
-      padding-left: 200px !important;
+      padding-left: 216px !important;
     }
 
     &.mobile-compact {

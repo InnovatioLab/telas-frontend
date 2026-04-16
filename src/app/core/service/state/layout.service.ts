@@ -20,7 +20,7 @@ export class LayoutService {
     isMobile: false,
     isMobileCompact: false,
     sidebarWidth: 200,
-    mobileSidebarWidth: 200,
+    mobileSidebarWidth: 150,
   });
 
   public layoutState = this._layoutState.asReadonly();
@@ -43,13 +43,14 @@ export class LayoutService {
 
   public contentMargin = computed(() => {
     const state = this._layoutState();
+    const gapAfterSidebar = 16;
     if (state.isMobileCompact) {
       return state.menuOpen ? 70 : 0;
     }
     if (state.isMobile) {
       return state.menuOpen ? state.mobileSidebarWidth : 0;
     }
-    return state.menuOpen ? state.sidebarWidth : 0;
+    return state.menuOpen ? state.sidebarWidth + gapAfterSidebar : 0;
   });
 
   public layoutChange$ = new BehaviorSubject<LayoutState>(this._layoutState());

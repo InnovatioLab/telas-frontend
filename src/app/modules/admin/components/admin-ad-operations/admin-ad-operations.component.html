@@ -1,0 +1,168 @@
+<p-card styleClass="card-header">
+  <div class="card-header-content">
+    <div class="p-card-content toolbar-row">
+      <div class="toolbar-filters-inline">
+        <span class="p-input-icon-left">
+          <app-icon-search
+            style="color: #496382"
+            class="search-icon"
+            (click)="onSearch()"
+          ></app-icon-search>
+          <input
+            type="text"
+            style="width: 220px"
+            pInputText
+            placeholder="Buscar anunciante, parceiro, ad, endereço..."
+            [(ngModel)]="searchTerm"
+            [ngModelOptions]="{ standalone: true }"
+            (keyup.enter)="onSearch()"
+          />
+        </span>
+        <p-dropdown
+          [options]="validationOptions"
+          [(ngModel)]="validationFilter"
+          placeholder="Validação do ad"
+          [showClear]="true"
+          styleClass="validation-dropdown"
+          [style]="{ width: 'auto', minWidth: '15rem', maxWidth: '18rem' }"
+          (onChange)="onSearch()"
+        ></p-dropdown>
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-download"
+          class="p-button-rounded p-button-text export-csv-icon"
+          pTooltip="Exportar assinaturas (CSV)"
+          tooltipPosition="bottom"
+          (click)="exportCsv()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</p-card>
+
+<p-table
+  [value]="rows"
+  [loading]="loading"
+  styleClass="p-datatable-sm"
+  [paginator]="true"
+  [rows]="currentFilters.size || 10"
+  [totalRecords]="totalRecords"
+  [rowsPerPageOptions]="[5, 10, 25, 50]"
+  [showCurrentPageReport]="true"
+  responsiveLayout="scroll"
+  [lazy]="true"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+  paginatorDropdownAppendTo="body"
+  (onPage)="onPageChange($event)"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th scope="col">Anunciante</th>
+      <th scope="col">Anúncio</th>
+      <th scope="col">Validação</th>
+      <th scope="col">Parceiro (tela)</th>
+      <th scope="col">Endereço da tela</th>
+      <th scope="col">Box (IP)</th>
+      <th scope="col">Fim da assinatura</th>
+      <th scope="col">Prazo</th>
+      <th scope="col">Estágio</th>
+      <th scope="col">Ações</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>{{ row.advertiserBusinessName ?? "—" }}</td>
+      <td>{{ row.adName ?? "—" }}</td>
+      <td>
+        <p-badge [value]="row.validation" severity="info"></p-badge>
+      </td>
+      <td>{{ row.partnerBusinessName ?? "—" }}</td>
+      <td class="wrap-address">{{ row.screenAddressSummary ?? "—" }}</td>
+      <td>{{ row.boxIp ?? "—" }}</td>
+      <td>
+        {{
+          row.subscriptionEndsAt
+            ? (row.subscriptionEndsAt | date : "shortDate")
+            : "—"
+        }}
+      </td>
+      <td>
+        <p-badge
+          [value]="urgencyLabel(row.urgencyLevel)"
+          [severity]="getUrgencySeverity(row.urgencyLevel)"
+        ></p-badge>
+      </td>
+      <td>{{ stageLabel(row.operationalStage) }}</td>
+      <td>
+        <div class="action-buttons">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-envelope"
+            class="p-button-rounded p-button-help p-button-text"
+            pTooltip="E-mails de lembrete de expiração"
+            (click)="openExpiryNotifications(row)"
+          ></button>
+          <button
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-external-link"
+            class="p-button-rounded p-button-info p-button-text"
+            [routerLink]="['/admin/screens', row.monitorId, 'manage-ads']"
+            pTooltip="Gerenciar anúncios na tela"
+          ></button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="10" class="text-center">Nenhum registro encontrado.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  header="Lembretes de expiração (e-mail)"
+  [(visible)]="notificationsDialogVisible"
+  [modal]="true"
+  [style]="{ width: 'min(640px, 96vw)' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closeNotificationsDialog()"
+>
+  <p class="mb-3 text-muted">
+    Cliente: <strong>{{ selectedAdvertiserLabel }}</strong>
+  </p>
+  <p *ngIf="notificationsLoading" class="text-center py-3">Carregando…</p>
+  <p-table
+    *ngIf="!notificationsLoading"
+    [value]="expiryNotifications"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th scope="col">Tipo</th>
+        <th scope="col">Registrado em</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-n>
+      <tr>
+        <td>{{ n.label }}</td>
+        <td>{{ n.createdAt | date : "short" }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="2" class="text-center">
+          Nenhum lembrete de expiração registrado para este cliente.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

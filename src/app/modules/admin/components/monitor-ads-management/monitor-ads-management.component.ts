@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Monitor } from "@app/model/monitors";
+import { MAX_MONITOR_ADS } from "@app/shared/constants/monitor.constants";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { PdfViewerModule } from "ng2-pdf-viewer";
@@ -152,8 +153,13 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     );
   }
 
+  get maxMonitorAds(): number {
+    const cap = this.monitor?.maxBlocks ?? MAX_MONITOR_ADS;
+    return Math.min(cap, MAX_MONITOR_ADS);
+  }
+
   get hasBlockError(): boolean {
-    return this.totalBlockSlots > 17;
+    return this.totalBlockSlots > this.maxMonitorAds;
   }
 
   get filteredValidAds(): MonitorAdItem[] {
@@ -268,7 +274,9 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     }
 
     if (this.hasBlockError) {
-      this.toastService.erro("Total block slots must be less or equal to 17");
+      this.toastService.erro(
+        `Total block slots must be less or equal to ${this.maxMonitorAds}`
+      );
       return;
     }
 

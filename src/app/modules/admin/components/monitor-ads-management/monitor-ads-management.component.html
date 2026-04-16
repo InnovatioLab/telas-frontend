@@ -86,9 +86,9 @@
         </p>
 
         <div class="block-summary" [class.error]="hasBlockError">
-          <span>Total blocks: {{ totalBlockSlots }} / 17</span>
+          <span>Total blocks: {{ totalBlockSlots }} / {{ maxMonitorAds }}</span>
           <span *ngIf="hasBlockError" class="error-text">
-            Total blocks cannot be greater than 17.
+            Total blocks cannot be greater than {{ maxMonitorAds }}.
           </span>
         </div>
 
