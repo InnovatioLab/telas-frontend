@@ -5,7 +5,8 @@ import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { Role } from "@app/model/client";
+import { AuthenticationStorage } from "@app/core/service/auth/authentication-storage";
+import { Client, DefaultStatus, Role } from "@app/model/client";
 import { ILoginRequest } from "@app/model/dto/request/login.request";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
@@ -95,11 +96,27 @@ export class LoginComponent implements OnInit {
       )
       .subscribe((response) => {
         if (response && response.client) {
-          this.clientService.setClientAtual(response.client as any);
-          this.authentication.updateClientData(response.client as any);
+          const r = response as {
+            token?: string;
+            accessToken?: string;
+            refreshToken?: string;
+            client: AuthenticatedClientResponseDto;
+          };
 
-          if (response.client.termAccepted) {
-            this.redirecionarParaHome(response.client as any);
+          const accessToken = r.accessToken ?? r.token;
+          if (accessToken) {
+            AuthenticationStorage.setToken(accessToken);
+          }
+          if (r.refreshToken) {
+            AuthenticationStorage.setRefreshToken(r.refreshToken);
+          }
+
+          const client = this.toClient(r.client);
+          this.clientService.setClientAtual(client);
+          this.authentication.updateClientData(client);
+
+          if (r.client.termAccepted) {
+            this.redirecionarParaHome(r.client);
           } else {
             this.router.navigate(["/terms-of-service"]);
           }
@@ -119,6 +136,46 @@ export class LoginComponent implements OnInit {
         this.router.navigate(["/client"]);
       }
     }
+  }
+
+  private toClient(dto: AuthenticatedClientResponseDto): Client {
+    const role = Object.values(Role).includes(dto.role as Role)
+      ? (dto.role as Role)
+      : undefined;
+
+    const status = Object.values(DefaultStatus).includes(dto.status as DefaultStatus)
+      ? (dto.status as DefaultStatus)
+      : undefined;
+
+    return {
+      id: dto.id,
+      businessName: dto.businessName,
+      role,
+      industry: dto.industry,
+      status,
+      termAccepted: dto.termAccepted,
+      permissions: dto.permissions,
+      contact: dto.contact,
+      addresses: dto.addresses?.map((a) => ({
+        id: a.id,
+        street: a.street,
+        zipCode: a.zipCode,
+        city: a.city,
+        state: a.state,
+        country: a.country,
+        address2: a.address2 ?? undefined,
+        latitude: a.latitude,
+        longitude: a.longitude,
+        partnerAddress: a.partnerAddress,
+        coordinatesParams: a.coordinatesParams,
+      })),
+      attachments: dto.attachments?.map((att) => ({
+        id: att.attachmentId,
+        fileName: att.attachmentName,
+        url: att.attachmentLink,
+      })),
+      currentSubscriptionFlowStep: dto.currentSubscriptionFlowStep,
+    };
   }
 
   logout(): void {
