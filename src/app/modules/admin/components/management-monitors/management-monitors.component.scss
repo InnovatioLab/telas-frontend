@@ -77,11 +77,14 @@
   .p-card-body {
     width: 100%;
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
 
     .card-header-content {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      align-items: stretch;
+      justify-content: flex-start;
+      width: 100%;
     }
 
     .p-card-content {
@@ -211,10 +214,6 @@
 
   .text-center {
     text-align: center;
-  }
-
-  .card-header {
-    padding: var(--espacamento-padrao);
   }
 
   .p-card-content {
@@ -587,5 +586,141 @@
     &:hover:not(:disabled) {
       background: transparent !important;
     }
+  }
+}
+
+:host ::ng-deep .content .card-header.p-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+:host ::ng-deep .card-header.p-card .p-card-body {
+  padding: 0.75rem 1rem;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .card-header .card-header-content {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .p-card-content.card-toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .card-toolbar-search {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+:host ::ng-deep .card-toolbar-search .info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin: 0;
+  line-height: 1;
+  font-size: 1rem;
+}
+
+:host ::ng-deep .card-toolbar-search .p-input-icon-left {
+  flex: 1;
+  min-width: 0;
+  max-width: 28rem;
+}
+
+:host ::ng-deep .card-toolbar-search .search-input-width {
+  width: 100%;
+  min-width: 0;
+}
+
+:host ::ng-deep .card-toolbar-search input.p-inputtext {
+  height: var(--altura-input);
+  min-height: var(--altura-input);
+  max-height: var(--altura-input);
+  padding: 0 0.75rem 0 2.5rem;
+  line-height: 1.25;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .card-toolbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.625rem;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+:host ::ng-deep .card-toolbar-actions .p-button {
+  white-space: nowrap;
+  flex-direction: row !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center;
+  gap: 0.5rem;
+  height: var(--altura-input);
+  min-height: var(--altura-input);
+  max-height: var(--altura-input);
+  padding: 0 1rem !important;
+  margin: 0;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .card-toolbar-actions .p-button .p-button-label {
+  white-space: nowrap;
+  line-height: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex;
+  align-items: center;
+}
+
+:host ::ng-deep .card-toolbar-actions .p-button .p-button-icon {
+  margin: 0 !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+:host ::ng-deep .card-toolbar-actions .btn-register-smart-plug.p-button .p-button-icon,
+:host ::ng-deep .card-toolbar-actions .btn-create-monitor.p-button .p-button-icon {
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 767px) {
+  :host ::ng-deep .p-card-content.card-toolbar {
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  :host ::ng-deep .card-toolbar-search {
+    width: 100%;
+  }
+
+  :host ::ng-deep .card-toolbar-search .p-input-icon-left {
+    max-width: none;
+  }
+
+  :host ::ng-deep .card-toolbar-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 }

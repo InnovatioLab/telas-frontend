@@ -1,8 +1,8 @@
 <div class="content">
   <p-card styleClass="card-header">
     <div class="card-header-content">
-      <div class="p-card-content">
-        <div class="w-full flex align-items-center gap-2">
+      <div class="p-card-content card-toolbar">
+        <div class="card-toolbar-search">
           <span class="p-input-icon-left">
             <app-icon-search
               class="search-icon search-icon-color"
@@ -25,9 +25,7 @@
           ></span>
         </div>
 
-        <div
-          class="create-monitor-container w-full flex justify-content-center align-items-center gap-2 flex-wrap"
-        >
+        <div class="card-toolbar-actions">
           <button
             *ngIf="isDeveloper"
             pButton
@@ -43,7 +41,6 @@
             label="Create Screen"
             icon="pi pi-plus"
             (click)="openCreateMonitorModal()"
-            onKeyDown="openCreateMonitorModal()"
           ></button>
         </div>
       </div>
