@@ -21,11 +21,21 @@ label {
     padding: 8px;
   }
 
+  .resend-wrap {
+    width: 100%;
+
+    .p-button {
+      align-self: center;
+    }
+  }
+
   .btn-reenviar-codigo {
     color: var(--cor-primaria);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    max-width: 100%;
+  }
+
+  .resend-hint {
+    line-height: 1.5;
   }
 }
 
@@ -33,7 +43,7 @@ label {
   background-color: var(--cor-primaria) !important;
   max-width: 150px !important;
   padding: 8px !important;
-  margin-left: 0.5rem;
+  flex-shrink: 0;
 
   &:hover {
     opacity: 0.9 !important;

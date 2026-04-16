@@ -28,6 +28,8 @@ export class ApplicationLogsComponent {
   totalRecords = 0;
   rows = 20;
   first = 0;
+  messageDialogVisible = false;
+  selectedMessage = "";
 
   filterSource = "";
   filterLevel = "";
@@ -91,6 +93,11 @@ export class ApplicationLogsComponent {
     return typeof v === "string" && v.length > 0 ? v : "—";
   }
 
+  openMessageDialog(row: ApplicationLogEntry): void {
+    this.selectedMessage = row.message ?? "";
+    this.messageDialogVisible = true;
+  }
+
   detailFromMetadata(row: ApplicationLogEntry): string {
     if (row.source === "EMAIL") {
       const m = row.metadata;
@@ -129,7 +136,7 @@ export class ApplicationLogsComponent {
           this.totalRecords = 0;
           this.loading = false;
           if (err?.status === 403) {
-            this.toastService.erro("Não tem permissão para consultar os logs.");
+            this.toastService.erro("You do not have permission to view logs.");
           }
         },
       });

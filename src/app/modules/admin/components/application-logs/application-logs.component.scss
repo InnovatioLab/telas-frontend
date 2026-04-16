@@ -90,6 +90,35 @@
     word-break: break-word;
   }
 
+  .message-cell-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .message-preview {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .message-expand-btn {
+    flex-shrink: 0;
+  }
+
+  .full-message-body {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    font-size: var(--fonte-tamanho-pequeno);
+    max-height: 70vh;
+    overflow: auto;
+  }
+
   .metadata-cell {
     max-width: 10rem;
     overflow: hidden;

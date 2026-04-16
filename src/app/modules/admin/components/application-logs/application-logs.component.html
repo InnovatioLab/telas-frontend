@@ -124,7 +124,19 @@
         </td>
         <td>{{ row.source }}</td>
         <td class="metadata-cell">{{ detailFromMetadata(row) }}</td>
-        <td class="message-cell">{{ row.message }}</td>
+        <td class="message-cell">
+          <div class="message-cell-inner">
+            <span class="message-preview">{{ row.message }}</span>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-eye"
+              class="p-button-text p-button-rounded p-button-sm message-expand-btn"
+              (click)="openMessageDialog(row)"
+              [attr.aria-label]="'View full message'"
+            ></button>
+          </div>
+        </td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
@@ -133,4 +145,16 @@
       </tr>
     </ng-template>
   </p-table>
+
+  <p-dialog
+    header="Message"
+    [(visible)]="messageDialogVisible"
+    [modal]="true"
+    [style]="{ width: 'min(90vw, 48rem)' }"
+    [breakpoints]="{ '960px': '95vw' }"
+    [dismissableMask]="true"
+    (onHide)="selectedMessage = ''"
+  >
+    <pre class="full-message-body">{{ selectedMessage }}</pre>
+  </p-dialog>
 </div>

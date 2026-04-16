@@ -51,13 +51,16 @@
       </div>
     </form>
 
-    <div class="flex flex-column gap-3 text-normal text-center mt-3">
+    <div
+      class="resend-wrap w-full flex justify-content-center align-items-center mt-3 text-normal"
+    >
       <div
-        class="flex flex-row gap-1 justify-content-center text-normal text-center btn-reenviar-codigo"
+        class="flex flex-row flex-wrap align-items-center justify-content-center gap-2 btn-reenviar-codigo"
       >
-        Didn't receive it?
+        <span class="resend-hint">Didn't receive it?</span>
         <button
           pButton
+          type="button"
           (click)="enviarCodigo()"
           class="bg-transparent border-0 cursor-pointer resend-button"
           [disabled]="inativarBotaoReenviarCodigo"
