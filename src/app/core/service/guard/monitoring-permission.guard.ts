@@ -22,14 +22,25 @@ export class MonitoringPermissionGuard implements CanActivate {
 
   async canActivate(route: ActivatedRouteSnapshot): Promise<boolean | UrlTree> {
     const permission = route.data["permission"] as string | undefined;
-    if (!permission) {
-      return true;
-    }
+    const permissionsAny = route.data["permissionsAny"] as string[] | undefined;
 
     const client = await this.loadPanelClient();
     if (!client?.role || (client.role !== Role.ADMIN && client.role !== Role.DEVELOPER)) {
       this.router.navigate(["/client"]);
       return false;
+    }
+
+    if (permissionsAny && permissionsAny.length > 0) {
+      const ok = permissionsAny.some((p) => hasMonitoringPermission(client, p));
+      if (ok) {
+        return true;
+      }
+      this.router.navigate(["/admin"]);
+      return false;
+    }
+
+    if (!permission) {
+      return true;
     }
 
     if (hasMonitoringPermission(client, permission)) {

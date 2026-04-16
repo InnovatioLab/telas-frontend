@@ -1,150 +1,245 @@
 <div class="content application-logs">
-  <p-card styleClass="card-header">
-    <div class="card-header-content">
-      <div class="p-card-content filters-toolbar">
-        <div class="filters-grid">
-          <div class="field">
-            <label for="src" class="filter-label">Source</label>
-            <p-dropdown
-              inputId="src"
-              [options]="sourceOptions"
-              [(ngModel)]="filterSource"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="All sources"
-              styleClass="w-full"
-              appendTo="body"
-              [overlayOptions]="{ appendTo: 'body' }"
-            ></p-dropdown>
-          </div>
-          <div class="field">
-            <label for="lvl" class="filter-label">Level</label>
-            <p-dropdown
-              inputId="lvl"
-              [options]="levelOptions"
-              [(ngModel)]="filterLevel"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="All levels"
-              styleClass="w-full"
-              appendTo="body"
-              [overlayOptions]="{ appendTo: 'body' }"
-            ></p-dropdown>
-          </div>
-          <div class="field field-search">
-            <label for="q" class="filter-label">Message</label>
-            <span class="p-input-icon-left w-full block">
-              <app-icon-search
-                class="search-icon search-icon-color"
-                aria-hidden="true"
-              ></app-icon-search>
+  <ng-container *ngIf="useTabs(); else singleSectionLayout">
+    <p-tabView styleClass="logs-tabs">
+      <p-tabPanel *ngIf="canViewLogs()" header="Application logs">
+        <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
+      </p-tabPanel>
+      <p-tabPanel *ngIf="canViewScheduler()" header="Scheduled jobs">
+        <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
+      </p-tabPanel>
+    </p-tabView>
+  </ng-container>
+
+  <ng-template #singleSectionLayout>
+    <ng-container *ngIf="canViewLogs()">
+      <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="canViewScheduler() && !canViewLogs()">
+      <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #logsFiltersAndTable>
+    <p-card styleClass="card-header">
+      <div class="card-header-content">
+        <div class="p-card-content filters-toolbar">
+          <div class="filters-grid">
+            <div class="field">
+              <label for="src" class="filter-label">Source</label>
+              <p-dropdown
+                inputId="src"
+                [options]="sourceOptions"
+                [(ngModel)]="filterSource"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="All sources"
+                styleClass="w-full"
+                appendTo="body"
+                [overlayOptions]="{ appendTo: 'body' }"
+              ></p-dropdown>
+            </div>
+            <div class="field">
+              <label for="lvl" class="filter-label">Level</label>
+              <p-dropdown
+                inputId="lvl"
+                [options]="levelOptions"
+                [(ngModel)]="filterLevel"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="All levels"
+                styleClass="w-full"
+                appendTo="body"
+                [overlayOptions]="{ appendTo: 'body' }"
+              ></p-dropdown>
+            </div>
+            <div class="field field-search">
+              <label for="q" class="filter-label">Message</label>
+              <span class="p-input-icon-left w-full block">
+                <app-icon-search
+                  class="search-icon search-icon-color"
+                  aria-hidden="true"
+                ></app-icon-search>
+                <input
+                  id="q"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="filterQ"
+                  placeholder="Search message or metadata"
+                  class="w-full"
+                />
+              </span>
+            </div>
+            <div class="field">
+              <label for="from" class="filter-label">From</label>
               <input
-                id="q"
+                id="from"
                 type="text"
                 pInputText
-                [(ngModel)]="filterQ"
-                placeholder="Search message or metadata"
+                [(ngModel)]="filterFrom"
+                placeholder="ISO-8601"
                 class="w-full"
               />
-            </span>
-          </div>
-          <div class="field">
-            <label for="from" class="filter-label">From</label>
-            <input
-              id="from"
-              type="text"
-              pInputText
-              [(ngModel)]="filterFrom"
-              placeholder="ISO-8601"
-              class="w-full"
-            />
-          </div>
-          <div class="field">
-            <label for="to" class="filter-label">To</label>
-            <input
-              id="to"
-              type="text"
-              pInputText
-              [(ngModel)]="filterTo"
-              placeholder="ISO-8601"
-              class="w-full"
-            />
-          </div>
-          <div class="field field-apply">
-            <span class="filter-label filter-label--spacer" aria-hidden="true"></span>
-            <button
-              pButton
-              type="button"
-              class="btn-apply-filters"
-              label="Apply filters"
-              icon="pi pi-filter"
-              (click)="applyFilters()"
-            ></button>
+            </div>
+            <div class="field">
+              <label for="to" class="filter-label">To</label>
+              <input
+                id="to"
+                type="text"
+                pInputText
+                [(ngModel)]="filterTo"
+                placeholder="ISO-8601"
+                class="w-full"
+              />
+            </div>
+            <div class="field field-apply">
+              <span class="filter-label filter-label--spacer" aria-hidden="true"></span>
+              <button
+                pButton
+                type="button"
+                class="btn-apply-filters"
+                label="Apply filters"
+                icon="pi pi-filter"
+                (click)="applyFilters()"
+              ></button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </p-card>
+    </p-card>
 
-  <p-table
-    [value]="logs"
-    [loading]="loading"
-    styleClass="p-datatable-sm"
-    [paginator]="true"
-    [rows]="rows"
-    [totalRecords]="totalRecords"
-    [lazy]="true"
-    [rowsPerPageOptions]="[10, 20, 50, 100]"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-    paginatorDropdownAppendTo="body"
-    (onLazyLoad)="onLazyLoad($event)"
-    [first]="first"
-    responsiveLayout="scroll"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th scope="col">When</th>
-        <th scope="col" class="level-col">Level</th>
-        <th scope="col">Source</th>
-        <th scope="col">Detail</th>
-        <th scope="col">Message</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-row>
-      <tr>
-        <td class="whitespace-nowrap">{{ row.createdAt | date : "short" }}</td>
-        <td class="level-cell">
-          <span class="level-badge-wrap">
-            <p-badge
-              [value]="row.level"
-              [severity]="levelSeverity(row.level)"
-            ></p-badge>
-          </span>
-        </td>
-        <td>{{ row.source }}</td>
-        <td class="metadata-cell">{{ detailFromMetadata(row) }}</td>
-        <td class="message-cell">
-          <div class="message-cell-inner">
-            <span class="message-preview">{{ row.message }}</span>
-            <button
-              pButton
-              type="button"
-              icon="pi pi-eye"
-              class="p-button-text p-button-rounded p-button-sm message-expand-btn"
-              (click)="openMessageDialog(row)"
-              [attr.aria-label]="'View full message'"
-            ></button>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="5" class="text-center p-4">No log entries.</td>
-      </tr>
-    </ng-template>
-  </p-table>
+    <p-table
+      [value]="logs"
+      [loading]="loading"
+      styleClass="p-datatable-sm"
+      [paginator]="true"
+      [rows]="rows"
+      [totalRecords]="totalRecords"
+      [lazy]="true"
+      [rowsPerPageOptions]="[10, 20, 50, 100]"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      paginatorDropdownAppendTo="body"
+      (onLazyLoad)="onLazyLoad($event)"
+      [first]="first"
+      responsiveLayout="scroll"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col">When</th>
+          <th scope="col" class="level-col">Level</th>
+          <th scope="col">Source</th>
+          <th scope="col">Detail</th>
+          <th scope="col">Message</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td class="whitespace-nowrap">{{ row.createdAt | date : "short" }}</td>
+          <td class="level-cell">
+            <span class="level-badge-wrap">
+              <p-badge
+                [value]="row.level"
+                [severity]="levelSeverity(row.level)"
+              ></p-badge>
+            </span>
+          </td>
+          <td>{{ row.source }}</td>
+          <td class="metadata-cell">{{ detailFromMetadata(row) }}</td>
+          <td class="message-cell">
+            <div class="message-cell-inner">
+              <span class="message-preview">{{ row.message }}</span>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-eye"
+                class="p-button-text p-button-rounded p-button-sm message-expand-btn"
+                (click)="openMessageDialog(row)"
+                [attr.aria-label]="'View full message'"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center p-4">No log entries.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-template>
+
+  <ng-template #schedulerTable>
+    <p-card styleClass="card-header scheduler-card">
+      <div class="scheduler-table-wrap">
+        <p-table
+          [value]="schedulerJobs"
+          [loading]="schedulerLoading"
+          styleClass="p-datatable-sm"
+          responsiveLayout="scroll"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th scope="col">Job</th>
+              <th scope="col">Title</th>
+              <th scope="col">Type</th>
+              <th scope="col">Schedule</th>
+              <th scope="col">Zone</th>
+              <th scope="col">Last run</th>
+              <th scope="col">Duration</th>
+              <th scope="col">Status</th>
+              <th scope="col">Next (est.)</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td class="scheduler-job-id">{{ row.jobId }}</td>
+              <td>{{ row.title }}</td>
+              <td>{{ row.scheduleKind }}</td>
+              <td class="scheduler-schedule">
+                <ng-container *ngIf="row.scheduleKind === 'CRON'; else fixedDelay">
+                  {{ row.cronExpression || "—" }}
+                </ng-container>
+                <ng-template #fixedDelay>
+                  {{ row.fixedDelayMillis != null ? (row.fixedDelayMillis + " ms") : "—" }}
+                </ng-template>
+              </td>
+              <td>{{ row.zone || "—" }}</td>
+              <td class="whitespace-nowrap">
+                {{ row.lastStartedAt ? (row.lastStartedAt | date : "medium") : "—" }}
+              </td>
+              <td>{{ formatMs(row.lastDurationMillis) }}</td>
+              <td>
+                <p-badge
+                  *ngIf="row.lastStatus"
+                  [value]="row.lastStatus"
+                  [severity]="
+                    row.lastStatus === 'SUCCESS'
+                      ? 'success'
+                      : row.lastStatus === 'FAILED'
+                        ? 'danger'
+                        : 'info'
+                  "
+                ></p-badge>
+                <span *ngIf="!row.lastStatus">—</span>
+              </td>
+              <td class="whitespace-nowrap">
+                {{
+                  row.nextExecutionEstimated
+                    ? (row.nextExecutionEstimated | date : "medium")
+                    : "—"
+                }}
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="9" class="text-center p-4">No scheduler data yet.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-card>
+  </ng-template>
 
   <p-dialog
     header="Message"

@@ -1,4 +1,29 @@
 .application-logs {
+  :host ::ng-deep .logs-tabs .p-tabview-nav {
+    margin-bottom: 1rem;
+  }
+
+  .scheduler-card {
+    margin-top: 0;
+  }
+
+  .scheduler-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .scheduler-job-id {
+    max-width: 12rem;
+    word-break: break-all;
+    font-size: var(--fonte-tamanho-pequeno);
+  }
+
+  .scheduler-schedule {
+    max-width: 14rem;
+    word-break: break-word;
+    font-size: var(--fonte-tamanho-pequeno);
+  }
+
   .filters-toolbar {
     width: 100%;
   }

@@ -105,7 +105,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       if (item.id === "logs") {
         return (
           isDev ||
-          perms.includes(MonitoringPermission.MONITORING_LOGS_VIEW)
+          perms.includes(MonitoringPermission.MONITORING_LOGS_VIEW) ||
+          perms.includes(MonitoringPermission.MONITORING_SCHEDULER_VIEW)
         );
       }
       if (item.id === "testing") {

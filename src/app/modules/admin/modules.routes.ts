@@ -76,7 +76,12 @@ export const ROUTES: Route[] = [
         component: ApplicationLogsComponent,
         title: "Application logs",
         canActivate: [MonitoringPermissionGuard],
-        data: { permission: MonitoringPermission.MONITORING_LOGS_VIEW },
+        data: {
+          permissionsAny: [
+            MonitoringPermission.MONITORING_LOGS_VIEW,
+            MonitoringPermission.MONITORING_SCHEDULER_VIEW,
+          ],
+        },
       },
       {
         path: "testing",

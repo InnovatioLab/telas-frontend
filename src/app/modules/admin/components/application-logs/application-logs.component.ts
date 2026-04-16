@@ -1,11 +1,18 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
   ApplicationLogEntry,
   MonitoringLogService,
 } from "@app/core/service/api/monitoring-log.service";
+import {
+  MonitoringSchedulerService,
+  SchedulerJobStatus,
+} from "@app/core/service/api/monitoring-scheduler.service";
+import { Authentication } from "@app/core/service/auth/autenthication";
 import { ToastService } from "@app/core/service/state/toast.service";
+import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TableLazyLoadEvent } from "primeng/table";
@@ -22,7 +29,12 @@ interface SelectOption {
   templateUrl: "./application-logs.component.html",
   styleUrls: ["./application-logs.component.scss"],
 })
-export class ApplicationLogsComponent {
+export class ApplicationLogsComponent implements OnInit {
+  private readonly monitoringLogService = inject(MonitoringLogService);
+  private readonly monitoringSchedulerService = inject(MonitoringSchedulerService);
+  private readonly toastService = inject(ToastService);
+  private readonly authentication = inject(Authentication);
+
   logs: ApplicationLogEntry[] = [];
   loading = false;
   totalRecords = 0;
@@ -30,6 +42,9 @@ export class ApplicationLogsComponent {
   first = 0;
   messageDialogVisible = false;
   selectedMessage = "";
+
+  schedulerJobs: SchedulerJobStatus[] = [];
+  schedulerLoading = false;
 
   filterSource = "";
   filterLevel = "";
@@ -54,10 +69,25 @@ export class ApplicationLogsComponent {
     { label: "TRACE", value: "TRACE" },
   ];
 
-  constructor(
-    private readonly monitoringLogService: MonitoringLogService,
-    private readonly toastService: ToastService
-  ) {}
+  ngOnInit(): void {
+    if (this.canViewScheduler()) {
+      this.loadSchedulerJobs();
+    }
+  }
+
+  canViewLogs(): boolean {
+    const c = this.authentication.client();
+    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_LOGS_VIEW);
+  }
+
+  canViewScheduler(): boolean {
+    const c = this.authentication.client();
+    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_SCHEDULER_VIEW);
+  }
+
+  useTabs(): boolean {
+    return this.canViewLogs() && this.canViewScheduler();
+  }
 
   onLazyLoad(event: TableLazyLoadEvent): void {
     this.first = event.first ?? 0;
@@ -112,7 +142,37 @@ export class ApplicationLogsComponent {
     return this.boxAddressFromMetadata(row);
   }
 
+  formatMs(ms: number | null | undefined): string {
+    if (ms == null || Number.isNaN(ms)) {
+      return "—";
+    }
+    if (ms < 1000) {
+      return `${ms} ms`;
+    }
+    return `${(ms / 1000).toFixed(1)} s`;
+  }
+
+  private loadSchedulerJobs(): void {
+    this.schedulerLoading = true;
+    this.monitoringSchedulerService.listJobs().subscribe({
+      next: (list) => {
+        this.schedulerJobs = list ?? [];
+        this.schedulerLoading = false;
+      },
+      error: (err) => {
+        this.schedulerJobs = [];
+        this.schedulerLoading = false;
+        if (err?.status === 403) {
+          this.toastService.erro("You do not have permission to view scheduled jobs.");
+        }
+      },
+    });
+  }
+
   private loadPage(): void {
+    if (!this.canViewLogs()) {
+      return;
+    }
     this.loading = true;
     const page = Math.floor(this.first / this.rows);
     this.monitoringLogService
