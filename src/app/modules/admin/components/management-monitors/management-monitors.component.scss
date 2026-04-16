@@ -681,6 +681,11 @@
   box-sizing: border-box;
 }
 
+:host ::ng-deep .card-toolbar-actions .btn-register-smart-plug.p-button {
+  padding-left: 1.75rem !important;
+  padding-right: 1.75rem !important;
+}
+
 :host ::ng-deep .card-toolbar-actions .p-button .p-button-label {
   white-space: nowrap;
   line-height: 1 !important;

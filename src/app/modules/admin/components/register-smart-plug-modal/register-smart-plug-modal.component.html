@@ -22,8 +22,10 @@
             id="plug-mac"
             formControlName="macAddress"
             class="w-full"
-            placeholder="e.g. AABBCCDDEEFF or AA:BB:CC:DD:EE:FF"
+            maxlength="17"
+            placeholder="e.g. 98:BA:5F:72:66:61"
             autocomplete="off"
+            (input)="onMacInput($event)"
           />
           <small class="error-message" *ngIf="fieldError('macAddress')">{{
             fieldError("macAddress")

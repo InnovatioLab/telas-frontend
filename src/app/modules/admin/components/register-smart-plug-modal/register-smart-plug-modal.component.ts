@@ -7,6 +7,12 @@ import {
   Validators,
 } from "@angular/forms";
 import {
+  cursorAfterHexDigits,
+  formatMacForDisplay,
+  hexDigitsOnly,
+  macAddressCompleteValidator,
+} from "@app/shared/utils/mac-address.util";
+import {
   SmartPlugAdminDto,
   SmartPlugAdminService,
 } from "@app/core/service/api/smart-plug-admin.service";
@@ -39,7 +45,10 @@ export class RegisterSmartPlugModalComponent {
     private readonly messageService: MessageService
   ) {
     this.form = this.fb.group({
-      macAddress: ["", [Validators.required, Validators.maxLength(32)]],
+      macAddress: [
+        "",
+        [Validators.required, macAddressCompleteValidator],
+      ],
       vendor: ["KASA", [Validators.required]],
       model: ["", [Validators.maxLength(128)]],
       displayName: ["", [Validators.maxLength(255)]],
@@ -57,10 +66,11 @@ export class RegisterSmartPlugModalComponent {
     }
     const v = this.form.getRawValue();
     const password = (v.password as string)?.trim();
+    const macFormatted = formatMacForDisplay(hexDigitsOnly(v.macAddress as string));
     this.submitting = true;
     this.smartPlugAdmin
       .createInventory({
-        macAddress: (v.macAddress as string).trim(),
+        macAddress: macFormatted,
         vendor: v.vendor as string,
         model: (v.model as string)?.trim() || null,
         displayName: (v.displayName as string)?.trim() || null,
@@ -119,6 +129,31 @@ export class RegisterSmartPlugModalComponent {
     if (c.errors["maxlength"]) {
       return `Max ${c.errors["maxlength"].requiredLength} characters`;
     }
+    if (c.errors["macIncomplete"]) {
+      return "Complete MAC address (12 hex digits, e.g. 98:BA:5F:72:66:61)";
+    }
     return "";
+  }
+
+  onMacInput(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const start = el.selectionStart ?? 0;
+    const beforeValue = el.value;
+    const hexBefore = hexDigitsOnly(beforeValue.slice(0, start)).length;
+    const hex = hexDigitsOnly(beforeValue).slice(0, 12);
+    const formatted = formatMacForDisplay(hex);
+    const control = this.form.get("macAddress");
+    if (!control) {
+      return;
+    }
+    if (formatted !== beforeValue) {
+      control.setValue(formatted, { emitEvent: true });
+    }
+    const newPos = cursorAfterHexDigits(formatted, hexBefore);
+    setTimeout(() => {
+      if (document.activeElement === el) {
+        el.setSelectionRange(newPos, newPos);
+      }
+    }, 0);
   }
 }
