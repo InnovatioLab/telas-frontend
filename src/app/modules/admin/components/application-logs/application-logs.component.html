@@ -107,7 +107,7 @@
         <th scope="col">When</th>
         <th scope="col" class="level-col">Level</th>
         <th scope="col">Source</th>
-        <th scope="col">Box</th>
+        <th scope="col">Detail</th>
         <th scope="col">Message</th>
       </tr>
     </ng-template>
@@ -123,7 +123,7 @@
           </span>
         </td>
         <td>{{ row.source }}</td>
-        <td class="metadata-cell">{{ boxAddressFromMetadata(row) }}</td>
+        <td class="metadata-cell">{{ detailFromMetadata(row) }}</td>
         <td class="message-cell">{{ row.message }}</td>
       </tr>
     </ng-template>

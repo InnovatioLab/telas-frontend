@@ -91,6 +91,20 @@ export class ApplicationLogsComponent {
     return typeof v === "string" && v.length > 0 ? v : "—";
   }
 
+  detailFromMetadata(row: ApplicationLogEntry): string {
+    if (row.source === "EMAIL") {
+      const m = row.metadata;
+      if (m && typeof m === "object") {
+        const to = m["recipientEmail"];
+        if (typeof to === "string" && to.length > 0) {
+          return to;
+        }
+      }
+      return "—";
+    }
+    return this.boxAddressFromMetadata(row);
+  }
+
   private loadPage(): void {
     this.loading = true;
     const page = Math.floor(this.first / this.rows);
