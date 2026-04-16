@@ -4,14 +4,14 @@
       <div>
         <h2 class="page-title">Testing</h2>
         <p class="page-subtitle">
-          Estado do heartbeat, monitores e tomadas (admin).
+          Heartbeat, monitors and smart plugs status (admin).
         </p>
       </div>
       <button
         pButton
         type="button"
         icon="pi pi-refresh"
-        label="Atualizar"
+        label="Refresh"
         class="p-button-outlined"
         [disabled]="loading"
         (click)="load()"
@@ -34,16 +34,16 @@
           <th>Box (IP)</th>
           <th>Heartbeat</th>
           <th>Monitor</th>
-          <th>Tomada (ecrã)</th>
-          <th>Tomada (box)</th>
-          <th class="col-actions">Ações</th>
+          <th>Plug (screen)</th>
+          <th>Plug (box)</th>
+          <th class="col-actions">Actions</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-row>
         <tr>
           <td>
             <span class="mono">{{ row.boxIp ?? "—" }}</span>
-            <span *ngIf="!row.boxActive" class="inactive-hint"> (inativa)</span>
+            <span *ngIf="!row.boxActive" class="inactive-hint"> (inactive)</span>
           </td>
           <td>
             <p-tag
@@ -55,7 +55,7 @@
             <ng-container *ngIf="row.monitorId; else noMonitor">
               <div class="mono wrap">{{ row.monitorAddressSummary ?? "—" }}</div>
               <small *ngIf="row.monitorActive === false" class="inactive-hint"
-                >monitor inativo</small
+                >monitor inactive</small
               >
             </ng-container>
             <ng-template #noMonitor>—</ng-template>
@@ -73,7 +73,7 @@
               type="button"
               class="p-button-sm p-button-outlined mr-2 monitoring-test-btn"
               icon="pi pi-box"
-              label="Testar box"
+              label="Test box"
               [loading]="isCheckingBox(row)"
               [disabled]="loading || isCheckingBox(row) || !canExecuteActions()"
               (click)="testBox(row)"
@@ -84,7 +84,7 @@
               type="button"
               class="p-button-sm p-button-outlined mr-2 monitoring-test-btn"
               icon="pi pi-power-off"
-              label="Tomada ecrã"
+              label="Screen plug"
               [loading]="isCheckingMonitorPlug(row)"
               [disabled]="
                 loading ||
@@ -100,7 +100,7 @@
               type="button"
               class="p-button-sm monitoring-test-btn"
               icon="pi pi-power-off"
-              label="Tomada box"
+              label="Box plug"
               [loading]="isCheckingBoxPlug(row)"
               [disabled]="
                 loading ||
@@ -115,7 +115,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center">Sem dados.</td>
+          <td colspan="6" class="text-center">No data.</td>
         </tr>
       </ng-template>
     </p-table>

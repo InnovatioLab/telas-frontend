@@ -11,6 +11,15 @@ import { CheckboxModule } from "primeng/checkbox";
 import { FormsModule } from "@angular/forms";
 import { finalize } from "rxjs";
 
+const PERMISSION_LABELS: Record<string, string> = {
+  ADMIN_CLIENTS_DEACTIVATE: "Deactivate clients",
+  MONITORING_LOGS_VIEW: "Application logs",
+  MONITORING_SCHEDULER_VIEW: "Scheduled jobs",
+  MONITORING_SMART_PLUG_ADMIN: "Smart plugs (monitor)",
+  MONITORING_TESTING_EXECUTE: "Run monitoring tests",
+  MONITORING_TESTING_VIEW: "View monitoring tests",
+};
+
 @Component({
   selector: "app-developer-permissions",
   standalone: true,
@@ -39,6 +48,17 @@ export class DeveloperPermissionsComponent implements OnInit {
     this.reload();
   }
 
+  labelForPermission(code: string): string {
+    const mapped = PERMISSION_LABELS[code];
+    if (mapped) {
+      return mapped;
+    }
+    return code
+      .split("_")
+      .map((w) => w.charAt(0) + w.slice(1).toLowerCase())
+      .join(" ");
+  }
+
   reload(): void {
     this.loading = true;
     this.developerPermissionService
@@ -54,14 +74,14 @@ export class DeveloperPermissionsComponent implements OnInit {
             error: () => {
               this.rows = [];
               this.loading = false;
-              this.toastService.erro("Não foi possível carregar os administradores.");
+              this.toastService.erro("Could not load administrators.");
             },
           });
         },
         error: () => {
           this.catalog = [];
           this.loading = false;
-          this.toastService.erro("Não foi possível carregar o catálogo de permissões.");
+          this.toastService.erro("Could not load the permission catalog.");
         },
       });
   }
@@ -92,14 +112,14 @@ export class DeveloperPermissionsComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.toastService.sucesso("Permissões atualizadas.");
+          this.toastService.sucesso("Permissions updated.");
         },
         error: (err) => {
           const status = err?.status;
           if (status === 403) {
-            this.toastService.erro("Sem permissão para alterar grants.");
+            this.toastService.erro("You do not have permission to change grants.");
           } else {
-            this.toastService.erro("Falha ao guardar permissões.");
+            this.toastService.erro("Failed to save permissions.");
           }
           this.reload();
         },

@@ -55,9 +55,9 @@ export class MonitoringTestingComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         if (err?.status === 403) {
-          this.toastService.erro("Não tem permissão para ver o overview de monitorização.");
+          this.toastService.erro("You do not have permission to view the monitoring overview.");
         } else {
-          this.toastService.erro("Não foi possível carregar o overview de monitorização.");
+          this.toastService.erro("Could not load the monitoring overview.");
         }
       },
     });
@@ -70,7 +70,7 @@ export class MonitoringTestingComponent implements OnInit {
       case "STALE":
         return "Stale";
       case "MISSING":
-        return "Sem heartbeat";
+        return "No heartbeat";
       default:
         return status;
     }
@@ -131,7 +131,7 @@ export class MonitoringTestingComponent implements OnInit {
       },
       error: () => {
         this.checkingBoxId = null;
-        this.toastService.erro("Falha ao verificar heartbeat da box.");
+        this.toastService.erro("Failed to verify box heartbeat.");
       },
     });
   }
@@ -145,11 +145,11 @@ export class MonitoringTestingComponent implements OnInit {
     this.monitoringTestingService.testReadSmartPlug(row.boxSmartPlugId).subscribe({
       next: (r) => {
         this.checkingPlugKey = null;
-        this.toastPlugRead("Tomada (box)", r);
+        this.toastPlugRead("Plug (box)", r);
       },
       error: () => {
         this.checkingPlugKey = null;
-        this.toastService.erro("Falha ao testar leitura da tomada da box.");
+        this.toastService.erro("Failed to read smart plug on box.");
       },
     });
   }
@@ -163,11 +163,11 @@ export class MonitoringTestingComponent implements OnInit {
     this.monitoringTestingService.testReadSmartPlug(row.smartPlugId).subscribe({
       next: (r) => {
         this.checkingPlugKey = null;
-        this.toastPlugRead("Tomada (ecrã)", r);
+        this.toastPlugRead("Plug (screen)", r);
       },
       error: () => {
         this.checkingPlugKey = null;
-        this.toastService.erro("Falha ao testar leitura da tomada do ecrã.");
+        this.toastService.erro("Failed to read smart plug on screen.");
       },
     });
   }
@@ -203,7 +203,7 @@ export class MonitoringTestingComponent implements OnInit {
     const st = this.heartbeatLabel(this.normalizeHeartbeatStatus(r));
     const age =
       r.secondsSinceHeartbeat != null
-        ? ` · há ${r.secondsSinceHeartbeat}s`
+        ? ` · ${r.secondsSinceHeartbeat}s ago`
         : "";
     const msg = `Box ${row.boxIp ?? row.boxId}: ${st}${age}.`;
     const status = this.normalizeHeartbeatStatus(r);
@@ -235,7 +235,7 @@ export class MonitoringTestingComponent implements OnInit {
         ? String(r.errorCode).trim()
         : null;
     if (!r.reachable || errCode != null) {
-      const err = errCode ?? "sem resposta";
+      const err = errCode ?? "no response";
       this.toastService.erro(`${prefix}: ${err}`);
       return;
     }
@@ -249,7 +249,7 @@ export class MonitoringTestingComponent implements OnInit {
     if (r.voltageVolts != null) {
       parts.push(`${r.voltageVolts} V`);
     }
-    const detail = parts.length > 0 ? parts.join(" · ") : "ligada";
+    const detail = parts.length > 0 ? parts.join(" · ") : "on";
     this.toastService.sucesso(`${prefix}: ${detail}`);
   }
 }

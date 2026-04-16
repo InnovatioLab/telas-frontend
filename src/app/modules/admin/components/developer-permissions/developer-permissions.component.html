@@ -2,9 +2,10 @@
 <p-card styleClass="card-header">
   <div class="card-header-content">
     <div class="p-card-content">
-      <h2 class="m-0">Permissões de monitorização (admins)</h2>
+      <h2 class="m-0">Monitoring permissions (admins)</h2>
       <p class="text-muted mt-2 mb-0">
-        Marque quais administradores podem aceder a Logs, Testing, gestão de tomadas e inativar utilizadores (Clients).
+        Choose which features each admin may use: application logs, scheduled jobs, monitoring tests, smart
+        plugs, and deactivating clients. Hover the column header to see the technical permission code.
       </p>
     </div>
   </div>
@@ -21,10 +22,16 @@
 >
   <ng-template pTemplate="header">
     <tr>
-      <th scope="col">Nome</th>
+      <th scope="col">Name</th>
       <th scope="col">Email</th>
-      <th scope="col" *ngFor="let code of catalog" class="perm-col">
-        {{ code }}
+      <th
+        scope="col"
+        *ngFor="let code of catalog"
+        class="perm-col"
+        [attr.title]="'Code: ' + code"
+        [attr.aria-label]="labelForPermission(code) + ' (' + code + ')'"
+      >
+        <span class="perm-col__head">{{ labelForPermission(code) }}</span>
       </th>
     </tr>
   </ng-template>
@@ -45,7 +52,7 @@
   </ng-template>
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td [attr.colspan]="2 + catalog.length">Sem dados.</td>
+      <td [attr.colspan]="2 + catalog.length">No data.</td>
     </tr>
   </ng-template>
 </p-table>

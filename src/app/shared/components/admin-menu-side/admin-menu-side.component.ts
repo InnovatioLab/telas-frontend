@@ -388,7 +388,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "adOperations":
         return "Operational view: ads, screens, subscriptions, reminders";
       case "logs":
-        return "Application and box telemetry logs";
+        return "Application logs, scheduled jobs, and box telemetry";
       case "testing":
         return "Heartbeat, monitors and smart plug checks";
       case "access":

@@ -334,7 +334,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
 
   openPreview(): void {
     if (this.monitorAds.length === 0) {
-      this.toastService.erro("Nenhum ad selecionado para preview");
+      this.toastService.erro("No ad selected for preview.");
       return;
     }
 

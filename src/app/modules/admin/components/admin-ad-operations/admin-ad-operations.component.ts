@@ -45,20 +45,20 @@ export class AdminAdOperationsComponent implements OnInit {
   selectedAdvertiserLabel = "";
 
   readonly validationOptions: { label: string; value: string }[] = [
-    { label: "Pendente", value: "PENDING" },
-    { label: "Aprovado", value: "APPROVED" },
-    { label: "Rejeitado", value: "REJECTED" },
+    { label: "Pending", value: "PENDING" },
+    { label: "Approved", value: "APPROVED" },
+    { label: "Rejected", value: "REJECTED" },
   ];
 
   private readonly stageLabels: Record<string, string> = {
-    PENDING_VALIDATION: "Pendente de validação",
-    REJECTED: "Rejeitado",
-    APPROVED_NO_ACTIVE_SUBSCRIPTION: "Aprovado (sem assinatura ativa)",
-    SUBSCRIPTION_EXPIRED: "Assinatura expirada",
-    ON_AIR_OPEN_ENDED: "No ar (sem data fim)",
-    ON_AIR: "No ar",
-    SUBSCRIPTION_ENDED: "Encerrada",
-    APPROVED_OTHER: "Outro",
+    PENDING_VALIDATION: "Pending validation",
+    REJECTED: "Rejected",
+    APPROVED_NO_ACTIVE_SUBSCRIPTION: "Approved (no active subscription)",
+    SUBSCRIPTION_EXPIRED: "Subscription expired",
+    ON_AIR_OPEN_ENDED: "On air (open-ended)",
+    ON_AIR: "On air",
+    SUBSCRIPTION_ENDED: "Ended",
+    APPROVED_OTHER: "Other",
   };
 
   constructor(
@@ -88,7 +88,7 @@ export class AdminAdOperationsComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.toastService.erro("Não foi possível carregar os dados.");
+        this.toastService.erro("Could not load data.");
         this.loading = false;
       },
     });
@@ -133,11 +133,11 @@ export class AdminAdOperationsComponent implements OnInit {
   urgencyLabel(level: AdminUrgencyLevel): string {
     switch (level) {
       case "GREEN":
-        return "> 14 dias";
+        return "> 14 days";
       case "YELLOW":
-        return "4–14 dias";
+        return "4–14 days";
       case "RED":
-        return "≤ 3 dias ou expirado";
+        return "≤ 3 days or expired";
       default:
         return "—";
     }
@@ -158,7 +158,7 @@ export class AdminAdOperationsComponent implements OnInit {
         this.notificationsLoading = false;
       },
       error: () => {
-        this.toastService.erro("Não foi possível carregar os lembretes.");
+        this.toastService.erro("Could not load expiry reminders.");
         this.notificationsLoading = false;
       },
     });
@@ -178,10 +178,10 @@ export class AdminAdOperationsComponent implements OnInit {
         a.download = "subscriptions-export.csv";
         a.click();
         URL.revokeObjectURL(url);
-        this.toastService.sucesso("Exportação iniciada.");
+        this.toastService.sucesso("Export started.");
       },
       error: () => {
-        this.toastService.erro("Falha ao exportar CSV.");
+        this.toastService.erro("Failed to export CSV.");
       },
     });
   }

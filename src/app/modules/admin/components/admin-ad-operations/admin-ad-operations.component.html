@@ -12,7 +12,7 @@
             type="text"
             style="width: 220px"
             pInputText
-            placeholder="Buscar anunciante, parceiro, ad, endereço..."
+            placeholder="Search advertiser, partner, ad, address..."
             [(ngModel)]="searchTerm"
             [ngModelOptions]="{ standalone: true }"
             (keyup.enter)="onSearch()"
@@ -21,7 +21,7 @@
         <p-dropdown
           [options]="validationOptions"
           [(ngModel)]="validationFilter"
-          placeholder="Validação do ad"
+          placeholder="Ad validation"
           [showClear]="true"
           styleClass="validation-dropdown"
           [style]="{ width: 'auto', minWidth: '15rem', maxWidth: '18rem' }"
@@ -33,7 +33,7 @@
           type="button"
           icon="pi pi-download"
           class="p-button-rounded p-button-text export-csv-icon"
-          pTooltip="Exportar assinaturas (CSV)"
+          pTooltip="Export subscriptions (CSV)"
           tooltipPosition="bottom"
           (click)="exportCsv()"
         ></button>
@@ -53,22 +53,22 @@
   [showCurrentPageReport]="true"
   responsiveLayout="scroll"
   [lazy]="true"
-  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
   paginatorDropdownAppendTo="body"
   (onPage)="onPageChange($event)"
 >
   <ng-template pTemplate="header">
     <tr>
-      <th scope="col">Anunciante</th>
-      <th scope="col">Anúncio</th>
-      <th scope="col">Validação</th>
-      <th scope="col">Parceiro (tela)</th>
-      <th scope="col">Endereço da tela</th>
+      <th scope="col">Advertiser</th>
+      <th scope="col">Ad</th>
+      <th scope="col">Validation</th>
+      <th scope="col">Partner (screen)</th>
+      <th scope="col">Screen address</th>
       <th scope="col">Box (IP)</th>
-      <th scope="col">Fim da assinatura</th>
-      <th scope="col">Prazo</th>
-      <th scope="col">Estágio</th>
-      <th scope="col">Ações</th>
+      <th scope="col">Subscription ends</th>
+      <th scope="col">Urgency</th>
+      <th scope="col">Stage</th>
+      <th scope="col">Actions</th>
     </tr>
   </ng-template>
 
@@ -103,7 +103,7 @@
             pRipple
             icon="pi pi-envelope"
             class="p-button-rounded p-button-help p-button-text"
-            pTooltip="E-mails de lembrete de expiração"
+            pTooltip="Expiry reminder emails"
             (click)="openExpiryNotifications(row)"
           ></button>
           <button
@@ -113,7 +113,7 @@
             icon="pi pi-external-link"
             class="p-button-rounded p-button-info p-button-text"
             [routerLink]="['/admin/screens', row.monitorId, 'manage-ads']"
-            pTooltip="Gerenciar anúncios na tela"
+            pTooltip="Manage ads on screen"
           ></button>
         </div>
       </td>
@@ -122,13 +122,13 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="10" class="text-center">Nenhum registro encontrado.</td>
+      <td colspan="10" class="text-center">No records found.</td>
     </tr>
   </ng-template>
 </p-table>
 
 <p-dialog
-  header="Lembretes de expiração (e-mail)"
+  header="Expiry reminders (email)"
   [(visible)]="notificationsDialogVisible"
   [modal]="true"
   [style]="{ width: 'min(640px, 96vw)' }"
@@ -137,9 +137,9 @@
   (onHide)="closeNotificationsDialog()"
 >
   <p class="mb-3 text-muted">
-    Cliente: <strong>{{ selectedAdvertiserLabel }}</strong>
+    Client: <strong>{{ selectedAdvertiserLabel }}</strong>
   </p>
-  <p *ngIf="notificationsLoading" class="text-center py-3">Carregando…</p>
+  <p *ngIf="notificationsLoading" class="text-center py-3">Loading…</p>
   <p-table
     *ngIf="!notificationsLoading"
     [value]="expiryNotifications"
@@ -147,8 +147,8 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th scope="col">Tipo</th>
-        <th scope="col">Registrado em</th>
+        <th scope="col">Type</th>
+        <th scope="col">Recorded at</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-n>
@@ -160,7 +160,7 @@
     <ng-template pTemplate="emptymessage">
       <tr>
         <td colspan="2" class="text-center">
-          Nenhum lembrete de expiração registrado para este cliente.
+          No expiry reminders recorded for this client.
         </td>
       </tr>
     </ng-template>
