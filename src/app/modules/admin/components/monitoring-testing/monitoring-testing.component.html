@@ -33,6 +33,7 @@
         <tr>
           <th>Box (IP)</th>
           <th>Heartbeat</th>
+          <th>Box script</th>
           <th>Monitor</th>
           <th>Plug (screen)</th>
           <th>Plug (box)</th>
@@ -50,6 +51,22 @@
               [value]="heartbeatLabel(row.heartbeatStatus)"
               [severity]="heartbeatSeverity(row)"
             ></p-tag>
+          </td>
+          <td>
+            <div class="mono small">
+              {{ row.reportedBoxScriptVersion ?? "—" }}
+            </div>
+            <div *ngIf="row.targetBoxScriptVersion" class="mono small muted">
+              target {{ row.targetBoxScriptVersion }}
+            </div>
+            <p-tag
+              class="mt-1"
+              [value]="boxScriptVersionLabel(row)"
+              [severity]="boxScriptVersionSeverity(row)"
+            ></p-tag>
+            <div *ngIf="row.reportedGitSha" class="mono small muted mt-1">
+              {{ row.reportedGitSha }}
+            </div>
           </td>
           <td>
             <ng-container *ngIf="row.monitorId; else noMonitor">
@@ -77,6 +94,21 @@
               [loading]="isCheckingBox(row)"
               [disabled]="loading || isCheckingBox(row) || !canExecuteActions()"
               (click)="testBox(row)"
+            ></button>
+            <button
+              pButton
+              pRipple
+              type="button"
+              class="p-button-sm p-button-outlined mr-2 monitoring-test-btn"
+              icon="pi pi-download"
+              label="Queue update"
+              [loading]="isEnqueueingBox(row)"
+              [disabled]="
+                loading ||
+                isEnqueueingBox(row) ||
+                !canExecuteActions()
+              "
+              (click)="enqueueBoxScriptUpdate(row)"
             ></button>
             <button
               pButton
@@ -115,7 +147,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center">No data.</td>
+          <td colspan="7" class="text-center">No data.</td>
         </tr>
       </ng-template>
     </p-table>

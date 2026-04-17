@@ -29,6 +29,7 @@ export class MonitoringTestingComponent implements OnInit {
   rowsPerPage = 15;
   checkingBoxId: string | null = null;
   checkingPlugKey: string | null = null;
+  enqueueingBoxId: string | null = null;
 
   constructor(
     private readonly monitoringTestingService: MonitoringTestingService,
@@ -78,6 +79,32 @@ export class MonitoringTestingComponent implements OnInit {
     }
   }
 
+  boxScriptVersionLabel(row: MonitoringTestingRow): string {
+    const s = row.boxScriptVersionStatus ?? "UNKNOWN";
+    switch (s) {
+      case "MATCH":
+        return "Up to date";
+      case "BEHIND":
+        return "Behind";
+      default:
+        return "Unknown";
+    }
+  }
+
+  boxScriptVersionSeverity(
+    row: MonitoringTestingRow
+  ): "success" | "warn" | "danger" | "secondary" {
+    const s = row.boxScriptVersionStatus ?? "UNKNOWN";
+    switch (s) {
+      case "MATCH":
+        return "success";
+      case "BEHIND":
+        return "warn";
+      default:
+        return "secondary";
+    }
+  }
+
   heartbeatSeverity(
     row: MonitoringTestingRow
   ): "success" | "warn" | "danger" | "secondary" {
@@ -121,6 +148,27 @@ export class MonitoringTestingComponent implements OnInit {
       return `${m} · ${v}`;
     }
     return m || v || "—";
+  }
+
+  enqueueBoxScriptUpdate(row: MonitoringTestingRow): void {
+    this.enqueueingBoxId = row.boxId;
+    this.monitoringTestingService.enqueueBoxScriptUpdate(row.boxId).subscribe({
+      next: () => {
+        this.enqueueingBoxId = null;
+        this.toastService.sucesso("Box script update queued.");
+        this.load();
+      },
+      error: (err: unknown) => {
+        this.enqueueingBoxId = null;
+        this.toastService.erro(
+          this.httpErrorMessage(err, "Failed to queue box script update.")
+        );
+      },
+    });
+  }
+
+  isEnqueueingBox(row: MonitoringTestingRow): boolean {
+    return this.enqueueingBoxId === row.boxId;
   }
 
   testBox(row: MonitoringTestingRow): void {
@@ -207,7 +255,8 @@ export class MonitoringTestingComponent implements OnInit {
       r.secondsSinceHeartbeat != null
         ? ` · ${r.secondsSinceHeartbeat}s ago`
         : "";
-    const msg = `Box ${row.boxIp ?? row.boxId}: ${st}${age}.`;
+    const versionHint = this.boxHeartbeatVersionHint(r);
+    const msg = `Box ${row.boxIp ?? row.boxId}: ${st}${age}${versionHint}.`;
     const status = this.normalizeHeartbeatStatus(r);
     if (r.heartbeatOnline === true && status === "ONLINE") {
       this.toastService.sucesso(msg);
@@ -229,6 +278,26 @@ export class MonitoringTestingComponent implements OnInit {
       return ApiErrorHandler.handleApiError(err);
     }
     return fallback;
+  }
+
+  private boxHeartbeatVersionHint(r: BoxHeartbeatCheckResponse): string {
+    const parts: string[] = [];
+    if (r.reportedBoxScriptVersion) {
+      parts.push(`script ${r.reportedBoxScriptVersion}`);
+    }
+    if (r.targetBoxScriptVersion) {
+      parts.push(`target ${r.targetBoxScriptVersion}`);
+    }
+    if (r.boxScriptVersionStatus) {
+      parts.push(r.boxScriptVersionStatus);
+    }
+    if (r.reportedGitSha) {
+      parts.push(`sha ${r.reportedGitSha}`);
+    }
+    if (parts.length === 0) {
+      return "";
+    }
+    return ` · ${parts.join(" · ")}`;
   }
 
   private normalizeHeartbeatStatus(r: BoxHeartbeatCheckResponse): string {

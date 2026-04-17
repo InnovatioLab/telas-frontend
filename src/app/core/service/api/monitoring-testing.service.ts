@@ -8,6 +8,8 @@ import { AuthenticationStorage } from "@app/core/service/auth/authentication-sto
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
 
+export type BoxScriptVersionStatus = "MATCH" | "BEHIND" | "UNKNOWN";
+
 export interface MonitoringTestingRow {
   boxId: string;
   boxIp: string | null;
@@ -15,6 +17,11 @@ export interface MonitoringTestingRow {
   lastHeartbeatAt: string | null;
   heartbeatOnline: boolean;
   heartbeatStatus: "ONLINE" | "STALE" | "MISSING";
+  reportedBoxScriptVersion?: string | null;
+  targetBoxScriptVersion?: string | null;
+  boxScriptVersionStatus?: BoxScriptVersionStatus;
+  reportedGitSha?: string | null;
+  reportedBuildId?: string | null;
   monitorId: string | null;
   monitorAddressSummary: string | null;
   monitorActive: boolean | null;
@@ -35,6 +42,11 @@ export interface BoxHeartbeatCheckResponse {
   heartbeatOnline: boolean;
   heartbeatStatus: string;
   staleAfterSeconds: number;
+  reportedBoxScriptVersion?: string | null;
+  targetBoxScriptVersion?: string | null;
+  boxScriptVersionStatus?: BoxScriptVersionStatus;
+  reportedGitSha?: string | null;
+  reportedBuildId?: string | null;
 }
 
 export interface SmartPlugReadingResponse {
@@ -83,6 +95,16 @@ export class MonitoringTestingService {
         { headers: new HttpHeaders(this.getAuthHeaders()) }
       )
       .pipe(map((res) => res.data as SmartPlugReadingResponse));
+  }
+
+  enqueueBoxScriptUpdate(boxId: string): Observable<void> {
+    return this.http
+      .post<void>(
+        `${this.env.apiUrl}monitoring/testing/boxes/${boxId}/box-script-update`,
+        {},
+        { headers: new HttpHeaders(this.getAuthHeaders()) }
+      )
+      .pipe(map((): void => undefined));
   }
 
   private getAuthHeaders(): Record<string, string> {

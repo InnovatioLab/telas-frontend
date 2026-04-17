@@ -25,6 +25,18 @@
     font-size: 0.9em;
   }
 
+  .small {
+    font-size: var(--fonte-tamanho-pequeno);
+  }
+
+  .muted {
+    color: var(--text-color-secondary);
+  }
+
+  .mt-1 {
+    margin-top: 0.25rem;
+  }
+
   .wrap {
     word-break: break-word;
   }
@@ -36,7 +48,7 @@
 
   .col-actions {
     white-space: nowrap;
-    min-width: 16rem;
+    min-width: 22rem;
   }
 
   .monitoring-test-btn {
