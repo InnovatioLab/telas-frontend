@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { CanActivate, Router } from "@angular/router";
-import { Role } from "@app/model/client";
+import { Client, isPrivilegedPanelRole } from "@app/model/client";
 import { firstValueFrom, of } from "rxjs";
-import { switchMap, take } from "rxjs/operators";
+import { catchError } from "rxjs/operators";
 import { ClientService } from "../api/client.service";
 import { Authentication } from "../auth/autenthication";
 import { AuthenticationStorage } from "../auth/authentication-storage";
@@ -26,19 +26,20 @@ export class AdminAuthenticatedGuard implements CanActivate {
     }
 
     const authenticatedClient = await firstValueFrom(
-      this.clientService.clientAtual$.pipe(
-        take(1),
-        switchMap((client) =>
-          client ? of(client) : this.clientService.getAuthenticatedClient()
-        )
-      )
+      this.clientService.getAuthenticatedClient().pipe(catchError(() => of(null)))
     );
-    const userRole = authenticatedClient?.role;
 
-    if (userRole !== Role.ADMIN && userRole !== Role.DEVELOPER) {
+    if (!authenticatedClient) {
+      this.router.navigate(["/login"]);
+      return false;
+    }
+
+    if (!isPrivilegedPanelRole(authenticatedClient.role)) {
       this.router.navigate(["/client"]);
       return false;
     }
+
+    this.authentication.updateClientData(authenticatedClient as unknown as Client);
 
     return true;
   }

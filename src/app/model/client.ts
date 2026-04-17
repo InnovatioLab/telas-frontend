@@ -101,7 +101,11 @@ export enum Role {
 export function isPrivilegedPanelRole(
   role: Role | string | undefined | null
 ): boolean {
-  return role === Role.ADMIN || role === Role.DEVELOPER;
+  if (role == null) {
+    return false;
+  }
+  const r = String(role).trim().toUpperCase();
+  return r === Role.ADMIN || r === Role.DEVELOPER;
 }
 
 export enum DefaultStatus {
