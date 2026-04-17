@@ -56,4 +56,61 @@
     </tr>
   </ng-template>
 </p-table>
+
+<p-card styleClass="card-header mt-4">
+  <div class="card-header-content">
+    <div class="p-card-content">
+      <h2 class="m-0">Email alerts (admins)</h2>
+      <p class="text-muted mt-2 mb-0">
+        When checked, the administrator receives an email for that alert type (in-app notifications are always recorded).
+      </p>
+    </div>
+  </div>
+</p-card>
+
+<p-table
+  [value]="rows"
+  [loading]="loading"
+  styleClass="p-datatable-sm mt-3 developer-permissions-table"
+  [paginator]="true"
+  [rows]="10"
+  responsiveLayout="scroll"
+  paginatorDropdownAppendTo="body"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th
+        scope="col"
+        *ngFor="let opt of emailAlertCategories"
+        class="perm-col"
+        [attr.title]="'Code: ' + opt.code"
+        [attr.aria-label]="opt.labelEn + ' (' + opt.code + ')'"
+      >
+        <span class="perm-col__head">{{ opt.labelEn }}</span>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td>{{ row.businessName }}</td>
+      <td>{{ row.email }}</td>
+      <td *ngFor="let opt of emailAlertCategories" class="perm-col">
+        <p-checkbox
+          [binary]="true"
+          [ngModel]="isEmailAlertEnabled(row, opt.code)"
+          (ngModelChange)="toggleEmailAlert(row, opt.code, $event)"
+          [disabled]="savingEmailClientId === row.clientId"
+          [inputId]="row.clientId + '-email-' + opt.code"
+        ></p-checkbox>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="2 + emailAlertCategories.length">No data.</td>
+    </tr>
+  </ng-template>
+</p-table>
 </div>

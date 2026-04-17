@@ -15,6 +15,15 @@ export interface AdminPermissionRow {
   grantedPermissions: string[];
 }
 
+export interface EmailAlertCategoryOption {
+  code: string;
+  labelEn: string;
+}
+
+export interface EmailAlertPreferences {
+  preferences: Record<string, boolean>;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -47,6 +56,35 @@ export class DeveloperPermissionService {
     return this.http.put<void>(
       `${this.env.apiUrl}developer/clients/${clientId}/permissions`,
       { permissions },
+      { headers: new HttpHeaders(this.getAuthHeaders()) }
+    );
+  }
+
+  emailAlertCatalog(): Observable<EmailAlertCategoryOption[]> {
+    return this.http
+      .get<ResponseDto<EmailAlertCategoryOption[]>>(
+        `${this.env.apiUrl}developer/email-alert-preferences/catalog`,
+        { headers: new HttpHeaders(this.getAuthHeaders()) }
+      )
+      .pipe(map((res) => res.data ?? []));
+  }
+
+  getEmailAlertPreferences(clientId: string): Observable<EmailAlertPreferences> {
+    return this.http
+      .get<ResponseDto<EmailAlertPreferences>>(
+        `${this.env.apiUrl}developer/clients/${clientId}/email-alert-preferences`,
+        { headers: new HttpHeaders(this.getAuthHeaders()) }
+      )
+      .pipe(map((res) => res.data ?? { preferences: {} }));
+  }
+
+  replaceEmailAlertPreferences(
+    clientId: string,
+    preferences: Record<string, boolean>
+  ): Observable<void> {
+    return this.http.put<void>(
+      `${this.env.apiUrl}developer/clients/${clientId}/email-alert-preferences`,
+      { preferences },
       { headers: new HttpHeaders(this.getAuthHeaders()) }
     );
   }
