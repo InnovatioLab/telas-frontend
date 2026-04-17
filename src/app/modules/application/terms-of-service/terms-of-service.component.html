@@ -33,7 +33,10 @@
                 <p><strong>Version: </strong> {{ termoCondicao.version }}</p>
                 <p>
                   <strong>Effective Date: </strong>
-                  {{ termoCondicao.createdAt | date: "MM/dd/yyyy" }}
+                  {{
+                    (termoCondicao.updatedAt || termoCondicao.createdAt)
+                      | date: "MM/dd/yyyy"
+                  }}
                 </p>
               </div>
             </div>
@@ -44,6 +47,11 @@
               class="terms-of-service-content"
               [innerHTML]="termoCondicao.content"
             ></div>
+            <div class="terms-mailing-footer border-top-1 surface-border pt-4 mt-4">
+              <p class="m-0 text-600 text-sm">
+                <strong>Mailing address:</strong> {{ companyMailingAddress }}
+              </p>
+            </div>
           </ng-template>
 
           <ng-template pTemplate="footer" *ngIf="precisaAceitarTermos">

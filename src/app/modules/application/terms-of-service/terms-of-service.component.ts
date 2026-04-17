@@ -9,6 +9,7 @@ import { ToastService } from "@app/core/service/state/toast.service";
 import { Role } from "@app/model/client";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { TermoCondicao } from "@app/model/termo-condicao";
+import { COMPANY_MAILING_ADDRESS } from "@app/shared/constants/company.constants";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { GuestHeaderComponent } from "../components/guest-header/guest-header.component";
@@ -27,6 +28,7 @@ import { GuestHeaderComponent } from "../components/guest-header/guest-header.co
   styleUrls: ["./terms-of-service.component.scss"],
 })
 export class TermsOfServiceComponent implements OnInit {
+  readonly companyMailingAddress = COMPANY_MAILING_ADDRESS;
   termoCondicao: TermoCondicao | null = null;
   client: AuthenticatedClientResponseDto | null = null;
   loading = true;

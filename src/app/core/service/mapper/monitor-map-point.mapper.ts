@@ -19,6 +19,7 @@ export class MonitorMapPointMapper {
       category: 'MONITOR',
       addressLocationName: monitor.addressLocationName,
       addressLocationDescription: monitor.addressLocationDescription,
+      photoUrl: monitor.photoUrl,
       data: monitor,
       healthOk: this.deriveHealthOk(monitor),
     };

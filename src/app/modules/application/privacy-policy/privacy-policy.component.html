@@ -35,7 +35,10 @@
                 </p>
                 <p>
                   <strong>Effective Date: </strong>
-                  {{ politicaPrivacidade.createdAt | date: "MM/dd/yyyy" }}
+                  {{
+                    (politicaPrivacidade.updatedAt || politicaPrivacidade.createdAt)
+                      | date: "MM/dd/yyyy"
+                  }}
                 </p>
               </div>
             </div>

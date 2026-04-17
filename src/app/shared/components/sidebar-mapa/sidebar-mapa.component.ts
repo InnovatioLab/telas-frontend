@@ -16,15 +16,13 @@ import { ToastService } from "@app/core/service/state/toast.service";
 import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
 import { CartResponseDto } from "@app/model/dto/response/cart-response.dto";
 import { Recurrence } from "@app/model/enums/recurrence.enum";
-import { IconBoltComponent } from "@app/shared/icons/bolt.icon";
 import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconClockComponent } from "@app/shared/icons/clock.icon";
-import { IconCloseComponent } from "@app/shared/icons/close.icon";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconWarningComponent } from "@app/shared/icons/warning.icon";
 import { Subscription } from "rxjs";
 import { ENVIRONMENT } from "src/environments/environment-token";
-import { Environment } from "src/environments/environment.interface";
+import { Environment } from "src/environments/environment";
 import { PrimengModule } from "../../primeng/primeng.module";
 
 @Component({
@@ -34,9 +32,7 @@ import { PrimengModule } from "../../primeng/primeng.module";
     CommonModule,
     PrimengModule,
     IconsModule,
-    IconBoltComponent,
     IconCheckComponent,
-    IconCloseComponent,
     IconWarningComponent,
     IconClockComponent,
     SliceStringPipe,
@@ -209,6 +205,24 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
           this.toastService.erro("Error adding to wishlist");
         },
       });
+    }
+  }
+
+  resolveLocationPhotoUrl(): string | null {
+    const data = this.getMonitorData();
+    const raw = data?.photoUrl ?? this.pontoSelecionado?.photoUrl;
+    if (raw == null || !String(raw).trim()) {
+      return null;
+    }
+    const u = String(raw).trim();
+    if (/^https?:\/\//i.test(u)) {
+      return u;
+    }
+    try {
+      const origin = new URL(this.env.apiUrl).origin;
+      return u.startsWith("/") ? origin + u : `${origin}/${u}`;
+    } catch {
+      return u;
     }
   }
 }

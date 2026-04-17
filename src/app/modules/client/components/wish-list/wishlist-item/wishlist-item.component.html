@@ -9,48 +9,26 @@
     </div>
 
     <div class="item-info">
-      <div
-        class="info-group"
-        *ngIf="item.addressLocationName || item.addressLocationDescription"
-      >
-        <h3 class="item-name" *ngIf="item.addressLocationName">
-          {{ item.addressLocationName }}
-        </h3>
-        <p class="item-description" *ngIf="item.addressLocationDescription">
-          {{ item.addressLocationDescription }}
-        </p>
+      <div class="info-group" *ngIf="item.addressLocationName">
+        <h3 class="item-name">{{ item.addressLocationName }}</h3>
       </div>
 
       <div
         class="info-group"
-        *ngIf="!item.addressLocationName && !item.addressLocationDescription"
+        *ngIf="!item.addressLocationName"
       >
         <p><strong>Address: </strong>{{ item.fullAddress }}</p>
       </div>
 
       <div class="info-details">
         <div class="detail-item">
-          <p-badge
-            [value]="item.active ? 'Active' : 'Inactive'"
-            [severity]="item.active ? 'success' : 'danger'"
-          ></p-badge>
-        </div>
-
-        <div class="detail-item">
-          <span class="detail-label">Status:</span>
+          <span class="detail-label">Available:</span>
           <span
             class="detail-value"
             [class.unavailable]="!item.hasAvailableSlots"
           >
-            {{ displayAvailable }}
+            {{ item.hasAvailableSlots ? "Yes" : "No" }}
           </span>
-        </div>
-
-        <div class="detail-item" *ngIf="showEstimatedDate">
-          <span class="detail-label">Next Available:</span>
-          <span class="detail-value">{{
-            item.estimatedSlotReleaseDate | date: "MM/dd/yyyy"
-          }}</span>
         </div>
       </div>
 

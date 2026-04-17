@@ -53,17 +53,6 @@ export class WishlistItemComponent implements OnInit {
     }
   }
 
-  get displayAvailable(): string {
-    return this.item.hasAvailableSlots ? "Available" : "Not Available";
-  }
-
-  get showEstimatedDate(): boolean {
-    return (
-      this.item.estimatedSlotReleaseDate !== null &&
-      !this.item.hasAvailableSlots
-    );
-  }
-
   onAddToCart(): void {
     if (this.isButtonDisabled) {
       return;

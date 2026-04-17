@@ -1,5 +1,6 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { RouterModule } from "@angular/router";
+import { CartService } from "@app/core/service/api/cart.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ContentWrapperComponent } from "@app/shared/components/content-wrapper/content-wrapper.component";
 import { HeaderComponent } from "@app/shared/components/header/header.component";
@@ -19,6 +20,12 @@ import { RodapeComponent } from "@app/shared/components/rodape/rodape.component"
     RodapeComponent,
   ],
 })
-export class ClientViewLayoutComponent {
+export class ClientViewLayoutComponent implements OnInit {
+  constructor(private readonly cartService: CartService) {}
+
+  ngOnInit(): void {
+    this.cartService.refreshActiveCart().subscribe({ error: () => {} });
+  }
+
   onMonitorsFound(monitors: MapPoint[]): void {}
 }
