@@ -1,5 +1,7 @@
+import { HttpErrorResponse } from "@angular/common/http";
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
+import { ApiErrorHandler } from "@app/core/error/api-error-handler";
 import {
   BoxHeartbeatCheckResponse,
   MonitoringTestingRow,
@@ -129,9 +131,9 @@ export class MonitoringTestingComponent implements OnInit {
         this.toastBoxHeartbeat(row, r);
         this.load();
       },
-      error: () => {
+      error: (err: unknown) => {
         this.checkingBoxId = null;
-        this.toastService.erro("Failed to verify box heartbeat.");
+        this.toastService.erro(this.httpErrorMessage(err, "Failed to verify box heartbeat."));
       },
     });
   }
@@ -147,9 +149,9 @@ export class MonitoringTestingComponent implements OnInit {
         this.checkingPlugKey = null;
         this.toastPlugRead("Plug (box)", r);
       },
-      error: () => {
+      error: (err: unknown) => {
         this.checkingPlugKey = null;
-        this.toastService.erro("Failed to read smart plug on box.");
+        this.toastService.erro(this.httpErrorMessage(err, "Failed to read smart plug on box."));
       },
     });
   }
@@ -165,9 +167,9 @@ export class MonitoringTestingComponent implements OnInit {
         this.checkingPlugKey = null;
         this.toastPlugRead("Plug (screen)", r);
       },
-      error: () => {
+      error: (err: unknown) => {
         this.checkingPlugKey = null;
-        this.toastService.erro("Failed to read smart plug on screen.");
+        this.toastService.erro(this.httpErrorMessage(err, "Failed to read smart plug on screen."));
       },
     });
   }
@@ -215,7 +217,18 @@ export class MonitoringTestingComponent implements OnInit {
       this.toastService.aviso(msg);
       return;
     }
+    if (status === "MISSING") {
+      this.toastService.aviso(msg);
+      return;
+    }
     this.toastService.erro(msg);
+  }
+
+  private httpErrorMessage(err: unknown, fallback: string): string {
+    if (err instanceof HttpErrorResponse) {
+      return ApiErrorHandler.handleApiError(err);
+    }
+    return fallback;
   }
 
   private normalizeHeartbeatStatus(r: BoxHeartbeatCheckResponse): string {
