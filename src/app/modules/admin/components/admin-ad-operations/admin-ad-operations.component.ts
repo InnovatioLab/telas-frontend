@@ -44,6 +44,10 @@ export class AdminAdOperationsComponent implements OnInit {
   notificationsLoading = false;
   selectedAdvertiserLabel = "";
 
+  textDialogVisible = false;
+  selectedTextDialogTitle = "";
+  selectedTextDialogValue = "";
+
   readonly validationOptions: { label: string; value: string }[] = [
     { label: "Pending", value: "PENDING" },
     { label: "Approved", value: "APPROVED" },
@@ -167,6 +171,18 @@ export class AdminAdOperationsComponent implements OnInit {
   closeNotificationsDialog(): void {
     this.notificationsDialogVisible = false;
     this.expiryNotifications = [];
+  }
+
+  openTextDialog(title: string, value: string | null | undefined): void {
+    this.selectedTextDialogTitle = title;
+    this.selectedTextDialogValue = value ?? "—";
+    this.textDialogVisible = true;
+  }
+
+  closeTextDialog(): void {
+    this.textDialogVisible = false;
+    this.selectedTextDialogTitle = "";
+    this.selectedTextDialogValue = "";
   }
 
   exportCsv(): void {

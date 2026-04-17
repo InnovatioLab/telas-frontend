@@ -25,6 +25,43 @@
   word-break: break-word;
 }
 
+.trunc-cell {
+  max-width: 18rem;
+}
+
+.trunc-cell--stage {
+  max-width: 16rem;
+}
+
+.trunc-cell-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.trunc-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trunc-eye-btn {
+  flex-shrink: 0;
+}
+
+.full-text-body {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  font-size: var(--fonte-tamanho-pequeno);
+  max-height: 70vh;
+  overflow: auto;
+}
+
 .action-buttons {
   display: flex;
   flex-wrap: wrap;
