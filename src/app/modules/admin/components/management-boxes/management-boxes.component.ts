@@ -15,7 +15,7 @@ import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { MessageService } from "primeng/api";
+import { MessageService, OverlayOptions } from "primeng/api";
 import { Role } from "@app/model/client";
 import { Observable, of } from "rxjs";
 import { switchMap, take } from "rxjs/operators";
@@ -28,6 +28,11 @@ import { switchMap, take } from "rxjs/operators";
   styleUrls: ["./management-boxes.component.scss"],
 })
 export class ManagementBoxesComponent implements OnInit {
+  readonly selectOverlayOptions: OverlayOptions = {
+    appendTo: "body",
+    baseZIndex: 11000,
+  };
+
   boxes: Box[] = [];
   availableBoxAddresses: BoxAddress[] = [];
   selectedBoxForEdit: Box | null = null;

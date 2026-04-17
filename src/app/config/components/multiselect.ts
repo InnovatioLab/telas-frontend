@@ -1,47 +1,63 @@
+type ThemeCssFn = (options: { dt: (token: string) => string }) => string;
+
 export const multiselect: MultiselectTokens = {
   root: {
     border: {
-      color: 'var(--cor-cinza-medio)',
+      color: "var(--cor-cinza-medio)",
     },
     hover: {
       border: {
-        color: 'var(--cor-cinza-medio)',
+        color: "var(--cor-cinza-medio)",
       },
     },
     focus: {
       border: {
-        color: 'var(--cor-primaria)',
+        color: "var(--cor-primaria)",
       },
     },
     disabled: {
-      color: 'var(--cor-legenda)',
-      background: 'var(--cor-cinza-medio)',
+      color: "var(--cor-legenda)",
+      background: "var(--cor-cinza-medio)",
     },
     invalid: {
       border: {
-        color: 'var(--cor-erro)',
+        color: "var(--cor-erro)",
       },
     },
   },
   trigger: {
     icon: {
-      color: 'var(--cor-primaria-escura)',
+      color: "var(--cor-primaria-escura)",
     },
   },
   panel: {
-    background: 'var(--cor-branca)',
+    background: "var(--cor-branca)",
+  },
+  overlay: {
+    background: "var(--cor-branca)",
   },
   item: {
-    color: 'var(--cor-cinza-escuro)',
+    color: "var(--cor-cinza-escuro)",
     hover: {
-      background: 'var(--cor-primaria)',
-      color: 'var(--cor-branca)',
+      background: "var(--cor-primaria)",
+      color: "var(--cor-branca)",
     },
     selected: {
-      background: 'var(--cor-primaria)',
-      color: 'var(--cor-branca)',
+      background: "var(--cor-primaria)",
+      color: "var(--cor-branca)",
     },
   },
+  css: (({ dt }) => `
+    .p-multiselect-overlay .p-multiselect-header p-iconfield,
+    .p-multiselect-overlay .p-multiselect-header .p-iconfield,
+    .p-multiselect-overlay .p-multiselect-filter-container {
+      background: ${dt("multiselect.overlay.background")} !important;
+    }
+    .p-multiselect-overlay input.p-multiselect-filter,
+    .p-multiselect-overlay .p-multiselect-filter-container input.p-inputtext {
+      background: ${dt("multiselect.overlay.background")} !important;
+    }
+  `) satisfies ThemeCssFn,
 };
 
 export type MultiselectTokens = {
@@ -95,6 +111,9 @@ export type MultiselectTokens = {
     };
     shadow?: string;
   };
+  overlay?: {
+    background?: string;
+  };
   item?: {
     color?: string;
     padding?: string;
@@ -107,4 +126,5 @@ export type MultiselectTokens = {
       color?: string;
     };
   };
+  css?: ThemeCssFn;
 };

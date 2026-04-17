@@ -88,6 +88,7 @@
   header="Create New Box"
   [(visible)]="createBoxModalVisible"
   [modal]="true"
+  [baseZIndex]="10000"
   [style]="{ width: '70vw', maxWidth: '600px' }"
   [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
   [draggable]="false"
@@ -109,7 +110,7 @@
         [loading]="loadingBoxAddresses"
         [disabled]="loadingBoxAddresses"
         (onChange)="onBoxAddressChange($event.value)"
-        [overlayOptions]="{ appendTo: 'body' }"
+        [overlayOptions]="selectOverlayOptions"
       >
         <ng-template #empty>
           <p class="font-semibold">No IP address found.</p>
@@ -139,7 +140,7 @@
         class="w-full"
         [loading]="loadingMonitors"
         [disabled]="loadingMonitors"
-        [overlayOptions]="{ appendTo: 'body' }"
+        [overlayOptions]="selectOverlayOptions"
         [filter]="true"
         filterPlaceHolder="Type address to search..."
         emptyFilterMessage="No monitors found."
@@ -188,6 +189,7 @@
   header="Edit Box"
   [(visible)]="editBoxModalVisible"
   [modal]="true"
+  [baseZIndex]="10000"
   [style]="{ width: '70vw', maxWidth: '600px' }"
   [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
   [draggable]="false"
@@ -209,6 +211,7 @@
         [loading]="loadingBoxAddresses"
         [disabled]="loadingBoxAddresses"
         (onChange)="onEditBoxAddressChange($event.value)"
+        [overlayOptions]="selectOverlayOptions"
       >
       </p-select>
       <ng-template pTemplate="empty">
@@ -237,8 +240,7 @@
         class="w-full"
         [loading]="loadingMonitors"
         [disabled]="loadingMonitors"
-        [overlayOptions]="{ appendTo: 'body' }"
-        appendTo="body"
+        [overlayOptions]="selectOverlayOptions"
         [filter]="true"
         filterPlaceHolder="Type address to search..."
         emptyFilterMessage="No monitors found."
@@ -269,8 +271,7 @@
         optionValue="value"
         placeholder="Nenhuma ou selecionar inventário"
         class="w-full"
-        [overlayOptions]="{ appendTo: 'body' }"
-        appendTo="body"
+        [overlayOptions]="selectOverlayOptions"
       >
       </p-select>
       <small class="help-text">Associa uma tomada Kasa/Tapo ao equipamento da box (DEVELOPER).</small>

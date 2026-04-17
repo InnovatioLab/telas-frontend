@@ -1031,6 +1031,25 @@ select:disabled::placeholder,
   border-radius: var(--borda-raio-pequeno) !important;
 }
 
+.p-select-overlay .p-select-header,
+.p-select-overlay p-iconfield,
+.p-select-overlay .p-iconfield,
+.p-multiselect-overlay .p-multiselect-header,
+.p-multiselect-overlay p-iconfield,
+.p-multiselect-overlay .p-iconfield,
+.p-multiselect-overlay .p-multiselect-filter-container {
+  background: var(--cor-branca) !important;
+  background-color: var(--cor-branca) !important;
+}
+
+.p-select-overlay input.p-select-filter,
+.p-select-overlay input.p-inputtext,
+.p-multiselect-overlay input.p-multiselect-filter,
+.p-multiselect-overlay input.p-inputtext {
+  background: var(--cor-branca) !important;
+  background-color: var(--cor-branca) !important;
+}
+
 .p-drawer-content {
   overflow: hidden !important;
 }
@@ -1520,7 +1539,7 @@ textarea {
 
 .p-select-panel {
   border: none !important;
-  background: transparent !important;
+  background: var(--cor-branca) !important;
   border-radius: var(--borda-raio-pequeno) !important;
   box-shadow: var(--sombra-padrao) !important;
 

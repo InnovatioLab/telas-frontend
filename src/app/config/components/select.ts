@@ -25,7 +25,20 @@ export const select: SelectTokens = {
     placeholder: {
       color: 'var(--cor-erro)',
     },
-  }
+  },
+  overlay: {
+    background: 'var(--cor-branca)',
+  },
+  css: ({ dt }) => `
+    .p-select-overlay .p-select-header p-iconfield,
+    .p-select-overlay .p-select-header .p-iconfield {
+      background: ${dt('select.overlay.background')} !important;
+    }
+    .p-select-overlay .p-select-header input.p-inputtext,
+    .p-select-overlay .p-select-header input.p-select-filter {
+      background: ${dt('select.overlay.background')} !important;
+    }
+  `,
 }
 
 export type SelectTokens = {
@@ -166,4 +179,5 @@ export type SelectTokens = {
       padding?: string;
     };
   };
+  css?: (options: { dt: (token: string) => string }) => string;
 };
