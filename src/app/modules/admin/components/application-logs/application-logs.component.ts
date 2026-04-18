@@ -105,7 +105,7 @@ export class ApplicationLogsComponent implements OnInit {
 
   canViewBoxPingLogs(): boolean {
     const c = this.authentication.client();
-    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_TESTING_VIEW);
+    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_BOX_PING_VIEW);
   }
 
   hasAnyBoxPingProbeResult(): boolean {

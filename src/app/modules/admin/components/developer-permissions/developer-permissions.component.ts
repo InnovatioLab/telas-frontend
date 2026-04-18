@@ -15,6 +15,7 @@ import { finalize, map } from "rxjs/operators";
 
 const PERMISSION_LABELS: Record<string, string> = {
   ADMIN_CLIENTS_DEACTIVATE: "Deactivate clients",
+  MONITORING_BOX_PING_VIEW: "Box ping logs",
   MONITORING_LOGS_VIEW: "Application logs",
   MONITORING_SCHEDULER_VIEW: "Scheduled jobs",
   MONITORING_SMART_PLUG_ADMIN: "Smart plugs (monitor)",

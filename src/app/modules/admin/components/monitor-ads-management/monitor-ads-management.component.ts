@@ -11,6 +11,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
+import { finalize } from "rxjs/operators";
 
 interface MonitorAdItem {
   id: string;
@@ -305,31 +306,36 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
       ads,
     };
 
-    this.monitorService.updateMonitor(this.monitor.id, payload).subscribe({
-      next: (success) => {
-        if (success) {
-          this.toastService.sucesso("Ads saved successfully");
-          this.router.navigate(["/admin/screens"]);
-        } else {
-          this.toastService.erro("Failed to save ads");
-        }
-      },
-      error: (error) => {
-        if (
-          error?.status === 422 &&
-          error?.error?.errors &&
-          Array.isArray(error.error.errors) &&
-          error.error.errors.length > 0
-        ) {
-          this.toastService.erro(error.error.errors[0]);
-        } else {
-          this.toastService.erro("Failed to save ads");
-        }
-      },
-      complete: () => {
-        this.saving = false;
-      },
-    });
+    this.monitorService
+      .updateMonitor(this.monitor.id, payload)
+      .pipe(finalize(() => (this.saving = false)))
+      .subscribe({
+        next: (success) => {
+          if (success) {
+            this.toastService.sucesso("Ads saved successfully");
+            this.router.navigate(["/admin/screens"]);
+          } else {
+            this.toastService.erro("Failed to save ads");
+          }
+        },
+        error: (error) => {
+          const apiMsg = this.apiErrorFirstMessage(error);
+          this.toastService.erro(apiMsg ?? "Failed to save ads");
+        },
+      });
+  }
+
+  private apiErrorFirstMessage(error: unknown): string | null {
+    const e = error as {
+      status?: number;
+      error?: { errors?: string[]; message?: string };
+    };
+    const errs = e?.error?.errors;
+    if (Array.isArray(errs) && errs.length > 0 && typeof errs[0] === "string") {
+      return errs[0];
+    }
+    const m = e?.error?.message;
+    return typeof m === "string" && m.length > 0 ? m : null;
   }
 
   openPreview(): void {
