@@ -29,6 +29,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
+import { CartService } from '@app/core/service/api/cart.service';
 import { MyTelasComponent } from '../my-telas.component';
 import { MyTelasService } from '../../../services/my-telas.service';
 import { ToastService } from '@app/core/service/state/toast.service';
@@ -258,6 +259,12 @@ describe('MyTelasComponent - New Features', () => {
         { provide: PdfViewerService, useValue: pdfViewerService },
         { provide: HttpClient, useValue: httpClient },
         { provide: ChangeDetectorRef, useValue: cdr },
+        {
+          provide: CartService,
+          useValue: {
+            refreshActiveCart: jest.fn().mockReturnValue(of(null)),
+          },
+        },
       ],
     }).compileComponents();
 

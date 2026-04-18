@@ -20,6 +20,7 @@ import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.uti
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
+import { CartService } from "@app/core/service/api/cart.service";
 import { MyTelasService } from "../../services/my-telas.service";
 import { AdItemComponent } from "../ad-item/ad-item.component";
 
@@ -78,7 +79,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly pdfViewerService: PdfViewerService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly sanitizer: DomSanitizer
+    private readonly sanitizer: DomSanitizer,
+    private readonly cartService: CartService
   ) {
     this.requestAdForm = this.myTelasService.createRequestAdForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
@@ -89,6 +91,14 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.checkRouteParams();
+    this.refreshCartAfterCheckoutReturn();
+  }
+
+  private refreshCartAfterCheckoutReturn(): void {
+    this.cartService.refreshActiveCart().subscribe();
+    setTimeout(() => {
+      this.cartService.refreshActiveCart().subscribe();
+    }, 2500);
   }
 
   checkRouteParams(): void {
