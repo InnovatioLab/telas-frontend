@@ -1,5 +1,5 @@
 <div class="content application-logs">
-  <ng-container *ngIf="useTabs(); else singleSectionLayout">
+  <ng-container *ngIf="showLogsSection(); else noLogsSection">
     <p-tabView styleClass="logs-tabs">
       <p-tabPanel *ngIf="canViewLogs()" header="Application logs">
         <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
@@ -7,16 +7,14 @@
       <p-tabPanel *ngIf="canViewScheduler()" header="Scheduled jobs">
         <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
       </p-tabPanel>
+      <p-tabPanel *ngIf="canViewBoxPingLogs()" header="Box ping logs">
+        <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
+      </p-tabPanel>
     </p-tabView>
   </ng-container>
 
-  <ng-template #singleSectionLayout>
-    <ng-container *ngIf="canViewLogs()">
-      <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
-    </ng-container>
-    <ng-container *ngIf="canViewScheduler() && !canViewLogs()">
-      <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
-    </ng-container>
+  <ng-template #noLogsSection>
+    <p class="text-center p-4 text-muted">Sem permissão para ver logs de monitorização.</p>
   </ng-template>
 
   <ng-template #logsFiltersAndTable>
@@ -249,6 +247,68 @@
           <ng-template pTemplate="emptymessage">
             <tr>
               <td colspan="10" class="text-center p-4">No scheduler data yet.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-card>
+  </ng-template>
+
+  <ng-template #boxPingTable>
+    <p-card styleClass="card-header scheduler-card">
+      <div class="scheduler-table-wrap box-ping-toolbar">
+        <button
+          pButton
+          type="button"
+          label="Refresh"
+          icon="pi pi-refresh"
+          class="p-button-sm mb-3"
+          (click)="loadBoxPingRows()"
+          [disabled]="boxPingLoading"
+        ></button>
+        <p-table
+          [value]="boxPingRows"
+          [loading]="boxPingLoading"
+          styleClass="p-datatable-sm"
+          responsiveLayout="scroll"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th scope="col">Box ID</th>
+              <th scope="col">Box IP</th>
+              <th scope="col">Monitor</th>
+              <th scope="col">Last probe</th>
+              <th scope="col">Reachable</th>
+              <th scope="col">Detail</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td class="scheduler-job-id">{{ row.boxId }}</td>
+              <td>{{ row.boxIp || "—" }}</td>
+              <td>{{ row.monitorAddressSummary || "—" }}</td>
+              <td class="whitespace-nowrap">
+                {{
+                  row.lastProbeAt ? (row.lastProbeAt | date : "medium") : "—"
+                }}
+              </td>
+              <td>
+                <p-badge
+                  *ngIf="row.reachable !== null && row.reachable !== undefined"
+                  [value]="row.reachable ? 'yes' : 'no'"
+                  [severity]="row.reachable ? 'success' : 'danger'"
+                ></p-badge>
+                <span *ngIf="row.reachable === null || row.reachable === undefined">—</span>
+              </td>
+              <td class="probe-detail-cell">{{ row.probeDetail || "—" }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                No probe data yet (job runs on interval; check server logs for
+                box.connectivity.probe).
+              </td>
             </tr>
           </ng-template>
         </p-table>

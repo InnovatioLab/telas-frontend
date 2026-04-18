@@ -6,6 +6,10 @@ import {
   MonitoringLogService,
 } from "@app/core/service/api/monitoring-log.service";
 import {
+  BoxConnectivityProbeRow,
+  MonitoringBoxConnectivityService,
+} from "@app/core/service/api/monitoring-box-connectivity.service";
+import {
   MonitoringSchedulerService,
   SchedulerJobStatus,
 } from "@app/core/service/api/monitoring-scheduler.service";
@@ -32,6 +36,7 @@ interface SelectOption {
 export class ApplicationLogsComponent implements OnInit {
   private readonly monitoringLogService = inject(MonitoringLogService);
   private readonly monitoringSchedulerService = inject(MonitoringSchedulerService);
+  private readonly monitoringBoxConnectivityService = inject(MonitoringBoxConnectivityService);
   private readonly toastService = inject(ToastService);
   private readonly authentication = inject(Authentication);
 
@@ -48,6 +53,9 @@ export class ApplicationLogsComponent implements OnInit {
 
   schedulerJobs: SchedulerJobStatus[] = [];
   schedulerLoading = false;
+
+  boxPingRows: BoxConnectivityProbeRow[] = [];
+  boxPingLoading = false;
 
   filterSource = "";
   filterLevel = "";
@@ -76,6 +84,13 @@ export class ApplicationLogsComponent implements OnInit {
     if (this.canViewScheduler()) {
       this.loadSchedulerJobs();
     }
+    if (this.canViewBoxPingLogs()) {
+      this.loadBoxPingRows();
+    }
+  }
+
+  showLogsSection(): boolean {
+    return this.canViewLogs() || this.canViewScheduler() || this.canViewBoxPingLogs();
   }
 
   canViewLogs(): boolean {
@@ -88,8 +103,26 @@ export class ApplicationLogsComponent implements OnInit {
     return hasMonitoringPermission(c, MonitoringPermission.MONITORING_SCHEDULER_VIEW);
   }
 
-  useTabs(): boolean {
-    return this.canViewLogs() && this.canViewScheduler();
+  canViewBoxPingLogs(): boolean {
+    const c = this.authentication.client();
+    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_TESTING_VIEW);
+  }
+
+  loadBoxPingRows(): void {
+    this.boxPingLoading = true;
+    this.monitoringBoxConnectivityService.listRows().subscribe({
+      next: (rows) => {
+        this.boxPingRows = rows ?? [];
+        this.boxPingLoading = false;
+      },
+      error: (err) => {
+        this.boxPingRows = [];
+        this.boxPingLoading = false;
+        if (err?.status === 403) {
+          this.toastService.erro("Sem permissão para ver Box ping logs.");
+        }
+      },
+    });
   }
 
   onLazyLoad(event: TableLazyLoadEvent): void {
