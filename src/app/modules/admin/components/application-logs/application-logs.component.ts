@@ -69,6 +69,7 @@ export class ApplicationLogsComponent implements OnInit {
     { label: "API", value: "API" },
     { label: "WORKER", value: "WORKER" },
     { label: "EMAIL", value: "EMAIL" },
+    { label: "MONITORING", value: "MONITORING" },
   ];
 
   readonly levelOptions: SelectOption[] = [

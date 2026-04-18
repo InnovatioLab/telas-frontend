@@ -22,6 +22,7 @@
             class="notification-item flex align-items-center w-full gap-3 px-2 pt-2 pb-3"
             (click)="markAsRead(notification)"
             [class.visualized]="notification.visualized"
+            [ngClass]="monitoringAccentClasses(notification)"
           >
             <div
               [innerHTML]="notification.message"

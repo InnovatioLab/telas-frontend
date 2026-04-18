@@ -811,8 +811,56 @@ body.dark-theme {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 
-  .p-drawer.notification-sidebar .notification-item:not(.visualized):hover {
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-down:not(.visualized) {
+    background-color: rgba(127, 29, 29, 0.35) !important;
+    border-left: 4px solid #f87171 !important;
+    color: #fecaca !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-down:not(.visualized):hover {
+    background-color: rgba(153, 27, 27, 0.45) !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-up:not(.visualized) {
+    background-color: rgba(20, 83, 45, 0.35) !important;
+    border-left: 4px solid #4ade80 !important;
+    color: #bbf7d0 !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-up:not(.visualized):hover {
+    background-color: rgba(22, 101, 52, 0.45) !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-warn:not(.visualized) {
+    background-color: rgba(120, 53, 15, 0.35) !important;
+    border-left: 4px solid #fbbf24 !important;
+    color: #fde68a !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-warn:not(.visualized):hover {
+    background-color: rgba(146, 64, 14, 0.45) !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item:not(.visualized):not(.notification-item--accent-down):not(
+      .notification-item--accent-up
+    ):not(.notification-item--accent-warn):hover {
     background-color: #334155 !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-down:not(.visualized):hover,
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-up:not(.visualized):hover,
+  .p-drawer.notification-sidebar
+    .notification-item.notification-item--accent-warn:not(.visualized):hover {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   }
 
   .p-drawer.notification-sidebar .notification-item.visualized {
@@ -821,8 +869,44 @@ body.dark-theme {
     color: #cbd5e1 !important;
   }
 
-  .p-drawer.notification-sidebar .notification-item.visualized:hover {
+  .p-drawer.notification-sidebar
+    .notification-item.visualized.notification-item--accent-down {
+    background-color: rgba(127, 29, 29, 0.2) !important;
+    border-left: 4px solid #b91c1c !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.visualized.notification-item--accent-up {
+    background-color: rgba(20, 83, 45, 0.2) !important;
+    border-left: 4px solid #15803d !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.visualized.notification-item--accent-warn {
+    background-color: rgba(120, 53, 15, 0.22) !important;
+    border-left: 4px solid #b45309 !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.visualized:not(.notification-item--accent-down):not(
+      .notification-item--accent-up
+    ):not(.notification-item--accent-warn):hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.visualized.notification-item--accent-down:hover {
+    background-color: rgba(127, 29, 29, 0.28) !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.visualized.notification-item--accent-up:hover {
+    background-color: rgba(20, 83, 45, 0.28) !important;
+  }
+
+  .p-drawer.notification-sidebar
+    .notification-item.visualized.notification-item--accent-warn:hover {
+    background-color: rgba(120, 53, 15, 0.3) !important;
   }
 
   .p-drawer.notification-sidebar .notification-item.visualized p,

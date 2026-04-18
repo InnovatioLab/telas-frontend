@@ -86,4 +86,38 @@ export class NotificationSidebarComponent
   refresh(): void {
     this.notificationsService.fetchAllNotifications().subscribe();
   }
+
+  monitoringAccentClasses(
+    notification: Notification
+  ): Record<string, boolean> {
+    const accent = this.monitoringAccent(notification);
+    return {
+      "notification-item--accent-down": accent === "down",
+      "notification-item--accent-up": accent === "up",
+      "notification-item--accent-warn": accent === "warn",
+    };
+  }
+
+  private monitoringAccent(
+    notification: Notification
+  ): "down" | "up" | "warn" | null {
+    const ref = notification.reference;
+    const msg = (notification.message || "").toLowerCase();
+    if (ref === "BOX_STATUS_UPDATED" || ref === "MONITOR_STATUS_UPDATED") {
+      if (msg.includes("reactivated")) {
+        return "up";
+      }
+      if (msg.includes("deactivated")) {
+        return "down";
+      }
+      return null;
+    }
+    if (ref === "SMART_PLUG_INCIDENT") {
+      return "down";
+    }
+    if (ref === "MONITORING_HOST_REBOOT") {
+      return "warn";
+    }
+    return null;
+  }
 }
