@@ -11,11 +11,12 @@
         {{ getMonitorData()?.addressLocationName | sliceString: 50 }}
       </h4>
 
-      <div class="street-view-container" *ngIf="resolveLocationPhotoUrl() as photoSrc">
+      <div class="street-view-container" *ngIf="canShowLocationPhoto()">
         <img
-          [src]="photoSrc"
-          alt="Location photo"
+          [src]="resolveLocationPhotoUrl()!"
+          alt=""
           class="street-view-image"
+          (error)="onLocationPhotoError()"
         />
       </div>
 

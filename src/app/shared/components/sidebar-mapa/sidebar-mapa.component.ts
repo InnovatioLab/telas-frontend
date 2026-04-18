@@ -44,6 +44,7 @@ import { PrimengModule } from "../../primeng/primeng.module";
 export class SidebarMapaComponent implements OnInit, OnDestroy {
   visibilidadeSidebar = false;
   pontoSelecionado: MapPoint | null = null;
+  private locationPhotoFailed = false;
 
   localInfo: {
     name?: string;
@@ -67,6 +68,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.mapsService.selectedPoint$.subscribe((point) => {
         if (point && !this.pontoSelecionado) {
+          this.resetLocationPhotoState();
           this.pontoSelecionado = point;
           this.openSidebar();
           setTimeout(() => {
@@ -79,6 +81,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     window.addEventListener("monitor-marker-clicked", ((e: Event) => {
       const customEvent = e as CustomEvent;
       if (customEvent.detail?.point && !this.pontoSelecionado) {
+        this.resetLocationPhotoState();
         this.pontoSelecionado = customEvent.detail.point;
         this.openSidebar();
         setTimeout(() => {
@@ -101,6 +104,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     this.mapsService.selectPoint(null);
     this.localInfo = null;
     this.pontoSelecionado = null;
+    this.resetLocationPhotoState();
   }
 
   voltar(): void {
@@ -224,5 +228,19 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
     } catch {
       return u;
     }
+  }
+
+  canShowLocationPhoto(): boolean {
+    const url = this.resolveLocationPhotoUrl();
+    return url != null && url.length > 0 && !this.locationPhotoFailed;
+  }
+
+  onLocationPhotoError(): void {
+    this.locationPhotoFailed = true;
+    this.cdr.detectChanges();
+  }
+
+  private resetLocationPhotoState(): void {
+    this.locationPhotoFailed = false;
   }
 }

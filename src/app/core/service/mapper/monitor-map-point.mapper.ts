@@ -6,7 +6,12 @@ import { MapPoint } from '@app/core/service/state/map-point.interface';
 export class MonitorMapPointMapper {
   convertToMapPoints(monitors: MonitorMapsResponseDto[]): MapPoint[] {
     return monitors
-      .filter((monitor) => monitor.latitude && monitor.longitude)
+      .filter(
+        (monitor) =>
+          monitor.latitude != null &&
+          monitor.longitude != null &&
+          monitor.boxActive != null
+      )
       .map((monitor) => this.convertSingleMonitor(monitor));
   }
 

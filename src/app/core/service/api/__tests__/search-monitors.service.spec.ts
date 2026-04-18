@@ -32,7 +32,8 @@ describe('SearchMonitorsService', () => {
     adsDailyDisplayTimeInMinutes: 120,
     addressLocationName: 'Test Address',
     addressLocationDescription: 'Test Description',
-    photoUrl: 'http://example.com/photo.jpg'
+    photoUrl: 'http://example.com/photo.jpg',
+    boxActive: true,
   };
 
   beforeEach(() => {
