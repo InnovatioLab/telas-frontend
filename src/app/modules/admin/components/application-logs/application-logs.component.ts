@@ -108,9 +108,16 @@ export class ApplicationLogsComponent implements OnInit {
     return hasMonitoringPermission(c, MonitoringPermission.MONITORING_TESTING_VIEW);
   }
 
-  loadBoxPingRows(): void {
+  hasAnyBoxPingProbeResult(): boolean {
+    return this.boxPingRows.some((r) => r.lastProbeAt != null);
+  }
+
+  loadBoxPingRows(refresh = false): void {
     this.boxPingLoading = true;
-    this.monitoringBoxConnectivityService.listRows().subscribe({
+    const request = refresh
+      ? this.monitoringBoxConnectivityService.runProbesNow()
+      : this.monitoringBoxConnectivityService.listRows();
+    request.subscribe({
       next: (rows) => {
         this.boxPingRows = rows ?? [];
         this.boxPingLoading = false;

@@ -260,12 +260,19 @@
         <button
           pButton
           type="button"
-          label="Refresh"
+          label="Atualizar sondas"
           icon="pi pi-refresh"
           class="p-button-sm mb-3"
-          (click)="loadBoxPingRows()"
+          (click)="loadBoxPingRows(true)"
           [disabled]="boxPingLoading"
         ></button>
+        <p
+          *ngIf="boxPingRows.length > 0 && !hasAnyBoxPingProbeResult()"
+          class="text-sm mb-2 box-ping-hint"
+        >
+          Ainda não há sondas gravadas na API (o job pode não ter corrido ou a migração não foi
+          aplicada). Clique em &quot;Atualizar sondas&quot; para testar agora.
+        </p>
         <p-table
           [value]="boxPingRows"
           [loading]="boxPingLoading"
@@ -306,8 +313,8 @@
           <ng-template pTemplate="emptymessage">
             <tr>
               <td colspan="6" class="text-center p-4">
-                No probe data yet (job runs on interval; check server logs for
-                box.connectivity.probe).
+                Sem linhas. Use &quot;Atualizar sondas&quot; para correr TCP agora ou aguarde o job
+                agendado na API.
               </td>
             </tr>
           </ng-template>

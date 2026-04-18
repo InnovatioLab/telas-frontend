@@ -38,6 +38,17 @@ export class MonitoringBoxConnectivityService {
       .pipe(map((res) => res.data ?? []));
   }
 
+  runProbesNow(): Observable<BoxConnectivityProbeRow[]> {
+    const headers = new HttpHeaders(this.getAuthHeaders());
+    return this.http
+      .post<ResponseDto<BoxConnectivityProbeRow[]>>(
+        `${this.env.apiUrl}monitoring/box-connectivity-probes/run`,
+        {},
+        { headers }
+      )
+      .pipe(map((res) => res.data ?? []));
+  }
+
   private getAuthHeaders(): Record<string, string> {
     const token =
       this.authentication.token ?? AuthenticationStorage.getToken();
