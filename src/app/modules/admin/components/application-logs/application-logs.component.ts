@@ -43,6 +43,9 @@ export class ApplicationLogsComponent implements OnInit {
   messageDialogVisible = false;
   selectedMessage = "";
 
+  summaryDialogVisible = false;
+  selectedSummaryJson = "";
+
   schedulerJobs: SchedulerJobStatus[] = [];
   schedulerLoading = false;
 
@@ -140,6 +143,31 @@ export class ApplicationLogsComponent implements OnInit {
       return "—";
     }
     return this.boxAddressFromMetadata(row);
+  }
+
+  formatSummaryPreview(row: SchedulerJobStatus): string {
+    const summary = row.lastRunSummary;
+    if (summary == null || typeof summary !== "object") {
+      return "—";
+    }
+    const raw = JSON.stringify(summary);
+    if (raw.length <= 120) {
+      return raw;
+    }
+    return `${raw.slice(0, 120)}…`;
+  }
+
+  openSummaryDialog(row: SchedulerJobStatus): void {
+    const summary = row.lastRunSummary;
+    if (summary == null) {
+      return;
+    }
+    try {
+      this.selectedSummaryJson = JSON.stringify(summary, null, 2);
+    } catch {
+      this.selectedSummaryJson = String(summary);
+    }
+    this.summaryDialogVisible = true;
   }
 
   formatMs(ms: number | null | undefined): string {

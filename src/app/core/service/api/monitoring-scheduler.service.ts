@@ -20,6 +20,7 @@ export interface SchedulerJobStatus {
   lastStatus: string | null;
   lastDurationMillis: number | null;
   nextExecutionEstimated: string | null;
+  lastRunSummary: Record<string, unknown> | null;
 }
 
 @Injectable({

@@ -187,6 +187,7 @@
               <th scope="col">Last run</th>
               <th scope="col">Duration</th>
               <th scope="col">Status</th>
+              <th scope="col">Last run summary</th>
               <th scope="col">Next (est.)</th>
             </tr>
           </ng-template>
@@ -222,6 +223,20 @@
                 ></p-badge>
                 <span *ngIf="!row.lastStatus">—</span>
               </td>
+              <td class="scheduler-summary-cell">
+                <span class="scheduler-summary-preview">{{
+                  formatSummaryPreview(row)
+                }}</span>
+                <button
+                  *ngIf="row.lastRunSummary"
+                  pButton
+                  type="button"
+                  icon="pi pi-search-plus"
+                  class="p-button-text p-button-rounded p-button-sm"
+                  (click)="openSummaryDialog(row)"
+                  [attr.aria-label]="'Last run summary details'"
+                ></button>
+              </td>
               <td class="whitespace-nowrap">
                 {{
                   row.nextExecutionEstimated
@@ -233,13 +248,25 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="9" class="text-center p-4">No scheduler data yet.</td>
+              <td colspan="10" class="text-center p-4">No scheduler data yet.</td>
             </tr>
           </ng-template>
         </p-table>
       </div>
     </p-card>
   </ng-template>
+
+  <p-dialog
+    header="Last run summary"
+    [(visible)]="summaryDialogVisible"
+    [modal]="true"
+    [style]="{ width: 'min(90vw, 48rem)' }"
+    [breakpoints]="{ '960px': '95vw' }"
+    [dismissableMask]="true"
+    (onHide)="selectedSummaryJson = ''"
+  >
+    <pre class="full-message-body">{{ selectedSummaryJson }}</pre>
+  </p-dialog>
 
   <p-dialog
     header="Message"
