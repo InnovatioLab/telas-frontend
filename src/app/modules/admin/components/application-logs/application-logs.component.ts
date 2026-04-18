@@ -9,6 +9,7 @@ import {
   BoxConnectivityProbeRow,
   MonitoringBoxConnectivityService,
 } from "@app/core/service/api/monitoring-box-connectivity.service";
+import { MonitoringConnectivityProbeSettingsService } from "@app/core/service/api/monitoring-connectivity-probe-settings.service";
 import {
   MonitoringSchedulerService,
   SchedulerJobStatus,
@@ -36,6 +37,9 @@ interface SelectOption {
 export class ApplicationLogsComponent implements OnInit {
   private readonly monitoringLogService = inject(MonitoringLogService);
   private readonly monitoringSchedulerService = inject(MonitoringSchedulerService);
+  private readonly monitoringConnectivityProbeSettingsService = inject(
+    MonitoringConnectivityProbeSettingsService
+  );
   private readonly monitoringBoxConnectivityService = inject(MonitoringBoxConnectivityService);
   private readonly toastService = inject(ToastService);
   private readonly authentication = inject(Authentication);
@@ -53,6 +57,10 @@ export class ApplicationLogsComponent implements OnInit {
 
   schedulerJobs: SchedulerJobStatus[] = [];
   schedulerLoading = false;
+
+  probeIntervalSeconds: number | null = null;
+  probeSettingsLoading = false;
+  probeSettingsSaving = false;
 
   boxPingRows: BoxConnectivityProbeRow[] = [];
   boxPingLoading = false;
@@ -82,8 +90,11 @@ export class ApplicationLogsComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    if (this.canViewScheduler()) {
+    if (this.hasSchedulerView()) {
       this.loadSchedulerJobs();
+    }
+    if (this.canConfigureProbeInterval()) {
+      this.loadProbeSettings();
     }
     if (this.canViewBoxPingLogs()) {
       this.loadBoxPingRows();
@@ -101,7 +112,26 @@ export class ApplicationLogsComponent implements OnInit {
 
   canViewScheduler(): boolean {
     const c = this.authentication.client();
+    return (
+      hasMonitoringPermission(c, MonitoringPermission.MONITORING_SCHEDULER_VIEW) ||
+      hasMonitoringPermission(
+        c,
+        MonitoringPermission.MONITORING_CONNECTIVITY_PROBE_SETTINGS
+      )
+    );
+  }
+
+  hasSchedulerView(): boolean {
+    const c = this.authentication.client();
     return hasMonitoringPermission(c, MonitoringPermission.MONITORING_SCHEDULER_VIEW);
+  }
+
+  canConfigureProbeInterval(): boolean {
+    const c = this.authentication.client();
+    return hasMonitoringPermission(
+      c,
+      MonitoringPermission.MONITORING_CONNECTIVITY_PROBE_SETTINGS
+    );
   }
 
   canViewBoxPingLogs(): boolean {
@@ -219,6 +249,52 @@ export class ApplicationLogsComponent implements OnInit {
       return `${ms} ms`;
     }
     return `${(ms / 1000).toFixed(1)} s`;
+  }
+
+  saveProbeInterval(): void {
+    if (this.probeIntervalSeconds == null || Number.isNaN(this.probeIntervalSeconds)) {
+      return;
+    }
+    const sec = Math.round(this.probeIntervalSeconds);
+    const ms = sec * 1000;
+    if (sec < 5 || sec > 86400) {
+      this.toastService.erro("Interval must be between 5 and 86400 seconds.");
+      return;
+    }
+    this.probeSettingsSaving = true;
+    this.monitoringConnectivityProbeSettingsService.updateSettings(ms).subscribe({
+      next: () => {
+        this.probeSettingsSaving = false;
+        this.toastService.sucesso("Connectivity probe interval updated.");
+        if (this.hasSchedulerView()) {
+          this.loadSchedulerJobs();
+        }
+      },
+      error: (err) => {
+        this.probeSettingsSaving = false;
+        if (err?.status === 403) {
+          this.toastService.erro("Sem permissão para alterar o intervalo da sonda.");
+        } else {
+          this.toastService.erro("Não foi possível guardar o intervalo.");
+        }
+      },
+    });
+  }
+
+  private loadProbeSettings(): void {
+    this.probeSettingsLoading = true;
+    this.monitoringConnectivityProbeSettingsService.getSettings().subscribe({
+      next: (s) => {
+        this.probeIntervalSeconds = Math.round(s.intervalMs / 1000);
+        this.probeSettingsLoading = false;
+      },
+      error: (err) => {
+        this.probeSettingsLoading = false;
+        if (err?.status === 403) {
+          this.toastService.erro("Sem permissão para ver as definições da sonda.");
+        }
+      },
+    });
   }
 
   private loadSchedulerJobs(): void {

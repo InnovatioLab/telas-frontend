@@ -80,6 +80,7 @@ export const ROUTES: Route[] = [
           permissionsAny: [
             MonitoringPermission.MONITORING_LOGS_VIEW,
             MonitoringPermission.MONITORING_SCHEDULER_VIEW,
+            MonitoringPermission.MONITORING_CONNECTIVITY_PROBE_SETTINGS,
             MonitoringPermission.MONITORING_BOX_PING_VIEW,
           ],
         },

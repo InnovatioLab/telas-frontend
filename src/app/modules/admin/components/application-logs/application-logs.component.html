@@ -167,6 +167,34 @@
   </ng-template>
 
   <ng-template #schedulerTable>
+    <p-card
+      *ngIf="canConfigureProbeInterval()"
+      styleClass="card-header scheduler-card probe-interval-card"
+    >
+      <div class="probe-interval-toolbar">
+        <div class="probe-interval-fields">
+          <label for="probeIntervalSec" class="filter-label">Intervalo da sonda (segundos)</label>
+          <p-inputNumber
+            inputId="probeIntervalSec"
+            [(ngModel)]="probeIntervalSeconds"
+            [min]="5"
+            [max]="86400"
+            [showButtons]="true"
+            [disabled]="probeSettingsLoading"
+            styleClass="probe-interval-input"
+          ></p-inputNumber>
+        </div>
+        <button
+          pButton
+          type="button"
+          label="Guardar"
+          icon="pi pi-check"
+          [loading]="probeSettingsSaving"
+          [disabled]="probeSettingsLoading || probeIntervalSeconds == null"
+          (click)="saveProbeInterval()"
+        ></button>
+      </div>
+    </p-card>
     <p-card styleClass="card-header scheduler-card">
       <div class="scheduler-table-wrap">
         <p-table

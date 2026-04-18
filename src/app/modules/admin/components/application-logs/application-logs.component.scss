@@ -7,6 +7,24 @@
     margin-top: 0;
   }
 
+  .probe-interval-card {
+    margin-bottom: 1rem;
+  }
+
+  .probe-interval-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .probe-interval-fields {
+    display: flex;
+    flex-direction: column;
+    min-width: 12rem;
+  }
+
   .scheduler-table-wrap {
     width: 100%;
     overflow-x: auto;

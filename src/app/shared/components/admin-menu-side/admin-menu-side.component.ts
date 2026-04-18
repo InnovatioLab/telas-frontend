@@ -107,6 +107,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
           isDev ||
           perms.includes(MonitoringPermission.MONITORING_LOGS_VIEW) ||
           perms.includes(MonitoringPermission.MONITORING_SCHEDULER_VIEW) ||
+          perms.includes(MonitoringPermission.MONITORING_CONNECTIVITY_PROBE_SETTINGS) ||
           perms.includes(MonitoringPermission.MONITORING_BOX_PING_VIEW)
         );
       }
