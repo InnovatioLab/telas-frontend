@@ -886,3 +886,101 @@ body.dark-theme {
     }
   }
 }
+
+:host-context(html[data-theme="dark"]),
+:host-context(html.dark-theme),
+:host-context(body.dark-theme) {
+  .attachments-content {
+    .upload-section {
+      h3 {
+        color: var(--cor-texto-clara) !important;
+      }
+
+      p {
+        color: rgba(255, 255, 255, 0.88) !important;
+      }
+
+      .upload-info small {
+        color: var(--cor-cinza-dark) !important;
+      }
+
+      ::ng-deep .p-fileupload {
+        .p-fileupload-buttonbar {
+          background: var(--cor-card-background-dark) !important;
+          border-color: var(--cor-cinza-medio-dark) !important;
+        }
+
+        .p-fileupload-content {
+          background: var(--cor-cinza-fundo-dark) !important;
+          border-color: var(--cor-cinza-medio-dark) !important;
+          color: var(--cor-texto-clara) !important;
+        }
+
+        .p-fileupload-file {
+          background: var(--cor-card-background-dark) !important;
+          border-color: var(--cor-cinza-medio-dark) !important;
+        }
+
+        .p-fileupload-file-name,
+        .p-fileupload-file-size {
+          color: var(--cor-texto-clara) !important;
+        }
+      }
+    }
+
+    .ad-request-active-section {
+      background: rgba(46, 125, 50, 0.22) !important;
+      border: 1px solid rgba(129, 199, 132, 0.55) !important;
+
+      .active-request-info {
+        > span.pi {
+          color: #81c784 !important;
+        }
+
+        .message-content {
+          h4 {
+            color: #c8e6c9 !important;
+          }
+
+          p {
+            color: rgba(255, 255, 255, 0.92) !important;
+          }
+        }
+      }
+    }
+
+    .rejection-info {
+      background: rgba(255, 152, 0, 0.12) !important;
+      border: 1px solid rgba(255, 183, 77, 0.5) !important;
+      border-radius: 8px;
+      padding: 12px 16px;
+
+      .message-content {
+        h4 {
+          color: #ffcc80 !important;
+        }
+
+        p {
+          color: rgba(255, 255, 255, 0.9) !important;
+        }
+      }
+    }
+
+    .request-ad-section {
+      h5,
+      label {
+        color: var(--cor-texto-clara) !important;
+      }
+
+      ::ng-deep .p-inputtext {
+        background: var(--cor-card-background-dark) !important;
+        color: var(--cor-texto-clara) !important;
+        border-color: var(--cor-cinza-medio-dark) !important;
+      }
+    }
+
+    .selection-info p {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+  }
+}
