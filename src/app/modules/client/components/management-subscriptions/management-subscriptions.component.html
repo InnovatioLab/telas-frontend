@@ -79,12 +79,7 @@
       <td [innerHTML]="getSubscriptionLocations(subscription)"></td>
       <td>
         <p-badge
-          [value]="
-            subscription.status
-              ? subscription.status.charAt(0).toUpperCase() +
-                subscription.status.slice(1).toLowerCase()
-              : ''
-          "
+          [value]="getSubscriptionStatusLabel(subscription)"
           [severity]="getSubscriptionStatusSeverity(subscription.status)"
         ></p-badge>
       </td>

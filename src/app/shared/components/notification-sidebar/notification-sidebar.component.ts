@@ -9,6 +9,7 @@ import {
   Input,
   Output,
 } from "@angular/core";
+import { Router } from "@angular/router";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -29,6 +30,7 @@ export class NotificationSidebarComponent
   @Output() visibleChange = new EventEmitter<boolean>();
 
   public readonly notificationsService = inject(NotificationsService);
+  private readonly router = inject(Router);
 
   private linkListenerAdded = false;
 
@@ -44,25 +46,42 @@ export class NotificationSidebarComponent
 
   private addLinkStopPropagationListener() {
     if (this.linkListenerAdded) return;
-    const sidebar = this.elRef.nativeElement.querySelector(
-      ".notification-sidebar"
-    );
-    if (!sidebar) return;
-    sidebar.addEventListener(
-      "click",
-      (event: Event) => {
-        const target = event.target as HTMLElement;
-        const linkTarget =
-          target.tagName === "A" &&
-          target.classList.contains("link-text") &&
-          target.closest(".notification-content");
+    const handler = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
 
-        if (linkTarget) {
-          event.stopPropagation();
-        }
-      },
-      true
-    );
+      const sidebarRoot = target.closest(".notification-sidebar");
+      if (!sidebarRoot) {
+        return;
+      }
+
+      const anchor = target.closest("a.link-text");
+      if (!(anchor instanceof HTMLAnchorElement)) {
+        return;
+      }
+
+      // Evita marcar como lida e evita navegação "hard refresh"
+      event.preventDefault();
+      event.stopPropagation();
+
+      const href = anchor.getAttribute("href")?.trim() ?? "";
+      if (!href) {
+        return;
+      }
+
+      if (/^https?:\/\//i.test(href)) {
+        window.location.href = href;
+        return;
+      }
+
+      // Links do backend costumam vir como "/client/..." (path absoluto na SPA)
+      const path = href.startsWith("/") ? href : `/${href}`;
+      this.router.navigateByUrl(path);
+    };
+
+    document.addEventListener("click", handler, true);
     this.linkListenerAdded = true;
   }
 

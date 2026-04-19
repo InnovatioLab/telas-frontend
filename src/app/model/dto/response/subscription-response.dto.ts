@@ -27,6 +27,7 @@ export interface SubscriptionMinResponseDto {
   ableToUpgrade: boolean;
   ableToRenew: boolean;
   ableToCancel: boolean;
+  cancelAtPeriodEnd?: boolean;
   monitors: SubscriptionMonitorResponseDto[];
 }
 

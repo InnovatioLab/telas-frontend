@@ -189,6 +189,18 @@ export class ManagementSubscriptionsComponent implements OnInit {
     }
   }
 
+  getSubscriptionStatusLabel(subscription: SubscriptionMinResponseDto): string {
+    const status = subscription?.status;
+    const base =
+      status && typeof status === "string"
+        ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+        : "";
+    if (status === SubscriptionStatus.ACTIVE && subscription.cancelAtPeriodEnd) {
+      return `${base} (cancel scheduled)`;
+    }
+    return base;
+  }
+
   getDaysLeftSeverity(
     daysLeft: number
   ): "info" | "success" | "warn" | "danger" | "secondary" | "contrast" {
@@ -384,7 +396,11 @@ export class ManagementSubscriptionsComponent implements OnInit {
     if (confirmed) {
       this.subscriptionService.delete(subscription.id).subscribe({
         next: () => {
-          this.toastService.sucesso("Subscription cancelled successfully.");
+          const msg =
+            subscription.recurrence === Recurrence.MONTHLY
+              ? "Cancelamento agendado para o fim do período de cobrança."
+              : "Subscription cancelled successfully.";
+          this.toastService.sucesso(msg);
           this.loadSubscriptions();
         },
         error: (error) => {

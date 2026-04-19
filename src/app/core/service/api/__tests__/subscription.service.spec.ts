@@ -38,6 +38,7 @@ describe('SubscriptionService', () => {
     daysLeft: 15,
     ableToUpgrade: true,
     ableToRenew: true,
+    ableToCancel: true,
     monitors: []
   };
 
@@ -52,6 +53,7 @@ describe('SubscriptionService', () => {
     daysLeft: 0,
     ableToUpgrade: false,
     ableToRenew: false,
+    ableToCancel: false,
     monitors: []
   };
 
