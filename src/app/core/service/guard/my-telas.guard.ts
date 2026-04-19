@@ -11,7 +11,7 @@ export const MyTelasGuard: CanActivateFn = () => {
   return clientService.clientAtual$.pipe(
     take(1),
     map((client) => {
-      if (client && !(client as any).shouldDisplayAttachments) {
+      if (client && (client as any).shouldDisplayAttachments === false) {
         router.navigate(["/client"]);
         return false;
       }

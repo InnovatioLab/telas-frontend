@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
+import { Client } from "@app/model/client";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogModule } from "primeng/dialog";
@@ -51,7 +52,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   menuItems: MenuItem[] = [];
   loading = false;
-  authenticatedClient: AuthenticatedClientResponseDto | null = null;
+  authenticatedClient: AuthenticatedClientResponseDto | Client | null = null;
 
   ngOnInit(): void {
     this.loadAuthenticatedClient();
@@ -72,7 +73,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (client) => {
-          this.authenticatedClient = client as any;
+          this.authenticatedClient = client;
           this.loading = false;
           this.updateMenuItems();
         },
@@ -87,11 +88,17 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     let filteredItems = [...this.allMenuItems];
 
     if (this.authenticatedClient) {
-      if (this.authenticatedClient.shouldDisplayAttachments === false) {
+      if (
+        "shouldDisplayAttachments" in this.authenticatedClient &&
+        this.authenticatedClient.shouldDisplayAttachments === false
+      ) {
         filteredItems = filteredItems.filter((item) => item.id !== "myTelas");
       }
 
-      if (this.authenticatedClient.hasSubscription === false) {
+      if (
+        "hasSubscription" in this.authenticatedClient &&
+        this.authenticatedClient.hasSubscription === false
+      ) {
         filteredItems = filteredItems.filter(
           (item) => item.id !== "subscriptions"
         );
