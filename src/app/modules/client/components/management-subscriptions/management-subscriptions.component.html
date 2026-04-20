@@ -69,6 +69,7 @@
       <th scope="col" pSortableColumn="endsAt">
         Ends At <p-sortIcon field="endsAt"></p-sortIcon>
       </th>
+      <th scope="col">Cancel requested</th>
       <th scope="col">Days Left</th>
       <th scope="col">Actions</th>
     </tr>
@@ -91,6 +92,13 @@
       <td>
         {{
           subscription.endsAt ? (subscription.endsAt | date: "MM/dd/yyyy") : "-"
+        }}
+      </td>
+      <td>
+        {{
+          subscription.cancelRequestedAt
+            ? (subscription.cancelRequestedAt | date: "MM/dd/yyyy")
+            : "-"
         }}
       </td>
       <td>
@@ -143,7 +151,7 @@
             icon="pi pi-trash"
             class="p-button-rounded p-button-danger p-button-text"
             (click)="cancelSubscription(subscription)"
-            [disabled]="!subscription.ableToCancel"
+            [disabled]="!subscription.ableToCancel || !!subscription.cancelAtPeriodEnd"
             [pTooltip]="subscription.ableToCancel ? 'Cancel' : null"
             tooltipPosition="top"
           ></button>
@@ -153,7 +161,7 @@
   </ng-template>
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="8" class="text-center">No subscriptions found.</td>
+      <td colspan="9" class="text-center">No subscriptions found.</td>
     </tr>
   </ng-template>
 </p-table>

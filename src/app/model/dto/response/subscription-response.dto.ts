@@ -28,6 +28,8 @@ export interface SubscriptionMinResponseDto {
   ableToRenew: boolean;
   ableToCancel: boolean;
   cancelAtPeriodEnd?: boolean;
+  cancelRequestedAt?: string;
+  cancelAtPeriodEndAt?: string;
   monitors: SubscriptionMonitorResponseDto[];
 }
 

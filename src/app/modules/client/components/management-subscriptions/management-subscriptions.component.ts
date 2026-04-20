@@ -384,6 +384,14 @@ export class ManagementSubscriptionsComponent implements OnInit {
   async cancelSubscription(
     subscription: SubscriptionMinResponseDto
   ): Promise<void> {
+    if (subscription.cancelAtPeriodEnd) {
+      const effectiveAt = subscription.cancelAtPeriodEndAt || subscription.endsAt;
+      const effectiveLabel = effectiveAt
+        ? `Cancelamento agendado para ${new Date(effectiveAt).toLocaleDateString()}.`
+        : "Cancelamento já está agendado para esta assinatura.";
+      this.toastService.aviso(effectiveLabel);
+      return;
+    }
     const locations = this.getSubscriptionLocations(subscription);
     const confirmed = await this.dialogService.confirm({
       title: "Cancel Subscription",
@@ -400,9 +408,14 @@ export class ManagementSubscriptionsComponent implements OnInit {
             this.toastService.erro("Não foi possível cancelar a assinatura.");
             return;
           }
+          subscription.ableToCancel = false;
+          if (subscription.recurrence === Recurrence.MONTHLY) {
+            subscription.cancelAtPeriodEnd = true;
+            subscription.cancelRequestedAt = new Date().toISOString();
+          }
           const msg =
             subscription.recurrence === Recurrence.MONTHLY
-              ? "Cancelamento agendado para o fim do período de cobrança."
+              ? "Cancelamento agendado para o fim do período de cobrança. Veja a data na tabela."
               : "Subscription cancelled successfully.";
           this.toastService.sucesso(msg);
           this.loadSubscriptions();
