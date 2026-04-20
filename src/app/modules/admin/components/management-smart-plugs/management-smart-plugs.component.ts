@@ -10,6 +10,7 @@ import {
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+import { Role } from "@app/model/client";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -39,8 +40,11 @@ export class ManagementSmartPlugsComponent implements OnInit {
     private readonly authentication: Authentication
   ) {}
 
-  get canAdmin(): boolean {
+  get canRunDiscovery(): boolean {
     const c = this.authentication.client();
+    if (c?.role != null && String(c.role).toUpperCase() === Role.DEVELOPER) {
+      return true;
+    }
     return hasMonitoringPermission(c, MonitoringPermission.MONITORING_SMART_PLUG_ADMIN);
   }
 

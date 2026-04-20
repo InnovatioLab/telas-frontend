@@ -30,6 +30,10 @@ export class MonitoringPermissionGuard implements CanActivate {
       return false;
     }
 
+    if (client.role === Role.DEVELOPER) {
+      return true;
+    }
+
     if (permissionsAny && permissionsAny.length > 0) {
       const ok = permissionsAny.some((p) => hasMonitoringPermission(client, p));
       if (ok) {
