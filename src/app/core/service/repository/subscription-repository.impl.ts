@@ -1,6 +1,6 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map, catchError, of } from 'rxjs';
+import { Observable, map, catchError, of, throwError } from 'rxjs';
 import { ISubscriptionRepository } from '@app/core/interfaces/services/repository/subscription-repository.interface';
 import { Subscription } from '@app/model/subscription';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
@@ -93,7 +93,7 @@ export class SubscriptionRepositoryImpl extends BaseRepository<Subscription, any
           return false;
         }),
         catchError((error) => {
-          return of(false);
+          return throwError(() => error);
         })
       );
   }

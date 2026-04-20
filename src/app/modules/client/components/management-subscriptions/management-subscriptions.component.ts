@@ -395,7 +395,11 @@ export class ManagementSubscriptionsComponent implements OnInit {
 
     if (confirmed) {
       this.subscriptionService.delete(subscription.id).subscribe({
-        next: () => {
+        next: (ok) => {
+          if (!ok) {
+            this.toastService.erro("Não foi possível cancelar a assinatura.");
+            return;
+          }
           const msg =
             subscription.recurrence === Recurrence.MONTHLY
               ? "Cancelamento agendado para o fim do período de cobrança."
