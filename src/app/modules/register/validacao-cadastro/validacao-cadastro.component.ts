@@ -2,18 +2,13 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
-import { Authentication } from "@app/core/service/auth/autenthication";
-import { Client, Role } from "@app/model/client";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
 import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { CAMPOS_REGEX, MENSAGENS, TEXTO_ACAO } from "@app/utility/src";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
-import { firstValueFrom, of } from "rxjs";
-import { switchMap, take } from "rxjs/operators";
 import { CadastrarSenhaComponent } from "../cadastrar-senha/cadastrar-senha.component";
 
 @Component({
@@ -46,10 +41,7 @@ export class ValidacaoCadastroComponent implements OnInit {
     private readonly formBuilder: FormBuilder,
     private readonly service: ClientService,
     private readonly dialogService: DialogService,
-    private readonly authService: AutenticacaoService,
-    private readonly clientService: ClientService,
-    private readonly router: Router,
-    private readonly authentication: Authentication
+    private readonly router: Router
   ) {
     this.validacaoForm = this.formBuilder.group({
       codigo: [
@@ -102,25 +94,9 @@ export class ValidacaoCadastroComponent implements OnInit {
     this.refDialogo = this.dialogService.open(DialogoComponent, config);
   }
 
-  cadastroSenhaFinalizado(senha: string) {
-    this.fazerLogin(senha);
-  }
-
-  fazerLogin(senha: string) {
-    this.authService
-      .login({
-        username: this.clientLogin,
-        password: senha,
-      })
-      .subscribe({
-        next: (response: any) => {
-          if (response && response.client) {
-            this.clientService.setClientAtual(response.client as Client);
-            this.authentication.updateClientData(response.client as Client);
-            this.handleNavigation();
-          }
-        },
-      });
+  cadastroSenhaFinalizado(_senha: string) {
+    void _senha;
+    void this.router.navigate(["/"], { replaceUrl: true });
   }
 
   onInput(event: Event) {
@@ -128,38 +104,4 @@ export class ValidacaoCadastroComponent implements OnInit {
     input.value = input.value.replace(CAMPOS_REGEX.SOMENTE_NUMEROS_INPUT, "");
   }
 
-  async handleNavigation() {
-    // Usa o estado já carregado em `Authentication` (via pegarDadosAutenticado)
-    // para decidir a navegação. Isso evita chamadas concorrentes e garante
-    // que `HeaderActionsService` e outros consumidores vejam o usuário correto.
-    const client = this.authentication._clientSignal();
-    if (!client) {
-      // Fallback: tentar obter do serviço caso o signal não esteja populado
-      try {
-        const authenticatedClient = await firstValueFrom(
-          this.clientService.clientAtual$.pipe(
-            take(1),
-            switchMap((c) =>
-              c ? of(c) : this.clientService.getAuthenticatedClient()
-            )
-          )
-        );
-        if ((authenticatedClient as any)?.role === Role.ADMIN) {
-          this.router.navigate(["/admin"]);
-        } else {
-          this.router.navigate(["/terms-of-service"]);
-        }
-        return;
-      } catch (error) {
-        this.router.navigate(["/"]);
-        return;
-      }
-    }
-
-    if (client.role !== Role.ADMIN) {
-      this.router.navigate(["/terms-of-service"]);
-    } else {
-      this.router.navigate(["/admin"]);
-    }
-  }
 }

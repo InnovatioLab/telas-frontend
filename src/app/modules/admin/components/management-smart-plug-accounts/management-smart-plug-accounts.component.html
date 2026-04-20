@@ -1,0 +1,173 @@
+<p-card styleClass="card-header">
+  <div class="card-header-content toolbar">
+    <div>
+      <h2 class="page-title">Smart plug accounts</h2>
+      <p class="page-subtitle">
+        Default Kasa / Tapo login per box and vendor. Used when a plug has no
+        dedicated email/password.
+      </p>
+    </div>
+    <div class="toolbar-actions toolbar-row">
+      <div class="field-inline">
+        <label for="boxSel" class="mr-2">Box</label>
+        <p-dropdown
+          id="boxSel"
+          [options]="boxes"
+          [(ngModel)]="selectedBoxId"
+          optionLabel="ip"
+          optionValue="id"
+          placeholder="Select box"
+          [filter]="true"
+          filterBy="ip"
+          (onChange)="onBoxChange()"
+          [style]="{ minWidth: '220px' }"
+        ></p-dropdown>
+      </div>
+      <button
+        pButton
+        type="button"
+        class="p-button-outlined"
+        [disabled]="loading || !selectedBoxId"
+        (click)="loadAccounts()"
+      >
+        <app-icon-recarregar></app-icon-recarregar>
+        <span class="ml-2">Refresh</span>
+      </button>
+      <button
+        *ngIf="canAdmin"
+        pButton
+        type="button"
+        [disabled]="!selectedBoxId"
+        (click)="openCreate()"
+      >
+        <span class="ml-1">Add account</span>
+      </button>
+    </div>
+  </div>
+</p-card>
+
+<p-card styleClass="mt-3">
+  <p-table
+    [value]="accounts"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="15"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Vendor</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Enabled</th>
+        <th *ngIf="canAdmin" class="col-actions">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td class="mono">{{ row.vendor }}</td>
+        <td>{{ row.accountEmail || "—" }}</td>
+        <td>
+          <p-tag
+            [value]="row.passwordConfigured ? 'Set' : '—'"
+            [severity]="row.passwordConfigured ? 'success' : 'secondary'"
+          ></p-tag>
+        </td>
+        <td>
+          <p-tag
+            [value]="row.enabled ? 'Yes' : 'No'"
+            [severity]="row.enabled ? 'success' : 'secondary'"
+          ></p-tag>
+        </td>
+        <td *ngIf="canAdmin" class="col-actions">
+          <button
+            pButton
+            type="button"
+            class="p-button-text p-button-sm"
+            (click)="openEdit(row)"
+          >
+            Edit
+          </button>
+          <button
+            pButton
+            type="button"
+            class="p-button-text p-button-danger p-button-sm"
+            (click)="remove(row)"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="canAdmin ? 5 : 4" class="text-center muted p-4">
+          {{
+            selectedBoxId
+              ? "No default accounts for this box."
+              : "Select a box to list accounts."
+          }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<p-dialog
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [header]="dialogCreate ? 'New account' : 'Edit account'"
+  (onHide)="closeDialog()"
+>
+  <div class="dialog-form" *ngIf="dialogVisible">
+    <div class="field" *ngIf="dialogCreate">
+      <label for="vend">Vendor</label>
+      <p-dropdown
+        id="vend"
+        [options]="vendors"
+        [(ngModel)]="formVendor"
+        optionLabel="label"
+        optionValue="value"
+        [style]="{ width: '100%' }"
+      ></p-dropdown>
+    </div>
+    <div class="field" *ngIf="!dialogCreate">
+      <label>Vendor</label>
+      <div class="mono">{{ formVendor }}</div>
+    </div>
+    <div class="field">
+      <label for="em">Account email</label>
+      <input id="em" pInputText [(ngModel)]="formEmail" class="w-full" />
+    </div>
+    <div class="field">
+      <label for="pw">Password</label>
+      <input
+        id="pw"
+        pInputText
+        type="password"
+        [(ngModel)]="formPassword"
+        class="w-full"
+        [placeholder]="dialogCreate ? '' : 'Leave empty to keep current'"
+      />
+    </div>
+    <div class="field flex align-items-center gap-2">
+      <p-checkbox [(ngModel)]="formEnabled" [binary]="true" inputId="en"></p-checkbox>
+      <label for="en">Enabled</label>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton type="button" class="p-button-text" (click)="closeDialog()">
+      Cancel
+    </button>
+    <button
+      pButton
+      type="button"
+      [disabled]="!canAdmin"
+      (click)="save()"
+    >
+      Save
+    </button>
+  </ng-template>
+</p-dialog>

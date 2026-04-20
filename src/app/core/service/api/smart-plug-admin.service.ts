@@ -53,6 +53,14 @@ export interface SmartPlugReadingResponse {
   errorCode: string | null;
 }
 
+export interface SmartPlugDiscoverySummary {
+  discoveryAttempted: boolean;
+  discoverySkipped?: number | "disabled";
+  discoveryPlugsTotal?: number;
+  discoveryEligible?: number;
+  discoveryResolved?: number;
+}
+
 export interface SmartPlugInventoryRequest {
   macAddress: string;
   vendor: string;
@@ -80,6 +88,16 @@ export class SmartPlugAdminService {
         { headers: this.headers() }
       )
       .pipe(map((res) => (res?.data as SmartPlugOverviewDto[]) ?? []));
+  }
+
+  runDiscoveryNow(): Observable<SmartPlugDiscoverySummary> {
+    return this.http
+      .post<ResponseDto<SmartPlugDiscoverySummary>>(
+        `${this.env.apiUrl}monitoring/smart-plugs/discovery/run`,
+        {},
+        { headers: this.headers() }
+      )
+      .pipe(map((res) => res.data as SmartPlugDiscoverySummary));
   }
 
   history(

@@ -1,8 +1,16 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { SmartPlugAdminService, SmartPlugHistoryPointDto, SmartPlugOverviewDto } from "@app/core/service/api/smart-plug-admin.service";
+import {
+  SmartPlugAdminService,
+  SmartPlugDiscoverySummary,
+  SmartPlugHistoryPointDto,
+  SmartPlugOverviewDto,
+} from "@app/core/service/api/smart-plug-admin.service";
+import { Authentication } from "@app/core/service/auth/autenthication";
 import { ToastService } from "@app/core/service/state/toast.service";
+import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TagModule } from "primeng/tag";
@@ -16,6 +24,7 @@ import { TagModule } from "primeng/tag";
 })
 export class ManagementSmartPlugsComponent implements OnInit {
   loading = false;
+  discoveryRunning = false;
   plugs: SmartPlugOverviewDto[] = [];
   search = "";
 
@@ -26,11 +35,46 @@ export class ManagementSmartPlugsComponent implements OnInit {
 
   constructor(
     private readonly smartPlugAdmin: SmartPlugAdminService,
-    private readonly toast: ToastService
+    private readonly toast: ToastService,
+    private readonly authentication: Authentication
   ) {}
+
+  get canAdmin(): boolean {
+    const c = this.authentication.client();
+    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_SMART_PLUG_ADMIN);
+  }
 
   ngOnInit(): void {
     this.load();
+  }
+
+  runDiscovery(): void {
+    this.discoveryRunning = true;
+    this.smartPlugAdmin.runDiscoveryNow().subscribe({
+      next: (s: SmartPlugDiscoverySummary) => {
+        this.discoveryRunning = false;
+        if (s.discoverySkipped === "disabled") {
+          this.toast.erro(
+            "Descoberta de IP desativada no servidor (monitoring.kasa.discovery.enabled)."
+          );
+          return;
+        }
+        const skip =
+          typeof s.discoverySkipped === "number" ? String(s.discoverySkipped) : "—";
+        const parts = [
+          `tomadas: ${s.discoveryPlugsTotal ?? "—"}`,
+          `sem necessidade: ${skip}`,
+          `elegíveis: ${s.discoveryEligible ?? "—"}`,
+          `IPs gravados: ${s.discoveryResolved ?? "—"}`,
+        ];
+        this.toast.sucesso(`Descoberta concluída. ${parts.join(" · ")}`);
+        this.load();
+      },
+      error: () => {
+        this.discoveryRunning = false;
+        this.toast.erro("Não foi possível executar a descoberta de IP.");
+      },
+    });
   }
 
   load(): void {

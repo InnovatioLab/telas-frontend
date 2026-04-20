@@ -19,10 +19,21 @@
         />
       </div>
       <button
+        *ngIf="canAdmin"
+        pButton
+        type="button"
+        class="p-button-outlined mr-2"
+        [disabled]="loading || discoveryRunning"
+        (click)="runDiscovery()"
+      >
+        <app-icon-wifi></app-icon-wifi>
+        <span class="ml-2">Descobrir IPs</span>
+      </button>
+      <button
         pButton
         type="button"
         class="p-button-outlined"
-        [disabled]="loading"
+        [disabled]="loading || discoveryRunning"
         (click)="load()"
       >
         <app-icon-recarregar></app-icon-recarregar>
