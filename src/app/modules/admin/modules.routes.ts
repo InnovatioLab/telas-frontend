@@ -19,6 +19,7 @@ import { MonitoringTestingComponent } from "./components/monitoring-testing/moni
 import { DeveloperPermissionsComponent } from "./components/developer-permissions/developer-permissions.component";
 import { AdminAdOperationsComponent } from "./components/admin-ad-operations/admin-ad-operations.component";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
+import { ManagementSmartPlugsComponent } from "./components/management-smart-plugs/management-smart-plugs.component";
 
 export const ROUTES: Route[] = [
   {
@@ -91,6 +92,13 @@ export const ROUTES: Route[] = [
         title: "Monitoring testing",
         canActivate: [MonitoringPermissionGuard],
         data: { permission: MonitoringPermission.MONITORING_TESTING_VIEW },
+      },
+      {
+        path: "smart-plugs",
+        component: ManagementSmartPlugsComponent,
+        title: "Smart plugs",
+        canActivate: [MonitoringPermissionGuard],
+        data: { permission: MonitoringPermission.MONITORING_SMART_PLUG_VIEW },
       },
       {
         path: "access",

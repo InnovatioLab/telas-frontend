@@ -46,6 +46,7 @@ import { IconWifiComponent } from "./wifi.icon";
 import { IconPermissionsComponent } from "./permissions.icon";
 import { IconTestingComponent } from "./testing.icon";
 import { IconTrashComponent } from './trash.icon';
+import { IconRecarregarComponent } from "./recarregar.icon";
 
 @NgModule({
   imports: [
@@ -96,6 +97,7 @@ import { IconTrashComponent } from './trash.icon';
     IconPhoneComponent,
     IconTestingComponent,
     IconPermissionsComponent,
+    IconRecarregarComponent,
   ],
   exports: [
     IconArquivoComponent,
@@ -143,7 +145,8 @@ import { IconTrashComponent } from './trash.icon';
   IconMailComponent,
   IconPhoneComponent,
     IconTestingComponent,
-    IconPermissionsComponent
+    IconPermissionsComponent,
+    IconRecarregarComponent
   ],
   declarations: [],
 })

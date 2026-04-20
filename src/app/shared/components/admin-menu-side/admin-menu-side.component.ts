@@ -85,7 +85,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       icon: "tv-display",
     },
     { id: "logs", label: "Logs", icon: "pi-file" },
-    { id: "testing", label: "Testing", icon: "testing" },
+    { id: "smartPlugs", label: "Smart plugs", icon: "pi-bolt" },
     { id: "access", label: "Permissions", icon: "permissions" },
     {
       id: "changePassword",
@@ -111,10 +111,11 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
           perms.includes(MonitoringPermission.MONITORING_BOX_PING_VIEW)
         );
       }
-      if (item.id === "testing") {
+      if (item.id === "smartPlugs") {
         return (
           isDev ||
-          perms.includes(MonitoringPermission.MONITORING_TESTING_VIEW)
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_VIEW) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_ADMIN)
         );
       }
       if (item.id === "access") {
@@ -223,8 +224,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "logs":
         this.navegarParaLogs();
         break;
-      case "testing":
-        this.navegarParaTesting();
+      case "smartPlugs":
+        this.navegarParaSmartPlugs();
         break;
       case "access":
         this.navegarParaAccess();
@@ -309,8 +310,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
-  navegarParaTesting(): void {
-    this.router.navigate(["/admin/testing"]);
+  navegarParaSmartPlugs(): void {
+    this.router.navigate(["/admin/smart-plugs"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
@@ -391,8 +392,8 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return "Operational view: ads, screens, subscriptions, reminders";
       case "logs":
         return "Application logs, scheduled jobs, and box telemetry";
-      case "testing":
-        return "Heartbeat, monitors and smart plug checks";
+      case "smartPlugs":
+        return "Smart plugs overview and history";
       case "access":
         return "Grant monitoring access to admin users";
       case "alerts":

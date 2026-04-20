@@ -1,0 +1,187 @@
+<p-card styleClass="card-header">
+  <div class="card-header-content toolbar">
+    <div>
+      <h2 class="page-title">Smart plugs</h2>
+      <p class="page-subtitle">
+        Operational view: association, last reading and history.
+      </p>
+    </div>
+    <div class="toolbar-actions">
+      <div class="search-field">
+        <span class="search-icon" aria-hidden="true">
+          <app-icon-search></app-icon-search>
+        </span>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="search"
+          placeholder="Search (MAC, IP, vendor, address...)"
+        />
+      </div>
+      <button
+        pButton
+        type="button"
+        class="p-button-outlined"
+        [disabled]="loading"
+        (click)="load()"
+      >
+        <app-icon-recarregar></app-icon-recarregar>
+        <span class="ml-2">Refresh</span>
+      </button>
+    </div>
+  </div>
+</p-card>
+
+<p-card styleClass="mt-3">
+  <p-table
+    [value]="filtered()"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="15"
+    [rowsPerPageOptions]="[10, 15, 25, 50]"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Plug</th>
+        <th>Association</th>
+        <th>Status</th>
+        <th>Last reading</th>
+        <th class="col-actions">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-p>
+      <tr>
+        <td>
+          <div class="mono wrap">
+            {{ p.displayName || "—" }}
+          </div>
+          <div class="mono small muted">
+            {{ p.macAddress }} · {{ p.vendor }}<span *ngIf="p.model"> · {{ p.model }}</span>
+          </div>
+          <div class="mono small muted" *ngIf="p.lastSeenIp">
+            lastSeenIp {{ p.lastSeenIp }}
+          </div>
+        </td>
+        <td>
+          <div class="mono wrap">
+            Box: {{ p.boxIp || "—" }}
+          </div>
+          <div class="mono wrap small muted">
+            Screen: {{ p.monitorAddressSummary || "—" }}
+          </div>
+        </td>
+        <td>
+          <p-tag
+            [value]="p.enabled ? 'Enabled' : 'Disabled'"
+            [severity]="p.enabled ? 'success' : 'secondary'"
+          ></p-tag>
+          <p-tag
+            class="ml-2"
+            [value]="p.reachable ? 'Reachable' : 'Unreachable'"
+            [severity]="p.reachable ? 'success' : 'danger'"
+          ></p-tag>
+        </td>
+        <td>
+          <div class="mono small">
+            {{ p.lastReadingAt ? (p.lastReadingAt | date: "MM/dd/yyyy HH:mm") : "—" }}
+          </div>
+          <div class="mono small muted">
+            <ng-container *ngIf="p.errorCode; else okLine">
+              {{ p.errorCode }}
+            </ng-container>
+            <ng-template #okLine>
+              <span *ngIf="p.relayOn != null">relay={{ p.relayOn }} · </span>
+              <span *ngIf="p.powerWatts != null">{{ p.powerWatts }} W · </span>
+              <span *ngIf="p.voltageVolts != null">{{ p.voltageVolts }} V · </span>
+              <span *ngIf="p.currentAmperes != null">{{ p.currentAmperes }} A</span>
+            </ng-template>
+          </div>
+        </td>
+        <td class="col-actions">
+          <button
+            pButton
+            pRipple
+            type="button"
+            class="p-button-sm p-button-outlined mr-2"
+            (click)="openHistory(p)"
+          >
+            <app-icon-clock></app-icon-clock>
+            <span class="ml-2">History</span>
+          </button>
+          <button
+            pButton
+            pRipple
+            type="button"
+            class="p-button-sm"
+            (click)="testRead(p)"
+          >
+            <app-icon-bolt></app-icon-bolt>
+            <span class="ml-2">Test read</span>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center">No smart plugs.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<p-dialog
+  header="Smart plug history"
+  [(visible)]="historyVisible"
+  [modal]="true"
+  [style]="{ width: '900px' }"
+  [dismissableMask]="true"
+  (onHide)="closeHistory()"
+>
+  <div class="mb-2 mono wrap" *ngIf="selected">
+    {{ selected.displayName || selected.macAddress }} · {{ selected.vendor }}
+    <span *ngIf="selected.boxIp"> · box {{ selected.boxIp }}</span>
+  </div>
+
+  <p-table
+    [value]="history"
+    [loading]="historyLoading"
+    styleClass="p-datatable-sm"
+    responsiveLayout="scroll"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>At</th>
+        <th>Reachable</th>
+        <th>Relay</th>
+        <th>Power (W)</th>
+        <th>Voltage (V)</th>
+        <th>Current (A)</th>
+        <th>Error</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-r>
+      <tr>
+        <td class="mono small">{{ r.at | date: "MM/dd/yyyy HH:mm:ss" }}</td>
+        <td>
+          <p-tag
+            [value]="r.reachable ? 'yes' : 'no'"
+            [severity]="r.reachable ? 'success' : 'danger'"
+          ></p-tag>
+        </td>
+        <td class="mono small">{{ r.relayOn == null ? "—" : r.relayOn }}</td>
+        <td class="mono small">{{ r.powerWatts ?? "—" }}</td>
+        <td class="mono small">{{ r.voltageVolts ?? "—" }}</td>
+        <td class="mono small">{{ r.currentAmperes ?? "—" }}</td>
+        <td class="mono small">{{ r.errorCode ?? "—" }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center">No history.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+

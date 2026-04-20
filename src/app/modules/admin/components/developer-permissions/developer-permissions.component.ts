@@ -19,6 +19,7 @@ const PERMISSION_LABELS: Record<string, string> = {
   MONITORING_BOX_PING_VIEW: "Box ping logs",
   MONITORING_LOGS_VIEW: "Application logs",
   MONITORING_SCHEDULER_VIEW: "Scheduled jobs",
+  MONITORING_SMART_PLUG_VIEW: "Smart plugs (view)",
   MONITORING_SMART_PLUG_ADMIN: "Smart plugs (monitor)",
   MONITORING_TESTING_EXECUTE: "Run monitoring tests",
   MONITORING_TESTING_VIEW: "View monitoring tests",

@@ -22,6 +22,37 @@ export interface SmartPlugAdminDto {
   updatedAt: string;
 }
 
+export interface SmartPlugOverviewDto extends SmartPlugAdminDto {
+  monitorAddressSummary: string | null;
+  boxIp: string | null;
+  lastReadingAt: string | null;
+  reachable: boolean;
+  relayOn: boolean | null;
+  powerWatts: number | null;
+  voltageVolts: number | null;
+  currentAmperes: number | null;
+  errorCode: string | null;
+}
+
+export interface SmartPlugHistoryPointDto {
+  at: string;
+  reachable: boolean;
+  relayOn: boolean | null;
+  powerWatts: number | null;
+  voltageVolts: number | null;
+  currentAmperes: number | null;
+  errorCode: string | null;
+}
+
+export interface SmartPlugReadingResponse {
+  reachable: boolean;
+  relayOn: boolean | null;
+  powerWatts: number | null;
+  voltageVolts: number | null;
+  currentAmperes: number | null;
+  errorCode: string | null;
+}
+
 export interface SmartPlugInventoryRequest {
   macAddress: string;
   vendor: string;
@@ -41,6 +72,46 @@ export class SmartPlugAdminService {
     private readonly http: HttpClient,
     @Inject(ENVIRONMENT) private readonly env: Environment
   ) {}
+
+  overview(): Observable<SmartPlugOverviewDto[]> {
+    return this.http
+      .get<ResponseDto<SmartPlugOverviewDto[]>>(
+        `${this.env.apiUrl}monitoring/smart-plugs/overview`,
+        { headers: this.headers() }
+      )
+      .pipe(map((res) => (res?.data as SmartPlugOverviewDto[]) ?? []));
+  }
+
+  history(
+    plugId: string,
+    limit = 200,
+    from?: string | null,
+    to?: string | null
+  ): Observable<SmartPlugHistoryPointDto[]> {
+    let params = new HttpParams().set("limit", String(limit));
+    if (from) {
+      params = params.set("from", from);
+    }
+    if (to) {
+      params = params.set("to", to);
+    }
+    return this.http
+      .get<ResponseDto<SmartPlugHistoryPointDto[]>>(
+        `${this.env.apiUrl}monitoring/smart-plugs/${plugId}/history`,
+        { headers: this.headers(), params }
+      )
+      .pipe(map((res) => (res?.data as SmartPlugHistoryPointDto[]) ?? []));
+  }
+
+  testRead(plugId: string): Observable<SmartPlugReadingResponse> {
+    return this.http
+      .post<ResponseDto<SmartPlugReadingResponse>>(
+        `${this.env.apiUrl}monitoring/smart-plugs/${plugId}/test-read`,
+        {},
+        { headers: this.headers() }
+      )
+      .pipe(map((res) => res.data as SmartPlugReadingResponse));
+  }
 
   listUnassigned(
     forMonitorId?: string | null,
