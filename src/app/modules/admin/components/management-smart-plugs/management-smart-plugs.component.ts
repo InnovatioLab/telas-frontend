@@ -119,5 +119,25 @@ export class ManagementSmartPlugsComponent implements OnInit {
       },
     });
   }
+
+  formatError(code: string | null | undefined): string {
+    const c = (code ?? "").trim();
+    if (!c) {
+      return "";
+    }
+    if (c === "missing_host" || c === "invalid_host") {
+      return "Aguardando descoberta por MAC (agente da box) ou IP não informado.";
+    }
+    if (c === "timeout") {
+      return "Timeout ao comunicar com a tomada.";
+    }
+    if (c === "unreachable") {
+      return "Tomada inacessível.";
+    }
+    if (c.startsWith("http_")) {
+      return `Sidecar HTTP ${c.replace("http_", "")}`;
+    }
+    return c;
+  }
 }
 

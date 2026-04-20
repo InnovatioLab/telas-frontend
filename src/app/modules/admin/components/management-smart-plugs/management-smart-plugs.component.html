@@ -89,7 +89,7 @@
           </div>
           <div class="mono small muted">
             <ng-container *ngIf="p.errorCode; else okLine">
-              {{ p.errorCode }}
+              {{ formatError(p.errorCode) }}
             </ng-container>
             <ng-template #okLine>
               <span *ngIf="p.relayOn != null">relay={{ p.relayOn }} · </span>
