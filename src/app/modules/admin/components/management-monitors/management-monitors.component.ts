@@ -22,6 +22,7 @@ import {
 } from "@app/model/dto/request/create-monitor.request.dto";
 import { FilterMonitorRequestDto } from "@app/model/dto/request/filter-monitor.request.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
+import { AvailablePartnerAddressResponseDto } from "@app/model/dto/response/available-partner-address.response.dto";
 import { Role } from "@app/model/client";
 import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
@@ -105,6 +106,9 @@ export class ManagementMonitorsComponent implements OnInit {
 
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
 
+  availablePartnerAddresses: AvailablePartnerAddressResponseDto[] = [];
+  loadingPartnerAddresses = false;
+
   constructor(
     private readonly monitorService: MonitorService,
     private readonly toastService: ToastService,
@@ -120,6 +124,7 @@ export class ManagementMonitorsComponent implements OnInit {
   ngOnInit(): void {
     this.loadInitialData();
     this.loadAuthenticatedClient();
+    this.refreshAvailablePartnerAddresses();
   }
 
   get isDeveloper(): boolean {
@@ -202,11 +207,26 @@ export class ManagementMonitorsComponent implements OnInit {
         );
         this.loading = false;
         this.isSorting = false;
+        this.refreshAvailablePartnerAddresses();
       },
       error: (error) => {
         this.toastService.erro("Error loading monitors");
         this.loading = false;
         this.isSorting = false;
+      },
+    });
+  }
+
+  refreshAvailablePartnerAddresses(): void {
+    this.loadingPartnerAddresses = true;
+    this.monitorService.getAvailablePartnerAddresses().subscribe({
+      next: (rows) => {
+        this.availablePartnerAddresses = rows;
+        this.loadingPartnerAddresses = false;
+      },
+      error: () => {
+        this.availablePartnerAddresses = [];
+        this.loadingPartnerAddresses = false;
       },
     });
   }
@@ -249,6 +269,7 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   openCreateMonitorModal(): void {
+    this.refreshAvailablePartnerAddresses();
     this.createMonitorModalVisible = true;
   }
 
@@ -319,8 +340,24 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   onSelectMonitor(monitor: Monitor): void {
-    this.selectedMonitorForEdit = { ...monitor };
-    this.editMonitorModalVisible = true;
+    if (!monitor?.id) {
+      return;
+    }
+    this.loading = true;
+    this.monitorService.getMonitorById(monitor.id).subscribe({
+      next: (full) => {
+        this.selectedMonitorForEdit = full ?? { ...monitor };
+        this.refreshAvailablePartnerAddresses();
+        this.editMonitorModalVisible = true;
+        this.loading = false;
+      },
+      error: () => {
+        this.selectedMonitorForEdit = { ...monitor };
+        this.refreshAvailablePartnerAddresses();
+        this.editMonitorModalVisible = true;
+        this.loading = false;
+      },
+    });
   }
 
   updateMonitor(updateData: {

@@ -67,18 +67,13 @@ describe('MonitorService', () => {
 
   const mockCreateRequest: CreateMonitorRequestDto = {
     locationDescription: 'New Location',
-    address: {
-      street: '456 New St',
-      city: 'New City',
-      state: 'New State',
-      country: 'New Country',
-      zipCode: '54321'
-    }
+    addressId: 'addr-1',
   };
 
   const mockUpdateRequest: UpdateMonitorRequestDto = {
     locationDescription: 'Updated Location',
-    active: false
+    active: false,
+    addressId: 'addr-1',
   };
 
   beforeEach(() => {

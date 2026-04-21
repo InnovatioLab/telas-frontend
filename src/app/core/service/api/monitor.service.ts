@@ -1,10 +1,11 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import {
   CreateMonitorRequestDto,
   UpdateMonitorRequestDto,
 } from "@app/model/dto/request/create-monitor.request.dto";
 import { FilterMonitorRequestDto } from "@app/model/dto/request/filter-monitor.request.dto";
+import { AvailablePartnerAddressResponseDto } from "@app/model/dto/response/available-partner-address.response.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { Monitor } from "@app/model/monitors";
 import { Observable, of } from "rxjs";
@@ -53,6 +54,26 @@ export class MonitorService {
 
   deleteMonitor(id: string): Observable<boolean> {
     return this.repository.delete(id).pipe(map(result => typeof result === 'boolean' ? result : true));
+  }
+
+  getAvailablePartnerAddresses(
+    q?: string
+  ): Observable<AvailablePartnerAddressResponseDto[]> {
+    const headers = this.getAuthHeaders();
+    let params = new HttpParams();
+    const trimmed = (q ?? "").trim();
+    if (trimmed.length > 0) {
+      params = params.set("q", trimmed);
+    }
+    return this.http
+      .get<ApiEnvelope<AvailablePartnerAddressResponseDto[]>>(
+        `${this.env.apiUrl}addresses/partners/available`,
+        { headers, params }
+      )
+      .pipe(
+        map((res) => (Array.isArray(res?.data) ? res.data : [])),
+        catchError(() => of([]))
+      );
   }
 
   getValidAds(monitorId: string): Observable<any[]> {

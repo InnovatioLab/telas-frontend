@@ -3,10 +3,10 @@
     [showCloseIcon]="false"
     [(visible)]="visibilidadeSidebar"
     position="right"
-      [dismissible]="!dropdownOpen && !blockQuantityInteracting"
+    [dismissible]="!blockQuantityInteracting"
     (onHide)="fecharSidebar()"
     [blockScroll]="false"
-    [closeOnEscape]="!dropdownOpen"
+    [closeOnEscape]="true"
     [style]="{ width: '40%', maxWidth: '250px' }"
   >
     <ng-template pTemplate="header">
@@ -118,33 +118,7 @@
 
     <ng-template pTemplate="footer">
       <div *ngIf="cart && cart.items.length > 0" class="container-footer">
-        <div class="recurrence-label">
-          <label for="recurrence" class="block text-sm font-medium"
-            >Campaign Length:</label
-          >
-        </div>
-
         <div class="footer-actions">
-          <p-dropdown
-            id="recurrence"
-            [(ngModel)]="selectedRecurrence"
-            [options]="recurrenceOptions"
-            optionLabel="label"
-            optionValue="value"
-            (onChange)="onRecurrenceChange()"
-            (onShow)="onDropdownShow()"
-            (onHide)="onDropdownHide()"
-            (click)="onDropdownClick($event)"
-            placeholder="Select recurrence"
-            class="recurrence-dropdown"
-            [panelStyle]="{ 'margin-top': '-160px' }"
-            [overlayOptions]="{
-              showTransitionOptions: '0ms',
-              hideTransitionOptions: '0ms',
-            }"
-          >
-          </p-dropdown>
-
           <button
             pButton
             icon="pi pi-check"

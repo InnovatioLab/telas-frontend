@@ -33,7 +33,7 @@ import { LayoutService } from "@app/core/service/state/layout.service";
       }
 
       .content-container {
-        padding: 5rem;
+        padding: 1rem 3rem;
         max-width: 1600px;
         margin: 0 auto;
         width: 100%;

@@ -1,0 +1,24 @@
+<div class="next-steps">
+  <div class="card">
+    <h2>Próximos passos</h2>
+
+    <p class="subtitle">
+      Pagamento confirmado. Agora precisamos dos arquivos do seu anúncio para iniciarmos a criação.
+    </p>
+
+    <ol class="steps">
+      <li>Faça o upload dos seus arquivos (imagens ou PDF).</li>
+      <li>Se tiver guideline da marca, inclua o link ao solicitar o anúncio.</li>
+      <li>Nossa equipe vai montar o anúncio e você receberá uma notificação para aprovar.</li>
+    </ol>
+
+    <div class="actions">
+      <a class="primary" [routerLink]="['/client/my-telas']" [queryParams]="{ ads: true }">
+        Ir para upload de arquivos
+      </a>
+      <a class="secondary" [routerLink]="['/client/my-telas']">
+        Ver minha conta
+      </a>
+    </div>
+  </div>
+</div>

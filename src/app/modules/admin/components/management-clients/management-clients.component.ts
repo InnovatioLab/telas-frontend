@@ -9,7 +9,13 @@ import {
 import { ClientService } from "@app/core/service/api/client.service";
 import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { Client, DefaultStatus, Role, isPrivilegedPanelRole } from "@app/model/client";
+import {
+  Address,
+  Client,
+  DefaultStatus,
+  Role,
+  isPrivilegedPanelRole,
+} from "@app/model/client";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
 import { IconSearchComponent } from "@app/shared/icons/search.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -58,6 +64,9 @@ export class ManagementClientsComponent implements OnInit {
 
   currentUserId: string | null = null;
   private panelClient: Client | null = null;
+
+  private readonly addressesByClientId = new Map<string, Address[]>();
+  private readonly addressesLoadingByClientId = new Set<string>();
 
   constructor(
     private readonly clientManagementService: ClientManagementService,
@@ -130,6 +139,79 @@ export class ManagementClientsComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  async ensureClientAddressesLoaded(client: Client): Promise<void> {
+    const clientId = client.id;
+    if (!clientId) return;
+    if (this.addressesByClientId.has(clientId)) return;
+    if (this.addressesLoadingByClientId.has(clientId)) return;
+
+    this.addressesLoadingByClientId.add(clientId);
+    this.clientService.buscarClient<Client>(clientId).subscribe({
+      next: (fullClient) => {
+        this.addressesByClientId.set(clientId, fullClient.addresses ?? []);
+        this.addressesLoadingByClientId.delete(clientId);
+      },
+      error: () => {
+        this.addressesLoadingByClientId.delete(clientId);
+      },
+    });
+  }
+
+  getClientAddresses(client: Client): Address[] {
+    const clientId = client.id;
+    if (!clientId) return [];
+    return this.addressesByClientId.get(clientId) ?? [];
+  }
+
+  getFirstAddressText(client: Client): string {
+    const addresses = this.getClientAddresses(client);
+    if (addresses.length > 0) {
+      return this.formatAddress(addresses[0]);
+    }
+    return client.partnerAddressSummary?.trim() ? client.partnerAddressSummary : "—";
+  }
+
+  getAddressesTooltipHtml(client: Client): string {
+    const addresses = this.getClientAddresses(client);
+    if (addresses.length === 0) {
+      const summary = client.partnerAddressSummary?.trim();
+      return summary ? summary : "—";
+    }
+    return addresses
+      .map((addr, idx) => `${idx + 1}. ${this.formatAddress(addr)}`)
+      .join("<br/>");
+  }
+
+  getAddressesTooltipText(client: Client): string {
+    const addresses = this.getClientAddresses(client);
+    if (addresses.length === 0) {
+      const summary = client.partnerAddressSummary?.trim();
+      return summary ? summary : "—";
+    }
+    return addresses
+      .map((addr, idx) => `${idx + 1}. ${this.formatAddress(addr)}`)
+      .join("\n");
+  }
+
+  getExtraAddressesCount(client: Client): number {
+    const addresses = this.getClientAddresses(client);
+    return Math.max(0, addresses.length - 1);
+  }
+
+  private formatAddress(addr: Address): string {
+    const parts = [
+      addr.street,
+      addr.city,
+      addr.state,
+      addr.zipCode,
+      addr.country,
+    ]
+      .map((v) => (typeof v === "string" ? v.trim() : ""))
+      .filter((v) => Boolean(v));
+
+    return parts.length > 0 ? parts.join(", ") : "—";
   }
 
   onSearch(): void {

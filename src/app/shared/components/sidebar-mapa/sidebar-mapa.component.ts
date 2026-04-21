@@ -20,6 +20,7 @@ import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconClockComponent } from "@app/shared/icons/clock.icon";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconWarningComponent } from "@app/shared/icons/warning.icon";
+import { resolvePhotoUrl } from "@app/shared/utils/photo-url.utils";
 import { Subscription } from "rxjs";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment";
@@ -215,19 +216,7 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   resolveLocationPhotoUrl(): string | null {
     const data = this.getMonitorData();
     const raw = data?.photoUrl ?? this.pontoSelecionado?.photoUrl;
-    if (raw == null || !String(raw).trim()) {
-      return null;
-    }
-    const u = String(raw).trim();
-    if (/^https?:\/\//i.test(u)) {
-      return u;
-    }
-    try {
-      const origin = new URL(this.env.apiUrl).origin;
-      return u.startsWith("/") ? origin + u : `${origin}/${u}`;
-    } catch {
-      return u;
-    }
+    return resolvePhotoUrl({ apiUrl: this.env.apiUrl, photoUrl: raw });
   }
 
   canShowLocationPhoto(): boolean {

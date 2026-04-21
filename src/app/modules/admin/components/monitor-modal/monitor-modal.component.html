@@ -58,111 +58,13 @@
 
     <div class="form-section">
       <h3>Address Information</h3>
-      <div formGroupName="address" class="address-group">
-        <div class="form-row">
-          <div class="form-field">
-            <label for="zipCode" class="required">Zip Code</label>
-            <div class="zipcode-input-container">
-              <input
-                type="text"
-                pInputText
-                formControlName="zipCode"
-                placeholder="Enter 5-digit Zip Code"
-                class="w-full input-form"
-                minlength="5"
-                maxlength="5"
-                id="inp-zip-code"
-                pKeyFilter="int"
-              />
-              <i
-                *ngIf="loadingZipCode"
-                class="pi pi-spin pi-spinner loading-icon"
-              ></i>
-            </div>
-            <small class="help-text"
-              >Enter the zip code to automatically fill city and state</small
-            >
-            <small
-              class="error-message"
-              *ngIf="getFieldError('address', 'zipCode')"
-              >{{ getFieldError("address", "zipCode") }}</small
-            >
-          </div>
-          <div class="form-field">
-            <label for="street">Street*</label>
-            <input
-              pInputText
-              id="street"
-              formControlName="street"
-              placeholder="Enter street"
-            />
-            <small
-              class="error-message"
-              *ngIf="getFieldError('address', 'street')"
-              >{{ getFieldError("address", "street") }}</small
-            >
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-field">
-            <label for="city">City*</label>
-            <input
-              pInputText
-              id="city"
-              formControlName="city"
-              placeholder="Enter city"
-            />
-            <small
-              class="error-message"
-              *ngIf="getFieldError('address', 'city')"
-              >{{ getFieldError("address", "city") }}</small
-            >
-          </div>
-          <div class="form-field">
-            <label for="state">State*</label>
-            <input
-              pInputText
-              id="state"
-              formControlName="state"
-              placeholder="Enter 2-letter state code"
-              maxlength="2"
-            />
-            <small
-              class="error-message"
-              *ngIf="getFieldError('address', 'state')"
-              >{{ getFieldError("address", "state") }}</small
-            >
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-field">
-            <label for="country">Country</label>
-            <input
-              pInputText
-              id="country"
-              formControlName="country"
-              placeholder="Enter country"
-            />
-            <small
-              class="error-message"
-              *ngIf="getFieldError('address', 'country')"
-              >{{ getFieldError("address", "country") }}</small
-            >
-          </div>
-          <div class="form-field">
-            <label for="address2">Address 2</label>
-            <input
-              pInputText
-              id="address2"
-              formControlName="address2"
-              placeholder="Enter Address 2"
-            />
-            <small
-              class="error-message"
-              *ngIf="getFieldError('address', 'address2')"
-              >{{ getFieldError("address", "address2") }}</small
-            >
-          </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="addressId" class="required">Address ID</label>
+          <input pInputText id="addressId" formControlName="addressId" />
+          <small class="error-message" *ngIf="getFieldError('addressId')">{{
+            getFieldError("addressId")
+          }}</small>
         </div>
       </div>
     </div>

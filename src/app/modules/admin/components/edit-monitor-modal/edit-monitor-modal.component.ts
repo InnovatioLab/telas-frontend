@@ -19,9 +19,8 @@ import {
   SmartPlugAdminDto,
   SmartPlugAdminService,
 } from "@app/core/service/api/smart-plug-admin.service";
-import { ZipCodeService } from "@app/core/service/api/zipcode.service";
-import { AddressData } from "@app/model/dto/request/address-data-request";
 import { UpdateMonitorRequestDto } from "@app/model/dto/request/create-monitor.request.dto";
+import { AvailablePartnerAddressResponseDto } from "@app/model/dto/response/available-partner-address.response.dto";
 import { Role } from "@app/model/client";
 import { Monitor } from "@app/model/monitors";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -36,6 +35,8 @@ import { take } from "rxjs";
 })
 export class EditMonitorModalComponent implements OnInit, OnChanges {
   @Input() monitor: Monitor | null = null;
+  @Input() availablePartnerAddresses: AvailablePartnerAddressResponseDto[] = [];
+  @Input() loadingPartnerAddresses = false;
   @Output() close = new EventEmitter<void>();
   @Output() monitorUpdated = new EventEmitter<{
     id: string;
@@ -45,14 +46,13 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
   }>();
 
   monitorForm: FormGroup;
-  loadingZipCode = false;
   isDeveloper = false;
   plugOptions: { label: string; value: string }[] = [];
   initialSmartPlugId: string | null = null;
+  addressOptions: { label: string; value: string }[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly zipCodeService: ZipCodeService,
     private readonly clientService: ClientService,
     private readonly smartPlugAdmin: SmartPlugAdminService
   ) {
@@ -60,29 +60,24 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
       active: [true, [Validators.required]],
       locationDescription: ["", [Validators.maxLength(200)]],
       smartPlugId: [""],
-      address: this.fb.group({
-        id: [""],
-        street: ["", [Validators.required, Validators.maxLength(100)]],
-        zipCode: ["", [Validators.required, Validators.pattern(/^\d{5}$/)]],
-        city: ["", [Validators.required, Validators.maxLength(50)]],
-        state: [
-          "",
-          [
-            Validators.required,
-            Validators.minLength(2),
-            Validators.maxLength(2),
-          ],
-        ],
-        country: ["US", [Validators.maxLength(100)]],
-        address2: ["", [Validators.maxLength(100)]],
-        latitude: [null],
-        longitude: [null],
+      addressId: ["", [Validators.required]],
+      addressPreview: this.fb.group({
+        street: [{ value: "", disabled: true }],
+        zipCode: [{ value: "", disabled: true }],
+        city: [{ value: "", disabled: true }],
+        state: [{ value: "", disabled: true }],
+        country: [{ value: "", disabled: true }],
+        address2: [{ value: "", disabled: true }],
       }),
+    });
+
+    this.monitorForm.get("addressId")?.valueChanges.subscribe((id: string) => {
+      this.applySelectedAddressPreview(id);
     });
   }
 
   ngOnInit(): void {
-    this.setupZipCodeSearch();
+    this.syncAddressOptions();
     this.clientService.clientAtual$
       .pipe(take(1))
       .subscribe((client) => {
@@ -100,30 +95,26 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
         this.loadPlugOptions();
       }
     }
+    if (changes["availablePartnerAddresses"]) {
+      this.syncAddressOptions();
+    }
   }
 
   private populateForm(): void {
     if (!this.monitor) return;
 
+    const addressId = this.monitor.address?.id ?? "";
     const formData = {
       active: this.monitor.active ?? true,
       locationDescription:
         (this.monitor as { locationDescription?: string }).locationDescription ??
         "",
-      address: {
-        id: this.monitor.address?.id ?? "",
-        street: this.monitor.address?.street ?? "",
-        zipCode: this.monitor.address?.zipCode ?? "",
-        city: this.monitor.address?.city ?? "",
-        state: this.monitor.address?.state ?? "",
-        country: this.monitor.address?.country ?? "US",
-        address2: this.monitor.address?.address2 ?? "",
-        latitude: this.monitor.address?.latitude ?? null,
-        longitude: this.monitor.address?.longitude ?? null,
-      },
+      addressId,
     };
 
     this.monitorForm.patchValue(formData, { emitEvent: false });
+    this.syncAddressOptions();
+    this.applySelectedAddressPreview(addressId);
     this.monitorForm.markAllAsTouched();
   }
 
@@ -163,84 +154,83 @@ export class EditMonitorModalComponent implements OnInit, OnChanges {
     return `${name} — ${p.vendor} (${p.macAddress})`;
   }
 
-  private setupZipCodeSearch(): void {
-    // const zipCodeControl = this.monitorForm.get("address.zipCode");
-    // if (zipCodeControl) {
-    //   zipCodeControl.valueChanges
-    //     .pipe(
-    //       debounceTime(500),
-    //       distinctUntilChanged(),
-    //       filter((zipCode: string) => {
-    //         return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
-    //       }),
-    //       switchMap((zipCode: string): Observable<AddressData | null> => {
-    //         if (zipCode) {
-    //           this.loadingZipCode = true;
-    //           return this.zipCodeService.findLocationByZipCode(zipCode);
-    //         }
-    //         return of(null);
-    //       })
-    //     )
-    //     .subscribe({
-    //       next: (addressData) => {
-    //         this.loadingZipCode = false;
-    //         if (addressData) {
-    //           this.fillAddressFields(addressData);
-    //         }
-    //       },
-    //       error: (error) => {
-    //         this.loadingZipCode = false;
-    //       },
-    //     });
-    // }
+  private syncAddressOptions(): void {
+    const selected = this.monitorForm.get("addressId")?.value as string;
+    const currentId = this.monitor?.address?.id;
+
+    const base = (this.availablePartnerAddresses ?? []).map((a) => ({
+      label: a.label,
+      value: a.addressId,
+    }));
+
+    this.addressOptions = [...base];
+    if (currentId && !this.addressOptions.some((o) => o.value === currentId)) {
+      const street = this.monitor?.address?.street ?? "";
+      const city = this.monitor?.address?.city ?? "";
+      const state = this.monitor?.address?.state ?? "";
+      const zip = this.monitor?.address?.zipCode ?? "";
+      this.addressOptions = [
+        {
+          label: `Current screen — ${street}, ${city}, ${state}, ${zip}`,
+          value: currentId,
+        },
+        ...this.addressOptions,
+      ];
+    }
+
+    if (selected && !this.addressOptions.some((o) => o.value === selected)) {
+      this.monitorForm.patchValue({ addressId: currentId ?? "" }, { emitEvent: false });
+      this.applySelectedAddressPreview(this.monitorForm.get("addressId")?.value as string);
+    }
   }
 
-  private fillAddressFields(addressData: AddressData): void {
-    const addressGroup = this.monitorForm.get("address");
+  private applySelectedAddressPreview(addressId: string): void {
+    const preview = this.monitorForm.get("addressPreview") as FormGroup;
+    if (!preview) {
+      return;
+    }
 
-    const fields: Array<keyof AddressData & string> = [
-      "street",
-      "city",
-      "state",
-      "country",
-    ];
-
-    const { payload, touched } = fields.reduce(
-      (acc, field) => {
-        const value = (addressData as any)[field];
-        if (value != null && value !== "") {
-          acc.payload[field] = value;
-          acc.touched.push(field);
-        }
-        return acc;
-      },
-      { payload: {} as Partial<Record<string, any>>, touched: [] as string[] }
+    const fromList = (this.availablePartnerAddresses ?? []).find(
+      (a) => a.addressId === addressId
     );
+    if (fromList) {
+      preview.patchValue(
+        {
+          street: fromList.street ?? "",
+          zipCode: fromList.zipCode ?? "",
+          city: fromList.city ?? "",
+          state: fromList.state ?? "",
+          country: fromList.country ?? "",
+          address2: fromList.address2 ?? "",
+        },
+        { emitEvent: false }
+      );
+      return;
+    }
 
-    if (Object.keys(payload).length > 0) {
-      addressGroup.patchValue(payload);
-      for (const name of touched) {
-        addressGroup.get(name)?.markAsTouched();
-      }
+    if (this.monitor?.address?.id === addressId) {
+      preview.patchValue(
+        {
+          street: this.monitor.address?.street ?? "",
+          zipCode: this.monitor.address?.zipCode ?? "",
+          city: this.monitor.address?.city ?? "",
+          state: this.monitor.address?.state ?? "",
+          country: this.monitor.address?.country ?? "",
+          address2: this.monitor.address?.address2 ?? "",
+        },
+        { emitEvent: false }
+      );
     }
   }
 
   onSubmit(): void {
     if (this.monitorForm.valid && this.monitor) {
-      const formValue = this.monitorForm.value;
-      const addressValue = formValue.address;
+      const formValue = this.monitorForm.getRawValue();
 
       const monitorRequest: UpdateMonitorRequestDto = {
         active: formValue.active,
         locationDescription: formValue.locationDescription,
-        address: {
-          street: addressValue.street,
-          city: addressValue.city,
-          state: addressValue.state,
-          country: addressValue.country,
-          zipCode: addressValue.zipCode,
-          address2: addressValue.address2 ?? null,
-        },
+        addressId: formValue.addressId,
       };
 
       const rawPlug = formValue.smartPlugId as string;

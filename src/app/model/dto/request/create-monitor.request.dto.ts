@@ -1,20 +1,10 @@
-import { AddressRequestDTO } from "./client-request.dto";
-
 export interface CreateMonitorRequestDto {
   locationDescription?: string;
-  address: AddressRequestDTO;
+  addressId: string;
 }
 
 export interface UpdateMonitorRequestDto {
-  addressId?: string;
-  address?: {
-    street: string;
-    zipCode: string;
-    city: string;
-    state: string;
-    country: string;
-    address2?: string;
-  };
+  addressId: string;
   locationDescription?: string;
   active: boolean;
   ads?: Array<{

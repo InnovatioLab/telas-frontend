@@ -6,7 +6,7 @@ import {
   Validators,
 } from "@angular/forms";
 export class AbstractControlUtils {
-  private static readonly PHONE_REGEX = /^\+?\d{10}$/;
+  private static readonly PHONE_REGEX = /^(?:\+?1)?\d{10}$/;
   private static readonly URL_REGEX =
     /^(?:https?:\/\/|www\.)((?!-)[A-Za-z0-9-]{1,63}(?<!-)(?:\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*)\.([A-Za-z]{2,63})(?::\d{1,5})?(?:\/[^\s]*)?(?:\?[^\s#]*)?(?:#[^\s]*)?$/i;
 
@@ -246,7 +246,8 @@ export class AbstractControlUtils {
   static validatePhone(): ValidatorFn {
     return ({ value }: AbstractControl): ValidationErrors | null => {
       if (typeof value !== "string" || value.trim() === "") return null;
-      return AbstractControlUtils.PHONE_REGEX.test(value.trim())
+      const digits = value.replace(/\D/g, "");
+      return AbstractControlUtils.PHONE_REGEX.test(digits)
         ? null
         : { invalidPhone: true };
     };

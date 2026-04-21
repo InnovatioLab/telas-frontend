@@ -84,7 +84,18 @@
         {{ client.contact?.email }}
       </td>
       <td class="text-center wrap-address">
-        {{ client.partnerAddressSummary ?? "—" }}
+        <span
+          (mouseenter)="ensureClientAddressesLoaded(client)"
+          [pTooltip]="getAddressesTooltipText(client)"
+          [escape]="true"
+          tooltipStyleClass="addresses-tooltip"
+          tooltipPosition="top"
+        >
+          {{ getFirstAddressText(client) }}
+          <span class="addresses-more" *ngIf="getExtraAddressesCount(client) > 0">
+            +{{ getExtraAddressesCount(client) }}
+          </span>
+        </span>
       </td>
 
       <td class="text-center">

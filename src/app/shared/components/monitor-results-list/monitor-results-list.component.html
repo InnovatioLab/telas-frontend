@@ -1,0 +1,32 @@
+<div class="results" *ngIf="items.length > 0">
+  <div class="results-header">
+    <div class="results-title">Locations</div>
+    <div class="results-count">{{ items.length }}</div>
+  </div>
+
+  <div class="results-list">
+    <button
+      type="button"
+      class="result-card"
+      *ngFor="let item of items; trackBy: trackById"
+      (click)="onSelect(item)"
+    >
+      <div class="thumb" *ngIf="resolveItemPhotoUrl(item) as photoUrl; else noThumb">
+        <img [src]="photoUrl" alt="" (error)="onImgError(item)" />
+      </div>
+      <ng-template #noThumb>
+        <div class="thumb thumb-empty"></div>
+      </ng-template>
+
+      <div class="info">
+        <div class="name">
+          {{ item.addressLocationName || item.title || "Location" }}
+        </div>
+        <div class="address">
+          {{ item.locationDescription || item.addressLocationDescription || "" }}
+        </div>
+      </div>
+    </button>
+  </div>
+</div>
+

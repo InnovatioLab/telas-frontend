@@ -5,6 +5,13 @@
   word-break: break-word;
 }
 
+.addresses-more {
+  margin-left: 0.5rem;
+  opacity: 0.8;
+  font-size: 0.85em;
+  color: var(--cor-legenda);
+}
+
 ::ng-deep {
   .p-card-body {
     width: 100%;
@@ -221,6 +228,18 @@
       writing-mode: horizontal-tb !important;
       text-orientation: mixed !important;
     }
+  }
+
+  .addresses-tooltip {
+    max-width: 32rem;
+  }
+
+  .addresses-tooltip .p-tooltip-text {
+    white-space: pre-line !important;
+    word-break: break-word;
+    line-height: 1.25rem;
+    max-width: 32rem;
+    text-align: left;
   }
 }
 

@@ -56,19 +56,12 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   loadingSelectedMonitorLocationInfo: boolean = false;
   checkoutEmProgresso = false;
   dialogoRef: DynamicDialogRef | undefined;
-  recurrenceOptions = [
-    { label: "1 Month", value: Recurrence.THIRTY_DAYS },
-    { label: "2 Months", value: Recurrence.SIXTY_DAYS },
-    { label: "3 Months", value: Recurrence.NINETY_DAYS },
-    { label: "Monthly", value: Recurrence.MONTHLY },
-  ];
   selectedRecurrence: Recurrence = Recurrence.MONTHLY;
   blockQuantityOptions = [
     { label: "1", value: 1 },
     { label: "2", value: 2 },
   ];
   monitorDetailsVisible: boolean = false;
-  dropdownOpen: boolean = false;
   blockQuantityInteracting: boolean = false;
   private pendingBlockQuantityUpdates: Map<string, number> = new Map();
 
@@ -93,9 +86,10 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         next: (cart) => {
           this.cart = cart;
           if (cart) {
-            this.selectedRecurrence = cart.recurrence;
+            this.selectedRecurrence = Recurrence.MONTHLY;
             this.applyPendingBlockQuantityUpdates();
             this.ensureBlockQuantityDefaults();
+            this.enforceMonthlyRecurrenceIfNeeded(cart);
           }
         },
         error: (error) => {
@@ -106,10 +100,30 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     this.cart = this.cartService.currentCart;
     if (this.cart) {
-      this.selectedRecurrence = this.cart.recurrence;
+      this.selectedRecurrence = Recurrence.MONTHLY;
       this.applyPendingBlockQuantityUpdates();
       this.ensureBlockQuantityDefaults();
+      this.enforceMonthlyRecurrenceIfNeeded(this.cart);
     }
+  }
+
+  private enforceMonthlyRecurrenceIfNeeded(cart: CartResponseDto): void {
+    if (cart.recurrence === Recurrence.MONTHLY) return;
+
+    const cartRequest: CartRequestDto = {
+      recurrence: Recurrence.MONTHLY,
+      items: cart.items.map((item) => ({
+        monitorId: item.monitorId,
+        blockQuantity: item.blockQuantity || 1,
+      })),
+    };
+
+    this.cartService.update(cartRequest, cart.id).subscribe({
+      next: (updatedCart) => {
+        this.cart = updatedCart;
+      },
+      error: () => {},
+    });
   }
 
   private ensureBlockQuantityDefaults(): void {
@@ -125,7 +139,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     if (needsUpdate) {
       const cartRequest: CartRequestDto = {
-        recurrence: this.selectedRecurrence,
+        recurrence: Recurrence.MONTHLY,
         items: this.cart.items.map((item) => ({
           monitorId: item.monitorId,
           blockQuantity: item.blockQuantity,
@@ -180,7 +194,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
           }));
 
           const cartRequest: CartRequestDto = {
-            recurrence: this.selectedRecurrence,
+            recurrence: Recurrence.MONTHLY,
             items: updatedItems,
           };
 
@@ -245,39 +259,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   }
 
   onRecurrenceChange(): void {
-    if (!this.cart) return;
-
-    const cartRequest: CartRequestDto = {
-      recurrence: this.selectedRecurrence,
-      items: this.cart.items.map((item) => ({
-        monitorId: item.monitorId,
-        blockQuantity: item.blockQuantity || 1,
-      })),
-    };
-
-    this.cartService.update(cartRequest, this.cart.id).subscribe({
-      next: (updatedCart) => {
-        this.cart = updatedCart;
-        
-        this.cartService.refreshActiveCart().subscribe({
-          next: (refreshedCart) => {
-            if (refreshedCart) {
-              this.cart = refreshedCart;
-              this.selectedRecurrence = refreshedCart.recurrence;
-            }
-          },
-          error: () => {
-          },
-        });
-      },
-      error: (error) => {
-        if (error.status === 404) {
-          this.handleCartNotFound(() => {
-            this.onRecurrenceChange();
-          });
-        }
-      },
-    });
+    return;
   }
 
   onBlockQuantityChange(item: CartItemResponseDto, newValue: number): void {
@@ -293,7 +275,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     item.blockQuantity = newValue;
 
     const cartRequest: CartRequestDto = {
-      recurrence: this.selectedRecurrence,
+      recurrence: Recurrence.MONTHLY,
       items: this.cart.items.map((cartItem) => {
         const pendingValue = this.pendingBlockQuantityUpdates.get(cartItem.monitorId);
         return {
@@ -361,15 +343,15 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   }
 
   onDropdownShow(): void {
-    this.dropdownOpen = true;
+    return;
   }
 
   onDropdownHide(): void {
-    this.dropdownOpen = false;
+    return;
   }
 
   onDropdownClick(event: Event): void {
-    event.stopPropagation();
+    return;
   }
 
   onBlockQuantityMouseDown(): void {
@@ -416,7 +398,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     this.applyPendingBlockQuantityUpdates();
 
     const cartRequest: CartRequestDto = {
-      recurrence: this.selectedRecurrence,
+      recurrence: Recurrence.MONTHLY,
       items: this.cart.items.map((item) => ({
         monitorId: item.monitorId,
         blockQuantity: item.blockQuantity || 1,

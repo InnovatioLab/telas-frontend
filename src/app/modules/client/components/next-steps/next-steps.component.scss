@@ -1,0 +1,48 @@
+.next-steps {
+  padding: 24px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  width: 100%;
+  max-width: 860px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
+}
+
+.subtitle {
+  margin-top: 8px;
+  color: #3b3b3b;
+}
+
+.steps {
+  margin: 16px 0 20px 18px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primary,
+.secondary {
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.primary {
+  background: #075473;
+  color: #fff;
+}
+
+.secondary {
+  background: #f3f5f7;
+  color: #075473;
+}
+

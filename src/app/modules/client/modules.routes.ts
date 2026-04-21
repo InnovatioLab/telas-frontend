@@ -11,6 +11,7 @@ import { TermsOfServiceComponent } from "../application/terms-of-service/terms-o
 import { ClientViewComponent } from "./components/client-view/client-view.component";
 import { ManagementSubscriptionsComponent } from "./components/management-subscriptions/management-subscriptions.component";
 import { MyTelasComponent } from "./components/my-telas/my-telas.component";
+import { NextStepsComponent } from "./components/next-steps/next-steps.component";
 import { WishListComponent } from "./components/wish-list/wish-list.component";
 import { ClientViewLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
 
@@ -35,6 +36,12 @@ export const ROUTES: Route[] = [
         component: MyTelasComponent,
         canActivate: [MyTelasGuard],
         title: "My Telas",
+      },
+      {
+        path: "next-steps",
+        component: NextStepsComponent,
+        canActivate: [MyTelasGuard],
+        title: "Next steps",
       },
       {
         path: "subscriptions",

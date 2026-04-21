@@ -1,5 +1,13 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -11,21 +19,11 @@ import {
   SmartPlugAdminDto,
   SmartPlugAdminService,
 } from "@app/core/service/api/smart-plug-admin.service";
-import { ZipCodeService } from "@app/core/service/api/zipcode.service";
-import { AddressData } from "@app/model/dto/request/address-data-request";
 import { CreateMonitorRequestDto } from "@app/model/dto/request/create-monitor.request.dto";
+import { AvailablePartnerAddressResponseDto } from "@app/model/dto/response/available-partner-address.response.dto";
 import { Role } from "@app/model/client";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
-import {
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  Observable,
-  of,
-  switchMap,
-  take,
-} from "rxjs";
+import { take } from "rxjs";
 
 @Component({
   selector: "app-create-monitor-modal",
@@ -34,7 +32,10 @@ import {
   templateUrl: "./create-monitor-modal.component.html",
   styleUrls: ["./create-monitor-modal.component.scss"],
 })
-export class CreateMonitorModalComponent implements OnInit {
+export class CreateMonitorModalComponent implements OnInit, OnChanges {
+  @Input() availablePartnerAddresses: AvailablePartnerAddressResponseDto[] = [];
+  @Input() loadingPartnerAddresses = false;
+
   @Output() close = new EventEmitter<void>();
   @Output() monitorCreated = new EventEmitter<{
     request: CreateMonitorRequestDto;
@@ -43,46 +44,24 @@ export class CreateMonitorModalComponent implements OnInit {
 
   monitorForm: FormGroup;
 
-  loadingZipCode = false;
   isDeveloper = false;
   plugOptions: { label: string; value: string }[] = [];
+  addressOptions: { label: string; value: string }[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly zipCodeService: ZipCodeService,
     private readonly clientService: ClientService,
     private readonly smartPlugAdmin: SmartPlugAdminService
   ) {
     this.monitorForm = this.fb.group({
+      addressId: ["", [Validators.required]],
       locationDescription: ["", [Validators.maxLength(200)]],
       smartPlugId: [""],
-      address: this.fb.group({
-        street: [
-          "",
-          [
-            Validators.required,
-            Validators.maxLength(100),
-            AbstractControlUtils.validateStreet(),
-          ],
-        ],
-        zipCode: ["", [Validators.required, Validators.pattern(/^\d{5}$/)]],
-        city: ["", [Validators.required, Validators.maxLength(50)]],
-        state: [
-          "",
-          [
-            Validators.required,
-            Validators.minLength(2),
-            Validators.maxLength(2),
-          ],
-        ],
-        country: ["US", [Validators.required, Validators.maxLength(100)]],
-        address2: ["", [Validators.maxLength(100)]],
-      }),
     });
   }
 
   ngOnInit(): void {
-    this.setupZipCodeSearch();
+    this.syncAddressOptions();
     this.clientService.clientAtual$
       .pipe(take(1))
       .subscribe((client) => {
@@ -91,6 +70,12 @@ export class CreateMonitorModalComponent implements OnInit {
           this.loadPlugOptions();
         }
       });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["availablePartnerAddresses"]) {
+      this.syncAddressOptions();
+    }
   }
 
   private loadPlugOptions(): void {
@@ -114,95 +99,30 @@ export class CreateMonitorModalComponent implements OnInit {
     this.loadPlugOptions();
   }
 
+  private syncAddressOptions(): void {
+    const selected = this.monitorForm.get("addressId")?.value as string;
+    this.addressOptions = (this.availablePartnerAddresses ?? []).map((a) => ({
+      label: a.label,
+      value: a.addressId,
+    }));
+
+    if (selected && !this.addressOptions.some((o) => o.value === selected)) {
+      this.monitorForm.patchValue({ addressId: "" }, { emitEvent: false });
+    }
+  }
+
   private formatPlugLabel(p: SmartPlugAdminDto): string {
     const name = p.displayName?.trim() || p.macAddress;
     return `${name} — ${p.vendor} (${p.macAddress})`;
   }
 
-  private setupZipCodeSearch(): void {
-    // const zipCodeControl = this.monitorForm.get("address.zipCode");
-
-    // if (zipCodeControl) {
-    //   zipCodeControl.valueChanges
-    //     .pipe(
-    //       debounceTime(500),
-    //       distinctUntilChanged(),
-    //       filter((zipCode: string) => {
-    //         return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
-    //       }),
-    //       switchMap((zipCode: string): Observable<AddressData | null> => {
-    //         if (zipCode) {
-    //           this.loadingZipCode = true;
-    //           return this.zipCodeService.findLocationByZipCode(zipCode);
-    //         }
-    //         return of(null);
-    //       })
-    //     )
-    //     .subscribe({
-    //       next: (addressData) => {
-    //         this.loadingZipCode = false;
-    //         if (addressData) {
-    //           this.fillAddressFields(addressData);
-    //         }
-    //       },
-    //       error: (error) => {
-    //         this.loadingZipCode = false;
-    //       },
-    //     });
-    // }
-  }
-
-  private fillAddressFields(addressData: AddressData): void {
-    const addressGroup = this.monitorForm.get("address");
-
-    const fields: Array<keyof AddressData & string> = [
-      "street",
-      "city",
-      "state",
-      "country",
-    ];
-
-    const { payload, touched } = fields.reduce(
-      (acc, field) => {
-        const value = (addressData as any)[field];
-        if (value != null && value !== "") {
-          acc.payload[field] = value;
-          acc.touched.push(field);
-        }
-        return acc;
-      },
-      { payload: {} as Partial<Record<string, any>>, touched: [] as string[] }
-    );
-
-    // Garantir que o country sempre tenha um valor
-    if (!payload.country || payload.country === "") {
-      payload.country = "US";
-      touched.push("country");
-    }
-
-    if (Object.keys(payload).length > 0) {
-      addressGroup.patchValue(payload);
-      for (const name of touched) {
-        addressGroup.get(name)?.markAsTouched();
-      }
-    }
-  }
-
   onSubmit(): void {
     if (this.monitorForm.valid) {
       const formValue = this.monitorForm.value;
-      const addressValue = formValue.address;
 
       const monitorRequest: CreateMonitorRequestDto = {
         locationDescription: formValue.locationDescription,
-        address: {
-          street: addressValue.street,
-          city: addressValue.city,
-          state: addressValue.state,
-          country: addressValue.country || "US",
-          zipCode: addressValue.zipCode,
-          address2: addressValue.address2 ?? null,
-        },
+        addressId: formValue.addressId,
       };
 
       const rawPlug = formValue.smartPlugId as string;
@@ -215,14 +135,6 @@ export class CreateMonitorModalComponent implements OnInit {
         const control = this.monitorForm.get(key);
         control?.markAsTouched();
       });
-
-      const addressGroup = this.monitorForm.get("address") as FormGroup;
-      if (addressGroup) {
-        Object.keys(addressGroup.controls).forEach((key) => {
-          const control = addressGroup.get(key);
-          control?.markAsTouched();
-        });
-      }
     }
   }
 
@@ -236,24 +148,15 @@ export class CreateMonitorModalComponent implements OnInit {
 
   closeModal(): void {
     this.monitorForm.reset({
+      addressId: "",
       locationDescription: "",
       smartPlugId: "",
-      address: {
-        street: "",
-        zipCode: "",
-        city: "",
-        state: "",
-        country: "US",
-        address2: "",
-      },
     });
     this.close.emit();
   }
 
-  getFieldError(fieldName: string, nestedField?: string): string {
-    const control = nestedField
-      ? this.monitorForm.get(fieldName)?.get(nestedField)
-      : this.monitorForm.get(fieldName);
+  getFieldError(fieldName: string): string {
+    const control = this.monitorForm.get(fieldName);
 
     if (control?.errors && control.touched) {
       if (control.errors["required"]) return "This field is required";

@@ -9,6 +9,12 @@
   height: 100%;
 }
 
+@media (max-width: 900px) {
+  .client-view {
+    flex-direction: column;
+  }
+}
+
 feat-rodape {
   margin-top: auto;
 }

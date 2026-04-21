@@ -198,6 +198,8 @@
   >
     <app-create-monitor-modal
       #createMonitorModal
+      [availablePartnerAddresses]="availablePartnerAddresses"
+      [loadingPartnerAddresses]="loadingPartnerAddresses"
       (close)="onCreateMonitorModalClose()"
       (monitorCreated)="onMonitorCreated($event)"
     >
@@ -221,6 +223,8 @@
     <app-edit-monitor-modal
       #editMonitorModal
       [monitor]="selectedMonitorForEdit"
+      [availablePartnerAddresses]="availablePartnerAddresses"
+      [loadingPartnerAddresses]="loadingPartnerAddresses"
       (close)="onEditMonitorModalClose()"
       (monitorUpdated)="onMonitorUpdated($event)"
     >
