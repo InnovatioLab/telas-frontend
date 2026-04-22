@@ -93,11 +93,16 @@ export class RecuperarSenhaComponent {
   }
 
   recuperarSenha() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     const login = this.form.get("login")?.value;
-    this.authService.recuperarSenha(login).subscribe((res) => {
-      if (res) {
-        this.redirecionarValidacaoRecuperar(login);
-      }
+    this.authService.recuperarSenha(login).subscribe({
+      next: () => this.redirecionarValidacaoRecuperar(login),
+      error: () =>
+        this.exibirAlerta(MENSAGENS.dialogo.naoEncontradoIdentificador),
     });
   }
 
@@ -107,10 +112,8 @@ export class RecuperarSenhaComponent {
 
   reenviarCodigo() {
     const login = this.form.get("login")?.value;
-    this.clientService.reenvioCodigo(login).subscribe((res) => {
-      if (res) {
-        this.redirecionarValidacaoCadastro(login);
-      }
+    this.clientService.reenvioCodigo(login).subscribe({
+      next: () => this.redirecionarValidacaoCadastro(login),
     });
   }
 
