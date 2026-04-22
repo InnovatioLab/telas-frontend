@@ -25,7 +25,8 @@ export interface ClientResponseDto {
   role?: any;
   createdAt?: string;
   updatedAt?: string;
-  ads?: any[];
+  ads?: unknown[];
+  adsCount?: number;
   reactivatableByCurrentUser?: boolean;
 }
 

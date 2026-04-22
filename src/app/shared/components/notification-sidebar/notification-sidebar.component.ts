@@ -137,6 +137,9 @@ export class NotificationSidebarComponent
     if (ref === "SIDE_API_DOWN") {
       return "down";
     }
+    if (ref === "SIDE_API_UP") {
+      return "up";
+    }
     if (ref === "MONITORING_HOST_REBOOT") {
       return "warn";
     }

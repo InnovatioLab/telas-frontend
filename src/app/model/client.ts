@@ -15,6 +15,7 @@ export interface Client {
   addresses?: Address[];
   attachments?: Attachment[];
   ads?: Ad[];
+  adsCount?: number;
   notifications?: Notification[];
   currentSubscriptionFlowStep?: number;
   permissions?: string[];
