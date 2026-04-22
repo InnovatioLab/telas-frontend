@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { HttpErrorResponse } from "@angular/common/http";
 import {
   SmartPlugAdminService,
   SmartPlugDiscoverySummary,
@@ -74,8 +75,15 @@ export class ManagementSmartPlugsComponent implements OnInit {
         this.toast.sucesso(`Descoberta concluída. ${parts.join(" · ")}`);
         this.load();
       },
-      error: () => {
+      error: (err: unknown) => {
         this.discoveryRunning = false;
+        const httpErr = err as HttpErrorResponse | undefined;
+        const status = httpErr?.status;
+        if (status === 401 || status === 403) {
+          (httpErr as any).handled = true;
+          this.toast.aviso("Sem permissão para executar a descoberta de IP.");
+          return;
+        }
         this.toast.erro("Não foi possível executar a descoberta de IP.");
       },
     });
