@@ -2,24 +2,36 @@
   padding: 24px 16px;
   display: flex;
   justify-content: center;
+  background: var(--surface-ground);
 }
 
 .card {
   width: 100%;
   max-width: 860px;
-  background: #fff;
+  background: var(--surface-card);
+  color: var(--text-color);
   border-radius: 16px;
   padding: 24px;
+  border: 1px solid var(--surface-border);
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+  color: var(--text-color);
+  margin: 0;
 }
 
 .subtitle {
   margin-top: 8px;
-  color: #3b3b3b;
+  color: var(--text-color-secondary);
 }
 
 .steps {
   margin: 16px 0 20px 18px;
+}
+
+.steps li {
+  color: var(--text-color);
 }
 
 .actions {
@@ -34,6 +46,7 @@
   padding: 10px 14px;
   border-radius: 10px;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .primary {
@@ -42,7 +55,8 @@
 }
 
 .secondary {
-  background: #f3f5f7;
-  color: #075473;
+  background: var(--surface-100);
+  color: var(--text-color);
+  border: 1px solid var(--surface-border);
 }
 
