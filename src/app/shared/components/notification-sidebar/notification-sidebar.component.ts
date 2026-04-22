@@ -134,6 +134,9 @@ export class NotificationSidebarComponent
     if (ref === "SMART_PLUG_INCIDENT") {
       return "down";
     }
+    if (ref === "SIDE_API_DOWN") {
+      return "down";
+    }
     if (ref === "MONITORING_HOST_REBOOT") {
       return "warn";
     }
