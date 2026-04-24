@@ -9,6 +9,7 @@
   <div class="menu-header">
     <p class="mb-0 font-semibold menu-title">Menu</p>
     <button
+      *ngIf="!menuAlwaysOpen"
       class="close-btn"
       (click)="toggleMenu()"
       aria-label="Close sidebar"
@@ -67,7 +68,7 @@
 
 <div
   class="menu-overlay"
-  *ngIf="isMenuOpen() && isMobileCompact()"
+  *ngIf="isMenuOpen() && isMobileCompact() && !menuAlwaysOpen"
   (click)="toggleMenu()"
   (keydown.escape)="toggleMenu()"
   tabindex="-1"

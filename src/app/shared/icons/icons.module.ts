@@ -36,6 +36,7 @@ import { IconSairComponent } from "./sair.icon";
 import { IconSearchComponent } from "./search.icon";
 import { IconSettingsComponent } from "./settings.icon";
 import { IconShoppingBasketComponent } from "./shopping-basket.icon";
+import { IconShoppingCartComponent } from "./shopping-cart.icon";
 import { SubscriptionsIconComponent } from "./subscriptions.icon";
 import { IconSunComponent } from "./sun.icon";
 import { IconTvDisplayComponent } from "./tv-display.icon";
@@ -62,6 +63,7 @@ import { IconRecarregarComponent } from "./recarregar.icon";
     IconLockOpenComponent,
     IconCloseComponent,
     IconShoppingBasketComponent,
+    IconShoppingCartComponent,
     IconNotificationsComponent,
     IconBarsComponent,
     IconSearchComponent,
@@ -111,6 +113,7 @@ import { IconRecarregarComponent } from "./recarregar.icon";
     IconLockOpenComponent,
     IconCloseComponent,
     IconShoppingBasketComponent,
+    IconShoppingCartComponent,
     IconNotificationsComponent,
     IconBarsComponent,
     IconSearchComponent,

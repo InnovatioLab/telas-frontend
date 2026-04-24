@@ -18,7 +18,7 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
         [title]="cartTooltip"
         [disabled]="!hasActiveCart"
       >
-        <app-icon-shopping-basket></app-icon-shopping-basket>
+        <app-icon-shopping-cart></app-icon-shopping-cart>
         <app-header-badge [count]="cartItemCount"></app-header-badge>
       </button>
 

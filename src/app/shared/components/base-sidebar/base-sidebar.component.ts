@@ -72,6 +72,7 @@ export class BaseSidebarComponent implements OnInit, OnDestroy {
   @Input() currentUser: any = null;
   @Input() showFooter: boolean = true;
   @Input() version: string = "v1.0.0";
+  @Input() menuAlwaysOpen = false;
 
   @Output() menuItemSelected = new EventEmitter<MenuItem>();
   @Output() menuToggled = new EventEmitter<boolean>();
@@ -86,6 +87,9 @@ export class BaseSidebarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setupSubscriptions();
+    if (this.menuAlwaysOpen) {
+      this.ensureMenuOpen();
+    }
   }
 
   ngOnDestroy(): void {
@@ -94,6 +98,10 @@ export class BaseSidebarComponent implements OnInit, OnDestroy {
     }
     if (this.layoutSubscription) {
       this.layoutSubscription.unsubscribe();
+    }
+    if (this.menuAlwaysOpen) {
+      this.layoutService.closeMenu();
+      this.sidebarService.fechar();
     }
   }
 
@@ -110,7 +118,9 @@ export class BaseSidebarComponent implements OnInit, OnDestroy {
             );
           }
         } else if (!isVisible) {
-          if (this.layoutService.isMenuOpen()) {
+          if (this.menuAlwaysOpen) {
+            this.ensureMenuOpen();
+          } else if (this.layoutService.isMenuOpen()) {
             this.layoutService.closeMenu();
           }
         }
@@ -141,22 +151,33 @@ export class BaseSidebarComponent implements OnInit, OnDestroy {
 
   @HostListener("document:keydown.escape")
   fecharMenuComEsc(): void {
+    if (this.menuAlwaysOpen) {
+      return;
+    }
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
 
+  private ensureMenuOpen(): void {
+    this.layoutService.openMenu(
+      this.sidebarType === "client-menu" ? "client" : "admin"
+    );
+    this.sidebarService.abrirMenu(this.sidebarType);
+  }
+
   toggleMenu(): void {
     const isCurrentlyOpen = this.isMenuOpen();
+
+    if (this.menuAlwaysOpen && isCurrentlyOpen) {
+      return;
+    }
 
     if (isCurrentlyOpen) {
       this.layoutService.closeMenu();
       this.sidebarService.fechar();
     } else {
-      this.layoutService.openMenu(
-        this.sidebarType === "client-menu" ? "client" : "admin"
-      );
-      this.sidebarService.abrirMenu(this.sidebarType);
+      this.ensureMenuOpen();
     }
 
     this.menuToggled.emit(!isCurrentlyOpen);

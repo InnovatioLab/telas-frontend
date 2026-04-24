@@ -6,7 +6,6 @@ import {
   OnDestroy,
   OnInit,
 } from "@angular/core";
-import { FormsModule } from "@angular/forms";
 import { CartService } from "@app/core/service/api/cart.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { SubscriptionService } from "@app/core/service/api/subscription.service";
@@ -37,7 +36,6 @@ import { DialogoComponent } from "../dialogo/dialogo.component";
     PrimengModule,
     ImagemCarrinhoVazioComponent,
     IconsModule,
-    FormsModule,
   ],
   templateUrl: "./checkout-list-side-bar.component.html",
   styleUrls: ["./checkout-list-side-bar.component.scss"],
@@ -57,13 +55,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   checkoutEmProgresso = false;
   dialogoRef: DynamicDialogRef | undefined;
   selectedRecurrence: Recurrence = Recurrence.MONTHLY;
-  blockQuantityOptions = [
-    { label: "1", value: 1 },
-    { label: "2", value: 2 },
-  ];
   monitorDetailsVisible: boolean = false;
-  blockQuantityInteracting: boolean = false;
-  private pendingBlockQuantityUpdates: Map<string, number> = new Map();
 
   locationInfo: Map<string, { name: string; description: string }> = new Map();
   loadingLocationInfo: Map<string, boolean> = new Map();
@@ -87,7 +79,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
           this.cart = cart;
           if (cart) {
             this.selectedRecurrence = Recurrence.MONTHLY;
-            this.applyPendingBlockQuantityUpdates();
             this.ensureBlockQuantityDefaults();
             this.enforceMonthlyRecurrenceIfNeeded(cart);
           }
@@ -101,7 +92,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     this.cart = this.cartService.currentCart;
     if (this.cart) {
       this.selectedRecurrence = Recurrence.MONTHLY;
-      this.applyPendingBlockQuantityUpdates();
       this.ensureBlockQuantityDefaults();
       this.enforceMonthlyRecurrenceIfNeeded(this.cart);
     }
@@ -114,7 +104,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
       recurrence: Recurrence.MONTHLY,
       items: cart.items.map((item) => ({
         monitorId: item.monitorId,
-        blockQuantity: item.blockQuantity || 1,
+        blockQuantity: 1,
       })),
     };
 
@@ -131,7 +121,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     let needsUpdate = false;
     this.cart.items.forEach((item) => {
-      if (!item.blockQuantity || item.blockQuantity < 1 || item.blockQuantity > 2) {
+      if (!item.blockQuantity || item.blockQuantity !== 1) {
         item.blockQuantity = 1;
         needsUpdate = true;
       }
@@ -190,7 +180,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
             (cartItem) => cartItem.id !== item.id
           ).map((cartItem) => ({
             monitorId: cartItem.monitorId,
-            blockQuantity: cartItem.blockQuantity,
+            blockQuantity: 1,
           }));
 
           const cartRequest: CartRequestDto = {
@@ -262,112 +252,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     return;
   }
 
-  onBlockQuantityChange(item: CartItemResponseDto, newValue: number): void {
-    if (!this.cart) return;
-
-    if (!newValue || newValue < 1) {
-      newValue = 1;
-    } else if (newValue > 2) {
-      newValue = 2;
-    }
-
-    this.pendingBlockQuantityUpdates.set(item.monitorId, newValue);
-    item.blockQuantity = newValue;
-
-    const cartRequest: CartRequestDto = {
-      recurrence: Recurrence.MONTHLY,
-      items: this.cart.items.map((cartItem) => {
-        const pendingValue = this.pendingBlockQuantityUpdates.get(cartItem.monitorId);
-        return {
-          monitorId: cartItem.monitorId,
-          blockQuantity: pendingValue !== undefined ? pendingValue : (cartItem.blockQuantity || 1),
-        };
-      }),
-    };
-
-    this.cartService.update(cartRequest, this.cart.id).subscribe({
-      next: (updatedCart) => {
-        this.cart = updatedCart;
-        
-        const updatedItem = updatedCart.items.find(i => i.monitorId === item.monitorId);
-        if (updatedItem && updatedItem.blockQuantity === newValue) {
-          this.pendingBlockQuantityUpdates.delete(item.monitorId);
-        }
-        
-        this.cartService.refreshActiveCart().subscribe({
-          next: (refreshedCart) => {
-            if (refreshedCart) {
-              this.cart = refreshedCart;
-              this.selectedRecurrence = refreshedCart.recurrence;
-              
-              const refreshedItem = refreshedCart.items.find(i => i.monitorId === item.monitorId);
-              if (refreshedItem) {
-                if (refreshedItem.blockQuantity !== newValue) {
-                  refreshedItem.blockQuantity = newValue;
-                  this.pendingBlockQuantityUpdates.set(item.monitorId, newValue);
-                } else {
-                  this.pendingBlockQuantityUpdates.delete(item.monitorId);
-                }
-              }
-              
-              this.applyPendingBlockQuantityUpdates();
-            }
-          },
-          error: () => {
-          },
-        });
-      },
-      error: (error) => {
-        if (error.status === 404) {
-          this.handleCartNotFound(() => {
-            this.onBlockQuantityChange(item, newValue);
-          });
-        } else {
-          this.toastService.erro("Error updating block quantity");
-          this.pendingBlockQuantityUpdates.delete(item.monitorId);
-          item.blockQuantity = item.blockQuantity === 1 ? 2 : 1;
-        }
-      },
-    });
-  }
-
-  private applyPendingBlockQuantityUpdates(): void {
-    if (!this.cart || this.pendingBlockQuantityUpdates.size === 0) return;
-
-    this.cart.items.forEach((item) => {
-      const pendingValue = this.pendingBlockQuantityUpdates.get(item.monitorId);
-      if (pendingValue !== undefined && item.blockQuantity !== pendingValue) {
-        item.blockQuantity = pendingValue;
-      }
-    });
-  }
-
-  onDropdownShow(): void {
-    return;
-  }
-
-  onDropdownHide(): void {
-    return;
-  }
-
-  onDropdownClick(event: Event): void {
-    return;
-  }
-
-  onBlockQuantityMouseDown(): void {
-    this.blockQuantityInteracting = true;
-  }
-
-  onBlockQuantityMouseUp(): void {
-    setTimeout(() => {
-      this.blockQuantityInteracting = false;
-    }, 100);
-  }
-
-  onBlockQuantityClick(event: Event): void {
-    event.stopPropagation();
-  }
-
   iniciarCheckout(): void {
     if (!this.authentication.isLoggedIn$.getValue()) {
       const config = DialogoUtils.exibirAlerta(
@@ -395,21 +279,18 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     this.checkoutEmProgresso = true;
 
-    this.applyPendingBlockQuantityUpdates();
-
     const cartRequest: CartRequestDto = {
       recurrence: Recurrence.MONTHLY,
       items: this.cart.items.map((item) => ({
         monitorId: item.monitorId,
-        blockQuantity: item.blockQuantity || 1,
+        blockQuantity: 1,
       })),
     };
 
     this.cartService.update(cartRequest, this.cart.id).subscribe({
       next: (updatedCart) => {
         this.cart = updatedCart;
-        this.pendingBlockQuantityUpdates.clear();
-        
+
         this.cartService.refreshActiveCart().subscribe({
           next: (refreshedCart) => {
             if (refreshedCart) {
@@ -461,7 +342,6 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         if (refreshedCart) {
           this.cart = refreshedCart;
           this.selectedRecurrence = refreshedCart.recurrence;
-          this.applyPendingBlockQuantityUpdates();
           this.ensureBlockQuantityDefaults();
           
           if (callback) {
@@ -473,7 +353,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
               recurrence: this.selectedRecurrence,
               items: this.cart.items.map((item) => ({
                 monitorId: item.monitorId,
-                blockQuantity: item.blockQuantity || 1,
+                blockQuantity: 1,
               })),
             };
 
@@ -481,8 +361,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
               next: (newCart) => {
                 this.cart = newCart;
                 this.selectedRecurrence = newCart.recurrence;
-                this.pendingBlockQuantityUpdates.clear();
-                
+
                 if (callback) {
                   callback();
                 }

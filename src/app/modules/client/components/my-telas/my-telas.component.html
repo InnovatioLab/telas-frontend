@@ -182,7 +182,8 @@
 
       @if (
         myTelasService.authenticatedClient() &&
-        myTelasService.clientAttachments().length === 0
+        myTelasService.clientAttachments().length === 0 &&
+        selectedFiles.length === 0
       ) {
         <div class="no-attachments">
           <p>

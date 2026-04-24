@@ -25,7 +25,7 @@ describe('CartService', () => {
   const mockCartItem: CartItemResponseDto = {
     id: 'item-1',
     monitorId: 'mon-1',
-    blockQuantity: 5
+    blockQuantity: 1
   } as CartItemResponseDto;
 
   const mockCartResponse: CartResponseDto = {
@@ -38,7 +38,7 @@ describe('CartService', () => {
   const mockCartRequest: CartRequestDto = {
     recurrence: 'MONTHLY' as any,
     items: [
-      { monitorId: 'mon-1', blockQuantity: 5 } as CartItemRequestDto
+      { monitorId: 'mon-1', blockQuantity: 1 } as CartItemRequestDto
     ]
   };
 

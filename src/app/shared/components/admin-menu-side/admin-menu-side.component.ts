@@ -52,6 +52,7 @@ interface MenuItem {
   styleUrls: ["./admin-menu-side.component.scss"],
 })
 export class AdminMenuSideComponent implements OnInit, OnDestroy {
+  readonly menuAlwaysOpen = true;
   private readonly layoutService = inject(LayoutService);
   private readonly sidebarService = inject(SidebarService);
   private readonly renderer = inject(Renderer2);
@@ -132,6 +133,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setupSubscriptions();
+    if (this.menuAlwaysOpen) {
+      this.ensureMenuOpen();
+    }
     this.toggleModeService.theme$.subscribe((theme: string) => {
       this.isDarkMode = theme === "dark";
     });
@@ -147,6 +151,10 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     if (this.layoutSubscription) {
       this.layoutSubscription.unsubscribe();
     }
+    if (this.menuAlwaysOpen) {
+      this.layoutService.closeMenu();
+      this.sidebarService.fechar();
+    }
   }
 
   private setupSubscriptions(): void {
@@ -160,7 +168,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
             this.layoutService.openMenu("admin");
           }
         } else if (!isVisible) {
-          if (this.layoutService.isMenuOpen()) {
+          if (this.menuAlwaysOpen) {
+            this.ensureMenuOpen();
+          } else if (this.layoutService.isMenuOpen()) {
             this.layoutService.closeMenu();
           }
         }
@@ -186,20 +196,31 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   @HostListener("document:keydown.escape")
   fecharMenuComEsc(): void {
+    if (this.menuAlwaysOpen) {
+      return;
+    }
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
   }
 
+  private ensureMenuOpen(): void {
+    this.layoutService.openMenu("admin");
+    this.sidebarService.abrirMenu("admin-menu");
+  }
+
   toggleMenu(): void {
     const isCurrentlyOpen = this.isMenuOpen();
+
+    if (this.menuAlwaysOpen && isCurrentlyOpen) {
+      return;
+    }
 
     if (isCurrentlyOpen) {
       this.layoutService.closeMenu();
       this.sidebarService.fechar();
     } else {
-      this.layoutService.openMenu("admin");
-      this.sidebarService.abrirMenu("admin-menu");
+      this.ensureMenuOpen();
     }
   }
 

@@ -3,7 +3,7 @@
     [showCloseIcon]="false"
     [(visible)]="visibilidadeSidebar"
     position="right"
-    [dismissible]="!blockQuantityInteracting"
+    [dismissible]="true"
     (onHide)="fecharSidebar()"
     [blockScroll]="false"
     [closeOnEscape]="true"
@@ -60,23 +60,6 @@
             <div
               class="item-actions flex flex-column justify-content-center align-items-end gap-2"
             >
-              <div 
-                class="block-quantity-selector"
-                (mousedown)="onBlockQuantityMouseDown()"
-                (mouseup)="onBlockQuantityMouseUp()"
-                (click)="onBlockQuantityClick($event)"
-              >
-                <label class="block text-xs font-medium mb-1">Blocks:</label>
-                <p-selectButton
-                  [options]="blockQuantityOptions"
-                  [ngModel]="item.blockQuantity || 1"
-                  (ngModelChange)="onBlockQuantityChange(item, $event)"
-                  [disabled]="false"
-                  optionLabel="label"
-                  optionValue="value"
-                  class="block-quantity-buttons"
-                ></p-selectButton>
-              </div>
               <div class="flex gap-1">
                 <button
                   pButton
