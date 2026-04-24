@@ -9,6 +9,8 @@
   .privacy-policy-content {
     a {
       color: var(--cor-primaria-escura) !important;
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     .document-section {
@@ -37,5 +39,18 @@
         font-size: 1rem !important;
       }
     }
+  }
+}
+
+html[data-theme="dark"],
+html.dark-theme,
+body.dark-theme,
+[data-theme="dark"] {
+  ::ng-deep .privacy-policy-content a {
+    color: var(--cor-primaria-clara-dark) !important;
+  }
+
+  ::ng-deep .privacy-policy-content a:hover {
+    color: var(--cor-preto-claro-dark) !important;
   }
 }

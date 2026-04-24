@@ -132,7 +132,9 @@ export class MyTelasService {
 
     try {
       await this.clientService.uploadMultipleAttachments(files).toPromise();
-      this.toastService.sucesso("Attachments uploaded successfully");
+      this.toastService.sucesso(
+        "Subscription process started. Your plan will be activated once your Ad has been created and approved by you."
+      );
       await this.loadClientData(true);
     } catch (error) {
       this.toastService.erro("Error uploading attachments");

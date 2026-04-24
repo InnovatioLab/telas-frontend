@@ -1,3 +1,16 @@
+.terms-accept-notice {
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  background: rgba(59, 130, 246, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.terms-accept-notice__text {
+  color: #1e3a8a;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
 ::ng-deep {
   .terms-of-service-container,
   .terms-of-service-card {
@@ -17,6 +30,8 @@
   .terms-of-service-content {
     a {
       color: var(--cor-primaria-escura) !important;
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     .document-section {
@@ -45,5 +60,35 @@
         font-size: 1rem !important;
       }
     }
+  }
+
+  .terms-mailing-footer a {
+    color: var(--cor-primaria-escura) !important;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+html[data-theme="dark"],
+html.dark-theme,
+body.dark-theme,
+[data-theme="dark"] {
+  .terms-accept-notice {
+    border-color: var(--cor-primaria-clara-dark);
+    background: rgba(4, 157, 217, 0.12);
+  }
+
+  .terms-accept-notice__text {
+    color: var(--cor-cinza-escuro-dark);
+  }
+
+  ::ng-deep .terms-of-service-content a,
+  ::ng-deep .terms-mailing-footer a {
+    color: var(--cor-primaria-clara-dark) !important;
+  }
+
+  ::ng-deep .terms-of-service-content a:hover,
+  ::ng-deep .terms-mailing-footer a:hover {
+    color: var(--cor-preto-claro-dark) !important;
   }
 }
