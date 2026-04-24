@@ -20,14 +20,13 @@
             [maxFileSize]="maxFileSize"
             [customUpload]="true"
             (onSelect)="onFileUpload($event)"
-            (uploadHandler)="confirmUpload()"
             [disabled]="myTelasService.isLoading()"
             chooseLabel="Select File"
             uploadLabel="Upload"
             cancelLabel="Cancel"
             [auto]="false"
             [fileLimit]="maxFilesPerUpload"
-            [showUploadButton]="selectedFiles.length > 0"
+            [showUploadButton]="false"
             [showCancelButton]="selectedFiles.length > 0"
           >
             <ng-template pTemplate="file" let-file>
@@ -64,7 +63,8 @@
         <div class="upload-info">
           <small
             >Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF, PDF - Maximum
-            size: 10MB - Maximum: 3 files per upload.</small
+            size: 10MB - Maximum: 3 files per selection. Use "Send ad request" below
+            to upload and send in one step.</small
           >
         </div>
       </div>
@@ -103,7 +103,7 @@
                   </p-checkbox>
                 </div>
                 <div class="attachment-preview">
-                  @if (isPdfLink(attachment.attachmentLink)) {
+                  @if (isPdfLink(attachment.attachmentLink, attachment.attachmentName)) {
                     <div class="pdf-preview-container">
                       <div class="pdf-preview-content">
                         <iframe
@@ -127,22 +127,22 @@
                     </div>
                   }
 
-                  @if (!isPdfLink(attachment.attachmentLink)) {
+                  @if (!isPdfLink(attachment.attachmentLink, attachment.attachmentName) && getSafeImageUrl(attachment.attachmentLink)) {
                     <img
-                      [src]="attachment.attachmentLink"
-                      [alt]="attachment.attachmentName"
+                      [src]="getSafeImageUrl(attachment.attachmentLink)!"
+                      [alt]="attachment.attachmentName || 'Attachment'"
                       class="attachment-image"
                       (error)="onImageError($event)"
                     />
+                  }
 
-                    @if (!attachment.attachmentLink) {
-                      <div class="attachment-fallback">
-                        <span
-                          class="pi pi-file-image"
-                          style="color: var(--cor-primaria)"
-                        ></span>
-                      </div>
-                    }
+                  @if (!isPdfLink(attachment.attachmentLink, attachment.attachmentName) && !getSafeImageUrl(attachment.attachmentLink)) {
+                    <div class="attachment-fallback">
+                      <span
+                        class="pi pi-file-image"
+                        style="color: var(--cor-primaria)"
+                      ></span>
+                    </div>
                   }
                 </div>
                 <div class="attachment-actions">
@@ -219,9 +219,10 @@
       @if (myTelasService.isClientDataLoaded() && canCreateAdRequest()) {
         <div class="request-ad-section">
           <div class="w-full m-auto">
-            <h5 class="mb-5">
-              Combine file upload and slogan/message field in one view
-            </h5>
+            <h5 class="mb-3">Request your ad</h5>
+            <p class="mb-5 text-sm">
+              Select files above, add optional slogan and brand guideline link, then send — your files and request go to the team in one step.
+            </p>
           </div>
 
           @if (selectedClientAttachments.length > 0) {
@@ -286,7 +287,7 @@
             <div class="form-actions">
               <button
                 pButton
-                label="Send Ad Request"
+                label="Send ad request"
                 icon="pi pi-send"
                 (click)="submitAdRequest()"
                 [disabled]="requestAdForm.invalid || myTelasService.isLoading()"

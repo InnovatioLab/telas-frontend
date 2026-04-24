@@ -88,7 +88,9 @@ export class MyTelasService {
 
       if (client) {
         this._authenticatedClient.set(client as any);
-        this._clientAttachments.set((client as any).attachments || []);
+        this._clientAttachments.set(
+          this.normalizeClientAttachments((client as { attachments?: unknown }).attachments)
+        );
         this._hasActiveAdRequest.set((client as any).adRequest !== null);
         this._ads.set((client as any).ads || []);
         this._isClientDataLoaded.set(true);
@@ -125,6 +127,61 @@ export class MyTelasService {
 
   setActiveTab(index: number): void {
     this._activeTabIndex.set(index);
+  }
+
+  private normalizeClientAttachments(raw: unknown): Array<{
+    attachmentId: string;
+    attachmentName: string;
+    attachmentLink: string;
+  }> {
+    if (!Array.isArray(raw)) {
+      return [];
+    }
+    return raw.map((a: { attachmentId?: unknown; attachmentName?: unknown; attachmentLink?: unknown }) => ({
+      attachmentId: a?.attachmentId != null ? String(a.attachmentId) : '',
+      attachmentName:
+        typeof a?.attachmentName === 'string' && a.attachmentName.trim()
+          ? a.attachmentName
+          : 'Attachment',
+      attachmentLink: typeof a?.attachmentLink === 'string' ? a.attachmentLink : '',
+    }));
+  }
+
+  async createAdRequestWithOptionalUploads(
+    files: File[] | null,
+    form: { slogan?: string; brandGuidelineUrl?: string },
+    selectedAttachmentIds: string[] | null
+  ): Promise<void> {
+    this._isLoading.set(true);
+
+    try {
+      if (files && files.length > 0) {
+        await this.clientService.uploadMultipleAttachments(files).toPromise();
+        await this.loadClientData(true);
+      }
+
+      const current = this._clientAttachments();
+      const ids =
+        selectedAttachmentIds && selectedAttachmentIds.length > 0
+          ? selectedAttachmentIds
+          : current.map((a) => a.attachmentId).filter((id) => id.length > 0);
+
+      const request: ClientAdRequestDto = {
+        attachmentIds: ids.length > 0 ? ids : undefined,
+        slogan: form.slogan,
+        brandGuidelineUrl: form.brandGuidelineUrl,
+      };
+
+      await this.clientService.createAdRequest(request).toPromise();
+      this.toastService.sucesso("Ad request successfully submitted");
+      this._hasActiveAdRequest.set(true);
+      await this.loadClientData(true);
+    } catch (error) {
+      this.toastService.erro("Error submitting request");
+      throw error;
+    } finally {
+      this._isLoading.set(false);
+    }
   }
 
   async uploadAttachments(files: File[]): Promise<void> {

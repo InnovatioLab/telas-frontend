@@ -1,13 +1,13 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from "@angular/platform-browser";
 import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
 import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
@@ -77,6 +77,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     public readonly myTelasService: MyTelasService,
     private readonly toastService: ToastService,
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly pdfViewerService: PdfViewerService,
     private readonly cdr: ChangeDetectorRef,
     private readonly sanitizer: DomSanitizer,
@@ -104,8 +105,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   checkRouteParams(): void {
     this.routeParamsSubscription = this.route.queryParams.subscribe(
       (params) => {
-        if (params["ads"] && params["ads"] === "true") {
+        if (params["tab"] === "ads" || params["ads"] === "true") {
           this.myTelasService.setActiveTab(1);
+        } else {
+          this.myTelasService.setActiveTab(0);
         }
       }
     );
@@ -118,8 +121,14 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  onTabChange(event: any): void {
+  onTabChange(event: { index: number }): void {
     this.myTelasService.setActiveTab(event.index);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: event.index === 1 ? "ads" : "attachments" },
+      queryParamsHandling: "merge",
+      replaceUrl: true,
+    });
   }
 
   onFileUpload(event: any): void {
@@ -244,30 +253,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  async confirmUpload(): Promise<void> {
-    if (this.selectedFiles.length === 0) {
-      this.toastService.erro("No files selected for upload");
-      return;
-    }
-
-    try {
-      await this.myTelasService.uploadAttachments(this.selectedFiles);
-      this.clearUploadData();
-
-      if (this.attachmentFileUploadComponent) {
-        this.attachmentFileUploadComponent.clear();
-      }
-    } catch (error) {
-    }
-  }
-
-  cancelUpload(): void {
-    this.clearUploadData();
-    if (this.attachmentFileUploadComponent) {
-      this.attachmentFileUploadComponent.clear();
-    }
-  }
-
   previewSelectedFile(file: File): void {
     if (isPdfFile(file.name)) {
       const reader = new FileReader();
@@ -349,22 +334,28 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   async submitAdRequest(): Promise<void> {
     if (this.requestAdForm.valid) {
-      const request = {
-        attachmentIds:
-          this.selectedClientAttachments.length > 0
-            ? this.selectedClientAttachments
-            : undefined,
-        slogan: this.requestAdForm.get("slogan")?.value || undefined,
-        brandGuidelineUrl:
-          this.requestAdForm.get("brandGuidelineUrl")?.value || undefined,
-      };
+      const files = this.selectedFiles.length > 0 ? [...this.selectedFiles] : null;
+      const selected =
+        this.selectedClientAttachments.length > 0
+          ? [...this.selectedClientAttachments]
+          : null;
+      const slogan = this.requestAdForm.get("slogan")?.value || undefined;
+      const brandGuidelineUrl =
+        this.requestAdForm.get("brandGuidelineUrl")?.value || undefined;
 
       try {
-        await this.myTelasService.createAdRequest(request);
+        await this.myTelasService.createAdRequestWithOptionalUploads(
+          files,
+          { slogan, brandGuidelineUrl },
+          selected
+        );
         this.requestAdForm.reset();
         this.selectedClientAttachments = [];
         this.attachmentCheckboxStates = {};
-        await this.loadClientData();
+        this.clearUploadData();
+        if (this.attachmentFileUploadComponent) {
+          this.attachmentFileUploadComponent.clear();
+        }
       } catch (error) {
       }
     }
@@ -592,14 +583,27 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   navigateToAdsTab(): void {
     this.myTelasService.setActiveTab(1);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: "ads" },
+      queryParamsHandling: "merge",
+      replaceUrl: true,
+    });
   }
 
-  isPdfLink(link?: string | null): boolean {
-    return isPdfFile(link);
+  isPdfLink(url?: string | null, fileName?: string | null): boolean {
+    return isPdfFile(url, fileName);
+  }
+
+  getSafeImageUrl(url: string | null | undefined): SafeUrl | null {
+    if (!url || !String(url).trim()) {
+      return null;
+    }
+    return this.sanitizer.bypassSecurityTrustUrl(String(url).trim());
   }
 
   getSafePdfUrl(url: string): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url + '#view=FitH');
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url + "#view=FitH");
   }
 
   ngOnDestroy(): void {

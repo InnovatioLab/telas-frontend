@@ -1,4 +1,10 @@
-export function isPdfFile(url?: string | null): boolean {
+export function isPdfFile(
+  url?: string | null,
+  fileName?: string | null
+): boolean {
+  if (fileName && /\.pdf$/i.test(fileName.trim())) {
+    return true;
+  }
   if (!url) return false;
   try {
     return /\.pdf(\?|$|#)/i.test(url);

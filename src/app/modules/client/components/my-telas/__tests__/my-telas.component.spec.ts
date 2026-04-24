@@ -26,7 +26,7 @@ jest.mock('@app/modules/client/components/ad-item/ad-item.component', () => ({
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { CartService } from '@app/core/service/api/cart.service';
@@ -222,6 +222,7 @@ describe('MyTelasComponent - New Features', () => {
       loadClientData: jest.fn().mockResolvedValue(null),
       uploadAttachments: jest.fn().mockResolvedValue(null),
       createAdRequest: jest.fn().mockResolvedValue(null),
+      createAdRequestWithOptionalUploads: jest.fn().mockResolvedValue(null),
       updateAdRequest: jest.fn().mockResolvedValue(null),
       deleteAttachment: jest.fn().mockResolvedValue(null),
       replaceAttachment: jest.fn().mockResolvedValue(null),
@@ -256,6 +257,7 @@ describe('MyTelasComponent - New Features', () => {
         { provide: MyTelasService, useValue: myTelasService },
         { provide: ToastService, useValue: toastService },
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
+        { provide: Router, useValue: { navigate: jest.fn() } },
         { provide: PdfViewerService, useValue: pdfViewerService },
         { provide: HttpClient, useValue: httpClient },
         { provide: ChangeDetectorRef, useValue: cdr },

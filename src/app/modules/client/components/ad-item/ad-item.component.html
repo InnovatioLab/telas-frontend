@@ -64,7 +64,7 @@
     </p-button>
     <p-button
       icon="pi pi-check-circle"
-      (click)="onValidate()"
+      (onClick)="onValidate()"
       *ngIf="canValidateAd()"
       [disabled]="loading"
       severity="success"
