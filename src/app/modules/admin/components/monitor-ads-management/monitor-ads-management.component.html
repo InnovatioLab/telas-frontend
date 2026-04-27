@@ -105,18 +105,6 @@
               <span class="name">{{ ad.fileName }}</span>
             </div>
 
-            <div class="block-select">
-              <span>Blocks</span>
-              <p-select
-                [options]="[1,2,3,4,5,6,7]"
-                [(ngModel)]="ad.blockQuantity"
-                [ngModelOptions]="{ standalone: true }"
-                (onChange)="changeBlockQuantity(ad, $event.value)"
-                [overlayOptions]="{ appendTo: 'body' }"
-              >
-              </p-select>
-            </div>
-
             <div class="order-controls">
               <button
                 pButton

@@ -88,7 +88,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
           link: ad.link || "",
           isAttachedToMonitor: true,
           orderIndex: ad.orderIndex || 0,
-          blockQuantity: ad.blockQuantity || 1,
+          blockQuantity: 1,
         }));
 
         const currentAdsIds = currentMonitorAds.map((ad) => ad.id);
@@ -107,7 +107,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
                   link: ad.link || "",
                   isAttachedToMonitor: false,
                   orderIndex: ad.orderIndex || idx + 1,
-                  blockQuantity: ad.blockQuantity || 1,
+                  blockQuantity: 1,
                 };
 
                 validAdsItems.push(baseItem);
@@ -121,6 +121,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
               .map((ad, index) => ({
                 ...ad,
                 orderIndex: index + 1,
+                blockQuantity: 1,
               }));
 
             this.selectedPreviewAd = this.monitorAds[0] || this.validAds[0] || null;
@@ -132,6 +133,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
               .map((ad, index) => ({
                 ...ad,
                 orderIndex: index + 1,
+                blockQuantity: 1,
               }));
 
             this.selectedPreviewAd = this.monitorAds[0] || null;
@@ -148,10 +150,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
   }
 
   get totalBlockSlots(): number {
-    return this.monitorAds.reduce(
-      (sum, ad) => sum + (Number(ad.blockQuantity) || 0),
-      0
-    );
+    return this.monitorAds.length;
   }
 
   get maxMonitorAds(): number {
@@ -187,7 +186,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
       ...ad,
       isAttachedToMonitor: true,
       orderIndex: this.monitorAds.length + 1,
-      blockQuantity: ad.blockQuantity || 1,
+      blockQuantity: 1,
     };
 
     this.monitorAds = [...this.monitorAds, newItem];
@@ -238,13 +237,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     }));
   }
 
-  changeBlockQuantity(ad: MonitorAdItem, value: number): void {
-    this.monitorAds = this.monitorAds.map((item) =>
-      item.id === ad.id
-        ? { ...item, blockQuantity: Number(value) || 1 }
-        : item
-    );
-  }
+  // blockQuantity não é mais configurável: sempre 1 (nova regra)
 
   isPdf(ad: MonitorAdItem | null): boolean {
     if (!ad) {
@@ -281,23 +274,12 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const reservedCount = this.monitorAds.filter(
-      (ad) => Number(ad.blockQuantity) === 7
-    ).length;
-
-    if (reservedCount > 1) {
-      this.toastService.erro(
-        "Only one ad with partner reserved slots (5) is allowed per monitor."
-      );
-      return;
-    }
-
     this.saving = true;
 
     const ads = this.monitorAds.map((ad) => ({
       id: ad.id,
       orderIndex: ad.orderIndex,
-      blockQuantity: ad.blockQuantity,
+      blockQuantity: 1,
     }));
 
     const payload: any = {
@@ -373,8 +355,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const currentAd = this.previewImages[this.currentPreviewIndex];
-    const displayTime = (currentAd.blockQuantity || 1) * 5000; // 5s por blockQuantity
+    const displayTime = 1 * 5000;
     const transitionTime = 2000; // 2s de transição
 
     const totalTime = displayTime + transitionTime;
