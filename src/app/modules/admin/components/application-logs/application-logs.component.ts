@@ -22,6 +22,7 @@ import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TableLazyLoadEvent } from "primeng/table";
 import { ActivatedRoute } from "@angular/router";
+import { SmartPlugLogsComponent } from "../smart-plug-logs/smart-plug-logs.component";
 
 interface SelectOption {
   label: string;
@@ -31,7 +32,13 @@ interface SelectOption {
 @Component({
   selector: "app-application-logs",
   standalone: true,
-  imports: [CommonModule, FormsModule, PrimengModule, IconsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PrimengModule,
+    IconsModule,
+    SmartPlugLogsComponent,
+  ],
   templateUrl: "./application-logs.component.html",
   styleUrls: ["./application-logs.component.scss"],
 })
@@ -122,12 +129,22 @@ export class ApplicationLogsComponent implements OnInit {
   }
 
   showLogsSection(): boolean {
-    return this.canViewLogs() || this.canViewScheduler() || this.canViewBoxPingLogs();
+    return (
+      this.canViewLogs() ||
+      this.canViewSmartPlugLogs() ||
+      this.canViewScheduler() ||
+      this.canViewBoxPingLogs()
+    );
   }
 
   canViewLogs(): boolean {
     const c = this.authentication.client();
     return hasMonitoringPermission(c, MonitoringPermission.MONITORING_LOGS_VIEW);
+  }
+
+  canViewSmartPlugLogs(): boolean {
+    const c = this.authentication.client();
+    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_SMART_PLUG_LOGS_VIEW);
   }
 
   canViewScheduler(): boolean {

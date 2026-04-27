@@ -4,6 +4,9 @@
       <p-tabPanel *ngIf="canViewLogs()" header="Application logs">
         <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
       </p-tabPanel>
+      <p-tabPanel *ngIf="canViewSmartPlugLogs()" header="Smart plug logs">
+        <app-smart-plug-logs />
+      </p-tabPanel>
       <p-tabPanel *ngIf="canViewScheduler()" header="Scheduled jobs">
         <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
       </p-tabPanel>
