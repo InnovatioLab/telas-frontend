@@ -21,7 +21,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
   imports: [CommonModule, PrimengModule],
   templateUrl: "./ad-item.component.html",
   styleUrls: ["./ad-item.component.scss"],
-  encapsulation: ViewEncapsulation.ShadowDom,
+  encapsulation: ViewEncapsulation.Emulated,
 })
 export class AdItemComponent implements AfterViewInit, OnDestroy {
   @Input() ad!: AdResponseDto;

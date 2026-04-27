@@ -474,6 +474,28 @@
   </ng-template>
 </p-dialog>
 
+<!-- Dialog para Preview do Ad (imagem) -->
+<p-dialog
+  header="{{ adPreviewTitle || 'Preview' }}"
+  [(visible)]="showAdPreviewDialog"
+  [modal]="true"
+  [style]="{ width: '70vw', maxWidth: '900px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closeAdPreviewDialog()"
+>
+  <div class="w-full flex justify-content-center">
+    @if (adPreviewLink) {
+      <img
+        [src]="getSafeImageUrl(adPreviewLink)!"
+        [alt]="adPreviewTitle || 'Ad preview'"
+        style="max-width: 100%; max-height: 70vh; object-fit: contain;"
+        (error)="onImageError($event)"
+      />
+    }
+  </div>
+</p-dialog>
+
 <!-- Hidden file input for replacing attachments -->
 <input
   type="file"

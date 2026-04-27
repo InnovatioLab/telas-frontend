@@ -57,6 +57,9 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   showValidateAdDialog = false;
   showUploadAdDialog = false;
   selectedAdForValidation: AdResponseDto | null = null;
+  showAdPreviewDialog = false;
+  adPreviewTitle: string | null = null;
+  adPreviewLink: string | null = null;
 
   readonly maxAttachments = 5;
   readonly maxFileSize = 10 * 1024 * 1024;
@@ -427,12 +430,20 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   }
 
   viewAttachment(link: string, attachmentName?: string): void {
-    if (isPdfFile(link)) {
-      const title = attachmentName || 'Visualizar PDF';
+    if (isPdfFile(link, attachmentName)) {
+      const title = attachmentName || "Visualizar PDF";
       this.pdfViewerService.openPdf(link, title);
-    } else {
-      window.open(link, "_blank");
+      return;
     }
+    this.adPreviewTitle = attachmentName || "Preview";
+    this.adPreviewLink = link;
+    this.showAdPreviewDialog = true;
+  }
+
+  closeAdPreviewDialog(): void {
+    this.showAdPreviewDialog = false;
+    this.adPreviewTitle = null;
+    this.adPreviewLink = null;
   }
 
   downloadAttachment(link: string): void {
