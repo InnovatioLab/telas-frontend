@@ -21,6 +21,7 @@ import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TableLazyLoadEvent } from "primeng/table";
+import { ActivatedRoute } from "@angular/router";
 
 interface SelectOption {
   label: string;
@@ -43,6 +44,7 @@ export class ApplicationLogsComponent implements OnInit {
   private readonly monitoringBoxConnectivityService = inject(MonitoringBoxConnectivityService);
   private readonly toastService = inject(ToastService);
   private readonly authentication = inject(Authentication);
+  private readonly route = inject(ActivatedRoute);
 
   logs: ApplicationLogEntry[] = [];
   loading = false;
@@ -78,6 +80,7 @@ export class ApplicationLogsComponent implements OnInit {
     { label: "WORKER", value: "WORKER" },
     { label: "EMAIL", value: "EMAIL" },
     { label: "MONITORING", value: "MONITORING" },
+    { label: "SMART_PLUG", value: "SMART_PLUG" },
   ];
 
   readonly levelOptions: SelectOption[] = [
@@ -90,6 +93,24 @@ export class ApplicationLogsComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe((qp) => {
+      const src = (qp.get("source") ?? "").trim();
+      if (src) {
+        this.filterSource = src;
+      }
+      const level = (qp.get("level") ?? "").trim();
+      if (level) {
+        this.filterLevel = level;
+      }
+      const q = (qp.get("q") ?? "").trim();
+      if (q) {
+        this.filterQ = q;
+      }
+      if (this.canViewLogs()) {
+        this.first = 0;
+        this.loadPage();
+      }
+    });
     if (this.hasSchedulerView()) {
       this.loadSchedulerJobs();
     }
@@ -107,7 +128,10 @@ export class ApplicationLogsComponent implements OnInit {
 
   canViewLogs(): boolean {
     const c = this.authentication.client();
-    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_LOGS_VIEW);
+    return (
+      hasMonitoringPermission(c, MonitoringPermission.MONITORING_LOGS_VIEW) ||
+      hasMonitoringPermission(c, MonitoringPermission.MONITORING_SMART_PLUG_LOGS_VIEW)
+    );
   }
 
   canViewScheduler(): boolean {

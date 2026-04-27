@@ -21,6 +21,7 @@ import { AdminAdOperationsComponent } from "./components/admin-ad-operations/adm
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { ManagementSmartPlugAccountsComponent } from "./components/management-smart-plug-accounts/management-smart-plug-accounts.component";
 import { ManagementSmartPlugsComponent } from "./components/management-smart-plugs/management-smart-plugs.component";
+import { SmartPlugsHubComponent } from "./components/smart-plugs-hub/smart-plugs-hub.component";
 
 export const ROUTES: Route[] = [
   {
@@ -84,6 +85,7 @@ export const ROUTES: Route[] = [
             MonitoringPermission.MONITORING_SCHEDULER_VIEW,
             MonitoringPermission.MONITORING_CONNECTIVITY_PROBE_SETTINGS,
             MonitoringPermission.MONITORING_BOX_PING_VIEW,
+            MonitoringPermission.MONITORING_SMART_PLUG_LOGS_VIEW,
           ],
         },
       },
@@ -96,7 +98,7 @@ export const ROUTES: Route[] = [
       },
       {
         path: "smart-plugs",
-        component: ManagementSmartPlugsComponent,
+        component: SmartPlugsHubComponent,
         title: "Smart plugs",
         canActivate: [MonitoringPermissionGuard],
         data: { permission: MonitoringPermission.MONITORING_SMART_PLUG_VIEW },
@@ -109,7 +111,7 @@ export const ROUTES: Route[] = [
         data: {
           permissionsAny: [
             MonitoringPermission.MONITORING_SMART_PLUG_VIEW,
-            MonitoringPermission.MONITORING_SMART_PLUG_ADMIN,
+            MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE,
           ],
         },
       },

@@ -121,7 +121,16 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return (
           isDev ||
           perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_VIEW) ||
-          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_ADMIN)
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_INVENTORY_CREATE) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_INVENTORY_EDIT) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_INVENTORY_DELETE) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_ASSIGN_MONITOR) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_ASSIGN_BOX) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_DISCOVERY_RUN) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_TEST_READ) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_HISTORY_VIEW) ||
+          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_LOGS_VIEW)
         );
       }
       if (item.id === "access") {

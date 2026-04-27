@@ -26,15 +26,15 @@
         </div>
 
         <div class="card-toolbar-actions">
-          <button
+          <a
             *ngIf="isDeveloper"
             pButton
-            type="button"
             class="btn-register-smart-plug"
-            label="Register smart plug"
+            [routerLink]="['/admin/smart-plugs']"
+            [queryParams]="{ tab: 'inventory' }"
+            label="Smart plugs hub"
             icon="pi pi-bolt"
-            (click)="openRegisterSmartPlugModal()"
-          ></button>
+          ></a>
           <button
             pButton
             class="btn-create-monitor"
@@ -157,27 +157,7 @@
     </ng-template>
   </p-table>
 
-  <p-dialog
-    [(visible)]="registerSmartPlugModalVisible"
-    [modal]="true"
-    [style]="{ width: '50vw', maxWidth: '640px' }"
-    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
-    [draggable]="false"
-    [resizable]="false"
-    [closeOnEscape]="true"
-    [dismissableMask]="true"
-    [showHeader]="false"
-    [contentStyle]="{
-      padding: '0',
-      'border-radius': '8px',
-      overflow: 'hidden',
-    }"
-  >
-    <app-register-smart-plug-modal
-      (close)="onRegisterSmartPlugModalClose()"
-      (registered)="onSmartPlugRegisteredToInventory()"
-    ></app-register-smart-plug-modal>
-  </p-dialog>
+  <!-- Register smart plug foi movido para o hub /admin/smart-plugs -->
 
   <!-- Modal de criação de monitor -->
   <p-dialog

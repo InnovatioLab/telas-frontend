@@ -46,7 +46,10 @@ export class ManagementSmartPlugsComponent implements OnInit {
     if (isPrivilegedPanelRole(c?.role)) {
       return true;
     }
-    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_SMART_PLUG_ADMIN);
+    return hasMonitoringPermission(
+      c,
+      MonitoringPermission.MONITORING_SMART_PLUG_DISCOVERY_RUN
+    );
   }
 
   ngOnInit(): void {

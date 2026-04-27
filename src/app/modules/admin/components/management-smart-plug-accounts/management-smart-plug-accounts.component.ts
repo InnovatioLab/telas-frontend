@@ -62,7 +62,10 @@ export class ManagementSmartPlugAccountsComponent implements OnInit {
 
   get canAdmin(): boolean {
     const c = this.authentication.client();
-    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_SMART_PLUG_ADMIN);
+    return hasMonitoringPermission(
+      c,
+      MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE
+    );
   }
 
   onBoxChange(): void {

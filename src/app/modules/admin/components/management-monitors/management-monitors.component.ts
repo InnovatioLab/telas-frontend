@@ -39,7 +39,6 @@ import { Observable, of } from "rxjs";
 import { switchMap, take } from "rxjs/operators";
 import { CreateMonitorModalComponent } from "../create-monitor-modal/create-monitor-modal.component";
 import { EditMonitorModalComponent } from "../edit-monitor-modal/edit-monitor-modal.component";
-import { RegisterSmartPlugModalComponent } from "../register-smart-plug-modal/register-smart-plug-modal.component";
 
 interface Ad {
   id: string;
@@ -58,7 +57,6 @@ interface Ad {
     IconsModule,
     CreateMonitorModalComponent,
     EditMonitorModalComponent,
-    RegisterSmartPlugModalComponent,
     IconTvDisplayComponent,
     RouterModule,
     GalleriaModule,
@@ -83,7 +81,6 @@ export class ManagementMonitorsComponent implements OnInit {
   advertisements: Advertisement[] = [];
   createMonitorModalVisible = false;
   editMonitorModalVisible = false;
-  registerSmartPlugModalVisible = false;
   deleteConfirmModalVisible = false;
   searchTerm = "";
   totalRecords = 0;
@@ -129,25 +126,6 @@ export class ManagementMonitorsComponent implements OnInit {
 
   get isDeveloper(): boolean {
     return this.authenticatedClient?.role === Role.DEVELOPER;
-  }
-
-  openRegisterSmartPlugModal(): void {
-    this.registerSmartPlugModalVisible = true;
-  }
-
-  onRegisterSmartPlugModalClose(): void {
-    this.registerSmartPlugModalVisible = false;
-  }
-
-  onSmartPlugRegisteredToInventory(): void {
-    this.messageService.add({
-      severity: "success",
-      summary: "Success",
-      detail: "Smart plug saved to inventory.",
-    });
-    this.registerSmartPlugModalVisible = false;
-    this.createMonitorModal?.reloadPlugOptions();
-    this.editMonitorModal?.reloadPlugOptions();
   }
 
   loadAuthenticatedClient(): void {
