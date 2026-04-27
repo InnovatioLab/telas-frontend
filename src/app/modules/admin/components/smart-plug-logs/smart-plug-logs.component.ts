@@ -9,6 +9,7 @@ import { Authentication } from "@app/core/service/auth/autenthication";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
+import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TableLazyLoadEvent } from "primeng/table";
 
@@ -20,7 +21,7 @@ interface SelectOption {
 @Component({
   selector: "app-smart-plug-logs",
   standalone: true,
-  imports: [CommonModule, FormsModule, PrimengModule],
+  imports: [CommonModule, FormsModule, PrimengModule, IconsModule],
   templateUrl: "./smart-plug-logs.component.html",
   styleUrls: ["./smart-plug-logs.component.scss"],
 })
