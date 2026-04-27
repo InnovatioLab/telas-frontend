@@ -1,14 +1,24 @@
 .terms-accept-notice {
-  border: 1px solid rgba(37, 99, 235, 0.35);
-  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--surface-border);
+  background: color-mix(in srgb, var(--cor-primaria-escura) 10%, var(--surface-card));
   width: 100%;
   box-sizing: border-box;
 }
 
 .terms-accept-notice__text {
-  color: #1e3a8a;
+  color: var(--text-color);
   text-align: center;
   margin-bottom: 0.75rem;
+}
+
+.terms-accept-button.p-button {
+  background-color: var(--cor-primaria-escura) !important;
+  border-color: var(--cor-primaria-escura) !important;
+  color: var(--cor-branca) !important;
+}
+
+.terms-accept-button.p-button:hover:not(:disabled) {
+  filter: brightness(1.05);
 }
 
 ::ng-deep {
@@ -74,12 +84,18 @@ html.dark-theme,
 body.dark-theme,
 [data-theme="dark"] {
   .terms-accept-notice {
-    border-color: var(--cor-primaria-clara-dark);
-    background: rgba(4, 157, 217, 0.12);
+    border-color: var(--surface-border);
+    background: color-mix(in srgb, var(--cor-primaria-clara-dark) 14%, var(--surface-card));
   }
 
   .terms-accept-notice__text {
-    color: var(--cor-cinza-escuro-dark);
+    color: var(--text-color);
+  }
+
+  .terms-accept-button.p-button {
+    background-color: var(--cor-primaria-escura) !important;
+    border-color: var(--cor-primaria-escura) !important;
+    color: var(--cor-branca) !important;
   }
 
   ::ng-deep .terms-of-service-content a,
