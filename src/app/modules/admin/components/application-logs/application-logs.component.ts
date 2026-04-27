@@ -80,7 +80,6 @@ export class ApplicationLogsComponent implements OnInit {
     { label: "WORKER", value: "WORKER" },
     { label: "EMAIL", value: "EMAIL" },
     { label: "MONITORING", value: "MONITORING" },
-    { label: "SMART_PLUG", value: "SMART_PLUG" },
   ];
 
   readonly levelOptions: SelectOption[] = [
@@ -96,7 +95,7 @@ export class ApplicationLogsComponent implements OnInit {
     this.route.queryParamMap.subscribe((qp) => {
       const src = (qp.get("source") ?? "").trim();
       if (src) {
-        this.filterSource = src;
+        this.filterSource = src === "SMART_PLUG" ? "" : src;
       }
       const level = (qp.get("level") ?? "").trim();
       if (level) {
@@ -128,10 +127,7 @@ export class ApplicationLogsComponent implements OnInit {
 
   canViewLogs(): boolean {
     const c = this.authentication.client();
-    return (
-      hasMonitoringPermission(c, MonitoringPermission.MONITORING_LOGS_VIEW) ||
-      hasMonitoringPermission(c, MonitoringPermission.MONITORING_SMART_PLUG_LOGS_VIEW)
-    );
+    return hasMonitoringPermission(c, MonitoringPermission.MONITORING_LOGS_VIEW);
   }
 
   canViewScheduler(): boolean {

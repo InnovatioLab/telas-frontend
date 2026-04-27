@@ -13,6 +13,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { RegisterSmartPlugModalComponent } from "../register-smart-plug-modal/register-smart-plug-modal.component";
 import { ManagementSmartPlugAccountsComponent } from "../management-smart-plug-accounts/management-smart-plug-accounts.component";
 import { ManagementSmartPlugsComponent } from "../management-smart-plugs/management-smart-plugs.component";
+import { SmartPlugLogsComponent } from "../smart-plug-logs/smart-plug-logs.component";
 
 @Component({
   selector: "app-smart-plugs-hub",
@@ -24,6 +25,7 @@ import { ManagementSmartPlugsComponent } from "../management-smart-plugs/managem
     RegisterSmartPlugModalComponent,
     ManagementSmartPlugAccountsComponent,
     ManagementSmartPlugsComponent,
+    SmartPlugLogsComponent,
   ],
   templateUrl: "./smart-plugs-hub.component.html",
   styleUrls: ["./smart-plugs-hub.component.scss"],
@@ -84,7 +86,7 @@ export class SmartPlugsHubComponent implements OnInit {
 
   loadInventory(): void {
     this.inventoryLoading.set(true);
-    this.smartPlugAdmin.listUnassigned().subscribe({
+    this.smartPlugAdmin.list().subscribe({
       next: (list) => {
         this.inventory.set(list ?? []);
         this.inventoryLoading.set(false);

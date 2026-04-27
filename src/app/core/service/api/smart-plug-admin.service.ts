@@ -90,6 +90,15 @@ export class SmartPlugAdminService {
       .pipe(map((res) => (res?.data as SmartPlugOverviewDto[]) ?? []));
   }
 
+  list(): Observable<SmartPlugAdminDto[]> {
+    return this.http
+      .get<ResponseDto<SmartPlugAdminDto[]>>(
+        `${this.env.apiUrl}monitoring/smart-plugs`,
+        { headers: this.headers() }
+      )
+      .pipe(map((res) => (res?.data as SmartPlugAdminDto[]) ?? []));
+  }
+
   runDiscoveryNow(): Observable<SmartPlugDiscoverySummary> {
     return this.http
       .post<ResponseDto<SmartPlugDiscoverySummary>>(

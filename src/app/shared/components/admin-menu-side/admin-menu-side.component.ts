@@ -87,11 +87,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     },
     { id: "logs", label: "Logs", icon: "pi-file" },
     { id: "smartPlugs", label: "Smart plugs", icon: "pi-bolt" },
-    {
-      id: "smartPlugAccounts",
-      label: "Smart plug accounts",
-      icon: "pi-bolt",
-    },
     { id: "access", label: "Permissions", icon: "permissions" },
     {
       id: "changePassword",
@@ -117,7 +112,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
           perms.includes(MonitoringPermission.MONITORING_BOX_PING_VIEW)
         );
       }
-      if (item.id === "smartPlugs" || item.id === "smartPlugAccounts") {
+      if (item.id === "smartPlugs") {
         return (
           isDev ||
           perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_VIEW) ||
@@ -126,7 +121,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
           perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_INVENTORY_DELETE) ||
           perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_ASSIGN_MONITOR) ||
           perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_ASSIGN_BOX) ||
-          perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE) ||
           perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_DISCOVERY_RUN) ||
           perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_TEST_READ) ||
           perms.includes(MonitoringPermission.MONITORING_SMART_PLUG_HISTORY_VIEW) ||
@@ -262,9 +256,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "smartPlugs":
         this.navegarParaSmartPlugs();
         break;
-      case "smartPlugAccounts":
-        this.navegarParaSmartPlugAccounts();
-        break;
       case "access":
         this.navegarParaAccess();
         break;
@@ -355,13 +346,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
   }
 
-  navegarParaSmartPlugAccounts(): void {
-    this.router.navigate(["/admin/smart-plug-accounts"]);
-    if (this.isMenuOpen()) {
-      this.toggleMenu();
-    }
-  }
-
   navegarParaAccess(): void {
     this.router.navigate(["/admin/access"]);
     if (this.isMenuOpen()) {
@@ -439,8 +423,6 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
         return "Application logs, scheduled jobs, and box telemetry";
       case "smartPlugs":
         return "Smart plugs overview and history";
-      case "smartPlugAccounts":
-        return "Default Kasa/Tapo credentials per box";
       case "access":
         return "Grant monitoring access to admin users";
       case "alerts":

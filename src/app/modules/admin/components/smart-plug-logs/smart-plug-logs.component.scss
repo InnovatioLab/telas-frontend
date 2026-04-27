@@ -1,0 +1,19 @@
+.smart-plug-logs :global(.filters-grid) {
+  display: grid;
+  grid-template-columns: 160px 1fr 200px 200px 180px;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.smart-plug-logs :global(.field-search) {
+  min-width: 240px;
+}
+
+.smart-plug-logs :global(.message-preview) {
+  display: inline-block;
+  max-width: 52vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+

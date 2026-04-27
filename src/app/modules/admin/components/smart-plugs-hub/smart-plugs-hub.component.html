@@ -100,17 +100,7 @@
 
     <p-tabPanel header="Logs" *ngIf="canLogsView">
       <div class="tab-pane">
-        <p class="muted mb-3">
-          Smart plug logs will be available here. You can use the global logs page for now.
-        </p>
-        <a
-          pButton
-          class="p-button-outlined"
-          [routerLink]="['/admin/logs']"
-          [queryParams]="{ source: 'SMART_PLUG' }"
-        >
-          Open logs (filtered)
-        </a>
+        <app-smart-plug-logs />
       </div>
     </p-tabPanel>
   </p-tabView>

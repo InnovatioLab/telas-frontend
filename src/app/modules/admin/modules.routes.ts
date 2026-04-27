@@ -19,7 +19,6 @@ import { MonitoringTestingComponent } from "./components/monitoring-testing/moni
 import { DeveloperPermissionsComponent } from "./components/developer-permissions/developer-permissions.component";
 import { AdminAdOperationsComponent } from "./components/admin-ad-operations/admin-ad-operations.component";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
-import { ManagementSmartPlugAccountsComponent } from "./components/management-smart-plug-accounts/management-smart-plug-accounts.component";
 import { ManagementSmartPlugsComponent } from "./components/management-smart-plugs/management-smart-plugs.component";
 import { SmartPlugsHubComponent } from "./components/smart-plugs-hub/smart-plugs-hub.component";
 
@@ -85,7 +84,6 @@ export const ROUTES: Route[] = [
             MonitoringPermission.MONITORING_SCHEDULER_VIEW,
             MonitoringPermission.MONITORING_CONNECTIVITY_PROBE_SETTINGS,
             MonitoringPermission.MONITORING_BOX_PING_VIEW,
-            MonitoringPermission.MONITORING_SMART_PLUG_LOGS_VIEW,
           ],
         },
       },
@@ -102,18 +100,6 @@ export const ROUTES: Route[] = [
         title: "Smart plugs",
         canActivate: [MonitoringPermissionGuard],
         data: { permission: MonitoringPermission.MONITORING_SMART_PLUG_VIEW },
-      },
-      {
-        path: "smart-plug-accounts",
-        component: ManagementSmartPlugAccountsComponent,
-        title: "Smart plug accounts",
-        canActivate: [MonitoringPermissionGuard],
-        data: {
-          permissionsAny: [
-            MonitoringPermission.MONITORING_SMART_PLUG_VIEW,
-            MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE,
-          ],
-        },
       },
       {
         path: "access",
