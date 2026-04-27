@@ -8,6 +8,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
+import { ReservedBusinessNameDirective } from "@app/core/directives/reserved-business-name.directive";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
@@ -24,6 +25,7 @@ import { ErrorComponent } from "../../error/error.component";
     ReactiveFormsModule,
     ErrorComponent,
     TextOnlyDirective,
+    ReservedBusinessNameDirective,
   ],
   providers: [DialogService, DialogoUtils],
   templateUrl: "./form-dados-pessoais.component.html",

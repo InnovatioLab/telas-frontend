@@ -9,6 +9,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
+import { ReservedBusinessNameDirective } from "@app/core/directives/reserved-business-name.directive";
 import { ClientService } from "@app/core/service/api/client.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { ToastService } from "@app/core/service/state/toast.service";
@@ -46,6 +47,7 @@ import { InputTextModule } from "primeng/inputtext";
     IconCheckComponent,
     IconUploadComponent,
     TextOnlyDirective,
+    ReservedBusinessNameDirective,
   ],
   templateUrl: "./edit-client-modal.component.html",
   styleUrls: ["./edit-client-modal.component.scss"],

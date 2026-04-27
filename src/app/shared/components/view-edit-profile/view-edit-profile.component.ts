@@ -8,6 +8,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
+import { ReservedBusinessNameDirective } from "@app/core/directives/reserved-business-name.directive";
 import { ClientService } from "@app/core/service/api/client.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Client } from "@app/model/client";
@@ -27,6 +28,7 @@ import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
     PrimengModule,
     ErrorComponent,
     TextOnlyDirective,
+    ReservedBusinessNameDirective,
   ],
 })
 export class ViewEditProfileComponent implements OnInit {
