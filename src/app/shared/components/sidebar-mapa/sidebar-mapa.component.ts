@@ -8,14 +8,13 @@ import {
   OnInit,
 } from "@angular/core";
 import { SliceStringPipe } from "@app/core/pipes/slice-string.pipe";
-import { CartService } from "@app/core/service/api/cart.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
+import { MonitorCartActionsService } from "@app/core/service/domain/monitor-cart-actions.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
-import { CartResponseDto } from "@app/model/dto/response/cart-response.dto";
-import { Recurrence } from "@app/model/enums/recurrence.enum";
+import { Authentication } from "@app/core/service/auth/autenthication";
+import { isClientShoppingRole } from "@app/model/client";
 import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconClockComponent } from "@app/shared/icons/clock.icon";
 import { IconsModule } from "@app/shared/icons/icons.module";
@@ -58,12 +57,17 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly mapsService: GoogleMapsService,
-    private readonly cartService: CartService,
+    private readonly monitorCartActions: MonitorCartActionsService,
     @Inject(ENVIRONMENT) private readonly env: Environment,
     private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly clientService: ClientService
+    private readonly clientService: ClientService,
+    private readonly authentication: Authentication
   ) {}
+
+  get showShoppingActions(): boolean {
+    return isClientShoppingRole(this.authentication.client()?.role);
+  }
 
   ngOnInit(): void {
     this.subscriptions.add(
@@ -122,80 +126,8 @@ export class SidebarMapaComponent implements OnInit, OnDestroy {
   addToList(): void {
     if (this.pontoSelecionado) {
       const monitorToAdd = this.pontoSelecionado;
-      this.addToCart(monitorToAdd);
+      this.monitorCartActions.addMonitorToCart(monitorToAdd);
       this.closeSidebar();
-    }
-  }
-
-  private addToCart(monitor: MapPoint): void {
-    this.cartService.getLoggedUserCart().subscribe({
-      next: (activeCart) => {
-        if (activeCart) {
-          this.updateExistingCart(activeCart, monitor);
-        } else {
-          this.createNewCart(monitor);
-        }
-      },
-      error: () => {
-        this.createNewCart(monitor);
-      },
-    });
-  }
-
-  private createNewCart(monitor: MapPoint): void {
-    const cartRequest: CartRequestDto = {
-      recurrence: Recurrence.MONTHLY,
-      items: [
-        {
-          monitorId: monitor.id,
-          blockQuantity: 1,
-        },
-      ],
-    };
-
-    this.cartService.addToCart(cartRequest).subscribe({
-      next: () => {
-        this.toastService.sucesso("Screen added to cart");
-      },
-      error: (error) => {
-        this.toastService.erro("Error adding to cart");
-      },
-    });
-  }
-
-  private updateExistingCart(
-    activeCart: CartResponseDto,
-    monitor: MapPoint
-  ): void {
-    const existingItem = activeCart.items.find(
-      (item) => item.monitorId === monitor.id
-    );
-
-    if (!existingItem) {
-      const updatedItems = [
-        ...activeCart.items.map((item) => ({
-          monitorId: item.monitorId,
-          blockQuantity: item.blockQuantity,
-        })),
-        {
-          monitorId: monitor.id,
-          blockQuantity: 1,
-        },
-      ];
-
-      const cartRequest: CartRequestDto = {
-        recurrence: activeCart.recurrence,
-        items: updatedItems,
-      };
-
-      this.cartService.update(cartRequest, activeCart.id).subscribe({
-        next: () => {
-          this.toastService.sucesso("Cart updated successfully");
-        },
-        error: (error) => {
-          this.toastService.erro("Error updating cart");
-        },
-      });
     }
   }
 

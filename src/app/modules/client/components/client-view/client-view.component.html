@@ -1,40 +1,68 @@
-<app-search-section (monitorsFound)="onMonitorsFound($event.monitors, $event.zipCode)"></app-search-section>
-
-<app-sidebar-mapa></app-sidebar-mapa>
-
 <div class="client-view">
-  <div class="map-container">
-    <div *ngIf="clientViewService.isLoading()" class="map-loading">
-      <p>Loading map, please wait...</p>
-      <div class="loading-spinner"></div>
-    </div>
+  <div
+    class="client-locations-layer"
+    *ngIf="zipSearchResults.length > 0"
+    [style.left.px]="locationsPanelInsetLeft()"
+  >
+    <aside class="client-locations-rail" *ngIf="locationsPanelOpen">
+      <app-monitor-results-list
+        [items]="zipSearchResults"
+        [apiUrl]="env.apiUrl"
+        [showShoppingActions]="showShoppingActions"
+        [selectedId]="selectedMonitorId"
+        [showCloseButton]="true"
+        (selected)="onSelectSearchResult($event)"
+        (hoverMonitorIdChange)="onHoverMonitorIdChange($event)"
+        (closed)="closeLocationsPanel()"
+      ></app-monitor-results-list>
+    </aside>
 
-    <app-maps
-      #mapsComponent
-      height="100%"
-      width="100%"
-      [zoom]="clientViewService.mapZoom()"
-      [center]="clientViewService.mapCenter()"
-      (pointClick)="handlePointClick($event)"
-      (markerClicked)="handleMarkerClick($event)"
-      (mapInitialized)="onMapLeafletInitialized($event)"
-      (mapReady)="onMapReady($event)"
-      (mapError)="onMapError($event)"
+    <button
+      *ngIf="!locationsPanelOpen"
+      type="button"
+      class="client-locations-tab"
+      aria-label="Show locations panel"
+      (click)="openLocationsPanel()"
     >
-    </app-maps>
+      <i class="pi pi-map" aria-hidden="true"></i>
+      <span class="client-locations-tab__text">Locations</span>
+      <span class="client-locations-tab__count">{{ zipSearchResults.length }}</span>
+      <i class="pi pi-angle-right" aria-hidden="true"></i>
+    </button>
   </div>
 
-  <app-monitor-results-list
-    *ngIf="zipSearchResults.length > 0"
-    [items]="zipSearchResults"
-    [apiUrl]="env.apiUrl"
-    (selected)="onSelectSearchResult($event)"
-  ></app-monitor-results-list>
+  <div class="client-map-section">
+    <app-search-section
+      (monitorsFound)="onMonitorsFound($event.monitors, $event.zipCode)"
+    ></app-search-section>
+
+    <div class="map-container">
+      <div *ngIf="clientViewService.isLoading()" class="map-loading">
+        <p>Loading map, please wait...</p>
+        <div class="loading-spinner"></div>
+      </div>
+
+      <app-maps
+        #mapsComponent
+        height="100%"
+        width="100%"
+        [zoom]="clientViewService.mapZoom()"
+        [center]="clientViewService.mapCenter()"
+        (pointClick)="handlePointClick($event)"
+        (markerClicked)="handleMarkerClick($event)"
+        (mapInitialized)="onMapLeafletInitialized($event)"
+        (mapReady)="onMapReady($event)"
+        (mapError)="onMapError($event)"
+      >
+      </app-maps>
+    </div>
+  </div>
 
   <app-pop-up-add-list
     [(visible)]="showPointMenu"
     [position]="menuPosition"
     [selectedPoint]="selectedPoint"
+    [showCartButton]="showPopupCartButton"
     (detailsClicked)="showPointDetails($event)"
     (addToListClicked)="addPointToList($event)"
   >

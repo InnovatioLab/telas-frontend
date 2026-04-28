@@ -28,8 +28,18 @@ html::-webkit-scrollbar-thumb {
 }
 
 // Typography
-*:not(span.pi, span.material-symbols-outlined) {
+*:not(
+    .pi,
+    span.material-symbols-outlined,
+    i.material-symbols-outlined,
+    i.material-icons
+  ) {
   font-family: var(--font-family);
+}
+
+svg,
+svg * {
+  font-family: initial;
 }
 
 // Text utilities

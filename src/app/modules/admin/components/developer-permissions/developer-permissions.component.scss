@@ -1,3 +1,6 @@
+$perm-sticky-name-w: 11rem;
+$perm-sticky-email-w: 15rem;
+
 .developer-permissions {
   .text-muted {
     opacity: 0.85;
@@ -9,18 +12,50 @@
     table-layout: fixed;
   }
 
-  th:first-of-type,
-  td:first-of-type {
-    width: 18%;
-    min-width: 9rem;
+  th.perm-sticky-name,
+  td.perm-sticky-name {
+    width: $perm-sticky-name-w;
+    min-width: $perm-sticky-name-w;
+    max-width: $perm-sticky-name-w;
+    position: sticky;
+    left: 0;
+    z-index: 3;
     text-align: left !important;
+    box-shadow: 4px 0 12px -6px rgba(0, 0, 0, 0.45);
   }
 
-  th:nth-of-type(2),
-  td:nth-of-type(2) {
-    width: 22%;
-    min-width: 10rem;
+  th.perm-sticky-email,
+  td.perm-sticky-email {
+    width: $perm-sticky-email-w;
+    min-width: $perm-sticky-email-w;
+    max-width: $perm-sticky-email-w;
+    position: sticky;
+    left: $perm-sticky-name-w;
+    z-index: 2;
     text-align: left !important;
+    box-shadow: 4px 0 12px -6px rgba(0, 0, 0, 0.28);
+  }
+
+  th.perm-sticky-name,
+  th.perm-sticky-email {
+    z-index: 5;
+    background-color: var(--p-datatable-header-cell-background, var(--cor-primaria)) !important;
+    color: var(--p-datatable-header-cell-color, #ffffff) !important;
+  }
+
+  tbody > tr:nth-child(odd) > td.perm-sticky-name,
+  tbody > tr:nth-child(odd) > td.perm-sticky-email {
+    background-color: var(--p-datatable-row-background) !important;
+  }
+
+  tbody > tr:nth-child(even) > td.perm-sticky-name,
+  tbody > tr:nth-child(even) > td.perm-sticky-email {
+    background-color: var(--p-datatable-row-alt-background) !important;
+  }
+
+  td.perm-sticky-name,
+  td.perm-sticky-email {
+    vertical-align: middle;
   }
 
   th.perm-col,

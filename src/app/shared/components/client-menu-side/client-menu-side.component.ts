@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { Client } from "@app/model/client";
+import { Client, isPrivilegedPanelRole } from "@app/model/client";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogModule } from "primeng/dialog";
@@ -88,6 +88,10 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     let filteredItems = [...this.allMenuItems];
 
     if (this.authenticatedClient) {
+      if (isPrivilegedPanelRole(this.authenticatedClient.role)) {
+        filteredItems = filteredItems.filter((item) => item.id !== "wishList");
+      }
+
       if (
         "shouldDisplayAttachments" in this.authenticatedClient &&
         this.authenticatedClient.shouldDisplayAttachments === false

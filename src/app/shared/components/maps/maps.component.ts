@@ -21,6 +21,7 @@ import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { LeafletMapService } from "@app/core/service/api/leaflet-map.service";
 import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
+import { getMonitorAddressLines } from "@app/core/service/utils/monitor-address-label.util";
 import { SidebarService } from "@app/core/service/state/sidebar.service";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { Subscription } from "rxjs";
@@ -76,6 +77,7 @@ interface MonitorCluster {
       div ::ng-deep .leaflet-tile {
         border-radius: 0 !important;
       }
+
     `,
   ],
 })
@@ -108,8 +110,13 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private monitorIcon: L.Icon | null = null;
   private monitorIconHealthy: L.Icon | null = null;
   private monitorIconUnhealthy: L.Icon | null = null;
+  private monitorIconLarge: L.Icon | null = null;
+  private monitorIconHealthyLarge: L.Icon | null = null;
+  private monitorIconUnhealthyLarge: L.Icon | null = null;
   private redMarkerIcon: L.Icon | null = null;
   private monitorMarkers: Map<L.Marker, MapPoint> = new Map();
+  private markersByMonitorId = new Map<string, L.Marker>();
+  private hoveredMarkerId: string | null = null;
 
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -150,32 +157,87 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     });
   }
 
+  private static readonly MONITOR_ICON_SIZE = 40;
+  private static readonly MONITOR_ICON_HOVER_SIZE = 52;
+
   private initializeIcons(): void {
-    this.monitorIcon = this.createMonitorIcon();
-    this.monitorIconHealthy = this.createMonitorIconVariant("#1B5E20", "#A5D6A7");
-    this.monitorIconUnhealthy = this.createMonitorIconVariant("#B71C1C", "#EF9A9A");
+    this.monitorIcon = this.createMonitorIconVariant(
+      "#111519",
+      "#111519",
+      MapsComponent.MONITOR_ICON_SIZE
+    );
+    this.monitorIconHealthy = this.createMonitorIconVariant(
+      "#1B5E20",
+      "#A5D6A7",
+      MapsComponent.MONITOR_ICON_SIZE
+    );
+    this.monitorIconUnhealthy = this.createMonitorIconVariant(
+      "#B71C1C",
+      "#EF9A9A",
+      MapsComponent.MONITOR_ICON_SIZE
+    );
+    this.monitorIconLarge = this.createMonitorIconVariant(
+      "#111519",
+      "#111519",
+      MapsComponent.MONITOR_ICON_HOVER_SIZE
+    );
+    this.monitorIconHealthyLarge = this.createMonitorIconVariant(
+      "#1B5E20",
+      "#A5D6A7",
+      MapsComponent.MONITOR_ICON_HOVER_SIZE
+    );
+    this.monitorIconUnhealthyLarge = this.createMonitorIconVariant(
+      "#B71C1C",
+      "#EF9A9A",
+      MapsComponent.MONITOR_ICON_HOVER_SIZE
+    );
     this.redMarkerIcon = this.createRedMarkerIcon();
   }
 
-  private createMonitorIcon(): L.Icon {
-    return this.createMonitorIconVariant("#111519", "#111519");
-  }
-
-  private createMonitorIconVariant(frameColor: string, screenColor: string): L.Icon {
+  private createMonitorIconVariant(
+    frameColor: string,
+    screenColor: string,
+    sizePx: number
+  ): L.Icon {
     const svg = `
-      <svg width="40" height="40" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg width="${sizePx}" height="${sizePx}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17Z" fill="${frameColor}"/>
         <path d="M6 7H18V15H6V7Z" fill="${screenColor}"/>
       </svg>
     `;
     const svgBlob = new Blob([svg], { type: "image/svg+xml" });
     const svgUrl = URL.createObjectURL(svgBlob);
+    const half = sizePx / 2;
     return L.icon({
       iconUrl: svgUrl,
-      iconSize: [40, 40],
-      iconAnchor: [20, 40],
-      popupAnchor: [0, -40],
+      iconSize: [sizePx, sizePx],
+      iconAnchor: [half, sizePx],
+      popupAnchor: [0, -sizePx],
     });
+  }
+
+  private getMonitorBaseIconForPoint(point: MapPoint): L.Icon {
+    const isMonitor = point.category === "MONITOR" || point.type === "MONITOR";
+    if (!isMonitor) {
+      return this.redMarkerIcon!;
+    }
+    if (point.healthOk === true) {
+      return this.monitorIconHealthy!;
+    }
+    if (point.healthOk === false) {
+      return this.monitorIconUnhealthy!;
+    }
+    return this.monitorIcon!;
+  }
+
+  private getMonitorHoverIconForPoint(point: MapPoint): L.Icon {
+    if (point.healthOk === true) {
+      return this.monitorIconHealthyLarge!;
+    }
+    if (point.healthOk === false) {
+      return this.monitorIconUnhealthyLarge!;
+    }
+    return this.monitorIconLarge!;
   }
 
   private createRedMarkerIcon(): L.Icon {
@@ -409,19 +471,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     if (!this._map) return;
 
     const isMonitor = point.category === "MONITOR" || point.type === "MONITOR";
-    let icon: L.Icon;
-
-    if (isMonitor) {
-      if (point.healthOk === true) {
-        icon = this.monitorIconHealthy!;
-      } else if (point.healthOk === false) {
-        icon = this.monitorIconUnhealthy!;
-      } else {
-        icon = this.monitorIcon!;
-      }
-    } else {
-      icon = this.redMarkerIcon!;
-    }
+    const icon = this.getMonitorBaseIconForPoint(point);
 
     const marker = L.marker([lat, lng], {
       icon: icon,
@@ -454,9 +504,16 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     if (isMonitor) {
       this.monitorMarkers.set(marker, point);
+      const monitorId = point.id;
       marker.on("remove", () => {
         this.monitorMarkers.delete(marker);
+        if (monitorId) {
+          this.markersByMonitorId.delete(monitorId);
+        }
       });
+      if (monitorId) {
+        this.markersByMonitorId.set(monitorId, marker);
+      }
     }
   }
 
@@ -495,17 +552,32 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     container.style.setProperty('max-width', '280px', 'important');
     container.style.setProperty('box-sizing', 'border-box', 'important');
 
+    const { line1, line2 } = getMonitorAddressLines(point);
+
     const title = L.DomUtil.create("div", "tooltip-title", container);
-    title.textContent = point.addressLocationName || point.title || "Monitor";
+    title.textContent = line1;
     (title as HTMLElement).style.setProperty('color', '#111519', 'important');
     (title as HTMLElement).style.setProperty('font-weight', '600', 'important');
     (title as HTMLElement).style.setProperty('font-size', '14px', 'important');
     (title as HTMLElement).style.setProperty('margin', '0', 'important');
     (title as HTMLElement).style.setProperty('padding', '0', 'important');
     (title as HTMLElement).style.setProperty('line-height', '1.5', 'important');
-    (title as HTMLElement).style.setProperty('white-space', 'nowrap', 'important');
-    (title as HTMLElement).style.setProperty('overflow', 'hidden', 'important');
-    (title as HTMLElement).style.setProperty('text-overflow', 'ellipsis', 'important');
+    if (line2) {
+      (title as HTMLElement).style.setProperty('white-space', 'normal', 'important');
+      (title as HTMLElement).style.setProperty('overflow', 'visible', 'important');
+      const sub = L.DomUtil.create("div", "tooltip-subtitle", container);
+      sub.textContent = line2;
+      (sub as HTMLElement).style.setProperty('color', 'rgba(17, 21, 25, 0.72)', 'important');
+      (sub as HTMLElement).style.setProperty('font-weight', '400', 'important');
+      (sub as HTMLElement).style.setProperty('font-size', '12px', 'important');
+      (sub as HTMLElement).style.setProperty('margin-top', '4px', 'important');
+      (sub as HTMLElement).style.setProperty('line-height', '1.45', 'important');
+      (sub as HTMLElement).style.setProperty('white-space', 'normal', 'important');
+    } else {
+      (title as HTMLElement).style.setProperty('white-space', 'nowrap', 'important');
+      (title as HTMLElement).style.setProperty('overflow', 'hidden', 'important');
+      (title as HTMLElement).style.setProperty('text-overflow', 'ellipsis', 'important');
+    }
 
     return container;
   }
@@ -542,10 +614,37 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     container.setAttribute("data-theme", "light");
     this.applyInlineStyles(container);
 
+    const { line1, line2 } = getMonitorAddressLines(point);
+
     const titleElement = container.querySelector(".tooltip-title");
     if (titleElement) {
-      titleElement.textContent = point.addressLocationName || point.title || "Monitor";
+      titleElement.textContent = line1;
       (titleElement as HTMLElement).style.setProperty('color', '#111519', 'important');
+      if (line2) {
+        (titleElement as HTMLElement).style.setProperty('white-space', 'normal', 'important');
+        (titleElement as HTMLElement).style.setProperty('overflow', 'visible', 'important');
+      } else {
+        (titleElement as HTMLElement).style.setProperty('white-space', 'nowrap', 'important');
+        (titleElement as HTMLElement).style.setProperty('overflow', 'hidden', 'important');
+        (titleElement as HTMLElement).style.setProperty('text-overflow', 'ellipsis', 'important');
+      }
+    }
+
+    const existingSub = container.querySelector(".tooltip-subtitle");
+    if (line2) {
+      let sub = existingSub;
+      if (!sub) {
+        sub = L.DomUtil.create("div", "tooltip-subtitle", container);
+      }
+      sub.textContent = line2;
+      (sub as HTMLElement).style.setProperty('color', 'rgba(17, 21, 25, 0.72)', 'important');
+      (sub as HTMLElement).style.setProperty('font-weight', '400', 'important');
+      (sub as HTMLElement).style.setProperty('font-size', '12px', 'important');
+      (sub as HTMLElement).style.setProperty('margin-top', '4px', 'important');
+      (sub as HTMLElement).style.setProperty('line-height', '1.45', 'important');
+      (sub as HTMLElement).style.setProperty('white-space', 'normal', 'important');
+    } else if (existingSub) {
+      existingSub.remove();
     }
   }
 
@@ -786,6 +885,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   private clearMarkers(): void {
+    this.resetHoveredMarkerVisual();
     this.markers.forEach((marker) => {
       if (this._map) {
         this._map.removeLayer(marker);
@@ -799,6 +899,43 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     });
     this.clusterMarkers = [];
     this.monitorMarkers.clear();
+    this.markersByMonitorId.clear();
+  }
+
+  private resetHoveredMarkerVisual(): void {
+    if (!this.hoveredMarkerId) {
+      return;
+    }
+    const id = this.hoveredMarkerId;
+    this.hoveredMarkerId = null;
+    const prevMarker = this.markersByMonitorId.get(id);
+    const prevPoint = this.points.find((p) => p.id === id);
+    if (prevMarker && prevPoint) {
+      prevMarker.setIcon(this.getMonitorBaseIconForPoint(prevPoint));
+      prevMarker.setZIndexOffset(0);
+    }
+  }
+
+  public setHoveredMonitor(monitorId: string | null): void {
+    if (!this._map) {
+      return;
+    }
+
+    this.resetHoveredMarkerVisual();
+
+    if (!monitorId) {
+      return;
+    }
+
+    const marker = this.markersByMonitorId.get(monitorId);
+    const point = this.points.find((p) => p.id === monitorId);
+    if (!marker || !point) {
+      return;
+    }
+
+    marker.setIcon(this.getMonitorHoverIconForPoint(point));
+    marker.setZIndexOffset(600);
+    this.hoveredMarkerId = monitorId;
   }
 
   private updateMapDimensions(): void {

@@ -28,6 +28,32 @@ app-content-wrapper {
   width: 100%;
 }
 
+:host ::ng-deep app-content-wrapper.content-wrapper--client-map-home .content-container {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 5rem;
+  padding-right: 5rem;
+  padding-top: 1rem;
+  padding-bottom: 3rem;
+}
+
+@media screen and (max-width: 768px) {
+  :host ::ng-deep app-content-wrapper.content-wrapper--client-map-home .content-container {
+    padding-right: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  :host ::ng-deep app-content-wrapper.content-wrapper--client-map-home .content-container {
+    padding-right: 0.75rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
 app-rodape {
   width: 100%;
   margin-top: auto;

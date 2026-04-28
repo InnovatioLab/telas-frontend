@@ -19,6 +19,7 @@ export class PopUpStepAddListComponent {
   @Input() visible = false;
   @Input() position: { x: number, y: number } = { x: 0, y: 0 };
   @Input() selectedPoint: MapPoint | null = null;
+  @Input() showCartButton = true;
   
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() detailsClicked = new EventEmitter<MapPoint>();

@@ -22,8 +22,8 @@
 >
   <ng-template pTemplate="header">
     <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Email</th>
+      <th scope="col" class="perm-sticky-name">Name</th>
+      <th scope="col" class="perm-sticky-email">Email</th>
       <th
         scope="col"
         *ngFor="let code of catalog"
@@ -37,8 +37,8 @@
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
-      <td>{{ row.businessName }}</td>
-      <td>{{ row.email }}</td>
+      <td class="perm-sticky-name">{{ row.businessName }}</td>
+      <td class="perm-sticky-email">{{ row.email }}</td>
       <td *ngFor="let code of catalog" class="perm-col">
         <p-checkbox
           [binary]="true"
@@ -79,8 +79,8 @@
 >
   <ng-template pTemplate="header">
     <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Email</th>
+      <th scope="col" class="perm-sticky-name">Name</th>
+      <th scope="col" class="perm-sticky-email">Email</th>
       <th
         scope="col"
         *ngFor="let opt of emailAlertCategories"
@@ -94,8 +94,8 @@
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
-      <td>{{ row.businessName }}</td>
-      <td>{{ row.email }}</td>
+      <td class="perm-sticky-name">{{ row.businessName }}</td>
+      <td class="perm-sticky-email">{{ row.email }}</td>
       <td *ngFor="let opt of emailAlertCategories" class="perm-col">
         <p-checkbox
           [binary]="true"

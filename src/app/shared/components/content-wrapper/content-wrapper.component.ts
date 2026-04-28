@@ -30,6 +30,9 @@ import { LayoutService } from "@app/core/service/state/layout.service";
         background-color: var(--cor-cinza-fundo);
         box-sizing: border-box;
         min-height: calc(100vh - 70px);
+        display: flex;
+        flex-direction: column;
+        flex: 1;
       }
 
       .content-container {
@@ -39,6 +42,10 @@ import { LayoutService } from "@app/core/service/state/layout.service";
         width: 100%;
         box-sizing: border-box;
         min-height: inherit;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
       }
 
       .content-wrapper.menu-active.mobile {

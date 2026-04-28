@@ -7,10 +7,15 @@
   </div>
   
   <div class="point-menu-options">
-    <button pButton type="button" icon="pi pi-list" label="Add to List" 
+    <button
+      *ngIf="showCartButton"
+      pButton
+      type="button"
+      icon="pi pi-list"
+      label="Add to List"
       class="p-button-text p-button-secondary menu-option"
-      (click)="addToList()">
-    </button>
+      (click)="addToList()"
+    ></button>
     
     <button pButton type="button" icon="pi pi-info-circle" label="Details" 
       class="p-button-text p-button-primary menu-option"

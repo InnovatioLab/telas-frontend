@@ -109,6 +109,15 @@ export function isPrivilegedPanelRole(
   return r === Role.ADMIN || r === Role.DEVELOPER;
 }
 
+export function isClientShoppingRole(
+  role: Role | string | undefined | null
+): boolean {
+  if (role == null) {
+    return false;
+  }
+  return String(role).trim().toUpperCase() === Role.CLIENT;
+}
+
 export enum DefaultStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",

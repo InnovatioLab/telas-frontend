@@ -1,32 +1,98 @@
-<div class="results" *ngIf="items.length > 0">
+<div class="results-shell">
   <div class="results-header">
-    <div class="results-title">Locations</div>
-    <div class="results-count">{{ items.length }}</div>
-  </div>
-
-  <div class="results-list">
+    <div class="results-header-main">
+      <div class="results-title">Locations</div>
+      <span class="results-count" *ngIf="items.length > 0">{{ items.length }}</span>
+    </div>
     <button
+      *ngIf="showCloseButton"
       type="button"
-      class="result-card"
-      *ngFor="let item of items; trackBy: trackById"
-      (click)="onSelect(item)"
+      class="results-close"
+      aria-label="Close locations panel"
+      (click)="onCloseClick($event)"
     >
-      <div class="thumb" *ngIf="resolveItemPhotoUrl(item) as photoUrl; else noThumb">
-        <img [src]="photoUrl" alt="" (error)="onImgError(item)" />
-      </div>
-      <ng-template #noThumb>
-        <div class="thumb thumb-empty"></div>
-      </ng-template>
-
-      <div class="info">
-        <div class="name">
-          {{ item.addressLocationName || item.title || "Location" }}
-        </div>
-        <div class="address">
-          {{ item.locationDescription || item.addressLocationDescription || "" }}
-        </div>
-      </div>
+      <app-icon-close [size]="18"></app-icon-close>
     </button>
   </div>
-</div>
 
+  <div class="results-placeholder" *ngIf="items.length === 0">
+    <p class="placeholder-text">
+      Enter a ZIP code above to find digital screens nearby.
+    </p>
+  </div>
+
+  <div class="results-list" *ngIf="items.length > 0">
+    <div
+      class="result-card"
+      *ngFor="let item of items; trackBy: trackById"
+      [attr.data-monitor-id]="item.id"
+      [class.result-card--selected]="selectedId === item.id"
+      (mouseenter)="onHoverEnter(item)"
+      (mouseleave)="onHoverLeave()"
+    >
+      <button type="button" class="result-card-main" (click)="onSelect(item)">
+        <div class="thumb" *ngIf="resolveThumbSrc(item) as thumbSrc; else noThumb">
+          <img
+            [src]="thumbSrc"
+            alt=""
+            loading="lazy"
+            decoding="async"
+            (error)="onThumbError(item)"
+          />
+        </div>
+        <ng-template #noThumb>
+          <div class="thumb thumb-empty"></div>
+        </ng-template>
+
+        <div class="info">
+          <div class="name">{{ displayTitle(item) }}</div>
+          <div class="availability">
+            <span class="avail avail--yes" *ngIf="item.hasAvailableSlots === true"
+              >Available</span
+            >
+            <span class="avail avail--no" *ngIf="item.hasAvailableSlots === false"
+              >Unavailable</span
+            >
+            <span
+              class="avail avail--next"
+              *ngIf="
+                item.hasAvailableSlots === false && item.estimatedSlotReleaseDate
+              "
+            >
+              Next:
+              {{ item.estimatedSlotReleaseDate | date : "MM/dd/yyyy" }}
+            </span>
+          </div>
+          <div class="address">{{ displayAddress(item) }}</div>
+        </div>
+      </button>
+
+      <div
+        class="result-actions"
+        *ngIf="showShoppingActions"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-heart"
+          class="p-button-rounded p-button-text p-button-sm result-action-btn"
+          pTooltip="Notify when available"
+          tooltipPosition="left"
+          (click)="onNotify(item, $event)"
+        ></button>
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-shopping-cart"
+          class="p-button-rounded p-button-text p-button-sm result-action-btn"
+          pTooltip="Add to cart"
+          tooltipPosition="left"
+          (click)="onAddToCart(item, $event)"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

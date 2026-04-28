@@ -33,7 +33,7 @@
   text-align: center;
 
   h2 {
-    color: var(--cor-primaria);
+    color: var(--cor-cinza-escuro);
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0;
@@ -61,7 +61,7 @@
     border: 1px solid var(--cor-primaria) !important;
     border-radius: 8px;
     font-size: 16px;
-    color: var(--cor-primaria) !important;
+    color: var(--cor-cinza-escuro) !important;
     background-color: var(--cor-branca);
     transition: all var(--animation-duration-default) var(--animation-ease-in-out);
 
@@ -95,7 +95,7 @@
     height: 36px;
 
     &:hover:not(:disabled) {
-      color: var(--cor-primaria) !important;
+      color: var(--cor-primaria-clara) !important;
     }
 
     &:disabled {

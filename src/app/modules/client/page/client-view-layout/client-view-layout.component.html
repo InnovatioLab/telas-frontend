@@ -1,4 +1,6 @@
 <app-header></app-header>
 <app-menu></app-menu>
-<app-content-wrapper></app-content-wrapper>
+<app-content-wrapper
+  [class.content-wrapper--client-map-home]="isClientMapHome()"
+></app-content-wrapper>
 <app-rodape />

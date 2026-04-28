@@ -422,8 +422,18 @@ html::-webkit-scrollbar-thumb {
   border-radius: var(--borda-raio-pequeno);
 }
 
-*:not(span.pi, span.material-symbols-outlined) {
+*:not(
+    .pi,
+    span.material-symbols-outlined,
+    i.material-symbols-outlined,
+    i.material-icons
+  ) {
   font-family: var(--fonte-familia);
+}
+
+svg,
+svg * {
+  font-family: initial;
 }
 
 .text-danger {
