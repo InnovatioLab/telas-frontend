@@ -7,15 +7,15 @@
 
 .ads-usage {
   font-weight: 700;
-  color: var(--cor-sucesso);
+  color: var(--cor-sucesso) !important;
 }
 
 .ads-usage--warn {
-  color: var(--cor-alerta);
+  color: var(--cor-alerta) !important;
 }
 
 .ads-usage--danger {
-  color: var(--cor-erro);
+  color: var(--cor-erro) !important;
 }
 
 .addresses-more {
