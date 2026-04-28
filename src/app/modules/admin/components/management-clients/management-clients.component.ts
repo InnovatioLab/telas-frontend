@@ -360,6 +360,17 @@ export class ManagementClientsComponent implements OnInit {
     return "ads-usage";
   }
 
+  getPartnerAdsUsageColor(client: Client): string {
+    const count = Math.min(this.getPartnerAdsCount(client), this.PARTNER_MAX_ADS);
+    if (count >= this.PARTNER_MAX_ADS) {
+      return "var(--cor-erro)";
+    }
+    if (count === this.PARTNER_MAX_ADS - 1) {
+      return "var(--cor-alerta)";
+    }
+    return "var(--cor-sucesso)";
+  }
+
   createClient(): void {
     this.toastService.sucesso(
       "Create client functionality will be implemented"

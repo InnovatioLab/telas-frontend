@@ -115,7 +115,12 @@
       </td>
       <td class="text-center">
         <span *ngIf="client.role === 'PARTNER'">
-          <span [class]="getPartnerAdsUsageClass(client)">{{ getPartnerAdsUsageLabel(client) }}</span>
+          <span
+            [class]="getPartnerAdsUsageClass(client)"
+            [style.color]="getPartnerAdsUsageColor(client)"
+          >
+            {{ getPartnerAdsUsageLabel(client) }}
+          </span>
         </span>
         <span *ngIf="client.role !== 'PARTNER'">-</span>
       </td>
