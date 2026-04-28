@@ -460,20 +460,22 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <div class="w-full flex justify-content-between align-items-center">
+    <div class="w-full validate-ad-footer">
       <button
         pButton
         label="Cancel"
         id="btnSecundario"
         (click)="closeValidateAdDialog()"
+        class="validate-ad-footer__btn"
       ></button>
       <button
         pButton
         pRipple
-        label="Validate Ad"
+        label="Send"
         (click)="submitAdValidation()"
         [disabled]="validateAdForm.invalid || myTelasService.isLoading()"
         [loading]="myTelasService.isLoading()"
+        class="validate-ad-footer__btn validate-ad-footer__btn--primary"
       ></button>
     </div>
   </ng-template>

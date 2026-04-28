@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable, computed, inject, signal } from "@angular/core";
 import { Notification } from "@app/modules/notificacao/models/notification";
 import { Observable, of } from "rxjs";
-import { catchError, map, tap } from "rxjs/operators";
+import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 
 interface FetchNotificationsRequest {
@@ -122,5 +122,24 @@ export class NotificationsService {
 
   public resetCount(): void {
     this._currentlyVisibleCount.set(10);
+  }
+
+  public refreshAndMarkReferencesAsRead(references: string[]): Observable<void> {
+    const refs = (references || []).map((r) => String(r).trim()).filter((r) => r.length > 0);
+    if (refs.length === 0) {
+      return of(void 0);
+    }
+    return this.fetchAllNotifications().pipe(
+      switchMap(() => {
+        const ids = (this._allNotifications() || [])
+          .filter((n) => n && !n.visualized && refs.includes(String(n.reference)))
+          .map((n) => n.id)
+          .filter((id) => typeof id === "string" && id.length > 0);
+        if (ids.length === 0) {
+          return of(void 0);
+        }
+        return this.fetchAllNotifications({ ids });
+      })
+    );
   }
 }

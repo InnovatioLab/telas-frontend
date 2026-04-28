@@ -113,6 +113,31 @@ small {
   }
 }
 
+.validate-ad-footer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+::ng-deep .validate-ad-footer__btn.p-button {
+  min-height: 44px;
+  padding: 0.85rem 1.25rem;
+  font-size: 1rem;
+  flex: 1 1 0;
+}
+
+@media (max-width: 480px) {
+  .validate-ad-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  ::ng-deep .validate-ad-footer__btn.p-button {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+}
+
 .dialog-content {
   .attachment-selection {
     margin-bottom: 24px;

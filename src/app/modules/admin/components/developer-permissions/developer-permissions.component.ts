@@ -20,6 +20,7 @@ const PERMISSION_LABELS: Record<string, string> = {
   ADMIN_CLIENTS_VIEW_DELETED: "View deleted clients in list",
   ADMIN_CLIENTS_SOFT_DELETE: "Mark clients as deleted (logical)",
   ADMIN_CLIENTS_PERMANENT_DELETE: "Permanently delete clients",
+  ADMIN_ADS_MANAGE: "Manage ads and ad requests",
   MONITORING_CONNECTIVITY_PROBE_SETTINGS: "Connectivity probe interval",
   MONITORING_BOX_PING_VIEW: "Box ping logs",
   MONITORING_LOGS_VIEW: "Application logs",

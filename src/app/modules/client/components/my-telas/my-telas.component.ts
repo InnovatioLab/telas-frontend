@@ -24,6 +24,7 @@ import { Subscription } from "rxjs";
 import { CartService } from "@app/core/service/api/cart.service";
 import { MyTelasService } from "../../services/my-telas.service";
 import { AdItemComponent } from "../ad-item/ad-item.component";
+import { NotificationsService } from "@app/core/service/api/notifications.service";
 
 @Component({
   selector: "app-my-telas",
@@ -85,7 +86,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly pdfViewerService: PdfViewerService,
     private readonly cdr: ChangeDetectorRef,
     private readonly sanitizer: DomSanitizer,
-    private readonly cartService: CartService
+    private readonly cartService: CartService,
+    private readonly notificationsService: NotificationsService
   ) {
     this.requestAdForm = this.myTelasService.createRequestAdForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
@@ -412,6 +414,9 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           refusedData
         );
         this.closeValidateAdDialog();
+        this.notificationsService
+          .refreshAndMarkReferencesAsRead(["AD_RECEIVED"])
+          .subscribe();
         await this.loadClientData();
       } catch (error) {
       }
