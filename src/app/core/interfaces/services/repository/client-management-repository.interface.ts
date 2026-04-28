@@ -4,6 +4,7 @@ import { PaginationResponseDto } from '@app/model/dto/response/pagination-respon
 import {
   FilterClientRequestDto,
   PermanentDeletionRequirementsDto,
+  PermanentDeleteClientPayload,
 } from '@app/core/service/api/client-management.service';
 
 /**
@@ -35,5 +36,5 @@ export interface IClientManagementRepository {
     clientId: string
   ): Observable<PermanentDeletionRequirementsDto>;
 
-  permanentDeleteClient(clientId: string, monitorSuccessorId?: string | null): Observable<void>;
+  permanentDeleteClient(clientId: string, payload: PermanentDeleteClientPayload): Observable<void>;
 }

@@ -74,7 +74,9 @@ export function errorInterceptor(
         });
       }
       
-      if (status >= 500) {
+      if (status === 0) {
+        toastService.erro(errorMessage);
+      } else if (status >= 500) {
         toastService.erro(errorMessage);
       } else if (status >= 400 && status !== HttpStatusCode.Unauthorized) {
         toastService.aviso(errorMessage);

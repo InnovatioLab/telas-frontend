@@ -12,10 +12,15 @@ export class ApiErrorHandler {
     }
 
     if (error.status === 422) {
-      if (error.error?.detail) {
-        const validationErrors = error.error.detail;
+      const body = error.error as { message?: string; detail?: unknown } | undefined;
+      if (body?.message && typeof body.message === 'string') {
+        return body.message;
+      }
+      if (body?.detail) {
+        const validationErrors = body.detail;
         if (Array.isArray(validationErrors) && validationErrors.length > 0) {
-          return `Validation error: ${validationErrors[0].msg}`;
+          const first = validationErrors[0] as { msg?: string };
+          return first.msg ? `Validation error: ${first.msg}` : 'Invalid data or resource unavailable.';
         }
       }
       return 'Invalid data or resource unavailable.';

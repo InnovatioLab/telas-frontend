@@ -19,6 +19,11 @@ export interface PermanentDeletionRequirementsDto {
   monitorCount: number;
 }
 
+export interface PermanentDeleteClientPayload {
+  password: string;
+  monitorSuccessorClientId?: string | null;
+}
+
 export interface ClientResponseDto {
   id: string;
   businessName?: string;
@@ -71,7 +76,7 @@ export class ClientManagementService {
     return this.repository.getPermanentDeletionRequirements(clientId);
   }
 
-  permanentDeleteClient(clientId: string, monitorSuccessorId?: string | null): Observable<void> {
-    return this.repository.permanentDeleteClient(clientId, monitorSuccessorId);
+  permanentDeleteClient(clientId: string, payload: PermanentDeleteClientPayload): Observable<void> {
+    return this.repository.permanentDeleteClient(clientId, payload);
   }
 } 

@@ -10,6 +10,7 @@ import {
   FilterClientRequestDto,
   ClientResponseDto,
   PermanentDeletionRequirementsDto,
+  PermanentDeleteClientPayload,
 } from '@app/core/service/api/client-management.service';
 
 @Injectable({ providedIn: 'root' })
@@ -96,11 +97,11 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
       .pipe(map((r) => r.data));
   }
 
-  permanentDeleteClient(clientId: string, monitorSuccessorId?: string | null): Observable<void> {
-    let params = new HttpParams();
-    if (monitorSuccessorId) {
-      params = params.set('monitorSuccessorId', monitorSuccessorId);
+  permanentDeleteClient(clientId: string, payload: PermanentDeleteClientPayload): Observable<void> {
+    const body: Record<string, unknown> = { password: payload.password };
+    if (payload.monitorSuccessorClientId) {
+      body["monitorSuccessorClientId"] = payload.monitorSuccessorClientId;
     }
-    return this.http.delete<void>(`${this.baseUrl}/${clientId}/permanent`, { params });
+    return this.http.post<void>(`${this.baseUrl}/${clientId}/permanent-delete`, body);
   }
 }

@@ -5,6 +5,7 @@ import { AdService } from "@app/core/service/api/ad.service";
 import {
   ClientManagementService,
   FilterClientRequestDto,
+  PermanentDeleteClientPayload,
 } from "@app/core/service/api/client-management.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
@@ -67,6 +68,11 @@ export class ManagementClientsComponent implements OnInit {
   permanentDeleteMonitorCount = 0;
   successorCandidates: Client[] = [];
   selectedSuccessorId: string | null = null;
+  adminDeletionPassword = "";
+  deletionPasswordReadonly = true;
+
+  showPermanentDeleteSimpleDialog = false;
+  pendingSimplePermanentDeleteClient: Client | null = null;
 
   currentUserId: string | null = null;
   private panelClient: Client | null = null;
@@ -516,6 +522,7 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   private openPermanentDeleteSuccessorDialog(client: Client, monitorCount: number): void {
+    this.armDeletionPasswordField();
     this.permanentDeleteDialogClient = client;
     this.permanentDeleteMonitorCount = monitorCount;
     this.selectedSuccessorId = null;
@@ -556,19 +563,42 @@ export class ManagementClientsComponent implements OnInit {
     return true;
   }
 
-  private async confirmPermanentDeleteWithoutMonitors(client: Client): Promise<void> {
-    const clientName = client.businessName ?? "Unknown";
-    const confirmed = await this.confirmationDialogService.confirm({
-      title: "Permanently remove account",
-      message: `This will permanently remove ${clientName} and related data. This cannot be undone.`,
-      confirmLabel: "Delete permanently",
-      cancelLabel: "Cancel",
-      severity: "error",
-    });
-    if (!confirmed || !client.id) {
+  private confirmPermanentDeleteWithoutMonitors(client: Client): void {
+    if (!client.id) {
       return;
     }
-    this.runPermanentDeleteRequest(client.id, null);
+    this.pendingSimplePermanentDeleteClient = client;
+    this.armDeletionPasswordField();
+    this.showPermanentDeleteSimpleDialog = true;
+  }
+
+  armDeletionPasswordField(): void {
+    this.adminDeletionPassword = "";
+    this.deletionPasswordReadonly = true;
+  }
+
+  onDeletionPasswordFocus(): void {
+    this.deletionPasswordReadonly = false;
+  }
+
+  closePermanentDeleteSimpleDialog(): void {
+    this.showPermanentDeleteSimpleDialog = false;
+    this.pendingSimplePermanentDeleteClient = null;
+    this.adminDeletionPassword = "";
+    this.deletionPasswordReadonly = true;
+  }
+
+  confirmPermanentDeleteSimplePassword(): void {
+    const pwd = this.adminDeletionPassword.trim();
+    if (!pwd) {
+      this.toastService.erro("Enter your password to confirm");
+      return;
+    }
+    const victim = this.pendingSimplePermanentDeleteClient;
+    if (!victim?.id) {
+      return;
+    }
+    this.runPermanentDeleteRequest(victim.id, null, pwd);
   }
 
   closePermanentDeleteSuccessorDialog(): void {
@@ -576,6 +606,8 @@ export class ManagementClientsComponent implements OnInit {
     this.permanentDeleteDialogClient = null;
     this.selectedSuccessorId = null;
     this.successorCandidates = [];
+    this.adminDeletionPassword = "";
+    this.deletionPasswordReadonly = true;
   }
 
   confirmPermanentDeleteWithSuccessor(): void {
@@ -583,27 +615,35 @@ export class ManagementClientsComponent implements OnInit {
       this.toastService.erro("Select the client who will inherit the screens");
       return;
     }
+    const pwd = this.adminDeletionPassword.trim();
+    if (!pwd) {
+      this.toastService.erro("Enter your password to confirm");
+      return;
+    }
     const victimId = this.permanentDeleteDialogClient.id;
     const successorId = this.selectedSuccessorId;
-    this.showPermanentDeleteSuccessorDialog = false;
-    this.runPermanentDeleteRequest(victimId, successorId);
+    this.runPermanentDeleteRequest(victimId, successorId, pwd);
   }
 
-  private runPermanentDeleteRequest(victimId: string, monitorSuccessorId: string | null): void {
+  private runPermanentDeleteRequest(
+    victimId: string,
+    monitorSuccessorId: string | null,
+    password: string
+  ): void {
     this.loading = true;
-    this.clientManagementService.permanentDeleteClient(victimId, monitorSuccessorId).subscribe({
+    const payload: PermanentDeleteClientPayload = { password };
+    if (monitorSuccessorId) {
+      payload.monitorSuccessorClientId = monitorSuccessorId;
+    }
+    this.clientManagementService.permanentDeleteClient(victimId, payload).subscribe({
       next: () => {
         this.toastService.sucesso("Account removed");
+        this.armDeletionPasswordField();
         this.closePermanentDeleteSuccessorDialog();
+        this.closePermanentDeleteSimpleDialog();
         this.loadClients();
       },
-      error: (error) => {
-        const msg =
-          error?.error?.message ||
-          error?.error?.data?.message ||
-          error?.message ||
-          "Failed to remove account";
-        this.toastService.erro(msg);
+      error: () => {
         this.loading = false;
       },
     });

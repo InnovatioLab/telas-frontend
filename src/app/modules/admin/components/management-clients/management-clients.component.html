@@ -272,6 +272,7 @@
   [style]="{ width: '90%', maxWidth: '520px' }"
   [draggable]="false"
   [resizable]="false"
+  (onShow)="armDeletionPasswordField()"
   (onHide)="closePermanentDeleteSuccessorDialog()"
 >
   <div class="flex flex-column gap-3" *ngIf="permanentDeleteDialogClient">
@@ -297,6 +298,25 @@
         [ngModelOptions]="{ standalone: true }"
       ></p-dropdown>
     </div>
+    <div class="flex flex-column gap-2">
+      <label for="adminPwdSuccessor">Your password (login)</label>
+      <input
+        id="adminPwdSuccessor"
+        type="password"
+        pInputText
+        name="telas-permanent-delete-confirmation"
+        autocomplete="new-password"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        [readonly]="deletionPasswordReadonly"
+        (focus)="onDeletionPasswordFocus()"
+        [(ngModel)]="adminDeletionPassword"
+        [ngModelOptions]="{ standalone: true }"
+        class="w-full"
+        placeholder="Type your password"
+      />
+    </div>
   </div>
   <ng-template pTemplate="footer">
     <div class="flex justify-content-end gap-2">
@@ -312,8 +332,71 @@
         type="button"
         label="Delete permanently"
         class="p-button-danger"
-        [disabled]="!selectedSuccessorId || loading"
+        [disabled]="
+          !selectedSuccessorId ||
+          !adminDeletionPassword.trim() ||
+          loading
+        "
         (click)="confirmPermanentDeleteWithSuccessor()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Confirm permanent deletion"
+  [(visible)]="showPermanentDeleteSimpleDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '90%', maxWidth: '480px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onShow)="armDeletionPasswordField()"
+  (onHide)="closePermanentDeleteSimpleDialog()"
+>
+  <div class="flex flex-column gap-3" *ngIf="pendingSimplePermanentDeleteClient">
+    <p>
+      This will permanently remove
+      <strong>{{ pendingSimplePermanentDeleteClient.businessName ?? "this account" }}</strong>
+      and related data. Enter your login password to confirm.
+    </p>
+    <div class="flex flex-column gap-2">
+      <label for="adminPwdSimple">Your password</label>
+      <input
+        id="adminPwdSimple"
+        type="password"
+        pInputText
+        name="telas-permanent-delete-confirmation"
+        autocomplete="new-password"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        [readonly]="deletionPasswordReadonly"
+        (focus)="onDeletionPasswordFocus()"
+        [(ngModel)]="adminDeletionPassword"
+        [ngModelOptions]="{ standalone: true }"
+        class="w-full"
+        placeholder="Type your password"
+      />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        class="p-button-text"
+        (click)="closePermanentDeleteSimpleDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Delete permanently"
+        class="p-button-danger"
+        [disabled]="!adminDeletionPassword.trim() || loading"
+        (click)="confirmPermanentDeleteSimplePassword()"
       ></button>
     </div>
   </ng-template>
