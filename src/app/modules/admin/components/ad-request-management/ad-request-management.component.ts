@@ -8,7 +8,10 @@ import { ToastService } from "@app/core/service/state/toast.service";
 import { Role } from "@app/model/client";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
-import { AdRequestResponseDto } from "@app/model/dto/response/ad-request-response.dto";
+import {
+  AdRequestResponseDto,
+  LinkResponseDto,
+} from "@app/model/dto/response/ad-request-response.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
@@ -127,9 +130,44 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   openViewDetailsDialog(adRequest: AdRequestResponseDto): void {
-    console.log(adRequest);
     this.selectedAdRequest = adRequest;
     this.showViewDetailsDialog = true;
+  }
+
+  shouldShowSeparateLastAdSection(ar: AdRequestResponseDto): boolean {
+    const ad = ar.ad;
+    if (!ad?.attachmentLink && !ad?.attachmentId) {
+      return false;
+    }
+    const attachments = ar.attachments ?? [];
+    if (attachments.length === 0) {
+      return true;
+    }
+    return !attachments.some((att) => this.sameLinkAsset(att, ad));
+  }
+
+  private sameLinkAsset(a: LinkResponseDto, b: LinkResponseDto): boolean {
+    if (a.attachmentId && b.attachmentId && a.attachmentId === b.attachmentId) {
+      return true;
+    }
+    const strip = (u: string | undefined) => (u ?? "").trim().split("?")[0];
+    const linkA = strip(a.attachmentLink);
+    const linkB = strip(b.attachmentLink);
+    if (linkA !== "" && linkA === linkB) {
+      return true;
+    }
+    const dlA = strip(a.attachmentDownloadLink);
+    const dlB = strip(b.attachmentDownloadLink);
+    if (dlA !== "" && dlA === dlB) {
+      return true;
+    }
+    if (linkA !== "" && linkA === strip(b.attachmentDownloadLink)) {
+      return true;
+    }
+    if (linkB !== "" && linkB === strip(a.attachmentDownloadLink)) {
+      return true;
+    }
+    return false;
   }
 
   closeViewDetailsDialog(): void {

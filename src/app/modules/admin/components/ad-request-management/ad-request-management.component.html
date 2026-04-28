@@ -217,8 +217,13 @@
       </div>
     </div>
 
-    <!-- Ad -->
-    <div class="detail-row" *ngIf="selectedAdRequest.ad">
+    <div
+      class="detail-row"
+      *ngIf="
+        selectedAdRequest.ad &&
+        shouldShowSeparateLastAdSection(selectedAdRequest)
+      "
+    >
       <strong>Last Ad Validated:</strong>
       <div class="ad-container">
         <img
