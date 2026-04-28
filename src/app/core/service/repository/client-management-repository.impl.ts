@@ -42,6 +42,7 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
             status: clientDto.status,
             contact: clientDto.contact,
             partnerAddressSummary: clientDto.partnerAddressSummary ?? null,
+            adsCount: clientDto.adsCount,
             role: clientDto.role as any,
             createdAt: clientDto.createdAt,
             updatedAt: clientDto.updatedAt,

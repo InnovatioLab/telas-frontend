@@ -5,6 +5,19 @@
   word-break: break-word;
 }
 
+.ads-usage {
+  font-weight: 700;
+  color: var(--cor-sucesso);
+}
+
+.ads-usage--warn {
+  color: var(--cor-alerta);
+}
+
+.ads-usage--danger {
+  color: var(--cor-erro);
+}
+
 .addresses-more {
   margin-left: 0.5rem;
   opacity: 0.8;

@@ -339,6 +339,27 @@ export class ManagementClientsComponent implements OnInit {
     }
   }
 
+  private getPartnerAdsCount(client: Client): number {
+    const raw = client.adsCount ?? client.ads?.length ?? 0;
+    return Number.isFinite(raw) ? Math.max(0, raw) : 0;
+  }
+
+  getPartnerAdsUsageLabel(client: Client): string {
+    const count = Math.min(this.getPartnerAdsCount(client), this.PARTNER_MAX_ADS);
+    return `${count} / ${this.PARTNER_MAX_ADS}`;
+  }
+
+  getPartnerAdsUsageClass(client: Client): string {
+    const count = Math.min(this.getPartnerAdsCount(client), this.PARTNER_MAX_ADS);
+    if (count >= this.PARTNER_MAX_ADS) {
+      return "ads-usage ads-usage--danger";
+    }
+    if (count === this.PARTNER_MAX_ADS - 1) {
+      return "ads-usage ads-usage--warn";
+    }
+    return "ads-usage";
+  }
+
   createClient(): void {
     this.toastService.sucesso(
       "Create client functionality will be implemented"
