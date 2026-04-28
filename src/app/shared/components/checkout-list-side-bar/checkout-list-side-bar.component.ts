@@ -303,8 +303,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
                 this.checkoutEmProgresso = false;
                 window.location.href = checkoutUrl;
               },
-              error: (error) => {
-                this.toastService.erro(error);
+              error: () => {
                 this.checkoutEmProgresso = false;
               },
             });
@@ -315,8 +314,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
                 this.checkoutEmProgresso = false;
                 window.location.href = checkoutUrl;
               },
-              error: (checkoutError) => {
-                this.toastService.erro(checkoutError);
+              error: () => {
                 this.checkoutEmProgresso = false;
               },
             });

@@ -59,6 +59,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedPoint: MapPoint | null = null;
 
   zipSearchResults: MonitorResultListItem[] = [];
+  viewportResults: MonitorResultListItem[] = [];
   lastZipCode: string | null = null;
   selectedMonitorId: string | null = null;
   locationsPanelOpen = false;
@@ -142,6 +143,15 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
       getMapsComponent: () => this.mapsComponent,
       googleMapsService: this.mapsService,
       ensureMapInitialized: () => this.mapsComponent?.ensureMapInitialized(),
+      onMarkersChanged: (points) => {
+        this.viewportResults = (points as MonitorResultListItem[]).filter(
+          (m): m is MonitorResultListItem =>
+            typeof m.id === "string" &&
+            typeof m.latitude === "number" &&
+            typeof m.longitude === "number"
+        );
+        this.cdr.markForCheck();
+      },
     });
   }
 
@@ -183,6 +193,14 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleMarkerClick(point: MapPoint): void {
     this.mapsService.selectPoint(point);
+    if (this.zipSearchResults.length === 0) {
+      const fromViewport = this.viewportResults.length > 0
+        ? this.viewportResults
+        : ([point] as unknown as MonitorResultListItem[]);
+      this.zipSearchResults = fromViewport;
+      this.locationsPanelOpen = true;
+      this.scheduleMapInvalidate();
+    }
   }
 
   showPointDetails(point: MapPoint): void {

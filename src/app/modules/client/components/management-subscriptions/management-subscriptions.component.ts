@@ -87,8 +87,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
         );
         this.loading = false;
       },
-      error: (error) => {
-        this.toastService.erro(error);
+      error: () => {
         this.loading = false;
       },
     });
@@ -149,8 +148,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
         this.loading = false;
         this.isSorting = false;
       },
-      error: (error) => {
-        this.toastService.erro(error);
+      error: () => {
         this.loading = false;
         this.isSorting = false;
       },
@@ -298,9 +296,8 @@ export class ManagementSubscriptionsComponent implements OnInit {
 
           window.location.href = checkoutUrl;
         },
-        error: (error) => {
+        error: () => {
           this.loading = false;
-          this.toastService.erro(error);
         },
       });
   }
@@ -317,9 +314,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
 
         window.location.href = checkoutUrl;
       },
-      error: (error) => {
-        this.toastService.erro(error);
-      },
+      error: () => {},
     });
   }
 
@@ -354,7 +349,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
         ) {
           return;
         }
-        this.toastService.erro(errorMessage);
+        // toast já é exibido pelo interceptor global
       },
     });
   }
@@ -420,9 +415,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
           this.toastService.sucesso(msg);
           this.loadSubscriptions();
         },
-        error: (error) => {
-          this.toastService.erro(error);
-        },
+        error: () => {},
       });
     }
   }

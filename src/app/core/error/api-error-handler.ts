@@ -12,9 +12,24 @@ export class ApiErrorHandler {
     }
 
     if (error.status === 422) {
-      const body = error.error as { message?: string; detail?: unknown } | undefined;
-      if (body?.message && typeof body.message === 'string') {
-        return body.message;
+      const body = error.error as {
+        message?: string;
+        mensagem?: string;
+        errors?: unknown;
+        detail?: unknown;
+      } | undefined;
+      const msg =
+        (typeof body?.message === "string" && body.message) ||
+        (typeof body?.mensagem === "string" && body.mensagem) ||
+        null;
+      if (msg) {
+        return msg;
+      }
+      if (Array.isArray(body?.errors) && body!.errors.length > 0) {
+        const first = body!.errors[0];
+        if (typeof first === "string" && first.trim().length > 0) {
+          return first.trim();
+        }
       }
       if (body?.detail) {
         const validationErrors = body.detail;

@@ -300,10 +300,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
             this.toastService.erro("Failed to save ads");
           }
         },
-        error: (error) => {
-          const apiMsg = this.apiErrorFirstMessage(error);
-          this.toastService.erro(apiMsg ?? "Failed to save ads");
-        },
+        error: () => {},
       });
   }
 
