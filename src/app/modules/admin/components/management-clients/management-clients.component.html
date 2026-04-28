@@ -115,7 +115,7 @@
       </td>
       <td class="text-center">
         <span *ngIf="client.role === 'PARTNER'">
-          {{ (client.adsCount ?? client.ads?.length ?? 0) }} / {{ PARTNER_MAX_ADS }}
+          {{ client.adsCount ?? client.ads?.length ?? 0 }}
         </span>
         <span *ngIf="client.role !== 'PARTNER'">-</span>
       </td>

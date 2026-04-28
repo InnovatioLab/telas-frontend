@@ -118,17 +118,6 @@
             <button
               pButton
               pRipple
-              class="p-button-rounded p-button-text btn-upload-ads"
-              (click)="openUploadAdsModal(monitor)"
-              pTooltip="Upload ads"
-              tooltipPosition="top"
-            >
-              <app-icon-upload
-                class="custom-icon btn-upload-ads-icon"
-                [fill]="'#6366f1'"
-              ></app-icon-upload>
-            </button>
-            <button
               pButton
               pRipple
               class="p-button-rounded p-button-danger p-button-text btn-delete-screen"
@@ -268,95 +257,5 @@
     </ng-template>
   </p-dialog>
 
-  <!-- Modal de upload de ads -->
-  <p-dialog
-    header="Upload Ad"
-    [(visible)]="showCreateAdModal"
-    [modal]="true"
-    [closable]="true"
-    [dismissableMask]="true"
-    [style]="{ width: '95vw', maxWidth: '600px' }"
-    [draggable]="false"
-    [resizable]="false"
-  >
-    <form (ngSubmit)="createAdvertisement()" #adForm="ngForm">
-      <input
-        #fileInput
-        id="adFile"
-        type="file"
-        (change)="onFileSelected($event)"
-        [accept]="acceptedFileTypes"
-        class="hidden-input"
-        required
-      />
-
-      <div class="upload-content">
-        <!-- File Preview -->
-        <div
-          *ngIf="uploadAdPreview && selectedFile"
-          class="file-preview flex flex-column align-items-center gap-3"
-        >
-          <h4 class="align-self-start">Selected File Preview:</h4>
-
-          <!-- PDF Preview -->
-          <div
-            *ngIf="isPdfFile(selectedFile.name)"
-            class="pdf-preview-container"
-          >
-            <pdf-viewer
-              [src]="uploadAdPreview"
-              [render-text]="true"
-              [original-size]="false"
-              [show-all]="false"
-              [fit-to-page]="true"
-              [zoom]="0.8"
-              [zoom-scale]="'page-width'"
-              [stick-to-page]="true"
-              style="
-                display: block;
-                width: 100%;
-                min-height: 400px;
-                max-height: 500px;
-              "
-            ></pdf-viewer>
-            <div class="pdf-preview-info">
-              <p class="pdf-preview-name">{{ selectedFile.name }}</p>
-              <p class="pdf-preview-size">
-                {{ formatFileSize(selectedFile.size) }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Image Preview -->
-          <img
-            *ngIf="!isPdfFile(selectedFile.name)"
-            [src]="uploadAdPreview"
-            [alt]="selectedFile.name"
-            class="preview-image"
-          />
-        </div>
-      </div>
-
-      <div
-        class="p-dialog-footer flex align-items-center justify-content-between"
-        style="margin-top: 2rem"
-      >
-        <button
-          pButton
-          type="button"
-          id="btnSecundario"
-          label="Cancel"
-          class="p-button-text"
-          (click)="showCreateAdModal = false"
-        ></button>
-        <button
-          pButton
-          type="submit"
-          label="Upload"
-          class="p-button-text"
-          [disabled]="loadingCreateAd || !adForm.form.valid"
-        ></button>
-      </div>
-    </form>
-  </p-dialog>
+  <!-- Upload de Ads removido: agora é via fluxo do cliente -->
 </div>
