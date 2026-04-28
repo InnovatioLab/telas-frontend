@@ -166,6 +166,24 @@
             (click)="deactivateClient(client)"
             pTooltip="Inactivate user"
           ></button>
+          <button
+            *ngIf="canSoftDeleteClient(client)"
+            pButton
+            pRipple
+            icon="pi pi-times-circle"
+            class="p-button-rounded p-button-secondary p-button-text"
+            (click)="softDeleteClient(client)"
+            pTooltip="Mark deleted (logical)"
+          ></button>
+          <button
+            *ngIf="canPermanentDeleteClient(client)"
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-danger p-button-text"
+            (click)="permanentDeleteClient(client)"
+            pTooltip="Permanently delete"
+          ></button>
         </div>
       </td>
     </tr>
@@ -240,6 +258,62 @@
         (click)="uploadAd()"
         [disabled]="!selectedFile || loadingUpload"
         [loading]="loadingUpload"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Permanently delete partner with screens"
+  [(visible)]="showPermanentDeleteSuccessorDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '90%', maxWidth: '520px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closePermanentDeleteSuccessorDialog()"
+>
+  <div class="flex flex-column gap-3" *ngIf="permanentDeleteDialogClient">
+    <p>
+      This account has {{ permanentDeleteMonitorCount }} screen(s) (monitors). The
+      screens are not removed; choose which active client will become the partner
+      and inherit those screens. The selected user will be set as partner and the
+      monitors will be linked to them before the account is removed.
+    </p>
+    <div class="flex flex-column gap-2">
+      <label for="successorClient">Client who inherits the screens</label>
+      <p-dropdown
+        inputId="successorClient"
+        [(ngModel)]="selectedSuccessorId"
+        [options]="successorCandidates"
+        placeholder="Select client"
+        optionLabel="businessName"
+        optionValue="id"
+        [filter]="true"
+        filterBy="businessName,contact.email"
+        appendTo="body"
+        [style]="{ width: '100%' }"
+        [ngModelOptions]="{ standalone: true }"
+      ></p-dropdown>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        class="p-button-text"
+        (click)="closePermanentDeleteSuccessorDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Delete permanently"
+        class="p-button-danger"
+        [disabled]="!selectedSuccessorId || loading"
+        (click)="confirmPermanentDeleteWithSuccessor()"
       ></button>
     </div>
   </ng-template>

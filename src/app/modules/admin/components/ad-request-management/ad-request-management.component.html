@@ -200,7 +200,12 @@
             </p-button>
             <p-button
               icon="pi pi-download"
-              (onClick)="downloadAttachment(attachment.attachmentLink)"
+              (onClick)="
+                downloadAttachment(
+                  attachment.attachmentDownloadLink || attachment.attachmentLink,
+                  attachment.attachmentName
+                )
+              "
               [disabled]="loading"
               severity="success"
               [text]="true"
@@ -221,6 +226,29 @@
           alt="Ad"
           class="ad-image"
         />
+        <div class="flex justify-content-center gap-2 mt-2">
+          <p-button
+            icon="pi pi-eye"
+            (onClick)="viewAttachment(selectedAdRequest.ad.attachmentLink)"
+            [disabled]="loading"
+            severity="info"
+            [text]="true"
+            pTooltip="View"
+          ></p-button>
+          <p-button
+            icon="pi pi-download"
+            (onClick)="
+              downloadAttachment(
+                selectedAdRequest.ad.attachmentDownloadLink || selectedAdRequest.ad.attachmentLink,
+                selectedAdRequest.ad.attachmentName
+              )
+            "
+            [disabled]="loading"
+            severity="success"
+            [text]="true"
+            pTooltip="Download"
+          ></p-button>
+        </div>
       </div>
     </div>
 

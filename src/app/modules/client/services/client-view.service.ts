@@ -24,22 +24,11 @@ export class ClientViewService {
     this._isLoading.set(true);
 
     try {
-      const position = await this.geolocationService.getCurrentPosition();
-      
-      this._mapCenter.set({ 
-        lat: position.latitude, 
-        lng: position.longitude 
-      });
-      
-      if (position.accuracy && position.accuracy < 100) {
-        this._mapZoom.set(15);
-      } else if (position.accuracy && position.accuracy < 1000) {
-        this._mapZoom.set(12);
-      } else {
-        this._mapZoom.set(9);
-      }
-    } catch (error) {
-      this._mapCenter.set({ lat: 30.3322, lng: -81.6557 });
+      const fallback = {
+        lat: this.geolocationService.getDefaultLocation().latitude,
+        lng: this.geolocationService.getDefaultLocation().longitude,
+      };
+      this._mapCenter.set(fallback);
       this._mapZoom.set(9);
     } finally {
       this._isLoading.set(false);

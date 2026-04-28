@@ -14,6 +14,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
+import { triggerBrowserFileDownload } from "@app/shared/utils/file-download.util";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 
 @Component({
@@ -55,6 +56,7 @@ export class AdRequestManagementComponent implements OnInit {
     size: 10,
     sortBy: "createdAt",
     sortDir: "desc",
+    includeInactiveRequests: true,
   };
 
   constructor(
@@ -308,14 +310,8 @@ export class AdRequestManagementComponent implements OnInit {
     return isPdfFile(link);
   }
 
-  downloadAttachment(link: string): void {
-    const a = document.createElement("a");
-    a.href = link;
-    a.download = "";
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  downloadAttachment(url: string, fileName?: string): void {
+    triggerBrowserFileDownload(url, fileName);
   }
 
   getAbsoluteUrl(url: string | null | undefined): string | null {

@@ -17,6 +17,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
+import { triggerBrowserFileDownload } from "@app/shared/utils/file-download.util";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { FileUpload } from "primeng/fileupload";
 import { Subscription } from "rxjs";
@@ -417,9 +418,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  downloadAd(link: string): void {
-    window.open(link, "_blank");
-  }
 
   mostrarErro(form: FormGroup, campo: string): boolean {
     return form.get(campo)?.invalid && form.get(campo)?.touched;
@@ -446,14 +444,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     this.adPreviewLink = null;
   }
 
-  downloadAttachment(link: string): void {
-    const a = document.createElement("a");
-    a.href = link;
-    a.download = "";
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  downloadAttachment(url: string, fileName?: string): void {
+    triggerBrowserFileDownload(url, fileName);
   }
 
   onImageError(event: any): void {

@@ -33,10 +33,7 @@
                 <p><strong>Version: </strong> {{ termoCondicao.version }}</p>
                 <p>
                   <strong>Effective Date: </strong>
-                  {{
-                    (termoCondicao.updatedAt || termoCondicao.createdAt)
-                      | date: "MM/dd/yyyy"
-                  }}
+                  {{ today | date: "MM/dd/yyyy" }}
                 </p>
               </div>
             </div>

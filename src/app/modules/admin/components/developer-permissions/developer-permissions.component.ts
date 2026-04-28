@@ -15,6 +15,11 @@ import { finalize, map } from "rxjs/operators";
 
 const PERMISSION_LABELS: Record<string, string> = {
   ADMIN_CLIENTS_DEACTIVATE: "Deactivate clients",
+  ADMIN_CLIENTS_REACTIVATE: "Reactivate clients",
+  ADMIN_CLIENTS_VIEW_INACTIVE: "View inactive clients in list",
+  ADMIN_CLIENTS_VIEW_DELETED: "View deleted clients in list",
+  ADMIN_CLIENTS_SOFT_DELETE: "Mark clients as deleted (logical)",
+  ADMIN_CLIENTS_PERMANENT_DELETE: "Permanently delete clients",
   MONITORING_CONNECTIVITY_PROBE_SETTINGS: "Connectivity probe interval",
   MONITORING_BOX_PING_VIEW: "Box ping logs",
   MONITORING_LOGS_VIEW: "Application logs",

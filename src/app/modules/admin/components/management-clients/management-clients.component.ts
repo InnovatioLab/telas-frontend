@@ -62,6 +62,12 @@ export class ManagementClientsComponent implements OnInit {
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
   readonly PARTNER_MAX_ADS = 5;
 
+  showPermanentDeleteSuccessorDialog = false;
+  permanentDeleteDialogClient: Client | null = null;
+  permanentDeleteMonitorCount = 0;
+  successorCandidates: Client[] = [];
+  selectedSuccessorId: string | null = null;
+
   currentUserId: string | null = null;
   private panelClient: Client | null = null;
 
@@ -107,10 +113,54 @@ export class ManagementClientsComponent implements OnInit {
     if (isPrivilegedPanelRole(client.role)) {
       return false;
     }
-    if (client.status === DefaultStatus.INACTIVE) {
+    if (
+      client.status === DefaultStatus.INACTIVE ||
+      client.status === DefaultStatus.DELETED
+    ) {
       return false;
     }
     return true;
+  }
+
+  canSoftDeleteClient(client: Client): boolean {
+    if (
+      !client.id ||
+      !hasMonitoringPermission(
+        this.panelClient,
+        MonitoringPermission.ADMIN_CLIENTS_SOFT_DELETE
+      )
+    ) {
+      return false;
+    }
+    if (client.id === this.currentUserId) {
+      return false;
+    }
+    if (isPrivilegedPanelRole(client.role)) {
+      return false;
+    }
+    if (client.status === DefaultStatus.DELETED) {
+      return false;
+    }
+    return true;
+  }
+
+  canPermanentDeleteClient(client: Client): boolean {
+    if (
+      !client.id ||
+      !hasMonitoringPermission(
+        this.panelClient,
+        MonitoringPermission.ADMIN_CLIENTS_PERMANENT_DELETE
+      )
+    ) {
+      return false;
+    }
+    if (client.id === this.currentUserId) {
+      return false;
+    }
+    if (isPrivilegedPanelRole(client.role)) {
+      return false;
+    }
+    return client.status === DefaultStatus.DELETED;
   }
 
   loadClients(): void {
@@ -403,6 +453,156 @@ export class ManagementClientsComponent implements OnInit {
           error?.error?.data?.message ||
           error?.message ||
           "Failed to inactivate user";
+        this.toastService.erro(msg);
+        this.loading = false;
+      },
+    });
+  }
+
+  async softDeleteClient(client: Client): Promise<void> {
+    const clientName = client.businessName ?? "Unknown";
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Mark account as deleted",
+      message: `This will mark ${clientName} as deleted. The user will not be able to sign in.`,
+      confirmLabel: "Confirm",
+      cancelLabel: "Cancel",
+      severity: "error",
+    });
+    if (!confirmed || !client.id) {
+      return;
+    }
+    this.loading = true;
+    this.clientManagementService.softDeleteClient(client.id).subscribe({
+      next: () => {
+        this.toastService.sucesso("Account marked as deleted");
+        this.loadClients();
+      },
+      error: (error) => {
+        const msg =
+          error?.error?.message ||
+          error?.error?.data?.message ||
+          error?.message ||
+          "Failed to update account";
+        this.toastService.erro(msg);
+        this.loading = false;
+      },
+    });
+  }
+
+  async permanentDeleteClient(client: Client): Promise<void> {
+    if (!client.id) {
+      return;
+    }
+    this.loading = true;
+    this.clientManagementService.getPermanentDeletionRequirements(client.id).subscribe({
+      next: async (req) => {
+        this.loading = false;
+        if (req.requiresMonitorSuccessor) {
+          this.openPermanentDeleteSuccessorDialog(client, req.monitorCount);
+        } else {
+          await this.confirmPermanentDeleteWithoutMonitors(client);
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        const msg =
+          error?.error?.message ||
+          error?.error?.data?.message ||
+          error?.message ||
+          "Failed to check deletion requirements";
+        this.toastService.erro(msg);
+      },
+    });
+  }
+
+  private openPermanentDeleteSuccessorDialog(client: Client, monitorCount: number): void {
+    this.permanentDeleteDialogClient = client;
+    this.permanentDeleteMonitorCount = monitorCount;
+    this.selectedSuccessorId = null;
+    this.successorCandidates = [];
+    this.loading = true;
+    this.clientManagementService
+      .getClientsWithPagination({
+        page: 1,
+        size: 500,
+        sortBy: "name",
+        sortDir: "asc",
+      })
+      .subscribe({
+        next: (result) => {
+          this.successorCandidates = (result.list || []).filter((c) =>
+            this.isPermanentDeleteSuccessorCandidate(c, client)
+          );
+          this.loading = false;
+          this.showPermanentDeleteSuccessorDialog = true;
+        },
+        error: () => {
+          this.loading = false;
+          this.toastService.erro("Failed to load clients for successor selection");
+        },
+      });
+  }
+
+  private isPermanentDeleteSuccessorCandidate(candidate: Client, victim: Client): boolean {
+    if (!candidate.id || candidate.id === victim.id) {
+      return false;
+    }
+    if (candidate.status !== DefaultStatus.ACTIVE) {
+      return false;
+    }
+    if (isPrivilegedPanelRole(candidate.role)) {
+      return false;
+    }
+    return true;
+  }
+
+  private async confirmPermanentDeleteWithoutMonitors(client: Client): Promise<void> {
+    const clientName = client.businessName ?? "Unknown";
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Permanently remove account",
+      message: `This will permanently remove ${clientName} and related data. This cannot be undone.`,
+      confirmLabel: "Delete permanently",
+      cancelLabel: "Cancel",
+      severity: "error",
+    });
+    if (!confirmed || !client.id) {
+      return;
+    }
+    this.runPermanentDeleteRequest(client.id, null);
+  }
+
+  closePermanentDeleteSuccessorDialog(): void {
+    this.showPermanentDeleteSuccessorDialog = false;
+    this.permanentDeleteDialogClient = null;
+    this.selectedSuccessorId = null;
+    this.successorCandidates = [];
+  }
+
+  confirmPermanentDeleteWithSuccessor(): void {
+    if (!this.permanentDeleteDialogClient?.id || !this.selectedSuccessorId) {
+      this.toastService.erro("Select the client who will inherit the screens");
+      return;
+    }
+    const victimId = this.permanentDeleteDialogClient.id;
+    const successorId = this.selectedSuccessorId;
+    this.showPermanentDeleteSuccessorDialog = false;
+    this.runPermanentDeleteRequest(victimId, successorId);
+  }
+
+  private runPermanentDeleteRequest(victimId: string, monitorSuccessorId: string | null): void {
+    this.loading = true;
+    this.clientManagementService.permanentDeleteClient(victimId, monitorSuccessorId).subscribe({
+      next: () => {
+        this.toastService.sucesso("Account removed");
+        this.closePermanentDeleteSuccessorDialog();
+        this.loadClients();
+      },
+      error: (error) => {
+        const msg =
+          error?.error?.message ||
+          error?.error?.data?.message ||
+          error?.message ||
+          "Failed to remove account";
         this.toastService.erro(msg);
         this.loading = false;
       },

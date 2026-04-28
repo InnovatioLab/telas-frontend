@@ -157,7 +157,12 @@
                   </p-button>
                   <p-button
                     icon="pi pi-download"
-                    (onClick)="downloadAttachment(attachment.attachmentLink)"
+                    (onClick)="
+                      downloadAttachment(
+                        attachment.attachmentDownloadLink || attachment.attachmentLink,
+                        attachment.attachmentName
+                      )
+                    "
                     [disabled]="myTelasService.isLoading()"
                     severity="info"
                     [text]="true"
@@ -341,7 +346,7 @@
               [ad]="ad"
               [loading]="myTelasService.isLoading()"
               (view)="viewAttachment($event)"
-              (download)="downloadAttachment($event)"
+              (download)="downloadAttachment(ad.downloadLink ?? ad.link, ad.name)"
               (validate)="openValidateAdDialog($event)"
             />
           }

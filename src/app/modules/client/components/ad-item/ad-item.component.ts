@@ -28,7 +28,7 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
   @Input() loading = false;
 
   @Output() view = new EventEmitter<string>();
-  @Output() download = new EventEmitter<string>();
+  @Output() download = new EventEmitter<void>();
   @Output() validate = new EventEmitter<AdResponseDto>();
 
   private mutationObserver?: MutationObserver;
@@ -48,7 +48,7 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
 
   onDownload(): void {
     if (this.ad?.link) {
-      this.download.emit(this.ad.link);
+      this.download.emit();
     }
   }
 

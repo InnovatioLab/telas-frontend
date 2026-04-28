@@ -1,7 +1,10 @@
 import { Observable } from 'rxjs';
 import { Client } from '@app/model/client';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
-import { FilterClientRequestDto } from '@app/core/service/api/client-management.service';
+import {
+  FilterClientRequestDto,
+  PermanentDeletionRequirementsDto,
+} from '@app/core/service/api/client-management.service';
 
 /**
  * Interface para operações de repositório de Gerenciamento de Clientes
@@ -25,4 +28,12 @@ export interface IClientManagementRepository {
   deactivateClient(clientId: string): Observable<void>;
 
   reactivateClient(clientId: string): Observable<void>;
+
+  softDeleteClient(clientId: string): Observable<void>;
+
+  getPermanentDeletionRequirements(
+    clientId: string
+  ): Observable<PermanentDeletionRequirementsDto>;
+
+  permanentDeleteClient(clientId: string, monitorSuccessorId?: string | null): Observable<void>;
 }

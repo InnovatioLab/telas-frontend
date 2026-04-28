@@ -11,6 +11,12 @@ export interface FilterClientRequestDto {
   sortBy?: string;
   sortDir?: string;
   genericFilter?: string;
+  includeInactiveRequests?: boolean;
+}
+
+export interface PermanentDeletionRequirementsDto {
+  requiresMonitorSuccessor: boolean;
+  monitorCount: number;
 }
 
 export interface ClientResponseDto {
@@ -53,5 +59,19 @@ export class ClientManagementService {
 
   reactivateClient(clientId: string): Observable<void> {
     return this.repository.reactivateClient(clientId);
+  }
+
+  softDeleteClient(clientId: string): Observable<void> {
+    return this.repository.softDeleteClient(clientId);
+  }
+
+  getPermanentDeletionRequirements(
+    clientId: string
+  ): Observable<PermanentDeletionRequirementsDto> {
+    return this.repository.getPermanentDeletionRequirements(clientId);
+  }
+
+  permanentDeleteClient(clientId: string, monitorSuccessorId?: string | null): Observable<void> {
+    return this.repository.permanentDeleteClient(clientId, monitorSuccessorId);
   }
 } 

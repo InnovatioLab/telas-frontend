@@ -5,4 +5,5 @@ export interface FilterBoxRequestDto {
   sortDir?: 'asc' | 'desc';
   genericFilter?: string;
   active?: boolean;
+  includeInactiveRequests?: boolean;
 }

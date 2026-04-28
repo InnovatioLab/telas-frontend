@@ -32,6 +32,7 @@ export interface LinkResponseDto {
   attachmentId: string;
   attachmentName: string;
   attachmentLink: string;
+  attachmentDownloadLink?: string;
 }
 
 export interface RefusedAdResponseDto {

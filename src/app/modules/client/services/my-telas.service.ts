@@ -23,11 +23,14 @@ export class MyTelasService {
   private readonly _authenticatedClient = signal<AuthenticatedClientResponseDto | null>(null);
   private readonly _ads = signal<AdResponseDto[]>([]);
   private readonly _attachments = signal<AttachmentResponseDto[]>([]);
-  private readonly _clientAttachments = signal<Array<{
-    attachmentId: string;
-    attachmentName: string;
-    attachmentLink: string;
-  }>>([]);
+  private readonly _clientAttachments = signal<
+    Array<{
+      attachmentId: string;
+      attachmentName: string;
+      attachmentLink: string;
+      attachmentDownloadLink?: string;
+    }>
+  >([]);
   private readonly _isLoading = signal(false);
   private readonly _activeTabIndex = signal(0);
   private readonly _hasActiveAdRequest = signal(false);
@@ -133,18 +136,28 @@ export class MyTelasService {
     attachmentId: string;
     attachmentName: string;
     attachmentLink: string;
+    attachmentDownloadLink?: string;
   }> {
     if (!Array.isArray(raw)) {
       return [];
     }
-    return raw.map((a: { attachmentId?: unknown; attachmentName?: unknown; attachmentLink?: unknown }) => ({
-      attachmentId: a?.attachmentId != null ? String(a.attachmentId) : '',
-      attachmentName:
-        typeof a?.attachmentName === 'string' && a.attachmentName.trim()
-          ? a.attachmentName
-          : 'Attachment',
-      attachmentLink: typeof a?.attachmentLink === 'string' ? a.attachmentLink : '',
-    }));
+    return raw.map(
+      (a: {
+        attachmentId?: unknown;
+        attachmentName?: unknown;
+        attachmentLink?: unknown;
+        attachmentDownloadLink?: unknown;
+      }) => ({
+        attachmentId: a?.attachmentId != null ? String(a.attachmentId) : '',
+        attachmentName:
+          typeof a?.attachmentName === 'string' && a.attachmentName.trim()
+            ? a.attachmentName
+            : 'Attachment',
+        attachmentLink: typeof a?.attachmentLink === 'string' ? a.attachmentLink : '',
+        attachmentDownloadLink:
+          typeof a?.attachmentDownloadLink === 'string' ? a.attachmentDownloadLink : undefined,
+      })
+    );
   }
 
   async createAdRequestWithOptionalUploads(

@@ -37,7 +37,7 @@ import { LayoutService } from "@app/core/service/state/layout.service";
 
       .content-container {
         padding: 1rem 3rem;
-        max-width: 1600px;
+        max-width: min(100%, 150rem);
         margin: 0 auto;
         width: 100%;
         box-sizing: border-box;
@@ -77,8 +77,7 @@ import { LayoutService } from "@app/core/service/state/layout.service";
         }
       }
 
-      /* Previne scroll horizontal */
-      .content-container * {
+      .content-container > * {
         max-width: 100%;
         box-sizing: border-box;
       }

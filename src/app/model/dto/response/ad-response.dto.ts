@@ -5,6 +5,7 @@ export interface AdResponseDto {
   name: string;
   submissionDate: string;
   link: string;
+  downloadLink?: string;
   validation: AdValidationType;
   waitingDays?: number;
   refusedCount: number;

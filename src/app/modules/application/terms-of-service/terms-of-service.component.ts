@@ -28,6 +28,7 @@ import { GuestHeaderComponent } from "../components/guest-header/guest-header.co
   styleUrls: ["./terms-of-service.component.scss"],
 })
 export class TermsOfServiceComponent implements OnInit {
+  readonly today = new Date();
   readonly companyMailingAddress = COMPANY_MAILING_ADDRESS;
   termoCondicao: TermoCondicao | null = null;
   client: AuthenticatedClientResponseDto | null = null;

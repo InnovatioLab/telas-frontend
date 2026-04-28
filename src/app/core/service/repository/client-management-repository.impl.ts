@@ -6,7 +6,11 @@ import { IClientManagementRepository } from '@app/core/interfaces/services/repos
 import { Client } from '@app/model/client';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
 import { ResponseDTO } from '@app/model/dto/response.dto';
-import { FilterClientRequestDto, ClientResponseDto } from '@app/core/service/api/client-management.service';
+import {
+  FilterClientRequestDto,
+  ClientResponseDto,
+  PermanentDeletionRequirementsDto,
+} from '@app/core/service/api/client-management.service';
 
 @Injectable({ providedIn: 'root' })
 export class ClientManagementRepositoryImpl implements IClientManagementRepository {
@@ -76,5 +80,27 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
 
   reactivateClient(clientId: string): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}/${clientId}/reactivate`, {});
+  }
+
+  softDeleteClient(clientId: string): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${clientId}/soft-delete`, {});
+  }
+
+  getPermanentDeletionRequirements(
+    clientId: string
+  ): Observable<PermanentDeletionRequirementsDto> {
+    return this.http
+      .get<ResponseDTO<PermanentDeletionRequirementsDto>>(
+        `${this.baseUrl}/${clientId}/permanent-deletion-requirements`
+      )
+      .pipe(map((r) => r.data));
+  }
+
+  permanentDeleteClient(clientId: string, monitorSuccessorId?: string | null): Observable<void> {
+    let params = new HttpParams();
+    if (monitorSuccessorId) {
+      params = params.set('monitorSuccessorId', monitorSuccessorId);
+    }
+    return this.http.delete<void>(`${this.baseUrl}/${clientId}/permanent`, { params });
   }
 }

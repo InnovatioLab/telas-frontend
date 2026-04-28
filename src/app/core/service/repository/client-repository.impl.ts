@@ -154,6 +154,9 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
       if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
       if (filters.sortDir) params = params.set('sortDir', filters.sortDir);
       if (filters.genericFilter) params = params.set('genericFilter', filters.genericFilter);
+      if (filters.includeInactiveRequests) {
+        params = params.set('includeInactiveRequests', 'true');
+      }
     }
 
     params = params.set('_t', Date.now().toString());

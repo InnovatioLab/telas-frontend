@@ -121,6 +121,7 @@ export function isClientShoppingRole(
 export enum DefaultStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
+  DELETED = "DELETED",
 }
 
 export enum ContactPreference {

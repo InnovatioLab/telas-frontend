@@ -37,6 +37,7 @@ export interface AuthenticatedClientResponseDto {
     attachmentId: string;
     attachmentName: string;
     attachmentLink: string;
+    attachmentDownloadLink?: string;
   }>;
   ads: AdResponseDto[];
   termAccepted: boolean;

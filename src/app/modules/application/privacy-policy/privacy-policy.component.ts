@@ -22,6 +22,7 @@ import { GuestHeaderComponent } from "../components/guest-header/guest-header.co
   styleUrls: ["./privacy-policy.component.scss"],
 })
 export class PrivacyPolicyComponent implements OnInit {
+  readonly today = new Date();
   politicaPrivacidade: PoliticaPrivacidade | null = null;
   loading = true;
   error = false;
