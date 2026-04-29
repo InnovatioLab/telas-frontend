@@ -57,6 +57,7 @@ export class AdminAdOperationsComponent implements OnInit {
   private readonly stageLabels: Record<string, string> = {
     PENDING_VALIDATION: "Pending validation",
     REJECTED: "Rejected",
+    IN_BOX: "In box",
     APPROVED_NO_ACTIVE_SUBSCRIPTION: "Approved (no active subscription)",
     SUBSCRIPTION_EXPIRED: "Subscription expired",
     ON_AIR_OPEN_ENDED: "On air (open-ended)",
