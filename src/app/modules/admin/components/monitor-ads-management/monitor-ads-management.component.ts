@@ -21,6 +21,9 @@ interface MonitorAdItem {
   isAttachedToMonitor: boolean;
   orderIndex: number;
   blockQuantity: number;
+  clientName?: string | null;
+  subscriptionEndsAt?: string | null;
+  subscriptionDaysLeft?: number | null;
 }
 
 @Component({
@@ -91,6 +94,10 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
           isAttachedToMonitor: true,
           orderIndex: ad.orderIndex || 0,
           blockQuantity: 1,
+          clientName: ad.clientName ?? null,
+          subscriptionEndsAt: ad.subscriptionEndsAt ?? null,
+          subscriptionDaysLeft:
+            typeof ad.subscriptionDaysLeft === "number" ? ad.subscriptionDaysLeft : null,
         }));
 
         const currentAdsIds = currentMonitorAds.map((ad) => ad.id);
@@ -222,16 +229,39 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
   }
 
   removeFromMonitor(ad: MonitorAdItem): void {
-    this.monitorAds = this.monitorAds
-      .filter((a) => a.id !== ad.id)
-      .map((item, index) => ({
-        ...item,
-        orderIndex: index + 1,
-      }));
+    const clientName = ad.clientName || "This client";
+    const endsAt = ad.subscriptionEndsAt ? new Date(ad.subscriptionEndsAt) : null;
+    const daysLeft =
+      typeof ad.subscriptionDaysLeft === "number" ? ad.subscriptionDaysLeft : null;
+    const hasPaidTimeInfo = endsAt != null || daysLeft != null;
+    const endsAtText = endsAt ? endsAt.toLocaleDateString("en-US") : "N/A";
+    const daysLeftText = daysLeft != null ? `${daysLeft} day(s)` : "N/A";
 
-    if (this.selectedPreviewAd?.id === ad.id) {
-      this.selectedPreviewAd = this.monitorAds[0] || this.validAds[0] || null;
-    }
+    const message = hasPaidTimeInfo
+      ? `${clientName} has screen time remaining. Expires on ${endsAtText} (${daysLeftText}). Do you want to remove this ad from the screen?`
+      : `Do you want to remove "${ad.fileName}" from the screen?`;
+
+    this.confirmationDialogService
+      .confirm({
+        title: "Remove ad from screen",
+        message,
+        confirmLabel: "Remove",
+        cancelLabel: "Cancel",
+        severity: "warn",
+      })
+      .then((confirmed) => {
+        if (!confirmed) return;
+        this.monitorAds = this.monitorAds
+          .filter((a) => a.id !== ad.id)
+          .map((item, index) => ({
+            ...item,
+            orderIndex: index + 1,
+          }));
+
+        if (this.selectedPreviewAd?.id === ad.id) {
+          this.selectedPreviewAd = this.monitorAds[0] || this.validAds[0] || null;
+        }
+      });
   }
 
   moveUp(index: number): void {

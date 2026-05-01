@@ -41,4 +41,7 @@ export interface MonitorAdResponseDto {
   link: string;
   fileName: string;
   orderIndex?: number;
+  clientName?: string | null;
+  subscriptionEndsAt?: string | null;
+  subscriptionDaysLeft?: number | null;
 }

@@ -61,7 +61,7 @@ export class AdRequestManagementComponent implements OnInit {
     size: 10,
     sortBy: "createdAt",
     sortDir: "desc",
-    includeInactiveRequests: true,
+    includeInactiveRequests: false,
   };
 
   constructor(
