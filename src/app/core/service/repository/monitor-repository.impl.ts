@@ -138,6 +138,14 @@ export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitor
       canBeDeleted: monitorResponse.canBeDeleted,
       createdAt: monitorResponse.createdAt,
       updatedAt: monitorResponse.updatedAt,
+      maxAds: monitorResponse.maxAds,
+      activeAdsCount: monitorResponse.activeAdsCount,
+      partnerAdsCount: monitorResponse.partnerAdsCount,
+      clientAdsCount: monitorResponse.clientAdsCount,
+      remainingTotalSlots: monitorResponse.remainingTotalSlots,
+      remainingPartnerSlots: monitorResponse.remainingPartnerSlots,
+      remainingClientSlots: monitorResponse.remainingClientSlots,
+      availableAdsCount: monitorResponse.availableAdsCount,
     };
   }
 }

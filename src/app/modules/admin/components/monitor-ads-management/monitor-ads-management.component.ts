@@ -12,6 +12,7 @@ import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { finalize } from "rxjs/operators";
+import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
 
 interface MonitorAdItem {
   id: string;
@@ -58,7 +59,8 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly monitorService: MonitorService,
     private readonly toastService: ToastService,
-    private readonly sanitizer: DomSanitizer
+    private readonly sanitizer: DomSanitizer,
+    private readonly confirmationDialogService: ConfirmationDialogService
   ) {}
 
   ngOnInit(): void {
@@ -190,6 +192,33 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     };
 
     this.monitorAds = [...this.monitorAds, newItem];
+  }
+
+  async removeAvailableAd(ad: MonitorAdItem): Promise<void> {
+    if (!this.monitorId || !ad?.id) return;
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Remove ad",
+      message: `Remover "${ad.fileName}" dos disponíveis? Essa ação apaga o Ad.`,
+      confirmLabel: "Remove",
+      cancelLabel: "Cancel",
+      severity: "warn",
+    });
+    if (!confirmed) return;
+    this.loading = true;
+    this.monitorService.deleteAvailableAd(this.monitorId, ad.id).subscribe({
+      next: () => {
+        this.toastService.sucesso("Ad removido.");
+        this.validAds = this.validAds.filter((a) => a.id !== ad.id);
+        if (this.selectedPreviewAd?.id === ad.id) {
+          this.selectedPreviewAd = this.monitorAds[0] || this.validAds[0] || null;
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        this.toastService.erro(error?.error?.message || "Falha ao remover ad.");
+        this.loading = false;
+      },
+    });
   }
 
   removeFromMonitor(ad: MonitorAdItem): void {

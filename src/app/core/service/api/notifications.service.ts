@@ -26,6 +26,11 @@ export class NotificationsService {
     return Array.isArray(all) ? all.slice(0, count) : [];
   });
 
+  public readonly allNotifications = computed(() => {
+    const all = this._allNotifications() || [];
+    return Array.isArray(all) ? all : [];
+  });
+
   public readonly totalNotifications = computed(() => {
     const all = this._allNotifications() || [];
     return Array.isArray(all) ? all.length : 0;

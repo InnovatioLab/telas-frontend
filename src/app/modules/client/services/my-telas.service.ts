@@ -250,7 +250,13 @@ export class MyTelasService {
 
     try {
       await this.clientService.validateAd(adId, validation, refusedData).toPromise();
-      this.toastService.sucesso("Ad validated successfully");
+      if (validation === "APPROVED") {
+        this.toastService.sucesso("Ad aprovado com sucesso.");
+      } else if (validation === "REJECTED") {
+        this.toastService.aviso("Ad enviado para reanálise do administrador.");
+      } else {
+        this.toastService.sucesso("Ad atualizado.");
+      }
       await this.loadClientData(true);
     } catch (error) {
       this.toastService.erro("Error validating ad");

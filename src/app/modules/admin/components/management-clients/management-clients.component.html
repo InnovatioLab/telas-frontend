@@ -135,6 +135,26 @@
             (click)="openMessagesHistory(client)"
             pTooltip="Messages history"
           ></button>
+          <span
+            *ngIf="getUnreadMessagesCount(client) > 0"
+            class="ml-1"
+            style="
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              min-width: 18px;
+              height: 18px;
+              padding: 0 6px;
+              border-radius: 999px;
+              background: #ef4444;
+              color: #fff;
+              font-size: 12px;
+              font-weight: 600;
+              margin-top: -8px;
+            "
+          >
+            {{ getUnreadMessagesCount(client) }}
+          </span>
           <button
             *ngIf="client.role !== 'PARTNER'"
             pButton

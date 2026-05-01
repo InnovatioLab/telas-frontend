@@ -31,6 +31,8 @@ import { of } from "rxjs";
 import { switchMap, take } from "rxjs/operators";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { EditClientModalComponent } from "../edit-client-modal/edit-client-modal.component";
+import { NotificationsService } from "@app/core/service/api/notifications.service";
+import { Notification } from "@app/modules/notificacao/models/notification";
 
 @Component({
   selector: "app-management-clients",
@@ -80,6 +82,7 @@ export class ManagementClientsComponent implements OnInit {
 
   private readonly addressesByClientId = new Map<string, Address[]>();
   private readonly addressesLoadingByClientId = new Set<string>();
+  private unreadMessagesByClientId = new Map<string, number>();
 
   constructor(
     private readonly clientManagementService: ClientManagementService,
@@ -89,7 +92,8 @@ export class ManagementClientsComponent implements OnInit {
     private readonly messageService: MessageService,
     private readonly confirmationDialogService: ConfirmationDialogService,
     private readonly dialogService: DialogService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly notificationsService: NotificationsService
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +107,34 @@ export class ManagementClientsComponent implements OnInit {
         this.currentUserId = client?.id ?? null;
       });
     this.loadClients();
+    this.refreshUnreadMessageCounters();
+  }
+
+  refreshUnreadMessageCounters(): void {
+    this.notificationsService.fetchAllNotifications().subscribe(() => {
+      const all = this.notificationsService.allNotifications();
+      const map = new Map<string, number>();
+      for (const n of all) {
+        if (!n || n.visualized) continue;
+        if (String(n.reference) !== "CLIENT_AD_REJECTED") continue;
+        const m = String(n.actionUrl || "");
+        const match = m.match(/\/admin\/clients\/([0-9a-fA-F-]{36})\/messages/);
+        const clientId = match?.[1];
+        if (!clientId) continue;
+        map.set(clientId, (map.get(clientId) ?? 0) + 1);
+      }
+      this.unreadMessagesByClientId = map;
+      this.clients = [...this.clients].sort(
+        (a, b) =>
+          (this.getUnreadMessagesCount(b) ?? 0) - (this.getUnreadMessagesCount(a) ?? 0)
+      );
+    });
+  }
+
+  getUnreadMessagesCount(client: Client): number {
+    const id = client?.id;
+    if (!id) return 0;
+    return this.unreadMessagesByClientId.get(id) ?? 0;
   }
 
   canDeactivateClient(client: Client): boolean {

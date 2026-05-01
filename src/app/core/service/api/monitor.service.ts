@@ -95,6 +95,16 @@ export class MonitorService {
       .pipe(map((res) => String(res?.data ?? "")));
   }
 
+  deleteAvailableAd(monitorId: string, adId: string): Observable<void> {
+    const headers = this.getAuthHeaders();
+    return this.http
+      .delete(
+        `${this.env.apiUrl}monitors/${encodeURIComponent(monitorId)}/available-ads/${encodeURIComponent(adId)}`,
+        { headers }
+      )
+      .pipe(map((): void => void 0));
+  }
+
   getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {
     const headers = this.getAuthHeaders();
     return this.http
