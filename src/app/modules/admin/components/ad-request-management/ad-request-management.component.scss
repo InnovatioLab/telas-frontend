@@ -12,11 +12,12 @@ a {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .actions {
   text-align: center;
-  width: 120px;
+  width: 180px;
 }
 
 .action-with-badge {

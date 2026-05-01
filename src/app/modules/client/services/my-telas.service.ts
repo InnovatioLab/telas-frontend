@@ -141,6 +141,13 @@ export class MyTelasService {
     if (!Array.isArray(raw)) {
       return [];
     }
+    const toAbsoluteUrl = (url: unknown): string => {
+      if (typeof url !== "string") return "";
+      const trimmed = url.trim();
+      if (!trimmed) return "";
+      if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed)) return trimmed;
+      return `https://${trimmed.replace(/^\/+/, "")}`;
+    };
     return raw.map(
       (a: {
         attachmentId?: unknown;
@@ -153,9 +160,9 @@ export class MyTelasService {
           typeof a?.attachmentName === 'string' && a.attachmentName.trim()
             ? a.attachmentName
             : 'Attachment',
-        attachmentLink: typeof a?.attachmentLink === 'string' ? a.attachmentLink : '',
+        attachmentLink: toAbsoluteUrl(a?.attachmentLink),
         attachmentDownloadLink:
-          typeof a?.attachmentDownloadLink === 'string' ? a.attachmentDownloadLink : undefined,
+          typeof a?.attachmentDownloadLink === 'string' ? toAbsoluteUrl(a.attachmentDownloadLink) : undefined,
       })
     );
   }
