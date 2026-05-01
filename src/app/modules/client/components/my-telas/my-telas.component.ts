@@ -98,8 +98,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     this.requestAdForm = this.myTelasService.createRequestAdForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
     this.uploadAdForm = this.myTelasService.createUploadAdForm();
-
-    this.loadClientData();
   }
 
   ngOnInit(): void {

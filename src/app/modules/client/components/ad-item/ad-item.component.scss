@@ -61,15 +61,25 @@
 html[data-theme="dark"] .ad-item .ad-header .ad-info h5,
 html.dark-theme .ad-item .ad-header .ad-info h5,
 body.dark-theme .ad-item .ad-header .ad-info h5,
-[data-theme="dark"] .ad-item .ad-header .ad-info h5 {
-  color: var(--text-color) !important;
+[data-theme="dark"] .ad-item .ad-header .ad-info h5,
+.dark-theme .ad-item .ad-header .ad-info h5 {
+  color: var(--text-on-dark-surface) !important;
 }
 
 html[data-theme="dark"] .ad-item .ad-header .ad-info .ad-date,
 html.dark-theme .ad-item .ad-header .ad-info .ad-date,
 body.dark-theme .ad-item .ad-header .ad-info .ad-date,
-[data-theme="dark"] .ad-item .ad-header .ad-info .ad-date {
-  color: var(--text-color-secondary) !important;
+[data-theme="dark"] .ad-item .ad-header .ad-info .ad-date,
+.dark-theme .ad-item .ad-header .ad-info .ad-date {
+  color: var(--text-on-dark-muted) !important;
+}
+
+html[data-theme="dark"] .ad-item .ad-header .ad-status .validation-count,
+html.dark-theme .ad-item .ad-header .ad-status .validation-count,
+body.dark-theme .ad-item .ad-header .ad-status .validation-count,
+[data-theme="dark"] .ad-item .ad-header .ad-status .validation-count,
+.dark-theme .ad-item .ad-header .ad-status .validation-count {
+  color: var(--text-on-dark-muted) !important;
 }
 
 .ad-item .ad-header .ad-status {

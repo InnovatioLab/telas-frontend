@@ -1,9 +1,11 @@
 import { Injectable, signal, Injector } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Client } from '@app/model/client';
 import { AdService } from '@app/core/service/api/ad.service';
 import { ClientService } from '@app/core/service/api/client.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { AuthService } from '@app/core/service/auth/auth.service';
+import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { AdValidationType } from '@app/model/client';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
 import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
@@ -13,8 +15,7 @@ import { AttachmentResponseDto } from '@app/model/dto/response/attachment-respon
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
 import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { ImageValidationUtil } from '@app/utility/src/utils/image-validation.util';
-import { of } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,8 @@ export class MyTelasService {
   private readonly _activeTabIndex = signal(0);
   private readonly _hasActiveAdRequest = signal(false);
   private readonly _isClientDataLoaded = signal(false);
+  private clientDataLoadPromise: Promise<{ phone: string; email: string } | null> | null =
+    null;
 
   readonly authenticatedClient = this._authenticatedClient.asReadonly();
   readonly ads = this._ads.asReadonly();
@@ -76,52 +79,88 @@ export class MyTelasService {
     });
   }
 
-  async loadClientData(forceRefresh: boolean = false): Promise<{ phone: string; email: string } | null> {
+  async loadClientData(): Promise<{ phone: string; email: string } | null> {
+    if (!this.clientDataLoadPromise) {
+      this.clientDataLoadPromise = this.runLoadClientData();
+    }
+    try {
+      return await this.clientDataLoadPromise;
+    } finally {
+      this.clientDataLoadPromise = null;
+    }
+  }
+
+  private hydrateFromAuthLoggedClientIfEmpty(): void {
+    if (this._ads().length > 0 && this._isClientDataLoaded()) {
+      return;
+    }
+    const autenticacao = this.injector.get(AutenticacaoService, null);
+    const logged = autenticacao?.loggedClient ?? null;
+    if (!logged?.id) {
+      return;
+    }
+    this._authenticatedClient.set(logged);
+    this._clientAttachments.set(this.normalizeClientAttachments(logged.attachments));
+    this._hasActiveAdRequest.set(logged.adRequest !== null);
+    this._ads.set(Array.isArray(logged.ads) ? logged.ads : []);
+    this._isClientDataLoaded.set(true);
+    if (this.clientService.setClientAtual) {
+      this.clientService.setClientAtual(logged as unknown as Client);
+    }
+    try {
+      const authService = this.injector.get(AuthService, null);
+      if (authService && typeof authService.updateClientData === "function") {
+        authService.updateClientData(logged as unknown as Client);
+      }
+    } catch {
+    }
+  }
+
+  private async runLoadClientData(): Promise<{ phone: string; email: string } | null> {
     this._isLoading.set(true);
 
     try {
-      const client = await this.clientService.clientAtual$
-        .pipe(
-          take(1),
-          switchMap((client) =>
-            client && !forceRefresh ? of(client) : this.clientService.getAuthenticatedClient()
-          )
-        )
+      this.hydrateFromAuthLoggedClientIfEmpty();
+
+      const client = await this.clientService
+        .getAuthenticatedClient()
+        .pipe(take(1))
         .toPromise();
 
       if (client) {
-        this._authenticatedClient.set(client as any);
+        const dto = client as AuthenticatedClientResponseDto;
+        this._authenticatedClient.set(dto);
         this._clientAttachments.set(
-          this.normalizeClientAttachments((client as { attachments?: unknown }).attachments)
+          this.normalizeClientAttachments(dto.attachments as unknown)
         );
-        this._hasActiveAdRequest.set((client as any).adRequest !== null);
-        this._ads.set((client as any).ads || []);
+        this._hasActiveAdRequest.set(dto.adRequest !== null);
+        this._ads.set(dto.ads || []);
         this._isClientDataLoaded.set(true);
 
-        if (forceRefresh) {
-          if (this.clientService.setClientAtual) {
-            this.clientService.setClientAtual(client as any);
-          }
+        if (this.clientService.setClientAtual) {
+          this.clientService.setClientAtual(dto as unknown as Client);
+        }
 
-          try {
-            const authService = this.injector.get(AuthService, null);
-            if (authService && typeof authService.updateClientData === 'function') {
-              authService.updateClientData(client as any);
-            }
-          } catch (error) {
+        try {
+          const authService = this.injector.get(AuthService, null);
+          if (authService && typeof authService.updateClientData === "function") {
+            authService.updateClientData(dto as unknown as Client);
           }
+        } catch {
         }
 
         return {
-          phone: (client as any).contact?.phone || "",
-          email: (client as any).contact?.email || ""
+          phone: dto.contact?.phone || "",
+          email: dto.contact?.email || ""
         };
       }
 
       return null;
     } catch (error) {
       this.toastService.erro("Error loading client data");
-      this._isClientDataLoaded.set(false);
+      if (this._authenticatedClient() === null) {
+        this._isClientDataLoaded.set(false);
+      }
       throw error;
     } finally {
       this._isLoading.set(false);
@@ -145,17 +184,26 @@ export class MyTelasService {
       if (typeof url !== "string") return "";
       const trimmed = url.trim();
       if (!trimmed) return "";
+      if (trimmed.startsWith("//")) {
+        return `https:${trimmed}`;
+      }
       if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed)) return trimmed;
       return `https://${trimmed.replace(/^\/+/, "")}`;
     };
     return raw.map(
       (a: {
         attachmentId?: unknown;
+        id?: unknown;
         attachmentName?: unknown;
         attachmentLink?: unknown;
         attachmentDownloadLink?: unknown;
       }) => ({
-        attachmentId: a?.attachmentId != null ? String(a.attachmentId) : '',
+        attachmentId:
+          a?.attachmentId != null
+            ? String(a.attachmentId)
+            : a?.id != null
+              ? String(a.id)
+              : '',
         attachmentName:
           typeof a?.attachmentName === 'string' && a.attachmentName.trim()
             ? a.attachmentName
@@ -177,7 +225,7 @@ export class MyTelasService {
     try {
       if (files && files.length > 0) {
         await this.clientService.uploadMultipleAttachments(files).toPromise();
-        await this.loadClientData(true);
+        await this.loadClientData();
       }
 
       const current = this._clientAttachments();
@@ -195,7 +243,7 @@ export class MyTelasService {
       await this.clientService.createAdRequest(request).toPromise();
       this.toastService.sucesso("Ad request successfully submitted");
       this._hasActiveAdRequest.set(true);
-      await this.loadClientData(true);
+      await this.loadClientData();
     } catch (error) {
       this.toastService.erro("Error submitting request");
       throw error;
@@ -212,7 +260,7 @@ export class MyTelasService {
       this.toastService.sucesso(
         "Subscription process started. Your plan will be activated once your Ad has been created and approved by you."
       );
-      await this.loadClientData(true);
+      await this.loadClientData();
     } catch (error) {
       this.toastService.erro("Error uploading attachments");
       throw error;
@@ -227,7 +275,7 @@ export class MyTelasService {
     try {
       await this.clientService.uploadAttachment(file, attachmentId).toPromise();
       this.toastService.sucesso("Attachment replaced successfully");
-      await this.loadClientData(true);
+      await this.loadClientData();
     } catch (error) {
       this.toastService.erro("Error replacing attachment");
       throw error;
@@ -243,7 +291,7 @@ export class MyTelasService {
       await this.clientService.createAdRequest(request).toPromise();
       this.toastService.sucesso("Ad request successfully submitted");
       this._hasActiveAdRequest.set(true);
-      await this.loadClientData(true);
+      await this.loadClientData();
     } catch (error) {
       this.toastService.erro("Error submitting request");
       throw error;
@@ -264,7 +312,7 @@ export class MyTelasService {
       } else {
         this.toastService.sucesso("Ad atualizado.");
       }
-      await this.loadClientData(true);
+      await this.loadClientData();
     } catch (error) {
       this.toastService.erro("Error validating ad");
       throw error;
@@ -279,7 +327,7 @@ export class MyTelasService {
     try {
       await this.adService.createClientAd(clientId, adDto).toPromise();
       this.toastService.sucesso("Ad sent for admin review");
-      await this.loadClientData(true);
+      await this.loadClientData();
     } catch (error) {
       this.toastService.erro("Error uploading ad");
       throw error;
