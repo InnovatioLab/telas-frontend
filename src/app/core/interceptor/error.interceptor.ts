@@ -36,6 +36,8 @@ export function errorInterceptor(
   return next(req).pipe(
     catchError((httpError: HttpErrorResponse) => {
       const { error, status, url } = httpError;
+      const ignorarToastErro =
+        req.headers.get("Ignorar-Error-Interceptor") === "true";
 
       if (status === HttpStatusCode.Unauthorized && !url?.includes(rotaLogin)) {
         const errorMessage = error?.detail ?? "Unauthorized access. Please log in again.";
@@ -64,25 +66,29 @@ export function errorInterceptor(
       }
 
       const errorMessage = ApiErrorHandler.handleApiError(httpError);
-      
-      if (status === HttpStatusCode.Forbidden) {
-        toastService.aviso(errorMessage);
-        return throwError(() => {
-          const customError = new Error(errorMessage);
-          (customError as any).handled = true;
-          return customError;
-        });
-      }
-      
-      if (status === 0) {
-        toastService.erro(errorMessage);
-      } else if (status >= 500) {
-        toastService.erro(errorMessage);
-      } else if (status >= 400 && status !== HttpStatusCode.Unauthorized) {
-        toastService.aviso(errorMessage);
+
+      if (!ignorarToastErro) {
+        if (status === HttpStatusCode.Forbidden) {
+          toastService.aviso(errorMessage);
+          return throwError(() => {
+            const customError = new Error(errorMessage);
+            (customError as any).handled = true;
+            return customError;
+          });
+        }
+
+        if (status === 0) {
+          toastService.erro(errorMessage);
+        } else if (status >= 500) {
+          toastService.erro(errorMessage);
+        } else if (status >= 400 && status !== HttpStatusCode.Unauthorized) {
+          toastService.aviso(errorMessage);
+        }
+
+        return throwError(() => new Error(errorMessage));
       }
 
-      return throwError(() => new Error(errorMessage));
+      return throwError(() => httpError);
     })
   );
 }

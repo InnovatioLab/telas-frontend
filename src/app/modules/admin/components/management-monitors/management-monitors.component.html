@@ -282,5 +282,65 @@
     </ng-template>
   </p-dialog>
 
-  <!-- Upload de Ads removido: agora é via fluxo do cliente -->
+  <p-dialog
+    header="Send ad to screen"
+    [(visible)]="showCreateAdModal"
+    [modal]="true"
+    [style]="{ width: 'min(520px, 92vw)' }"
+    [breakpoints]="{ '575px': '95vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="!loadingCreateAd"
+    [closeOnEscape]="!loadingCreateAd"
+    [dismissableMask]="!loadingCreateAd"
+    (onHide)="closeUploadAdModal()"
+  >
+    <div class="flex flex-column gap-3" *ngIf="selectedMonitorForUpload">
+      <p class="m-0 text-sm">
+        <strong>Screen:</strong> {{ getMonitorAddress(selectedMonitorForUpload) }}
+      </p>
+      <div
+        *ngIf="uploadAdPreview && selectedFile && !isPdfFile(selectedFile.name)"
+        class="w-full flex justify-content-center"
+      >
+        <img
+          [src]="uploadAdPreview"
+          alt="Preview"
+          class="border-round w-full"
+          style="max-height: 280px; object-fit: contain"
+        />
+      </div>
+      <div
+        *ngIf="selectedFile && isPdfFile(selectedFile.name)"
+        class="flex align-items-center gap-2"
+      >
+        <span class="pi pi-file-pdf" aria-hidden="true"></span>
+        <span>{{ selectedFile.name }}</span>
+      </div>
+      <p *ngIf="selectedFile && !newAd.bytes" class="m-0 text-sm text-500">
+        Reading file…
+      </p>
+    </div>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        class="p-button-text"
+        id="btn-upload-ad-cancel"
+        [disabled]="loadingCreateAd"
+        (click)="closeUploadAdModal()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Send"
+        icon="pi pi-send"
+        id="btn-upload-ad-send"
+        [loading]="loadingCreateAd"
+        [disabled]="loadingCreateAd || !newAd.bytes"
+        (click)="createAdvertisement()"
+      ></button>
+    </ng-template>
+  </p-dialog>
 </div>

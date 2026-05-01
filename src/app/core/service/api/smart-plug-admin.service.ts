@@ -104,7 +104,12 @@ export class SmartPlugAdminService {
       .post<ResponseDto<SmartPlugDiscoverySummary>>(
         `${this.env.apiUrl}monitoring/smart-plugs/discovery/run`,
         {},
-        { headers: this.headers() }
+        {
+          headers: {
+            ...this.headers(),
+            "Ignorar-Error-Interceptor": "true",
+          },
+        }
       )
       .pipe(map((res) => res.data as SmartPlugDiscoverySummary));
   }

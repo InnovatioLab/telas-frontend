@@ -384,7 +384,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       .validateAd(ad.id, "APPROVED")
       .then(async () => {
         this.notificationsService
-          .refreshAndMarkReferencesAsRead(["AD_RECEIVED"])
+          .refreshAndMarkReferencesAsRead([
+          "AD_RECEIVED",
+          "AD_RESUBMITTED_FOR_VALIDATION",
+        ])
           .subscribe();
         await this.loadClientData();
       })
@@ -448,7 +451,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         }
         this.closeValidateAdDialog();
         this.notificationsService
-          .refreshAndMarkReferencesAsRead(["AD_RECEIVED"])
+          .refreshAndMarkReferencesAsRead([
+          "AD_RECEIVED",
+          "AD_RESUBMITTED_FOR_VALIDATION",
+        ])
           .subscribe();
         await this.loadClientData();
       } catch (error) {

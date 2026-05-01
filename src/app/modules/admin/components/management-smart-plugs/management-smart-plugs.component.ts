@@ -80,11 +80,20 @@ export class ManagementSmartPlugsComponent implements OnInit {
       },
       error: (err: unknown) => {
         this.discoveryRunning = false;
-        const httpErr = err as HttpErrorResponse | undefined;
-        const status = httpErr?.status;
-        if (status === 401 || status === 403) {
-          (httpErr as any).handled = true;
-          this.toast.aviso("Sem permissão para executar a descoberta de IP.");
+        if (err instanceof HttpErrorResponse) {
+          if (err.status === 401) {
+            return;
+          }
+          if (err.status === 403) {
+            this.toast.aviso(
+              "Sem permissão para executar a descoberta de IP."
+            );
+            return;
+          }
+          this.toast.erro("Não foi possível executar a descoberta de IP.");
+          return;
+        }
+        if (err instanceof Error) {
           return;
         }
         this.toast.erro("Não foi possível executar a descoberta de IP.");

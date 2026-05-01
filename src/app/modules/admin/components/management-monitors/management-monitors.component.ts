@@ -601,9 +601,10 @@ export class ManagementMonitorsComponent implements OnInit {
             const base64 = (reader.result as string).split(",")[1];
             this.newAd.bytes = base64;
             this.uploadAdPreview = reader.result as string;
+            this.showCreateAdModal = true;
+            this.cdr.markForCheck();
           };
           reader.readAsDataURL(file);
-          this.showCreateAdModal = true;
         })
         .catch((error) => {
           
@@ -649,22 +650,46 @@ export class ManagementMonitorsComponent implements OnInit {
       .subscribe({
         next: () => {
           this.loadingCreateAd = false;
-          this.showCreateAdModal = false;
-          this.selectedFile = null;
-          this.newAd = { name: "", type: "", bytes: "" };
-          this.uploadAdPreview = null;
-          this.toastService.sucesso("Ad enviado direto para a screen.");
+          this.closeUploadAdModal();
+          this.toastService.sucesso("Ad sent to screen.");
+          this.messageService.add({
+            severity: "success",
+            summary: "Success",
+            detail: "Ad sent to screen.",
+          });
           this.loadMonitors();
         },
         error: (error) => {
           this.loadingCreateAd = false;
+          const raw =
+            error?.error?.message ??
+            error?.error?.data ??
+            error?.message;
           const msg =
-            error?.error?.message ||
-            error?.message ||
-            "Falha ao enviar ad direto.";
+            typeof raw === "string"
+              ? raw
+              : raw != null
+                ? JSON.stringify(raw)
+                : "Failed to send ad to screen.";
           this.toastService.erro(msg);
+          this.messageService.add({
+            severity: "error",
+            summary: "Upload failed",
+            detail: msg,
+          });
         },
       });
+  }
+
+  closeUploadAdModal(): void {
+    this.showCreateAdModal = false;
+    this.selectedMonitorForUpload = null;
+    this.selectedFile = null;
+    this.newAd = { name: "", type: "", bytes: "" };
+    this.uploadAdPreview = null;
+    if (this.fileInput?.nativeElement) {
+      this.fileInput.nativeElement.value = "";
+    }
   }
 
   private convertValidationTypeToStatus(
