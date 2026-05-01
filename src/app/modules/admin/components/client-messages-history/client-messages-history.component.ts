@@ -8,6 +8,7 @@ import { AdminClientMessageRowDto } from "@app/model/dto/response/admin-client-m
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { Client } from "@app/model/client";
+import { NotificationsService } from "@app/core/service/api/notifications.service";
 
 type GroupedMessages = {
   adId: string;
@@ -34,7 +35,8 @@ export class ClientMessagesHistoryComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly clientManagementService: ClientManagementService,
     private readonly clientService: ClientService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly notificationsService: NotificationsService
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +45,7 @@ export class ClientMessagesHistoryComponent implements OnInit {
       this.toastService.erro("Client not found.");
       return;
     }
+    this.notificationsService.markClientMessagesAsRead(this.clientId).subscribe();
     this.loadClientHeader();
     this.load();
   }

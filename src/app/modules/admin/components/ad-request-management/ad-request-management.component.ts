@@ -19,6 +19,8 @@ import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { triggerBrowserFileDownload } from "@app/shared/utils/file-download.util";
 import { PdfViewerModule } from "ng2-pdf-viewer";
+import { Router } from "@angular/router";
+import { NotificationsService } from "@app/core/service/api/notifications.service";
 
 @Component({
   selector: "app-ad-request-management",
@@ -66,11 +68,16 @@ export class AdRequestManagementComponent implements OnInit {
     private readonly clientService: ClientService,
     private readonly adService: AdService,
     private readonly toastService: ToastService,
-    private readonly pdfViewerService: PdfViewerService
+    private readonly pdfViewerService: PdfViewerService,
+    private readonly router: Router,
+    private readonly notificationsService: NotificationsService
   ) {}
+
+  private unreadMessagesByClientId = new Map<string, number>();
 
   ngOnInit(): void {
     this.loadAdRequests();
+    this.refreshUnreadMessageCounters();
   }
 
   loadAdRequests(): void {
@@ -88,12 +95,42 @@ export class AdRequestManagementComponent implements OnInit {
         this.totalRecords = response.totalElements || 0;
         this.loading = false;
         this.isSorting = false;
+        this.refreshUnreadMessageCounters();
       },
       error: (error) => {
         this.toastService.erro("Failed to load ad requests");
         this.loading = false;
         this.isSorting = false;
       },
+    });
+  }
+
+  openMessagesHistory(adRequest: AdRequestResponseDto): void {
+    const clientId = String(adRequest?.clientId ?? "").trim();
+    if (!clientId) return;
+    this.router.navigate([`/admin/clients/${clientId}/messages`]);
+  }
+
+  getUnreadMessagesCount(adRequest: AdRequestResponseDto): number {
+    const clientId = String(adRequest?.clientId ?? "").trim();
+    if (!clientId) return 0;
+    return this.unreadMessagesByClientId.get(clientId) ?? 0;
+  }
+
+  private refreshUnreadMessageCounters(): void {
+    this.notificationsService.fetchAllNotifications().subscribe(() => {
+      const all = this.notificationsService.allNotifications();
+      const map = new Map<string, number>();
+      for (const n of all) {
+        if (!n || n.visualized) continue;
+        if (String(n.reference) !== "CLIENT_AD_REJECTED") continue;
+        const m = String(n.actionUrl || "");
+        const match = m.match(/\/admin\/clients\/([0-9a-fA-F-]{36})\/messages/);
+        const clientId = match?.[1];
+        if (!clientId) continue;
+        map.set(clientId, (map.get(clientId) ?? 0) + 1);
+      }
+      this.unreadMessagesByClientId = map;
     });
   }
 

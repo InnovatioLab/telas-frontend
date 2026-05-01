@@ -92,6 +92,24 @@
       <td>{{ adRequest.waitingDays }} days</td>
       <td class="actions">
         <div class="action-buttons">
+          <span class="action-with-badge">
+            <button
+              pButton
+              pRipple
+              icon="pi pi-comments"
+              class="p-button-rounded p-button-secondary p-button-text"
+              (click)="openMessagesHistory(adRequest)"
+              pTooltip="Messages"
+              tooltipPosition="top"
+              type="button"
+            ></button>
+            <span
+              *ngIf="getUnreadMessagesCount(adRequest) > 0"
+              class="unread-badge"
+            >
+              {{ getUnreadMessagesCount(adRequest) }}
+            </span>
+          </span>
           <button
             pButton
             pRipple

@@ -147,4 +147,26 @@ export class NotificationsService {
       })
     );
   }
+
+  public markClientMessagesAsRead(clientId: string): Observable<void> {
+    const id = String(clientId || "").trim();
+    if (!id) {
+      return of(void 0);
+    }
+    const clientMessagesUrl = `/admin/clients/${id}/messages`;
+    return this.fetchAllNotifications().pipe(
+      switchMap(() => {
+        const ids = (this._allNotifications() || [])
+          .filter((n) => n && !n.visualized)
+          .filter((n) => String(n.reference) === "CLIENT_AD_REJECTED")
+          .filter((n) => String(n.actionUrl || "").includes(clientMessagesUrl))
+          .map((n) => n.id)
+          .filter((nid) => typeof nid === "string" && nid.length > 0);
+        if (ids.length === 0) {
+          return of(void 0);
+        }
+        return this.fetchAllNotifications({ ids });
+      })
+    );
+  }
 }
