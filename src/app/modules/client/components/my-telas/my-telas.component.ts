@@ -25,6 +25,7 @@ import { CartService } from "@app/core/service/api/cart.service";
 import { MyTelasService } from "../../services/my-telas.service";
 import { AdItemComponent } from "../ad-item/ad-item.component";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
+import { ClientService } from "@app/core/service/api/client.service";
 
 @Component({
   selector: "app-my-telas",
@@ -59,6 +60,10 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   showValidateAdDialog = false;
   showUploadAdDialog = false;
   selectedAdForValidation: AdResponseDto | null = null;
+  showAdMessagesDialog = false;
+  adMessages: import("@app/model/dto/response/ad-message-response.dto").AdMessageResponseDto[] = [];
+  messagesLoading = false;
+  newMessageText = "";
   showAdPreviewDialog = false;
   adPreviewTitle: string | null = null;
   adPreviewLink: string | null = null;
@@ -87,7 +92,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly cdr: ChangeDetectorRef,
     private readonly sanitizer: DomSanitizer,
     private readonly cartService: CartService,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly clientService: ClientService
   ) {
     this.requestAdForm = this.myTelasService.createRequestAdForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
@@ -401,9 +407,12 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       let refusedData: RefusedAdRequestDto | undefined;
 
       if (validation === "REJECTED") {
+        const msg = String(this.validateAdForm.get("justification")?.value ?? "").trim();
+        const desc = String(this.validateAdForm.get("description")?.value ?? "").trim();
+        const full = [msg, desc].filter(Boolean).join("\n");
         refusedData = {
-          justification: this.validateAdForm.get("justification")?.value,
-          description: this.validateAdForm.get("description")?.value,
+          justification: full.slice(0, 100),
+          description: full.length > 100 ? full : undefined,
         };
       }
 
@@ -413,6 +422,14 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           validation,
           refusedData
         );
+        if (validation === "REJECTED") {
+          const msg = String(this.validateAdForm.get("justification")?.value ?? "").trim();
+          const desc = String(this.validateAdForm.get("description")?.value ?? "").trim();
+          const full = [msg, desc].filter(Boolean).join("\n").trim();
+          if (full) {
+            await this.clientService.sendAdMessage(this.selectedAdForValidation.id, full).toPromise();
+          }
+        }
         this.closeValidateAdDialog();
         this.notificationsService
           .refreshAndMarkReferencesAsRead(["AD_RECEIVED"])
@@ -421,6 +438,49 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       } catch (error) {
       }
     }
+  }
+
+  openAdMessagesDialog(ad: AdResponseDto): void {
+    this.selectedAdForValidation = ad;
+    this.showAdMessagesDialog = true;
+    this.loadAdMessages(ad.id);
+  }
+
+  closeAdMessagesDialog(): void {
+    this.showAdMessagesDialog = false;
+    this.adMessages = [];
+    this.newMessageText = "";
+  }
+
+  loadAdMessages(adId: string): void {
+    this.messagesLoading = true;
+    this.clientService.listAdMessages(adId).subscribe({
+      next: (list) => {
+        this.adMessages = list ?? [];
+        this.messagesLoading = false;
+      },
+      error: () => {
+        this.toastService.erro("Erro ao carregar mensagens.");
+        this.messagesLoading = false;
+      },
+    });
+  }
+
+  sendNewMessage(): void {
+    if (!this.selectedAdForValidation) return;
+    const text = String(this.newMessageText ?? "").trim();
+    if (!text) return;
+    this.messagesLoading = true;
+    this.clientService.sendAdMessage(this.selectedAdForValidation.id, text).subscribe({
+      next: () => {
+        this.newMessageText = "";
+        this.loadAdMessages(this.selectedAdForValidation!.id);
+      },
+      error: () => {
+        this.toastService.erro("Erro ao enviar mensagem.");
+        this.messagesLoading = false;
+      },
+    });
   }
 
 

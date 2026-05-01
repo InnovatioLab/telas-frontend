@@ -25,6 +25,15 @@ export interface MonitorResponseDto {
   createdAt?: Date;
   updatedAt?: Date;
   canBeDeleted: boolean;
+
+  maxAds?: number;
+  activeAdsCount?: number;
+  partnerAdsCount?: number;
+  clientAdsCount?: number;
+  remainingTotalSlots?: number;
+  remainingPartnerSlots?: number;
+  remainingClientSlots?: number;
+  availableAdsCount?: number;
 }
 
 export interface MonitorAdResponseDto {

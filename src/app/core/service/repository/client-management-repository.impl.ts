@@ -12,6 +12,7 @@ import {
   PermanentDeletionRequirementsDto,
   PermanentDeleteClientPayload,
 } from '@app/core/service/api/client-management.service';
+import { AdminClientMessageRowDto } from '@app/model/dto/response/admin-client-message-row.dto';
 
 @Injectable({ providedIn: 'root' })
 export class ClientManagementRepositoryImpl implements IClientManagementRepository {
@@ -104,5 +105,13 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
       body["monitorSuccessorClientId"] = payload.monitorSuccessorClientId;
     }
     return this.http.post<void>(`${this.baseUrl}/${clientId}/permanent-delete`, body);
+  }
+
+  listClientMessagesHistory(clientId: string): Observable<AdminClientMessageRowDto[]> {
+    return this.http
+      .get<ResponseDTO<AdminClientMessageRowDto[]>>(
+        `${this.baseUrl}/${clientId}/messages-history`
+      )
+      .pipe(map((r) => r.data ?? []));
   }
 }

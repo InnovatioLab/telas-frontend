@@ -17,6 +17,7 @@ import { ClientResponseDTO } from "@app/model/dto/response/client-response.dto";
 import { Page } from "@app/model/dto/page.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { WishlistResponseDto } from "@app/model/dto/response/wishlist-response.dto";
+import { AdMessageResponseDto } from "@app/model/dto/response/ad-message-response.dto";
 import {
   BehaviorSubject,
   Observable,
@@ -123,6 +124,14 @@ export class ClientService {
     refusedData?: RefusedAdRequestDto
   ): Observable<any> {
     return this.clientRepository.validateAd(adId, validation, refusedData);
+  }
+
+  listAdMessages(adId: string): Observable<AdMessageResponseDto[]> {
+    return this.clientRepository.listAdMessages(adId);
+  }
+
+  sendAdMessage(adId: string, message: string): Observable<any> {
+    return this.clientRepository.sendAdMessage(adId, message);
   }
 
   getAuthenticatedClient(): Observable<AuthenticatedClientResponseDto> {

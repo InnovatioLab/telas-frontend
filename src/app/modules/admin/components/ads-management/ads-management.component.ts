@@ -43,6 +43,11 @@ export class AdsManagementComponent implements OnInit {
   selectedAd: PendingAdAdminValidationResponseDto | null = null;
   loadingValidation = false;
 
+  // Reject modal (message)
+  showRejectDialog = false;
+  rejectMessage = "";
+  rejecting = false;
+
   // Validation form
   validateForm: FormGroup;
   validationOptions = [
@@ -107,6 +112,18 @@ export class AdsManagementComponent implements OnInit {
     this.showValidateDialog = true;
   }
 
+  openRejectDialog(ad: PendingAdAdminValidationResponseDto): void {
+    this.selectedAd = ad;
+    this.rejectMessage = "";
+    this.showRejectDialog = true;
+  }
+
+  closeRejectDialog(): void {
+    this.showRejectDialog = false;
+    this.rejectMessage = "";
+    this.selectedAd = null;
+  }
+
   closeValidateDialog(): void {
     this.showValidateDialog = false;
     this.selectedAd = null;
@@ -156,6 +173,43 @@ export class AdsManagementComponent implements OnInit {
           
           this.toastService.erro("Failed to validate ad");
           this.loadingValidation = false;
+        },
+      });
+  }
+
+  submitReject(): void {
+    if (!this.selectedAd) return;
+    const msg = String(this.rejectMessage ?? "").trim();
+    if (!msg) return;
+
+    this.rejecting = true;
+    const refusedData = {
+      justification: msg.slice(0, 100),
+      description: msg.length > 100 ? msg : undefined,
+    };
+
+    this.clientService
+      .validateAd(this.selectedAd.id, AdValidationType.REJECTED, refusedData)
+      .subscribe({
+        next: () => {
+          this.clientService.sendAdMessage(this.selectedAd!.id, msg).subscribe({
+            next: () => {
+              this.toastService.sucesso("Ad rejeitado e mensagem enviada.");
+              this.closeRejectDialog();
+              this.loadPendingAds();
+              this.rejecting = false;
+            },
+            error: () => {
+              this.toastService.erro("Ad rejeitado, mas falhou ao enviar mensagem.");
+              this.closeRejectDialog();
+              this.loadPendingAds();
+              this.rejecting = false;
+            },
+          });
+        },
+        error: () => {
+          this.toastService.erro("Falha ao rejeitar ad.");
+          this.rejecting = false;
         },
       });
   }

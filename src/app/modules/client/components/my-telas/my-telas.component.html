@@ -259,6 +259,16 @@
         <app-ad-item [ad]="ad" [loading]="myTelasService.isLoading()" (view)="viewAttachment($event)"
           (download)="downloadAttachment(ad.downloadLink ?? ad.link, ad.name)"
           (validate)="openValidateAdDialog($event)" />
+        <div class="w-full flex justify-content-end mb-4">
+          <button
+            pButton
+            [text]="true"
+            icon="pi pi-comments"
+            label="Messages"
+            (click)="openAdMessagesDialog(ad)"
+            [disabled]="myTelasService.isLoading()"
+          ></button>
+        </div>
         }
       </div>
       }
@@ -339,6 +349,56 @@
         [disabled]="validateAdForm.invalid || myTelasService.isLoading()" [loading]="myTelasService.isLoading()"
         class="validate-ad-footer__btn validate-ad-footer__btn--primary"></button>
     </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Messages"
+  [(visible)]="showAdMessagesDialog"
+  [modal]="true"
+  [style]="{ width: '650px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closeAdMessagesDialog()"
+>
+  <div class="w-full flex flex-column gap-3">
+    <div *ngIf="messagesLoading">Loading...</div>
+
+    <div class="w-full" *ngIf="!messagesLoading && adMessages.length === 0">
+      No messages yet.
+    </div>
+
+    <div class="w-full flex flex-column gap-2" *ngIf="adMessages.length > 0">
+      <div *ngFor="let m of adMessages" class="p-2 surface-100 border-round">
+        <div class="text-sm font-semibold">
+          {{ m.senderName || m.senderRole }} • {{ m.createdAt | date: "MM/dd/yyyy HH:mm" }}
+        </div>
+        <div class="white-space-pre-line">{{ m.message }}</div>
+      </div>
+    </div>
+
+    <div class="w-full">
+      <label for="newMsg">Send a message</label>
+      <textarea
+        id="newMsg"
+        pTextarea
+        [(ngModel)]="newMessageText"
+        rows="4"
+        class="w-full"
+        placeholder="Type your message..."
+      ></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton id="btnSecundario" label="Close" (click)="closeAdMessagesDialog()"></button>
+    <button
+      pButton
+      label="Send"
+      (click)="sendNewMessage()"
+      [disabled]="!newMessageText?.trim() || messagesLoading"
+      [loading]="messagesLoading"
+    ></button>
   </ng-template>
 </p-dialog>
 

@@ -21,6 +21,7 @@ import { AdminAdOperationsComponent } from "./components/admin-ad-operations/adm
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { ManagementSmartPlugsComponent } from "./components/management-smart-plugs/management-smart-plugs.component";
 import { SmartPlugsHubComponent } from "./components/smart-plugs-hub/smart-plugs-hub.component";
+import { ClientMessagesHistoryComponent } from "./components/client-messages-history/client-messages-history.component";
 
 export const ROUTES: Route[] = [
   {
@@ -67,6 +68,11 @@ export const ROUTES: Route[] = [
         path: "clients",
         component: ManagementClientsComponent,
         title: "Clients Management",
+      },
+      {
+        path: "clients/:clientId/messages",
+        component: ClientMessagesHistoryComponent,
+        title: "Client messages",
       },
       {
         path: "ad-operations",

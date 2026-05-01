@@ -19,6 +19,7 @@ import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto
 import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
 import { FilterClientRequestDto } from '@app/core/service/api/client-management.service';
 import { BaseRepository } from './base.repository';
+import { AdMessageResponseDto } from '@app/model/dto/response/ad-message-response.dto';
 
 @Injectable({ providedIn: 'root' })
 export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDTO, Partial<ClientRequestDTO>> implements IClientRepository {
@@ -307,6 +308,23 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
     }
 
     return this.http.patch(url, {}, this.getHeaders());
+  }
+
+  listAdMessages(adId: string): Observable<AdMessageResponseDto[]> {
+    return this.http
+      .get<ResponseDTO<AdMessageResponseDto[]>>(
+        `${this.baseUrl}/ads/${adId}/messages`,
+        this.getHeaders()
+      )
+      .pipe(map((r) => r.data ?? []));
+  }
+
+  sendAdMessage(adId: string, message: string): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/ads/${adId}/messages`,
+      { message },
+      this.getHeaders()
+    );
   }
 
   addToWishlist(monitorId: string): Observable<boolean> {

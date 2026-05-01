@@ -6,6 +6,7 @@ import {
   PermanentDeletionRequirementsDto,
   PermanentDeleteClientPayload,
 } from '@app/core/service/api/client-management.service';
+import { AdminClientMessageRowDto } from '@app/model/dto/response/admin-client-message-row.dto';
 
 /**
  * Interface para operações de repositório de Gerenciamento de Clientes
@@ -37,4 +38,6 @@ export interface IClientManagementRepository {
   ): Observable<PermanentDeletionRequirementsDto>;
 
   permanentDeleteClient(clientId: string, payload: PermanentDeleteClientPayload): Observable<void>;
+
+  listClientMessagesHistory(clientId: string): Observable<AdminClientMessageRowDto[]>;
 }

@@ -15,6 +15,15 @@ export interface Monitor {
   hasAvailableSlots?: boolean;
   fullAddress?: string;
   canBeDeleted?: boolean;
+
+  maxAds?: number;
+  activeAdsCount?: number;
+  partnerAdsCount?: number;
+  clientAdsCount?: number;
+  remainingTotalSlots?: number;
+  remainingPartnerSlots?: number;
+  remainingClientSlots?: number;
+  availableAdsCount?: number;
 }
 
 export interface MonitorAd {

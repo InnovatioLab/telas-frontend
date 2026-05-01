@@ -39,6 +39,7 @@ import { Observable, of } from "rxjs";
 import { switchMap, take } from "rxjs/operators";
 import { CreateMonitorModalComponent } from "../create-monitor-modal/create-monitor-modal.component";
 import { EditMonitorModalComponent } from "../edit-monitor-modal/edit-monitor-modal.component";
+import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
 
 interface Ad {
   id: string;
@@ -631,62 +632,39 @@ export class ManagementMonitorsComponent implements OnInit {
     
     this.loadingCreateAd = true;
     
-    let clientId: string | null = null;
-    
-    if (this.authenticatedClient?.id) {
-      clientId = this.authenticatedClient.id;
-    } else if (this.autenticacaoService.user?.id) {
-      clientId = this.autenticacaoService.user.id;
-    } else if (this.autenticacaoService.loggedClient?.id) {
-      clientId = this.autenticacaoService.loggedClient.id;
-    }
-    
-    if (!clientId) {
-      this.clientService.getAuthenticatedClient().subscribe({
-        next: (client) => {
-          this.authenticatedClient = client as any;
-          if (client?.id) {
-            this.proceedWithAdUpload(client.id);
-          } else {
-            this.toastService.erro("Client ID not found. Please try logging in again.");
-            this.loadingCreateAd = false;
-          }
-        },
-        error: () => {
-          this.toastService.erro("Client ID not found. Please try logging in again.");
-          this.loadingCreateAd = false;
-        }
-      });
+    if (!this.selectedMonitorForUpload?.id) {
+      this.toastService.erro("Screen not selected.");
+      this.loadingCreateAd = false;
       return;
     }
-    
-    this.proceedWithAdUpload(clientId);
-  }
-  
-  private proceedWithAdUpload(clientId: string): void {
-    const payload = {
-      name: this.selectedFile!.name,
-      type: this.selectedFile!.type,
+
+    const payload: AttachmentRequestDto = {
+      name: this.selectedFile.name,
+      type: this.selectedFile.type,
       bytes: this.newAd.bytes,
     };
-    
-    this.adService.createClientAd(clientId, payload).subscribe({
-      next: () => {
-        this.loadingCreateAd = false;
-        this.showCreateAdModal = false;
-        this.selectedFile = null;
-        this.newAd = { name: "", type: "", bytes: "" };
-        this.uploadAdPreview = null;
-        this.toastService.sucesso("Ad uploaded successfully");
-        this.loadMonitors(); // Recarregar a lista de monitores
-      },
-      error: (error) => {
-        this.loadingCreateAd = false;
-        console.error("Error creating ad:", error);
-        const errorMessage = error?.error?.message || error?.message || "Failed to create ad";
-        this.toastService.erro(errorMessage);
-      },
-    });
+
+    this.monitorService
+      .uploadDirectAdToMonitor(this.selectedMonitorForUpload.id, payload)
+      .subscribe({
+        next: () => {
+          this.loadingCreateAd = false;
+          this.showCreateAdModal = false;
+          this.selectedFile = null;
+          this.newAd = { name: "", type: "", bytes: "" };
+          this.uploadAdPreview = null;
+          this.toastService.sucesso("Ad enviado direto para a screen.");
+          this.loadMonitors();
+        },
+        error: (error) => {
+          this.loadingCreateAd = false;
+          const msg =
+            error?.error?.message ||
+            error?.message ||
+            "Falha ao enviar ad direto.";
+          this.toastService.erro(msg);
+        },
+      });
   }
 
   private convertValidationTypeToStatus(

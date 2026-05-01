@@ -4,6 +4,7 @@ import { PaginationResponseDto } from '@app/model/dto/response/pagination-respon
 import { Observable } from 'rxjs';
 import { IClientManagementRepository } from '@app/core/interfaces/services/repository/client-management-repository.interface';
 import { CLIENT_MANAGEMENT_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
+import { AdminClientMessageRowDto } from '@app/model/dto/response/admin-client-message-row.dto';
 
 export interface FilterClientRequestDto {
   page?: number;
@@ -78,5 +79,9 @@ export class ClientManagementService {
 
   permanentDeleteClient(clientId: string, payload: PermanentDeleteClientPayload): Observable<void> {
     return this.repository.permanentDeleteClient(clientId, payload);
+  }
+
+  listClientMessagesHistory(clientId: string): Observable<AdminClientMessageRowDto[]> {
+    return this.repository.listClientMessagesHistory(clientId);
   }
 } 

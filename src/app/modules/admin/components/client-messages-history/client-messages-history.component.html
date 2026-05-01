@@ -1,0 +1,31 @@
+<p-card styleClass="card-header">
+  <div class="flex justify-content-between align-items-center w-full">
+    <div>
+      <h3 class="m-0">Histórico de mensagens</h3>
+      <small class="text-500">Client: {{ clientId }}</small>
+    </div>
+    <a pButton class="p-button-text" [routerLink]="['/admin/clients']" icon="pi pi-arrow-left" label="Voltar"></a>
+  </div>
+</p-card>
+
+<div class="w-full mt-3">
+  <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+
+  <div *ngIf="!loading && grouped.length === 0" class="text-center text-500">
+    Nenhuma mensagem encontrada.
+  </div>
+
+  <p-accordion *ngIf="!loading && grouped.length > 0" [multiple]="true">
+    <p-accordionTab *ngFor="let g of grouped" [header]="g.adName">
+      <div class="flex flex-column gap-2">
+        <div *ngFor="let m of g.rows" class="p-2 surface-100 border-round">
+          <div class="text-sm font-semibold">
+            {{ m.senderName || m.senderRole }} • {{ m.createdAt | date: "MM/dd/yyyy HH:mm" }}
+          </div>
+          <div class="white-space-pre-line">{{ m.message }}</div>
+        </div>
+      </div>
+    </p-accordionTab>
+  </p-accordion>
+</div>
+

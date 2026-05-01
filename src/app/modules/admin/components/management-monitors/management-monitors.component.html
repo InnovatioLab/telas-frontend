@@ -1,4 +1,5 @@
 <div class="content">
+  <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)" [accept]="acceptedFileTypes" />
   <p-card styleClass="card-header">
     <div class="card-header-content">
       <div class="p-card-content card-toolbar">
@@ -73,6 +74,7 @@
         <th scope="col" pSortableColumn="address">
           Address <p-sortIcon field="address"></p-sortIcon>
         </th>
+        <th scope="col">Ads</th>
         <th scope="col">Actions</th>
       </tr>
     </ng-template>
@@ -87,7 +89,30 @@
         </td>
         <td>{{ getMonitorAddress(monitor) }}</td>
         <td>
+          <div class="flex flex-column gap-1">
+            <div>
+              <strong>{{ monitor.activeAdsCount ?? (monitor.adLinks?.length || 0) }}</strong
+              >/ {{ monitor.maxAds ?? 15 }}
+              <span class="text-sm text-500">
+                (Client {{ monitor.clientAdsCount ?? 0 }}/5 • Partner {{ monitor.partnerAdsCount ?? 0 }}/10)
+              </span>
+            </div>
+            <div class="text-sm text-500">
+              Available: {{ monitor.availableAdsCount ?? 0 }} • Slots: {{ monitor.remainingTotalSlots ?? 0 }}
+            </div>
+          </div>
+        </td>
+        <td>
           <div class="action-buttons">
+            <button
+              pButton
+              pRipple
+              class="p-button-rounded p-button-primary p-button-text"
+              icon="pi pi-upload"
+              (click)="openUploadAdsModal(monitor)"
+              pTooltip="Send ad direct"
+              tooltipPosition="top"
+            ></button>
             <button
               [disabled]="!shouldShowManageAdsButton(monitor)"
               pButton

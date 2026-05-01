@@ -15,6 +15,7 @@ import { AttachmentRequestDto } from '@app/model/dto/request/attachment-request.
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
 import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
 import { FilterClientRequestDto } from '@app/core/service/api/client-management.service';
+import { AdMessageResponseDto } from '@app/model/dto/response/ad-message-response.dto';
 
 export interface ClientFilterDto extends IBaseFilterDto {}
 
@@ -60,6 +61,10 @@ export interface IClientRepository extends IRepository<Client, ClientRequestDTO,
   createAdRequest(request: ClientAdRequestDto): Observable<any>;
 
   validateAd(adId: string, validation: string, refusedData?: RefusedAdRequestDto): Observable<any>;
+
+  listAdMessages(adId: string): Observable<AdMessageResponseDto[]>;
+
+  sendAdMessage(adId: string, message: string): Observable<any>;
 
   addToWishlist(monitorId: string): Observable<boolean>;
 

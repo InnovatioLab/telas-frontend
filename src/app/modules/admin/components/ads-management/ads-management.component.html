@@ -88,6 +88,15 @@
             pTooltip="Validate Ad"
             tooltipPosition="left"
           ></button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-times-circle"
+            class="p-button-rounded p-button-danger p-button-text"
+            (click)="openRejectDialog(ad)"
+            pTooltip="Reject with message"
+            tooltipPosition="left"
+          ></button>
         </div>
       </td>
     </tr>
@@ -219,6 +228,49 @@
       (click)="submitValidation()"
       [disabled]="validateForm.invalid || loadingValidation"
       [loading]="loadingValidation"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Reject Ad"
+  [(visible)]="showRejectDialog"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '600px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closeRejectDialog()"
+>
+  <div class="w-full flex flex-column gap-3">
+    <div *ngIf="selectedAd">
+      <strong>Ad:</strong> {{ selectedAd.name }}<br />
+      <strong>Client:</strong> {{ selectedAd.clientName }}
+    </div>
+
+    <div class="w-full">
+      <label for="rejectMessage" class="required">Message</label>
+      <textarea
+        id="rejectMessage"
+        pTextarea
+        [(ngModel)]="rejectMessage"
+        rows="5"
+        class="w-full"
+        placeholder="Explique o motivo da rejeição..."
+      ></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton id="btnSecundario" label="Cancel" (click)="closeRejectDialog()"></button>
+    <button
+      pButton
+      label="Reject"
+      severity="danger"
+      (click)="submitReject()"
+      [disabled]="!rejectMessage?.trim() || rejecting"
+      [loading]="rejecting"
     ></button>
   </ng-template>
 </p-dialog>

@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 import { AdService } from "@app/core/service/api/ad.service";
 import {
   ClientManagementService,
@@ -87,7 +88,8 @@ export class ManagementClientsComponent implements OnInit {
     private readonly toastService: ToastService,
     private readonly messageService: MessageService,
     private readonly confirmationDialogService: ConfirmationDialogService,
-    private readonly dialogService: DialogService
+    private readonly dialogService: DialogService,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -824,5 +826,13 @@ export class ManagementClientsComponent implements OnInit {
       });
     };
     reader.readAsDataURL(this.selectedFile);
+  }
+
+  openMessagesHistory(client: Client): void {
+    if (!client.id) {
+      this.toastService.erro("Client ID not found");
+      return;
+    }
+    this.router.navigate(["/admin/clients", client.id, "messages"]);
   }
 }

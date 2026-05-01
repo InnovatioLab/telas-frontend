@@ -16,6 +16,7 @@ import { IMonitorAlert } from "./interfaces/monitor";
 import { IncidentApiDto } from "./interfaces/incident-api";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
+import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
 
 interface ApiEnvelope<T> {
   data?: T;
@@ -78,6 +79,20 @@ export class MonitorService {
 
   getValidAds(monitorId: string): Observable<any[]> {
     return this.repository.findValidAds(monitorId);
+  }
+
+  uploadDirectAdToMonitor(
+    monitorId: string,
+    payload: AttachmentRequestDto
+  ): Observable<string> {
+    const headers = this.getAuthHeaders();
+    return this.http
+      .post<ApiEnvelope<string>>(
+        `${this.env.apiUrl}monitors/${encodeURIComponent(monitorId)}/direct-ad`,
+        payload,
+        { headers }
+      )
+      .pipe(map((res) => String(res?.data ?? "")));
   }
 
   getMonitorAlerts(monitorId?: string): Observable<IMonitorAlert[]> {
