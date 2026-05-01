@@ -308,7 +308,7 @@ export class MyTelasService {
       if (validation === "APPROVED") {
         this.toastService.sucesso("Ad aprovado com sucesso.");
       } else if (validation === "REJECTED") {
-        this.toastService.aviso("Ad enviado para reanálise do administrador.");
+        this.toastService.aviso("Ad sent back to the administrator for review.");
       } else {
         this.toastService.sucesso("Ad atualizado.");
       }
