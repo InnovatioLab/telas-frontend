@@ -105,6 +105,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkRouteParams();
     this.refreshCartAfterCheckoutReturn();
+    void this.loadClientData();
   }
 
   private refreshCartAfterCheckoutReturn(): void {
@@ -379,6 +380,27 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     this.validateAdForm.reset();
   }
 
+  approveAd(ad: AdResponseDto): void {
+    if (!ad?.id) return;
+    this.myTelasService
+      .validateAd(ad.id, "APPROVED")
+      .then(async () => {
+        this.notificationsService
+          .refreshAndMarkReferencesAsRead(["AD_RECEIVED"])
+          .subscribe();
+        await this.loadClientData();
+      })
+      .catch(() => {});
+  }
+
+  openRejectAdDialog(ad: AdResponseDto): void {
+    this.selectedAdForValidation = ad;
+    this.showValidateAdDialog = true;
+    this.validateAdForm.reset();
+    this.validateAdForm.patchValue({ validation: "REJECTED" });
+    this.onValidationChange({ value: "REJECTED" });
+  }
+
   closeValidateAdDialog(): void {
     this.showValidateAdDialog = false;
     this.selectedAdForValidation = null;
@@ -403,18 +425,16 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   async submitAdValidation(): Promise<void> {
     if (this.validateAdForm.valid && this.selectedAdForValidation) {
-      const validation = this.validateAdForm.get("validation")?.value;
+      const validation = "REJECTED";
       let refusedData: RefusedAdRequestDto | undefined;
 
-      if (validation === "REJECTED") {
-        const msg = String(this.validateAdForm.get("justification")?.value ?? "").trim();
-        const desc = String(this.validateAdForm.get("description")?.value ?? "").trim();
-        const full = [msg, desc].filter(Boolean).join("\n");
-        refusedData = {
-          justification: full.slice(0, 100),
-          description: full.length > 100 ? full : undefined,
-        };
-      }
+      const msg = String(this.validateAdForm.get("justification")?.value ?? "").trim();
+      const desc = String(this.validateAdForm.get("description")?.value ?? "").trim();
+      const full = [msg, desc].filter(Boolean).join("\n");
+      refusedData = {
+        justification: full.slice(0, 100),
+        description: full.length > 100 ? full : undefined,
+      };
 
       try {
         await this.myTelasService.validateAd(
@@ -422,13 +442,11 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           validation,
           refusedData
         );
-        if (validation === "REJECTED") {
-          const msg = String(this.validateAdForm.get("justification")?.value ?? "").trim();
-          const desc = String(this.validateAdForm.get("description")?.value ?? "").trim();
-          const full = [msg, desc].filter(Boolean).join("\n").trim();
-          if (full) {
-            await this.clientService.sendAdMessage(this.selectedAdForValidation.id, full).toPromise();
-          }
+        const fullMsg = [msg, desc].filter(Boolean).join("\n").trim();
+        if (fullMsg) {
+          await this.clientService
+            .sendAdMessage(this.selectedAdForValidation.id, fullMsg)
+            .toPromise();
         }
         this.closeValidateAdDialog();
         this.notificationsService

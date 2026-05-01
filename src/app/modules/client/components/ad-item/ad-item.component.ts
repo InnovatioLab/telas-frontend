@@ -29,7 +29,8 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
 
   @Output() view = new EventEmitter<string>();
   @Output() download = new EventEmitter<void>();
-  @Output() validate = new EventEmitter<AdResponseDto>();
+  @Output() approve = new EventEmitter<AdResponseDto>();
+  @Output() reject = new EventEmitter<AdResponseDto>();
 
   private mutationObserver?: MutationObserver;
   private resizeObserver?: ResizeObserver;
@@ -52,9 +53,15 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  onValidate(): void {
+  onApprove(): void {
     if (this.ad) {
-      this.validate.emit(this.ad);
+      this.approve.emit(this.ad);
+    }
+  }
+
+  onReject(): void {
+    if (this.ad) {
+      this.reject.emit(this.ad);
     }
   }
 

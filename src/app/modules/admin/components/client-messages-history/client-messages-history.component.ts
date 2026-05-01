@@ -2,10 +2,12 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, RouterModule } from "@angular/router";
 import { ClientManagementService } from "@app/core/service/api/client-management.service";
+import { ClientService } from "@app/core/service/api/client.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { AdminClientMessageRowDto } from "@app/model/dto/response/admin-client-message-row.dto";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
+import { Client } from "@app/model/client";
 
 type GroupedMessages = {
   adId: string;
@@ -22,6 +24,8 @@ type GroupedMessages = {
 })
 export class ClientMessagesHistoryComponent implements OnInit {
   clientId = "";
+  clientName = "";
+  clientEmail = "";
   loading = false;
   rows: AdminClientMessageRowDto[] = [];
   grouped: GroupedMessages[] = [];
@@ -29,6 +33,7 @@ export class ClientMessagesHistoryComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly clientManagementService: ClientManagementService,
+    private readonly clientService: ClientService,
     private readonly toastService: ToastService
   ) {}
 
@@ -38,7 +43,21 @@ export class ClientMessagesHistoryComponent implements OnInit {
       this.toastService.erro("Client not found.");
       return;
     }
+    this.loadClientHeader();
     this.load();
+  }
+
+  private loadClientHeader(): void {
+    this.clientService.buscarClient<Client>(this.clientId).subscribe({
+      next: (c) => {
+        this.clientName = String(c?.businessName ?? "");
+        this.clientEmail = String(c?.contact?.email ?? "");
+      },
+      error: () => {
+        this.clientName = "";
+        this.clientEmail = "";
+      },
+    });
   }
 
   load(): void {

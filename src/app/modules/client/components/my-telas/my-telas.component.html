@@ -258,7 +258,7 @@
         @for (ad of myTelasService.ads(); track ad.id) {
         <app-ad-item [ad]="ad" [loading]="myTelasService.isLoading()" (view)="viewAttachment($event)"
           (download)="downloadAttachment(ad.downloadLink ?? ad.link, ad.name)"
-          (validate)="openValidateAdDialog($event)" />
+          (approve)="approveAd($event)" (reject)="openRejectAdDialog($event)" />
         <div class="w-full flex justify-content-end mb-4">
           <button
             pButton
@@ -273,7 +273,7 @@
       </div>
       }
 
-      @if (myTelasService.ads().length === 0) {
+      @if (myTelasService.isClientDataLoaded() && !myTelasService.isLoading() && myTelasService.ads().length === 0) {
       <div class="no-ads-message flex flex-column align-items-center">
         <div class="empty-state flex flex-column align-items-center gap-3">
           <span class="pi pi-image" style="font-size: 48px; color: #ccc"></span>
@@ -289,8 +289,8 @@
   </p-tabPanel>
 </p-tabView>
 
-<!-- Dialog para Validar Ad -->
-<p-dialog header="Validate Ad" [(visible)]="showValidateAdDialog" [modal]="true" [style]="{ width: '500px' }"
+<!-- Dialog para Rejeitar Ad -->
+<p-dialog header="Reject Ad" [(visible)]="showValidateAdDialog" [modal]="true" [style]="{ width: '500px' }"
   [draggable]="false" [resizable]="false">
   <div class="dialog-content validation-container">
     @if (
@@ -306,18 +306,6 @@
     }
     <form [formGroup]="validateAdForm" class="validate-form">
       <div class="form-field">
-        <label for="validation" class="required">Validation</label>
-        <p-select id="validation" class="w-full" [options]="validationOptions" formControlName="validation"
-          placeholder="Select an validation" (onChange)="onValidationChange($event)"
-          [overlayOptions]="{ appendTo: 'body' }" appendTo="body">
-        </p-select>
-        @if (mostrarErro(validateAdForm, "validation")) {
-        <app-error id="error-msg-validation" [control]="validateAdForm.get('validation')"></app-error>
-        }
-      </div>
-
-      @if (validateAdForm.get("validation")?.value === "REJECTED") {
-      <div class="form-field">
         <label for="justification" class="required">Justification</label>
         <input id="justification" type="text" pInputText formControlName="justification"
           placeholder="Type your justification" />
@@ -325,9 +313,7 @@
         <app-error id="error-msg-justification" [control]="validateAdForm.get('justification')"></app-error>
         }
       </div>
-      }
 
-      @if (validateAdForm.get("validation")?.value === "REJECTED") {
       <div class="form-field">
         <label for="description">Description</label>
         <textarea id="description" pInputTextarea formControlName="description"
@@ -337,7 +323,6 @@
         <app-error id="error-msg-description" [control]="validateAdForm.get('description')"></app-error>
         }
       </div>
-      }
     </form>
   </div>
 
@@ -345,7 +330,7 @@
     <div class="w-full validate-ad-footer">
       <button pButton label="Cancel" id="btnSecundario" (click)="closeValidateAdDialog()"
         class="validate-ad-footer__btn"></button>
-      <button pButton pRipple label="Send" (click)="submitAdValidation()"
+      <button pButton pRipple label="Reject" severity="danger" (click)="submitAdValidation()"
         [disabled]="validateAdForm.invalid || myTelasService.isLoading()" [loading]="myTelasService.isLoading()"
         class="validate-ad-footer__btn validate-ad-footer__btn--primary"></button>
     </div>

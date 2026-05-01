@@ -64,13 +64,24 @@
     >
     </p-button>
     <p-button
-      icon="pi pi-check-circle"
-      (onClick)="onValidate()"
+      icon="pi pi-check"
+      (onClick)="onApprove()"
       *ngIf="canValidateAd()"
       [disabled]="loading"
       severity="success"
       [text]="true"
-      pTooltip="Validate Ad"
+      pTooltip="Approve"
+      tooltipPosition="top"
+    >
+    </p-button>
+    <p-button
+      icon="pi pi-times"
+      (onClick)="onReject()"
+      *ngIf="canValidateAd()"
+      [disabled]="loading"
+      severity="danger"
+      [text]="true"
+      pTooltip="Reject"
       tooltipPosition="top"
     >
     </p-button>
