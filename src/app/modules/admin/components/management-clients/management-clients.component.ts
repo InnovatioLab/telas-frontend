@@ -185,13 +185,11 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   canPermanentDeleteClient(client: Client): boolean {
-    if (
-      !client.id ||
-      !hasMonitoringPermission(
-        this.panelClient,
-        MonitoringPermission.ADMIN_CLIENTS_PERMANENT_DELETE
-      )
-    ) {
+    const c = this.panelClient;
+    const canDelete =
+      hasMonitoringPermission(c, MonitoringPermission.ADMIN_CLIENTS_PERMANENT_DELETE) ||
+      hasMonitoringPermission(c, MonitoringPermission.ADMIN_CLIENTS_SOFT_DELETE);
+    if (!client.id || !canDelete) {
       return false;
     }
     if (client.id === this.currentUserId) {
