@@ -55,6 +55,7 @@
       <th scope="col">Submission date</th>
       <th scope="col">Sent to box</th>
       <th scope="col">Screen / box</th>
+      <th scope="col" class="col-actions">Actions</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-row>
@@ -69,11 +70,68 @@
       </td>
       <td>{{ sentToBoxLabel(row) }}</td>
       <td class="screen-cell">{{ screenTargetSummary(row) }}</td>
+      <td class="col-actions">
+        <button
+          pButton
+          type="button"
+          icon="pi pi-eye"
+          class="p-button-rounded p-button-text"
+          [disabled]="!row.adLink?.trim()"
+          pTooltip="Preview ad"
+          tooltipPosition="left"
+          (click)="openPreview(row)"
+        ></button>
+      </td>
     </tr>
   </ng-template>
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="4" class="text-center">No client-approved ads found.</td>
+      <td colspan="5" class="text-center">No client-approved ads found.</td>
     </tr>
   </ng-template>
 </p-table>
+
+<p-dialog
+  [(visible)]="previewVisible"
+  [header]="previewTitle"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: 'min(920px, 96vw)' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closePreview()"
+>
+  <div class="ad-preview-wrap">
+    @if (safePdfUrl) {
+    <iframe
+      title="Ad preview"
+      class="ad-preview-iframe"
+      [src]="safePdfUrl"
+    ></iframe>
+    } @else if (previewUrl) {
+    <img
+      [src]="previewUrl"
+      [alt]="previewTitle"
+      class="ad-preview-img"
+    />
+    }
+  </div>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Open in new tab"
+      icon="pi pi-external-link"
+      class="p-button-text"
+      [disabled]="!previewUrl"
+      (click)="openPreviewInNewTab()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Close"
+      (click)="closePreview()"
+    ></button>
+  </ng-template>
+</p-dialog>

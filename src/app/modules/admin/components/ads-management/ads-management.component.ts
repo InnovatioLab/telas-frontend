@@ -2,11 +2,13 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { AdminAdOperationsService } from "@app/core/service/api/admin-ad-operations.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { AdminAdOperationRow } from "@app/model/admin-ad-operations";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { isPdfFile } from "@app/shared/utils/file-type.utils";
 
 @Component({
   selector: "app-ads-management",
@@ -23,9 +25,15 @@ export class AdsManagementComponent implements OnInit {
   currentPage = 1;
   pageSize = 10;
 
+  previewVisible = false;
+  previewTitle = "";
+  previewUrl: string | null = null;
+  safePdfUrl: SafeResourceUrl | null = null;
+
   constructor(
     private readonly adminAdOperationsService: AdminAdOperationsService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -99,5 +107,35 @@ export class AdsManagementComponent implements OnInit {
       return "—";
     }
     return parts.join(" · ");
+  }
+
+  openPreview(row: AdminAdOperationRow): void {
+    const url = row.adLink?.trim();
+    if (!url) {
+      this.toastService.erro("No preview link available for this ad.");
+      return;
+    }
+    this.previewTitle = row.adName?.trim() || "Ad";
+    this.previewUrl = url;
+    const pdf =
+      isPdfFile(url, row.adName) ||
+      (row.adMediaType?.toLowerCase().includes("pdf") ?? false);
+    this.safePdfUrl = pdf
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(url)
+      : null;
+    this.previewVisible = true;
+  }
+
+  closePreview(): void {
+    this.previewVisible = false;
+    this.previewUrl = null;
+    this.safePdfUrl = null;
+    this.previewTitle = "";
+  }
+
+  openPreviewInNewTab(): void {
+    if (this.previewUrl) {
+      window.open(this.previewUrl, "_blank", "noopener,noreferrer");
+    }
   }
 }

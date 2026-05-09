@@ -119,6 +119,41 @@
   word-break: break-word;
 }
 
+.col-actions {
+  width: 4rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ad-preview-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 12rem;
+  max-height: min(78vh, 720px);
+  overflow: auto;
+  background: var(--surface-ground, #f8f9fa);
+  border-radius: 6px;
+}
+
+.ad-preview-iframe {
+  width: 100%;
+  min-height: min(70vh, 640px);
+  border: 0;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.ad-preview-img {
+  max-width: 100%;
+  max-height: min(72vh, 680px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
 // Table responsive styles
 @media (max-width: 768px) {
   .action-buttons {

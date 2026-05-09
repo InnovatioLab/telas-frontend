@@ -11,6 +11,8 @@ export interface AdminAdOperationRow {
   adId: string;
   adName: string;
   submissionDate?: string | null;
+  adLink?: string | null;
+  adMediaType?: string | null;
   validation: string;
   advertiserId: string;
   advertiserBusinessName: string;
