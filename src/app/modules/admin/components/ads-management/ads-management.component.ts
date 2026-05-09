@@ -103,7 +103,8 @@ export class AdsManagementComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.approvedRows = response.list ?? [];
-          this.approvedTotalRecords = response.totalElements ?? 0;
+          this.approvedTotalRecords =
+            response.totalRecords ?? response.totalElements ?? 0;
           this.approvedLoading = false;
         },
         error: () => {

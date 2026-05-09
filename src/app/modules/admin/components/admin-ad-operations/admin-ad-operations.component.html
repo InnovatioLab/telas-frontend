@@ -21,6 +21,8 @@
         <p-dropdown
           [options]="validationOptions"
           [(ngModel)]="validationFilter"
+          optionLabel="label"
+          optionValue="value"
           placeholder="Ad validation"
           [showClear]="true"
           styleClass="validation-dropdown"
@@ -131,6 +133,7 @@
             (click)="openExpiryNotifications(row)"
           ></button>
           <button
+            *ngIf="row.monitorId"
             pButton
             pRipple
             type="button"
@@ -138,6 +141,16 @@
             class="p-button-rounded p-button-info p-button-text"
             [routerLink]="['/admin/screens', row.monitorId, 'manage-ads']"
             pTooltip="Manage ads on screen"
+          ></button>
+          <button
+            *ngIf="!row.monitorId"
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-external-link"
+            class="p-button-rounded p-button-text"
+            [disabled]="true"
+            pTooltip="Ad is not on a screen yet"
           ></button>
         </div>
       </td>

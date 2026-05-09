@@ -228,14 +228,35 @@ export class MyTelasService {
         await this.loadClientData();
       }
 
-      const current = this._clientAttachments();
-      const ids =
-        selectedAttachmentIds && selectedAttachmentIds.length > 0
-          ? selectedAttachmentIds
-          : current.map((a) => a.attachmentId).filter((id) => id.length > 0);
+      const uploaded = files && files.length === 1 ? files[0] : null;
+      const chosen =
+        selectedAttachmentIds && selectedAttachmentIds.length === 1
+          ? selectedAttachmentIds[0]
+          : null;
+
+      let ids: string[];
+      if (chosen) {
+        ids = [chosen];
+      } else if (uploaded) {
+        const match = this._clientAttachments().find(
+          (a) => a.attachmentName === uploaded.name
+        );
+        if (!match?.attachmentId) {
+          this.toastService.erro(
+            "Could not match the uploaded file. Refresh the page and try again."
+          );
+          throw new Error("ATTACHMENT_MATCH_FAILED");
+        }
+        ids = [match.attachmentId];
+      } else {
+        this.toastService.erro(
+          "Select exactly one attachment or upload a single file for this request."
+        );
+        throw new Error("NO_ATTACHMENT_CHOSEN");
+      }
 
       const request: ClientAdRequestDto = {
-        attachmentIds: ids.length > 0 ? ids : undefined,
+        attachmentIds: ids,
         slogan: form.slogan,
         brandGuidelineUrl: form.brandGuidelineUrl,
       };
@@ -320,11 +341,11 @@ export class MyTelasService {
     try {
       await this.clientService.validateAd(adId, validation, refusedData).toPromise();
       if (validation === "APPROVED") {
-        this.toastService.sucesso("Ad aprovado com sucesso.");
+        this.toastService.sucesso("Ad approved successfully.");
       } else if (validation === "REJECTED") {
         this.toastService.aviso("Ad sent back to the administrator for review.");
       } else {
-        this.toastService.sucesso("Ad atualizado.");
+        this.toastService.sucesso("Ad updated.");
       }
       await this.loadClientData();
     } catch (error) {

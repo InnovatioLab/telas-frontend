@@ -258,7 +258,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       await this.loadClientData();
     } catch (err) {
       console.error('Error replacing attachment:', err);
-      this.toastService.erro("Erro ao substituir arquivo");
+      this.toastService.erro("Could not replace the attachment.");
       if (input) {
         input.value = "";
       }
@@ -324,7 +324,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       const others = this.selectedClientAttachments.filter((id) => id !== attachmentId);
       if (others.length > 0) {
         this.toastService.aviso(
-          "Selecione apenas um anexo por vez para o pedido de anúncio."
+          "Only one attachment can be selected per ad request."
         );
         this.attachmentCheckboxStates[attachmentId] = false;
         this.cdr.markForCheck();
@@ -353,29 +353,43 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   async submitAdRequest(): Promise<void> {
     if (this.requestAdForm.valid) {
-      const attachments = this.myTelasService.clientAttachments();
+      const files =
+        this.selectedFiles.length > 0 ? [...this.selectedFiles] : null;
+      const hasUpload = !!(files?.length);
+      const oneSelected = this.selectedClientAttachments.length === 1;
+
+      if (files && files.length > 1) {
+        this.toastService.aviso(
+          "Only one file per ad request. Remove extra files or send separate requests."
+        );
+        return;
+      }
+
       if (this.selectedClientAttachments.length > 1) {
         this.toastService.aviso(
-          "Selecione apenas um anexo por pedido. Remova seleções extras antes de enviar."
+          "Select only one attachment per request."
         );
         return;
       }
-      const files = this.selectedFiles.length > 0 ? [...this.selectedFiles] : null;
-      const hasUpload = files !== null && files.length > 0;
-      if (
-        !hasUpload &&
-        attachments.length > 1 &&
-        this.selectedClientAttachments.length === 0
-      ) {
+
+      if (hasUpload && oneSelected) {
         this.toastService.aviso(
-          "Selecione um único anexo para enviar o pedido de anúncio."
+          "Clear either the checkbox selection or the pending upload — one attachment per request."
         );
         return;
       }
-      const selected =
-        this.selectedClientAttachments.length > 0
-          ? [...this.selectedClientAttachments]
-          : null;
+
+      if (!oneSelected && !(hasUpload && files!.length === 1)) {
+        const libCount = this.myTelasService.clientAttachments().length;
+        this.toastService.aviso(
+          libCount >= 1
+            ? "Select exactly one attachment using the checkbox above."
+            : "Upload one file for your first ad request."
+        );
+        return;
+      }
+
+      const selected = oneSelected ? [...this.selectedClientAttachments] : null;
       const slogan = this.requestAdForm.get("slogan")?.value || undefined;
       const brandGuidelineUrl =
         this.requestAdForm.get("brandGuidelineUrl")?.value || undefined;

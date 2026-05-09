@@ -210,7 +210,15 @@
 
           <div class="form-actions">
             <button pButton label="Send ad request" icon="pi pi-send" (click)="submitAdRequest()"
-              [disabled]="requestAdForm.invalid || myTelasService.isLoading()" [loading]="myTelasService.isLoading()"
+              [disabled]="
+                requestAdForm.invalid ||
+                myTelasService.isLoading() ||
+                !(
+                  selectedClientAttachments.length === 1 ||
+                  selectedFiles.length === 1
+                )
+              "
+              [loading]="myTelasService.isLoading()"
               class="p-button-primary"></button>
           </div>
         </form>
