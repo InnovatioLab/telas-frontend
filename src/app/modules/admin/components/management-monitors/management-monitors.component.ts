@@ -29,6 +29,10 @@ import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
+import {
+  resolveLazyTableRequestPage,
+  TableLazyPageEvent,
+} from "@app/shared/utils/table-lazy-pagination.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { MessageService } from "primeng/api";
@@ -220,9 +224,13 @@ export class ManagementMonitorsComponent implements OnInit {
     this.loadMonitors();
   }
 
-  onPageChange(event: any): void {
-    this.currentFilters.page = event.page + 1;
-    this.currentFilters.size = event.rows;
+  onPageChange(event: TableLazyPageEvent): void {
+    const { page, rows } = resolveLazyTableRequestPage(
+      event,
+      this.currentFilters.size ?? 10
+    );
+    this.currentFilters.page = page;
+    this.currentFilters.size = rows;
     this.loadMonitors();
   }
 

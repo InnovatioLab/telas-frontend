@@ -9,6 +9,10 @@ import { AdminAdOperationRow } from "@app/model/admin-ad-operations";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
+import {
+  resolveLazyTableRequestPage,
+  TableLazyPageEvent,
+} from "@app/shared/utils/table-lazy-pagination.utils";
 
 @Component({
   selector: "app-ads-management",
@@ -70,9 +74,10 @@ export class AdsManagementComponent implements OnInit {
     this.loadApprovedClientAds();
   }
 
-  onPageChange(event: { first: number; rows: number }): void {
-    this.currentPage = Math.floor(event.first / event.rows) + 1;
-    this.pageSize = event.rows;
+  onPageChange(event: TableLazyPageEvent): void {
+    const { page, rows } = resolveLazyTableRequestPage(event, this.pageSize);
+    this.currentPage = page;
+    this.pageSize = rows;
     this.loadApprovedClientAds();
   }
 

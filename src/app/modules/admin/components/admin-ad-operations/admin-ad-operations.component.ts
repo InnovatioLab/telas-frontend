@@ -12,6 +12,10 @@ import {
 } from "@app/model/admin-ad-operations";
 import { IconSearchComponent } from "@app/shared/icons/search.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import {
+  resolveLazyTableRequestPage,
+  TableLazyPageEvent,
+} from "@app/shared/utils/table-lazy-pagination.utils";
 
 @Component({
   selector: "app-admin-ad-operations",
@@ -104,18 +108,12 @@ export class AdminAdOperationsComponent implements OnInit {
     this.loadRows();
   }
 
-  onPageChange(event: {
-    first?: number;
-    rows?: number;
-    page?: number;
-  }): void {
-    const rows = event.rows ?? 10;
-    if (event.page != null) {
-      this.currentFilters.page = event.page + 1;
-    } else {
-      const first = event.first ?? 0;
-      this.currentFilters.page = Math.floor(first / rows) + 1;
-    }
+  onPageChange(event: TableLazyPageEvent): void {
+    const { page, rows } = resolveLazyTableRequestPage(
+      event,
+      this.currentFilters.size ?? 10
+    );
+    this.currentFilters.page = page;
     this.currentFilters.size = rows;
     this.loadRows();
   }

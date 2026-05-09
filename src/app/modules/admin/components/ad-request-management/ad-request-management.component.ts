@@ -18,6 +18,10 @@ import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { triggerBrowserFileDownload } from "@app/shared/utils/file-download.util";
+import {
+  resolveLazyTableRequestPage,
+  TableLazyPageEvent,
+} from "@app/shared/utils/table-lazy-pagination.utils";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { Router } from "@angular/router";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
@@ -139,9 +143,10 @@ export class AdRequestManagementComponent implements OnInit {
     this.loadAdRequests();
   }
 
-  onPageChange(event: any): void {
-    this.currentPage = event.page + 1;
-    this.pageSize = event.rows;
+  onPageChange(event: TableLazyPageEvent): void {
+    const { page, rows } = resolveLazyTableRequestPage(event, this.pageSize);
+    this.currentPage = page;
+    this.pageSize = rows;
     this.loadAdRequests();
   }
 

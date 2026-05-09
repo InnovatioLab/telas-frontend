@@ -14,6 +14,10 @@ import { SubscriptionStatus } from "@app/model/enums/subscription-status.enum";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
+import {
+  resolveLazyTableRequestPage,
+  TableLazyPageEvent,
+} from "@app/shared/utils/table-lazy-pagination.utils";
 
 @Component({
   selector: "app-management-subscriptions",
@@ -103,9 +107,13 @@ export class ManagementSubscriptionsComponent implements OnInit {
     this.loadSubscriptions();
   }
 
-  onPageChange(event: any): void {
-    this.currentFilters.page = event.page + 1;
-    this.currentFilters.size = event.rows;
+  onPageChange(event: TableLazyPageEvent): void {
+    const { page, rows } = resolveLazyTableRequestPage(
+      event,
+      this.currentFilters.size ?? 10
+    );
+    this.currentFilters.page = page;
+    this.currentFilters.size = rows;
     this.loadSubscriptions();
   }
 

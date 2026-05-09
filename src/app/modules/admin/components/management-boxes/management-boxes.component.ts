@@ -15,6 +15,10 @@ import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import {
+  resolveLazyTableRequestPage,
+  TableLazyPageEvent,
+} from "@app/shared/utils/table-lazy-pagination.utils";
 import { MessageService, OverlayOptions } from "primeng/api";
 import { Role } from "@app/model/client";
 import { Observable, of } from "rxjs";
@@ -247,9 +251,13 @@ export class ManagementBoxesComponent implements OnInit {
     this.loadBoxes();
   }
 
-  onPageChange(event: any): void {
-    this.currentFilters.page = event.page + 1;
-    this.currentFilters.size = event.rows;
+  onPageChange(event: TableLazyPageEvent): void {
+    const { page, rows } = resolveLazyTableRequestPage(
+      event,
+      this.currentFilters.size ?? 10
+    );
+    this.currentFilters.page = page;
+    this.currentFilters.size = rows;
     this.loadBoxes();
   }
 
