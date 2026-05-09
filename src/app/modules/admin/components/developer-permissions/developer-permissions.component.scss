@@ -7,6 +7,13 @@ $perm-sticky-email-w: 15rem;
   }
 }
 
+:host ::ng-deep .developer-perm-tooltip {
+  max-width: min(22rem, 92vw);
+  white-space: pre-line;
+  text-align: left;
+  line-height: 1.45;
+}
+
 :host ::ng-deep .developer-permissions-table {
   table {
     table-layout: fixed;
@@ -84,6 +91,13 @@ $perm-sticky-email-w: 15rem;
     overflow-wrap: break-word;
     max-width: 100%;
     margin: 0 auto;
+  }
+
+  th.perm-col .perm-col__hint {
+    display: block;
+    margin: 0.2rem auto 0;
+    font-size: 0.65rem;
+    opacity: 0.65;
   }
 
   td.perm-col {

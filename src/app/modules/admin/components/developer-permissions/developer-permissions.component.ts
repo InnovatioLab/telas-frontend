@@ -1,194 +1,166 @@
-import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { TableModule } from "primeng/table";
+import { CheckboxModule } from "primeng/checkbox";
+import { CardModule } from "primeng/card";
+import { TooltipModule } from "primeng/tooltip";
+import { forkJoin, of } from "rxjs";
+import { finalize, map, switchMap, tap } from "rxjs/operators";
 import {
   AdminPermissionRow,
   DeveloperPermissionService,
   EmailAlertCategoryOption,
-} from "@app/core/service/api/developer-permission.service";
-import { ToastService } from "@app/core/service/state/toast.service";
-import { IconsModule } from "@app/shared/icons/icons.module";
-import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { CheckboxModule } from "primeng/checkbox";
-import { FormsModule } from "@angular/forms";
-import { forkJoin } from "rxjs";
-import { finalize, map } from "rxjs/operators";
+} from "../../../../core/service/api/developer-permission.service";
+import {
+  defaultEmailAlertDescription,
+  defaultPermissionDescription,
+  EMAIL_ALERT_DESCRIPTIONS,
+  PERMISSION_DESCRIPTIONS,
+  PERMISSION_LABELS,
+} from "./developer-permission-meta";
 
-const PERMISSION_LABELS: Record<string, string> = {
-  ADMIN_CLIENTS_DEACTIVATE: "Deactivate clients",
-  ADMIN_CLIENTS_REACTIVATE: "Reactivate clients",
-  ADMIN_CLIENTS_VIEW_INACTIVE: "View inactive clients in list",
-  ADMIN_CLIENTS_VIEW_DELETED: "View deleted clients in list",
-  ADMIN_CLIENTS_SOFT_DELETE: "Mark clients as deleted (logical)",
-  ADMIN_CLIENTS_PERMANENT_DELETE: "Permanently delete clients",
-  ADMIN_ADS_MANAGE: "Manage ads and ad requests",
-  MONITORING_CONNECTIVITY_PROBE_SETTINGS: "Connectivity probe interval",
-  MONITORING_BOX_PING_VIEW: "Box ping logs",
-  MONITORING_LOGS_VIEW: "Application logs",
-  MONITORING_SCHEDULER_VIEW: "Scheduled jobs",
-  MONITORING_SMART_PLUG_VIEW: "Smart plugs (view)",
-  MONITORING_SMART_PLUG_ADMIN: "Smart plugs (monitor)",
-  MONITORING_TESTING_EXECUTE: "Run monitoring tests",
-  MONITORING_TESTING_VIEW: "View monitoring tests",
-};
+type AdminRowView = AdminPermissionRow & { emailAlertPreferences: Record<string, boolean> };
 
 @Component({
   selector: "app-developer-permissions",
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    PrimengModule,
-    IconsModule,
-    CheckboxModule,
-  ],
+  imports: [CommonModule, FormsModule, TableModule, CheckboxModule, CardModule, TooltipModule],
   templateUrl: "./developer-permissions.component.html",
-  styleUrls: ["./developer-permissions.component.scss"],
+  styleUrl: "./developer-permissions.component.scss",
 })
 export class DeveloperPermissionsComponent implements OnInit {
-  rows: AdminPermissionRow[] = [];
+  loading = false;
+  errorMessage: string | null = null;
+
+  rows: AdminRowView[] = [];
   catalog: string[] = [];
   emailAlertCategories: EmailAlertCategoryOption[] = [];
-  emailPrefsByClient: Record<string, Record<string, boolean>> = {};
-  loading = false;
+
   savingClientId: string | null = null;
   savingEmailClientId: string | null = null;
 
-  constructor(
-    private readonly developerPermissionService: DeveloperPermissionService,
-    private readonly toastService: ToastService
-  ) {}
+  constructor(private readonly developerPermissionService: DeveloperPermissionService) {}
 
   ngOnInit(): void {
-    this.reload();
+    this.load();
+  }
+
+  load(): void {
+    this.loading = true;
+    this.errorMessage = null;
+    forkJoin({
+      admins: this.developerPermissionService.listAdmins(),
+      catalog: this.developerPermissionService.permissionCatalog(),
+      emailAlertCategories: this.developerPermissionService.emailAlertCatalog(),
+    })
+      .pipe(
+        switchMap(({ admins, catalog, emailAlertCategories }) => {
+          const sortedCatalog = [...catalog].sort((a, b) =>
+            this.labelForPermission(a).localeCompare(this.labelForPermission(b), undefined, {
+              sensitivity: "base",
+            }),
+          );
+          const sortedCats = [...emailAlertCategories].sort((x, y) =>
+            x.labelEn.localeCompare(y.labelEn, undefined, { sensitivity: "base" }),
+          );
+          this.catalog = sortedCatalog;
+          this.emailAlertCategories = sortedCats;
+
+          if (admins.length === 0) {
+            this.rows = [];
+            return of(void 0);
+          }
+
+          return forkJoin(
+            admins.map((a) =>
+              this.developerPermissionService.getEmailAlertPreferences(a.clientId).pipe(
+                map((p) => {
+                  const emailAlertPreferences: Record<string, boolean> = { ...p.preferences };
+                  for (const opt of sortedCats) {
+                    if (emailAlertPreferences[opt.code] === undefined) {
+                      emailAlertPreferences[opt.code] = false;
+                    }
+                  }
+                  return { ...a, emailAlertPreferences } satisfies AdminRowView;
+                }),
+              ),
+            ),
+          ).pipe(
+            tap((withPrefs) => {
+              this.rows = withPrefs;
+            }),
+            map((): undefined => undefined),
+          );
+        }),
+        finalize(() => {
+          this.loading = false;
+        }),
+      )
+      .subscribe({
+        error: () => {
+          this.errorMessage = "Could not load permissions.";
+        },
+      });
   }
 
   labelForPermission(code: string): string {
-    const mapped = PERMISSION_LABELS[code];
-    if (mapped) {
-      return mapped;
-    }
-    return code
-      .split("_")
-      .map((w) => w.charAt(0) + w.slice(1).toLowerCase())
-      .join(" ");
+    return PERMISSION_LABELS[code] ?? code.replaceAll("_", " ");
   }
 
-  reload(): void {
-    this.loading = true;
-    forkJoin({
-      catalog: this.developerPermissionService.permissionCatalog(),
-      emailCatalog: this.developerPermissionService.emailAlertCatalog(),
-      admins: this.developerPermissionService.listAdmins(),
-    }).subscribe({
-      next: ({ catalog, emailCatalog, admins }) => {
-        this.catalog = catalog;
-        this.emailAlertCategories = emailCatalog;
-        this.rows = admins;
-        if (admins.length === 0) {
-          this.emailPrefsByClient = {};
-          this.loading = false;
-          return;
-        }
-        forkJoin(
-          admins.map((a) =>
-            this.developerPermissionService.getEmailAlertPreferences(a.clientId).pipe(
-              map((r) => ({ id: a.clientId, prefs: r.preferences ?? {} }))
-            )
-          )
-        ).subscribe({
-          next: (pairs) => {
-            this.emailPrefsByClient = {};
-            for (const p of pairs) {
-              this.emailPrefsByClient[p.id] = p.prefs;
-            }
-            this.loading = false;
-          },
-          error: () => {
-            this.emailPrefsByClient = {};
-            this.loading = false;
-            this.toastService.erro("Could not load email alert preferences.");
-          },
-        });
-      },
-      error: () => {
-        this.catalog = [];
-        this.emailAlertCategories = [];
-        this.rows = [];
-        this.loading = false;
-        this.toastService.erro("Could not load developer permission data.");
-      },
-    });
+  permissionTooltip(code: string): string {
+    const label = this.labelForPermission(code);
+    const body = PERMISSION_DESCRIPTIONS[code] ?? defaultPermissionDescription(code);
+    return `${label}\n\n${body}\n\nCode: ${code}`;
+  }
+
+  emailAlertTooltip(opt: EmailAlertCategoryOption): string {
+    const title = opt.labelEn;
+    const body = EMAIL_ALERT_DESCRIPTIONS[opt.code] ?? defaultEmailAlertDescription(opt.code);
+    return `${title}\n\n${body}\n\nCode: ${opt.code}`;
   }
 
   isGranted(row: AdminPermissionRow, code: string): boolean {
-    return row.grantedPermissions?.includes(code) ?? false;
+    return row.grantedPermissions.includes(code);
   }
 
-  toggle(row: AdminPermissionRow, code: string, checked: boolean): void {
-    const next = new Set(row.grantedPermissions ?? []);
+  toggle(row: AdminRowView, code: string, checked: boolean): void {
+    const next = new Set(row.grantedPermissions);
     if (checked) {
       next.add(code);
     } else {
       next.delete(code);
     }
-    row.grantedPermissions = Array.from(next);
-    this.persist(row);
-  }
-
-  isEmailAlertEnabled(row: AdminPermissionRow, code: string): boolean {
-    return this.emailPrefsByClient[row.clientId]?.[code] ?? false;
-  }
-
-  toggleEmailAlert(row: AdminPermissionRow, code: string, checked: boolean): void {
-    const next = { ...(this.emailPrefsByClient[row.clientId] ?? {}) };
-    next[code] = checked;
-    this.emailPrefsByClient[row.clientId] = next;
-    this.savingEmailClientId = row.clientId;
-    this.developerPermissionService
-      .replaceEmailAlertPreferences(row.clientId, next)
-      .pipe(
-        finalize(() => {
-          this.savingEmailClientId = null;
-        })
-      )
-      .subscribe({
-        next: () => {
-          this.toastService.sucesso("Email alert preferences updated.");
-        },
-        error: (err) => {
-          const status = err?.status;
-          if (status === 403) {
-            this.toastService.erro("You do not have permission to change email alerts.");
-          } else {
-            this.toastService.erro("Failed to save email alert preferences.");
-          }
-          this.reload();
-        },
-      });
-  }
-
-  private persist(row: AdminPermissionRow): void {
+    const list = Array.from(next);
     this.savingClientId = row.clientId;
-    this.developerPermissionService
-      .replacePermissions(row.clientId, row.grantedPermissions ?? [])
-      .pipe(
-        finalize(() => {
-          this.savingClientId = null;
-        })
-      )
-      .subscribe({
-        next: () => {
-          this.toastService.sucesso("Permissions updated.");
-        },
-        error: (err) => {
-          const status = err?.status;
-          if (status === 403) {
-            this.toastService.erro("You do not have permission to change grants.");
-          } else {
-            this.toastService.erro("Failed to save permissions.");
-          }
-          this.reload();
-        },
-      });
+    this.developerPermissionService.replacePermissions(row.clientId, list).subscribe({
+      next: () => {
+        row.grantedPermissions = list;
+        this.savingClientId = null;
+      },
+      error: () => {
+        this.savingClientId = null;
+        this.errorMessage = "Could not update permissions.";
+      },
+    });
+  }
+
+  isEmailAlertEnabled(row: AdminRowView, categoryCode: string): boolean {
+    return !!row.emailAlertPreferences[categoryCode];
+  }
+
+  toggleEmailAlert(row: AdminRowView, categoryCode: string, checked: boolean): void {
+    const next = { ...row.emailAlertPreferences, [categoryCode]: checked };
+    this.savingEmailClientId = row.clientId;
+    this.developerPermissionService.replaceEmailAlertPreferences(row.clientId, next).subscribe({
+      next: () => {
+        row.emailAlertPreferences = next;
+        this.savingEmailClientId = null;
+      },
+      error: () => {
+        this.savingEmailClientId = null;
+        this.errorMessage = "Could not update email alert preferences.";
+      },
+    });
   }
 }

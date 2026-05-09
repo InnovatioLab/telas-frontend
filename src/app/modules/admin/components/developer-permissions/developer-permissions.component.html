@@ -4,8 +4,8 @@
     <div class="p-card-content">
       <h2 class="m-0">Monitoring permissions (admins)</h2>
       <p class="text-muted mt-2 mb-0">
-        Choose which features each admin may use: application logs, scheduled jobs, box ping logs, monitoring
-        tests, smart plugs, and deactivating clients. Hover the column header to see the technical permission code.
+        Choose which features each admin may use. Hover a column header (or the info icon) for a short explanation
+        and the technical permission code.
       </p>
     </div>
   </div>
@@ -28,10 +28,14 @@
         scope="col"
         *ngFor="let code of catalog"
         class="perm-col"
-        [attr.title]="'Code: ' + code"
+        [pTooltip]="permissionTooltip(code)"
+        tooltipPosition="top"
+        [showDelay]="200"
+        tooltipStyleClass="developer-perm-tooltip"
         [attr.aria-label]="labelForPermission(code) + ' (' + code + ')'"
       >
         <span class="perm-col__head">{{ labelForPermission(code) }}</span>
+        <i class="pi pi-info-circle perm-col__hint" aria-hidden="true"></i>
       </th>
     </tr>
   </ng-template>
@@ -63,6 +67,7 @@
       <h2 class="m-0">Email alerts (admins)</h2>
       <p class="text-muted mt-2 mb-0">
         When checked, the administrator receives an email for that alert type (in-app notifications are always recorded).
+        Hover a column header for what each alert means.
       </p>
     </div>
   </div>
@@ -85,10 +90,14 @@
         scope="col"
         *ngFor="let opt of emailAlertCategories"
         class="perm-col"
-        [attr.title]="'Code: ' + opt.code"
+        [pTooltip]="emailAlertTooltip(opt)"
+        tooltipPosition="top"
+        [showDelay]="200"
+        tooltipStyleClass="developer-perm-tooltip"
         [attr.aria-label]="opt.labelEn + ' (' + opt.code + ')'"
       >
         <span class="perm-col__head">{{ opt.labelEn }}</span>
+        <i class="pi pi-info-circle perm-col__hint" aria-hidden="true"></i>
       </th>
     </tr>
   </ng-template>
