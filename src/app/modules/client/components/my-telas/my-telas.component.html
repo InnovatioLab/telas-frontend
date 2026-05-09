@@ -10,8 +10,10 @@
         </p>
 
         @if (myTelasService.clientAttachments().length < maxAttachments) { <p-fileUpload #attachmentFileUpload
-          [multiple]="true" [accept]="acceptedFileTypes" [maxFileSize]="maxFileSize" [customUpload]="true"
-          (onSelect)="onFileUpload($event)" [disabled]="myTelasService.isLoading()" chooseLabel="Select File"
+          [multiple]="false" [accept]="acceptedFileTypes" [maxFileSize]="maxFileSize" [customUpload]="true"
+          (onSelect)="onFileUpload($event)"
+          [disabled]="myTelasService.isLoading() || selectedClientAttachments.length > 0"
+          chooseLabel="Select File"
           uploadLabel="Upload" cancelLabel="Cancel" [auto]="false" [fileLimit]="maxFilesPerUpload"
           [showUploadButton]="false" [showCancelButton]="selectedFiles.length > 0">
           <ng-template pTemplate="file" let-file>
@@ -80,7 +82,8 @@
                         attachment.attachmentId,
                         $event
                       )
-                    ">
+                    "
+                    [disabled]="selectedFiles.length > 0 || myTelasService.isLoading()">
               </p-checkbox>
             </div>
             <div class="attachment-preview">
@@ -167,7 +170,7 @@
       </div>
       }
 
-      @if (myTelasService.isClientDataLoaded()) {
+      @if (myTelasService.isClientDataLoaded() && canCreateAdRequest()) {
       <div class="request-ad-section">
         <div class="w-full m-auto">
           <h5 class="mb-3">Request your ad</h5>
@@ -213,6 +216,7 @@
               [disabled]="
                 requestAdForm.invalid ||
                 myTelasService.isLoading() ||
+                !canCreateAdRequest() ||
                 !(
                   selectedClientAttachments.length === 1 ||
                   selectedFiles.length === 1

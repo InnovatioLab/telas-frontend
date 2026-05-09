@@ -11,6 +11,9 @@ export function resolvePhotoUrl(input: {
   if (/^https?:\/\//i.test(u)) {
     return u;
   }
+  if (u.startsWith("//")) {
+    return `https:${u}`;
+  }
 
   try {
     const origin = new URL(input.apiUrl).origin;

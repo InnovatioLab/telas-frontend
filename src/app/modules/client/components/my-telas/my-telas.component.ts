@@ -55,7 +55,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   attachmentCheckboxStates: { [key: string]: boolean } = {};
   selectedFiles: File[] = [];
   uploadPreviews: string[] = [];
-  maxFilesPerUpload = 3;
+  maxFilesPerUpload = 1;
   pendingUpload = false;
   selectedAdFile: File | null = null;
   showValidateAdDialog = false;
@@ -352,6 +352,12 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   }
 
   async submitAdRequest(): Promise<void> {
+    if (!this.canCreateAdRequest()) {
+      this.toastService.aviso(
+        "You already have an ad request in progress. Wait for the admin or check your Ads tab."
+      );
+      return;
+    }
     if (this.requestAdForm.valid) {
       const files =
         this.selectedFiles.length > 0 ? [...this.selectedFiles] : null;

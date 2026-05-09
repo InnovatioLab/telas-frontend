@@ -1,11 +1,19 @@
 <p-card class="wishlist-item-card">
-  <div class="item-content" [class.no-photo]="!item.photoUrl">
-    <div class="item-photo" *ngIf="item.photoUrl">
-      <img
-        [src]="item.photoUrl"
-        [alt]="item.addressLocationName || 'Address image'"
-        class="monitor-image"
-      />
+  <div class="item-content" [class.no-photo]="!resolveThumbSrc()">
+    <div class="item-photo">
+      <ng-container *ngIf="resolveThumbSrc() as thumbSrc; else emptyThumb">
+        <img
+          [src]="thumbSrc"
+          [alt]="item.addressLocationName || 'Address image'"
+          class="monitor-image"
+          loading="lazy"
+          decoding="async"
+          (error)="onThumbError()"
+        />
+      </ng-container>
+      <ng-template #emptyThumb>
+        <div class="thumb-placeholder" aria-hidden="true"></div>
+      </ng-template>
     </div>
 
     <div class="item-info">
