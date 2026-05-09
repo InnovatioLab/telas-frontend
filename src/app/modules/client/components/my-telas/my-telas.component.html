@@ -21,8 +21,6 @@
                 <span class="p-fileupload-file-size">{{ formatFileSize(file.size) }}</span>
               </div>
               <div class="p-fileupload-file-actions">
-                <p-button icon="pi pi-eye" (onClick)="previewSelectedFile(file)" [text]="true" [rounded]="true"
-                  severity="info" pTooltip="Preview" tooltipPosition="top"></p-button>
                 <p-button icon="pi pi-times" (onClick)="removeSelectedFile(file)" [text]="true" [rounded]="true"
                   severity="danger" pTooltip="Remove" tooltipPosition="top"></p-button>
               </div>
@@ -119,10 +117,6 @@
               }
             </div>
             <div class="attachment-actions">
-              <p-button icon="pi pi-eye"
-                (onClick)="viewAttachment(attachment.attachmentLink, attachment.attachmentName)"
-                [disabled]="myTelasService.isLoading()" severity="info" [text]="true" pTooltip="View">
-              </p-button>
               <p-button icon="pi pi-download" (onClick)="
                       downloadAttachment(
                         attachment.attachmentDownloadLink || attachment.attachmentLink,
@@ -132,6 +126,9 @@
               </p-button>
               <p-button icon="pi pi-refresh" (onClick)="onUpdateAttachmentClick(attachment.attachmentId)"
                 [disabled]="myTelasService.isLoading()" severity="info" [text]="true" pTooltip="Replace">
+              </p-button>
+              <p-button icon="pi pi-trash" (onClick)="confirmRemoveAttachment(attachment.attachmentId)"
+                [disabled]="myTelasService.isLoading()" severity="danger" [text]="true" pTooltip="Remove">
               </p-button>
             </div>
           </div>
@@ -175,8 +172,8 @@
         <div class="w-full m-auto">
           <h5 class="mb-3">Request your ad</h5>
           <p class="mb-5 text-sm">
-            Select files above, add optional slogan and brand guideline link, then send — your files and request go to
-            the team in one step.
+            Select <strong>one</strong> attachment above (checkbox), add optional slogan and brand guideline link, then
+            send — one request at a time.
           </p>
         </div>
 
@@ -184,7 +181,7 @@
         <div class="selection-info">
           <p>
             <span class="pi pi-check-circle" style="color: var(--cor-primaria)"></span>
-            {{ selectedClientAttachments.length }} attachment(s) selected
+            1 attachment selected for this request
           </p>
         </div>
         }

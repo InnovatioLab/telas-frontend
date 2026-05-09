@@ -26,6 +26,7 @@ import { MyTelasService } from "../../services/my-telas.service";
 import { AdItemComponent } from "../ad-item/ad-item.component";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
 import { ClientService } from "@app/core/service/api/client.service";
+import { ConfirmationService } from "primeng/api";
 
 @Component({
   selector: "app-my-telas",
@@ -93,7 +94,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly sanitizer: DomSanitizer,
     private readonly cartService: CartService,
     private readonly notificationsService: NotificationsService,
-    private readonly clientService: ClientService
+    private readonly clientService: ClientService,
+    private readonly confirmationService: ConfirmationService
   ) {
     this.requestAdForm = this.myTelasService.createRequestAdForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
@@ -264,22 +266,18 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  previewSelectedFile(file: File): void {
-    if (isPdfFile(file.name)) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const blobUrl = reader.result as string;
-        this.pdfViewerService.openPdf(blobUrl, file.name);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const imageUrl = reader.result as string;
-        window.open(imageUrl, '_blank');
-      };
-      reader.readAsDataURL(file);
-    }
+  confirmRemoveAttachment(attachmentId: string): void {
+    this.confirmationService.confirm({
+      message: "Remove this attachment from your library?",
+      header: "Remove attachment",
+      icon: "pi pi-trash",
+      acceptLabel: "Remove",
+      rejectLabel: "Cancel",
+      acceptButtonStyleClass: "p-button-danger",
+      accept: () => {
+        void this.myTelasService.deleteAttachment(attachmentId);
+      },
+    });
   }
 
   removeSelectedFile(file: File): void {
@@ -320,8 +318,18 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  onAttachmentCheckboxChange(attachmentId: string, event: any): void {
-    if (event.checked) {
+  onAttachmentCheckboxChange(attachmentId: string, event: { checked?: boolean }): void {
+    const checked = !!event.checked;
+    if (checked) {
+      const others = this.selectedClientAttachments.filter((id) => id !== attachmentId);
+      if (others.length > 0) {
+        this.toastService.aviso(
+          "Selecione apenas um anexo por vez para o pedido de anúncio."
+        );
+        this.attachmentCheckboxStates[attachmentId] = false;
+        this.cdr.markForCheck();
+        return;
+      }
       if (!this.selectedClientAttachments.includes(attachmentId)) {
         this.selectedClientAttachments.push(attachmentId);
       }
@@ -345,7 +353,25 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   async submitAdRequest(): Promise<void> {
     if (this.requestAdForm.valid) {
+      const attachments = this.myTelasService.clientAttachments();
+      if (this.selectedClientAttachments.length > 1) {
+        this.toastService.aviso(
+          "Selecione apenas um anexo por pedido. Remova seleções extras antes de enviar."
+        );
+        return;
+      }
       const files = this.selectedFiles.length > 0 ? [...this.selectedFiles] : null;
+      const hasUpload = files !== null && files.length > 0;
+      if (
+        !hasUpload &&
+        attachments.length > 1 &&
+        this.selectedClientAttachments.length === 0
+      ) {
+        this.toastService.aviso(
+          "Selecione um único anexo para enviar o pedido de anúncio."
+        );
+        return;
+      }
       const selected =
         this.selectedClientAttachments.length > 0
           ? [...this.selectedClientAttachments]

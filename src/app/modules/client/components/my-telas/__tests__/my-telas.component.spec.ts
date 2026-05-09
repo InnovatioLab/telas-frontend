@@ -275,32 +275,6 @@ describe('MyTelasComponent - New Features', () => {
     fixture.detectChanges();
   });
 
-  describe('previewSelectedFile', () => {
-    it('deve abrir PDF no PdfViewerService quando arquivo for PDF', (done) => {
-      const pdfFile = new File(['pdf content'], 'document.pdf', { type: 'application/pdf' });
-      
-      component.previewSelectedFile(pdfFile);
-      
-      setTimeout(() => {
-        expect(pdfViewerService.openPdf).toHaveBeenCalled();
-        done();
-      }, 100);
-    });
-
-    it('deve abrir imagem em nova janela quando arquivo for imagem', (done) => {
-      const imageFile = new File(['image content'], 'image.jpg', { type: 'image/jpeg' });
-      const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
-      
-      component.previewSelectedFile(imageFile);
-      
-      setTimeout(() => {
-        expect(windowOpenSpy).toHaveBeenCalled();
-        windowOpenSpy.mockRestore();
-        done();
-      }, 100);
-    });
-  });
-
   describe('removeSelectedFile', () => {
     it('deve remover arquivo da lista de selectedFiles', () => {
       const file1 = new File(['content1'], 'file1.pdf', { type: 'application/pdf' });

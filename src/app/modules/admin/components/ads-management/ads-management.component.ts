@@ -8,9 +8,11 @@ import {
   Validators,
 } from "@angular/forms";
 import { ClientService } from "@app/core/service/api/client.service";
+import { AdminAdOperationsService } from "@app/core/service/api/admin-ad-operations.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { AdValidationType, Role } from "@app/model/client";
 import { PendingAdAdminValidationResponseDto } from "@app/model/dto/response/ad-request-response.dto";
+import { AdminAdOperationRow } from "@app/model/admin-ad-operations";
 import { ErrorComponent } from "@app/shared";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -31,12 +33,19 @@ import { MessageService } from "primeng/api";
   styleUrls: ["./ads-management.component.scss"],
 })
 export class AdsManagementComponent implements OnInit {
+  adsTabIndex = 0;
   pendingAds: PendingAdAdminValidationResponseDto[] = [];
   loading = false;
   searchTerm = "";
   totalRecords = 0;
   currentPage = 1;
   pageSize = 10;
+
+  approvedRows: AdminAdOperationRow[] = [];
+  approvedLoading = false;
+  approvedTotalRecords = 0;
+  approvedCurrentPage = 1;
+  approvedPageSize = 10;
 
   // Validation dialog states
   showValidateDialog = false;
@@ -56,6 +65,7 @@ export class AdsManagementComponent implements OnInit {
   ];
 
   constructor(
+    private readonly adminAdOperationsService: AdminAdOperationsService,
     private readonly clientService: ClientService,
     private readonly toastService: ToastService,
     private readonly messageService: MessageService,
@@ -70,6 +80,37 @@ export class AdsManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPendingAds();
+  }
+
+  onAdsTabChange(event: { index: number }): void {
+    this.adsTabIndex = event.index;
+    if (event.index === 1) {
+      this.loadApprovedAds();
+    }
+  }
+
+  loadApprovedAds(): void {
+    this.approvedLoading = true;
+    this.adminAdOperationsService
+      .findPage({
+        page: this.approvedCurrentPage,
+        size: this.approvedPageSize,
+        genericFilter: this.searchTerm,
+        validation: "APPROVED",
+        sortBy: "adName",
+        sortDir: "asc",
+      })
+      .subscribe({
+        next: (response) => {
+          this.approvedRows = response.list ?? [];
+          this.approvedTotalRecords = response.totalElements ?? 0;
+          this.approvedLoading = false;
+        },
+        error: () => {
+          this.toastService.erro("Failed to load approved ads");
+          this.approvedLoading = false;
+        },
+      });
   }
 
   loadPendingAds(): void {
@@ -97,13 +138,24 @@ export class AdsManagementComponent implements OnInit {
 
   onSearch(): void {
     this.currentPage = 1;
+    this.approvedCurrentPage = 1;
+    if (this.adsTabIndex === 0) {
+      this.loadPendingAds();
+    } else {
+      this.loadApprovedAds();
+    }
+  }
+
+  onPageChange(event: { first: number; rows: number }): void {
+    this.currentPage = Math.floor(event.first / event.rows) + 1;
+    this.pageSize = event.rows;
     this.loadPendingAds();
   }
 
-  onPageChange(event: any): void {
-    this.currentPage = event.page + 1;
-    this.pageSize = event.rows;
-    this.loadPendingAds();
+  onApprovedPageChange(event: { first: number; rows: number }): void {
+    this.approvedCurrentPage = Math.floor(event.first / event.rows) + 1;
+    this.approvedPageSize = event.rows;
+    this.loadApprovedAds();
   }
 
   openValidateDialog(ad: PendingAdAdminValidationResponseDto): void {

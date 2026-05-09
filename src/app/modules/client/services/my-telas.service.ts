@@ -269,6 +269,20 @@ export class MyTelasService {
     }
   }
 
+  async deleteAttachment(attachmentId: string): Promise<void> {
+    this._isLoading.set(true);
+    try {
+      await this.clientService.deleteClientAttachment(attachmentId).pipe(take(1)).toPromise();
+      this.toastService.sucesso("Attachment removed");
+      await this.loadClientData();
+    } catch (error) {
+      this.toastService.erro("Could not remove attachment");
+      throw error;
+    } finally {
+      this._isLoading.set(false);
+    }
+  }
+
   async replaceAttachment(attachmentId: string, file: File): Promise<void> {
     this._isLoading.set(true);
 

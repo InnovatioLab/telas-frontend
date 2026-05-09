@@ -114,6 +114,10 @@ export class ClientService {
     return this.clientRepository.uploadMultipleAttachments(files);
   }
 
+  deleteClientAttachment(attachmentId: string): Observable<unknown> {
+    return this.clientRepository.deleteClientAttachment(attachmentId);
+  }
+
   createAdRequest(request: ClientAdRequestDto): Observable<any> {
     return this.clientRepository.createAdRequest(request);
   }

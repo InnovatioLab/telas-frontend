@@ -58,6 +58,8 @@ export interface IClientRepository extends IRepository<Client, ClientRequestDTO,
 
   uploadMultipleAttachments(files: File[]): Observable<any>;
 
+  deleteClientAttachment(attachmentId: string): Observable<unknown>;
+
   createAdRequest(request: ClientAdRequestDto): Observable<any>;
 
   validateAd(adId: string, validation: string, refusedData?: RefusedAdRequestDto): Observable<any>;

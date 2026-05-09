@@ -296,6 +296,10 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
     );
   }
 
+  deleteClientAttachment(attachmentId: string): Observable<unknown> {
+    return this.http.delete(`${this.baseUrl}/attachments/${attachmentId}`, this.getHeaders());
+  }
+
   createAdRequest(request: ClientAdRequestDto): Observable<any> {
     return this.http.post(`${this.baseUrl}/request-ad`, request, this.getHeaders());
   }

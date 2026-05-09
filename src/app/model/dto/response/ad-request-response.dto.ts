@@ -16,6 +16,14 @@ export interface AdRequestResponseDto {
   ad: LinkResponseDto;
 }
 
+export interface ClientReferenceAttachmentAdminDto {
+  attachmentId: string;
+  slogan: string;
+  brandGuidelineUrl: string;
+  previewLink: string;
+  downloadLink: string;
+}
+
 export interface PendingAdAdminValidationResponseDto {
   id: string;
   clientId: string;
@@ -26,6 +34,7 @@ export interface PendingAdAdminValidationResponseDto {
   validation: AdValidationType;
   waitingDays: number;
   link: string;
+  clientReferences?: ClientReferenceAttachmentAdminDto[];
 }
 
 export interface LinkResponseDto {
