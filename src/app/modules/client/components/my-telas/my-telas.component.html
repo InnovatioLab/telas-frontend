@@ -12,7 +12,7 @@
         @if (myTelasService.clientAttachments().length < maxAttachments) { <p-fileUpload #attachmentFileUpload
           [multiple]="maxSelectableInPicker() > 1" [accept]="acceptedFileTypes" [maxFileSize]="maxFileSize" [customUpload]="true"
           (onSelect)="onFileUpload($event)"
-          [disabled]="myTelasService.isLoading() || selectedClientAttachments.length > 0"
+          [disabled]="myTelasService.isLoading()"
           chooseLabel="Select files"
           uploadLabel="Upload" cancelLabel="Cancel" [auto]="false" [fileLimit]="maxSelectableInPicker()"
           [showUploadButton]="false" [showCancelButton]="selectedFiles.length > 0">

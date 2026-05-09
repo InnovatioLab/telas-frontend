@@ -113,6 +113,12 @@
   }
 }
 
+.screen-cell {
+  max-width: 28rem;
+  white-space: normal;
+  word-break: break-word;
+}
+
 // Table responsive styles
 @media (max-width: 768px) {
   .action-buttons {

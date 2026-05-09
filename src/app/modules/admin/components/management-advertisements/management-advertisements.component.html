@@ -1,10 +1,16 @@
 <div class="management-ads">
-  <p-tabView>
-    <p-tabPanel header="Ads — pending & approved">
-      <app-ads-management></app-ads-management>
-    </p-tabPanel>
-    <p-tabPanel header="Client ad requests">
-      <app-ad-request-management></app-ad-request-management>
-    </p-tabPanel>
-  </p-tabView>
+  <p-tabs [(value)]="activeTab" [scrollable]="true">
+    <p-tablist>
+      <p-tab value="requests">Client ad requests</p-tab>
+      <p-tab value="approved">Ads (client-approved)</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="requests">
+        <app-ad-request-management></app-ad-request-management>
+      </p-tabpanel>
+      <p-tabpanel value="approved">
+        <app-ads-management></app-ads-management>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
 </div>

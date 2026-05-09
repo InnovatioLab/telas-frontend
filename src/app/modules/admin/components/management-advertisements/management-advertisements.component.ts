@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { PrimengModule } from '@app/shared/primeng/primeng.module';
+import { TabsModule } from 'primeng/tabs';
 import { AdRequestManagementComponent } from '../ad-request-management/ad-request-management.component';
 import { AdsManagementComponent } from '../ads-management/ads-management.component';
 
@@ -9,7 +9,7 @@ import { AdsManagementComponent } from '../ads-management/ads-management.compone
   standalone: true,
   imports: [
     CommonModule,
-    PrimengModule,
+    TabsModule,
     AdRequestManagementComponent,
     AdsManagementComponent
   ],
@@ -17,5 +17,5 @@ import { AdsManagementComponent } from '../ads-management/ads-management.compone
   styleUrls: ['./management-advertisements.component.scss']
 })
 export class ManagementAdvertisementsComponent {
-  
+  activeTab: string | number = 'requests';
 } 

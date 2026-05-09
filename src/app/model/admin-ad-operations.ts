@@ -10,6 +10,7 @@ export interface AdminAdOperationsFilter {
 export interface AdminAdOperationRow {
   adId: string;
   adName: string;
+  submissionDate?: string | null;
   validation: string;
   advertiserId: string;
   advertiserBusinessName: string;

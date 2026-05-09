@@ -91,9 +91,6 @@ export class MyTelasService {
   }
 
   private hydrateFromAuthLoggedClientIfEmpty(): void {
-    if (this._ads().length > 0 && this._isClientDataLoaded()) {
-      return;
-    }
     const autenticacao = this.injector.get(AutenticacaoService, null);
     const logged = autenticacao?.loggedClient ?? null;
     if (!logged?.id) {
@@ -101,7 +98,7 @@ export class MyTelasService {
     }
     this._authenticatedClient.set(logged);
     this._clientAttachments.set(this.normalizeClientAttachments(logged.attachments));
-    this._hasActiveAdRequest.set(logged.adRequest !== null);
+    this._hasActiveAdRequest.set(this.adRequestIsOpen(logged.adRequest));
     this._ads.set(Array.isArray(logged.ads) ? logged.ads : []);
     this._isClientDataLoaded.set(true);
     if (this.clientService.setClientAtual) {
@@ -133,7 +130,7 @@ export class MyTelasService {
         this._clientAttachments.set(
           this.normalizeClientAttachments(dto.attachments as unknown)
         );
-        this._hasActiveAdRequest.set(dto.adRequest !== null);
+        this._hasActiveAdRequest.set(this.adRequestIsOpen(dto.adRequest));
         this._ads.set(dto.ads || []);
         this._isClientDataLoaded.set(true);
 
@@ -169,6 +166,19 @@ export class MyTelasService {
 
   setActiveTab(index: number): void {
     this._activeTabIndex.set(index);
+  }
+
+  private adRequestIsOpen(
+    ar: AuthenticatedClientResponseDto["adRequest"] | null | undefined
+  ): boolean {
+    if (ar == null) {
+      return false;
+    }
+    const flags = ar as { active?: boolean; isActive?: boolean };
+    if (flags.active === false || flags.isActive === false) {
+      return false;
+    }
+    return true;
   }
 
   private normalizeClientAttachments(raw: unknown): Array<{
@@ -464,16 +474,16 @@ export class MyTelasService {
     }
 
     const client = this._authenticatedClient();
-    if (!client || client.adRequest !== null) {
+    if (!client || this.adRequestIsOpen(client.adRequest)) {
       return false;
     }
 
     const ads = this._ads();
-    if (ads.length > 0) {
-      return ads.some((ad) => ad.validation === "REJECTED");
+    if (ads.some((ad) => ad.validation === "PENDING")) {
+      return false;
     }
 
-    return client.adRequest !== null ? false : true;
+    return true;
   }
 
   canValidateAd(ad: AdResponseDto): boolean {
@@ -486,7 +496,7 @@ export class MyTelasService {
     }
 
     const client = this._authenticatedClient();
-    if (!client || client.adRequest !== null || this._ads().length > 0) {
+    if (!client || this.adRequestIsOpen(client.adRequest) || this._ads().length > 0) {
       return false;
     }
 
@@ -502,7 +512,7 @@ export class MyTelasService {
     return (
       ads.length === 1 &&
       ads[0].validation === "REJECTED" &&
-      (!this._hasActiveAdRequest() || this._authenticatedClient()?.adRequest === null)
+      !this._hasActiveAdRequest()
     );
   }
 

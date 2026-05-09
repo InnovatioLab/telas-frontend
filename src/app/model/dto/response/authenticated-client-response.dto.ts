@@ -18,7 +18,8 @@ export interface AuthenticatedClientResponseDto {
     phone?: string;
     emai?: string;
     attachmentsIds?: string[];
-    active: boolean;
+    active?: boolean;
+    isActive?: boolean;
   } | null;
   addresses: Array<{
     id: string;
