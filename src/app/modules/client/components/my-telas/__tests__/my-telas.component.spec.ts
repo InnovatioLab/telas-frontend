@@ -220,7 +220,7 @@ describe('MyTelasComponent - New Features', () => {
       createValidateAdForm: jest.fn(),
       createUploadAdForm: jest.fn(),
       loadClientData: jest.fn().mockResolvedValue(null),
-      uploadAttachments: jest.fn().mockResolvedValue(null),
+      uploadFilesToLibrary: jest.fn().mockResolvedValue(null),
       createAdRequest: jest.fn().mockResolvedValue(null),
       createAdRequestWithOptionalUploads: jest.fn().mockResolvedValue(null),
       updateAdRequest: jest.fn().mockResolvedValue(null),

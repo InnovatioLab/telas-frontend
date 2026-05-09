@@ -79,6 +79,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     { id: "screens", label: "Screens", icon: "tv-display" },
     { id: "boxes", label: "Boxes", icon: "box" },
     { id: "ads", label: "Ads", icon: "etiqueta" },
+    { id: "adRequests", label: "Ad requests", icon: "documento" },
     { id: "clients", label: "Clients", icon: "user" },
     {
       id: "adOperations",
@@ -244,6 +245,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "ads":
         this.navegarParaAds();
         break;
+      case "adRequests":
+        this.navegarParaAdRequests();
+        break;
       case "clients":
         this.navegarParaClients();
         break;
@@ -313,6 +317,13 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaAds(): void {
     this.router.navigate(["/admin/ads"]);
+    if (this.isMenuOpen()) {
+      this.toggleMenu();
+    }
+  }
+
+  navegarParaAdRequests(): void {
+    this.router.navigate(["/admin/ad-requests"]);
     if (this.isMenuOpen()) {
       this.toggleMenu();
     }
@@ -414,7 +425,9 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "boxes":
         return "Manage boxes";
       case "ads":
-        return "Manage ads and requests";
+        return "Validate ads: pending and approved placements";
+      case "adRequests":
+        return "Client attachment requests (slogan & guidelines)";
       case "clients":
         return "Manage clients";
       case "adOperations":

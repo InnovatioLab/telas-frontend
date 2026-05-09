@@ -1,13 +1,10 @@
 <div class="management-ads">
   <p-tabView>
-    <!-- Tab 1: Ad Request -->
-    <p-tabPanel header="Ad Request">
-      <app-ad-request-management></app-ad-request-management>
-    </p-tabPanel>
-
-    <!-- Tab 2: Ads -->
-    <p-tabPanel header="Ads">
+    <p-tabPanel header="Ads — pending & approved">
       <app-ads-management></app-ads-management>
+    </p-tabPanel>
+    <p-tabPanel header="Client ad requests">
+      <app-ad-request-management></app-ad-request-management>
     </p-tabPanel>
   </p-tabView>
 </div>

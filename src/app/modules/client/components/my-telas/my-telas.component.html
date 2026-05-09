@@ -10,11 +10,11 @@
         </p>
 
         @if (myTelasService.clientAttachments().length < maxAttachments) { <p-fileUpload #attachmentFileUpload
-          [multiple]="false" [accept]="acceptedFileTypes" [maxFileSize]="maxFileSize" [customUpload]="true"
+          [multiple]="maxSelectableInPicker() > 1" [accept]="acceptedFileTypes" [maxFileSize]="maxFileSize" [customUpload]="true"
           (onSelect)="onFileUpload($event)"
           [disabled]="myTelasService.isLoading() || selectedClientAttachments.length > 0"
-          chooseLabel="Select File"
-          uploadLabel="Upload" cancelLabel="Cancel" [auto]="false" [fileLimit]="maxFilesPerUpload"
+          chooseLabel="Select files"
+          uploadLabel="Upload" cancelLabel="Cancel" [auto]="false" [fileLimit]="maxSelectableInPicker()"
           [showUploadButton]="false" [showCancelButton]="selectedFiles.length > 0">
           <ng-template pTemplate="file" let-file>
             <div class="p-fileupload-file">
@@ -52,10 +52,20 @@
           </div>
           }
 
-          <div class="upload-info">
-            <small>Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF, PDF - Maximum
-              size: 10MB - Maximum: 3 files per selection. Use "Send ad request" below
-              to upload and send in one step.</small>
+          <div class="upload-info flex flex-column gap-2">
+            <small>Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF, PDF — max 10MB per file.
+              Library limit: {{ maxAttachments }} files. Use <strong>Add to library</strong> to store files without a request,
+              or choose exactly one file and <strong>Send ad request</strong>.</small>
+            @if (selectedFiles.length > 0) {
+            <div class="flex flex-wrap gap-2 align-items-center">
+              <button pButton type="button" label="Add to library" icon="pi pi-cloud-upload"
+                class="p-button-secondary"
+                [disabled]="myTelasService.isLoading()"
+                [loading]="myTelasService.isLoading()"
+                (click)="addSelectedFilesToLibrary()"></button>
+              <span class="text-sm text-color-secondary">{{ selectedFiles.length }} file(s) selected — only one can be sent per request.</span>
+            </div>
+            }
           </div>
       </div>
 
@@ -189,8 +199,9 @@
         </div>
         }
 
-        @if (!myTelasService.isLoading()) {
-        <form [formGroup]="requestAdForm" class="flex flex-column gap-5">
+        <form [formGroup]="requestAdForm" class="flex flex-column gap-5"
+          [class.pointer-events-none]="myTelasService.isLoading()"
+          [class.opacity-60]="myTelasService.isLoading()">
           <div class="grid form-group">
             <div class="col-12 md:col-6 lg:col-6">
               <label for="slogan" htmlFor="slogan" class="text-left">Slogan</label>
@@ -226,7 +237,6 @@
               class="p-button-primary"></button>
           </div>
         </form>
-        }
       </div>
       }
 

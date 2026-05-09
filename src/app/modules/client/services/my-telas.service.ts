@@ -273,17 +273,17 @@ export class MyTelasService {
     }
   }
 
-  async uploadAttachments(files: File[]): Promise<void> {
+  async uploadFilesToLibrary(files: File[]): Promise<void> {
+    if (!files.length) {
+      return;
+    }
     this._isLoading.set(true);
-
     try {
       await this.clientService.uploadMultipleAttachments(files).toPromise();
-      this.toastService.sucesso(
-        "Subscription process started. Your plan will be activated once your Ad has been created and approved by you."
-      );
+      this.toastService.sucesso("Files added to your library.");
       await this.loadClientData();
     } catch (error) {
-      this.toastService.erro("Error uploading attachments");
+      this.toastService.erro("Could not upload files");
       throw error;
     } finally {
       this._isLoading.set(false);

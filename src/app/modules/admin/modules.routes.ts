@@ -61,8 +61,13 @@ export const ROUTES: Route[] = [
       },
       {
         path: "ads",
-        component: AdRequestManagementComponent,
+        component: ManagementAdvertisementsComponent,
         title: "Ads Management",
+      },
+      {
+        path: "ad-requests",
+        component: AdRequestManagementComponent,
+        title: "Ad Requests",
       },
       {
         path: "clients",

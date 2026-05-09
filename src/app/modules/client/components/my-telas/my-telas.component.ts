@@ -55,7 +55,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   attachmentCheckboxStates: { [key: string]: boolean } = {};
   selectedFiles: File[] = [];
   uploadPreviews: string[] = [];
-  maxFilesPerUpload = 1;
   pendingUpload = false;
   selectedAdFile: File | null = null;
   showValidateAdDialog = false;
@@ -134,6 +133,25 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
+  maxSelectableInPicker(): number {
+    const lib = this.myTelasService.clientAttachments().length;
+    return Math.max(0, this.maxAttachments - lib);
+  }
+
+  async addSelectedFilesToLibrary(): Promise<void> {
+    if (this.selectedFiles.length === 0) {
+      return;
+    }
+    try {
+      await this.myTelasService.uploadFilesToLibrary([...this.selectedFiles]);
+      this.clearUploadData();
+      if (this.attachmentFileUploadComponent) {
+        this.attachmentFileUploadComponent.clear();
+      }
+    } catch {
+    }
+  }
+
   onTabChange(event: { index: number }): void {
     this.myTelasService.setActiveTab(event.index);
     void this.router.navigate([], {
@@ -144,63 +162,85 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     });
   }
 
-  onFileUpload(event: any): void {
-    const files = event.currentFiles;
-
-    if (files && files.length > 0) {
-      this.selectedFiles = [];
-      this.uploadPreviews = [];
-
-      const validateFiles = async () => {
-        const existingAttachments = this.myTelasService.clientAttachments();
-        
-        for (const file of files) {
-          const isDuplicate = existingAttachments.some(
-            attachment => attachment.attachmentName === file.name
-          );
-
-          if (isDuplicate) {
-            this.toastService.erro(`File "${file.name}" already exists. Please choose a different file.`);
-            if (this.attachmentFileUploadComponent) {
-              this.attachmentFileUploadComponent.clear();
-            }
-            return;
-          }
-
-          const validation =
-            await this.myTelasService.validateAttachmentFile(file);
-
-          if (!validation.isValid) {
-            validation.errors.forEach((error) => {
-              this.toastService.erro(error);
-            });
-
-            if (this.attachmentFileUploadComponent) {
-              this.attachmentFileUploadComponent.clear();
-            }
-            return;
-          }
-          this.selectedFiles.push(file);
-        }
-
-        this.selectedFiles.forEach((file, index) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.uploadPreviews[index] = reader.result as string;
-          };
-          reader.readAsDataURL(file);
-        });
-
-        this.pendingUpload = true;
-      };
-
-      validateFiles().catch((error) => {
-        this.toastService.erro("Error validating files");
-        if (this.attachmentFileUploadComponent) {
-          this.attachmentFileUploadComponent.clear();
-        }
-      });
+  onFileUpload(event: { currentFiles?: File[] }): void {
+    const rawFiles = event.currentFiles;
+    if (!rawFiles?.length) {
+      return;
     }
+
+    const validateFiles = async () => {
+      const libraryCount = this.myTelasService.clientAttachments().length;
+      const capacityLeft = this.maxAttachments - libraryCount;
+
+      if (capacityLeft <= 0) {
+        this.toastService.aviso(
+          `You already have the maximum of ${this.maxAttachments} attachments.`
+        );
+        this.attachmentFileUploadComponent?.clear();
+        return;
+      }
+
+      const existingAttachments = this.myTelasService.clientAttachments();
+      const accepted: File[] = [];
+
+      for (const file of rawFiles) {
+        if (accepted.length >= capacityLeft) {
+          this.toastService.aviso(
+            `Only ${capacityLeft} more file(s) fit in your library (max ${this.maxAttachments}).`
+          );
+          break;
+        }
+
+        const inLibrary = existingAttachments.some(
+          (a) => a.attachmentName === file.name
+        );
+        if (inLibrary) {
+          this.toastService.erro(
+            `File "${file.name}" is already in your library.`
+          );
+          continue;
+        }
+
+        const dupPending = accepted.some(
+          (f) => f.name === file.name && f.size === file.size
+        );
+        if (dupPending) {
+          continue;
+        }
+
+        const validation =
+          await this.myTelasService.validateAttachmentFile(file);
+        if (!validation.isValid) {
+          validation.errors.forEach((err) => this.toastService.erro(err));
+          continue;
+        }
+
+        accepted.push(file);
+      }
+
+      if (accepted.length === 0) {
+        this.attachmentFileUploadComponent?.clear();
+        return;
+      }
+
+      this.selectedFiles = accepted;
+      this.uploadPreviews = [];
+      accepted.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.uploadPreviews[index] = reader.result as string;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      this.pendingUpload = true;
+      this.cdr.markForCheck();
+    };
+
+    validateFiles().catch(() => {
+      this.toastService.erro("Error validating files");
+      this.attachmentFileUploadComponent?.clear();
+    });
   }
 
   onUpdateAttachmentClick(attachmentId: string): void {
