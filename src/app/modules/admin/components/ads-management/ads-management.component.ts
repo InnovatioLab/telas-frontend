@@ -36,8 +36,8 @@ export class AdsManagementComponent implements OnInit {
   colPartnerName = "";
   colBoxIp = "";
   colScreenContains = "";
-  colSubmissionFrom = "";
-  colSubmissionTo = "";
+  colSubmissionFrom: Date | null = null;
+  colSubmissionTo: Date | null = null;
 
   previewVisible = false;
   previewTitle = "";
@@ -55,8 +55,8 @@ export class AdsManagementComponent implements OnInit {
   }
 
   private buildListFilters(): AdminAdOperationsFilter {
-    const submissionDateFrom = this.dateInputToIsoStart(this.colSubmissionFrom);
-    const submissionDateTo = this.dateInputToIsoEnd(this.colSubmissionTo);
+    const submissionDateFrom = this.dateToIsoStartUtc(this.colSubmissionFrom);
+    const submissionDateTo = this.dateToIsoEndUtc(this.colSubmissionTo);
     return {
       page: this.currentPage,
       size: this.pageSize,
@@ -73,20 +73,40 @@ export class AdsManagementComponent implements OnInit {
     };
   }
 
-  private dateInputToIsoStart(value: string): string | undefined {
-    const t = value?.trim();
-    if (!t) {
+  private dateToIsoStartUtc(value: Date | null): string | undefined {
+    if (!value) {
       return undefined;
     }
-    return `${t}T00:00:00.000Z`;
+    const d = new Date(
+      Date.UTC(
+        value.getFullYear(),
+        value.getMonth(),
+        value.getDate(),
+        0,
+        0,
+        0,
+        0
+      )
+    );
+    return d.toISOString();
   }
 
-  private dateInputToIsoEnd(value: string): string | undefined {
-    const t = value?.trim();
-    if (!t) {
+  private dateToIsoEndUtc(value: Date | null): string | undefined {
+    if (!value) {
       return undefined;
     }
-    return `${t}T23:59:59.999Z`;
+    const d = new Date(
+      Date.UTC(
+        value.getFullYear(),
+        value.getMonth(),
+        value.getDate(),
+        23,
+        59,
+        59,
+        999
+      )
+    );
+    return d.toISOString();
   }
 
   loadApprovedClientAds(): void {
@@ -122,8 +142,8 @@ export class AdsManagementComponent implements OnInit {
     this.colPartnerName = "";
     this.colBoxIp = "";
     this.colScreenContains = "";
-    this.colSubmissionFrom = "";
-    this.colSubmissionTo = "";
+    this.colSubmissionFrom = null;
+    this.colSubmissionTo = null;
     this.currentPage = 1;
     this.loadApprovedClientAds();
   }

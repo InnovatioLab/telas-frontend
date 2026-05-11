@@ -59,21 +59,30 @@
       [ngModelOptions]="{ standalone: true }"
     />
     <input
-      type="date"
       class="filter-field"
-      pInputText
       title="Submitted from"
+    />
+    <p-calendar
+      class="filter-field"
       [(ngModel)]="colSubmissionFrom"
       [ngModelOptions]="{ standalone: true }"
-    />
-    <input
-      type="date"
+      [showIcon]="true"
+      [appendTo]="'body'"
+      dateFormat="dd/mm/yy"
+      placeholder="dd/mm/aaaa"
+      inputId="submission-from"
+    ></p-calendar>
+    <p-calendar
       class="filter-field"
-      pInputText
       title="Submitted to"
       [(ngModel)]="colSubmissionTo"
       [ngModelOptions]="{ standalone: true }"
-    />
+      [showIcon]="true"
+      [appendTo]="'body'"
+      dateFormat="dd/mm/yy"
+      placeholder="dd/mm/aaaa"
+      inputId="submission-to"
+    ></p-calendar>
     <button
       pButton
       type="button"
@@ -127,7 +136,7 @@
       <td>
         {{
           row.submissionDate
-            ? (row.submissionDate | date : "MM/dd/yyyy")
+            ? (row.submissionDate | date : "dd/MM/yyyy")
             : "—"
         }}
       </td>
