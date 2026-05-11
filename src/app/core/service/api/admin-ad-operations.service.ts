@@ -40,6 +40,24 @@ export class AdminAdOperationsService {
     if (filters.validation) {
       params = params.set("validation", filters.validation);
     }
+    if (filters.advertiserName?.trim()) {
+      params = params.set("advertiserName", filters.advertiserName.trim());
+    }
+    if (filters.partnerName?.trim()) {
+      params = params.set("partnerName", filters.partnerName.trim());
+    }
+    if (filters.boxIp?.trim()) {
+      params = params.set("boxIp", filters.boxIp.trim());
+    }
+    if (filters.screenContains?.trim()) {
+      params = params.set("screenContains", filters.screenContains.trim());
+    }
+    if (filters.submissionDateFrom?.trim()) {
+      params = params.set("submissionDateFrom", filters.submissionDateFrom.trim());
+    }
+    if (filters.submissionDateTo?.trim()) {
+      params = params.set("submissionDateTo", filters.submissionDateTo.trim());
+    }
     params = params.set("_t", String(Date.now()));
     return this.http
       .get<

@@ -5,7 +5,10 @@ import { RouterModule } from "@angular/router";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { AdminAdOperationsService } from "@app/core/service/api/admin-ad-operations.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { AdminAdOperationRow } from "@app/model/admin-ad-operations";
+import {
+  AdminAdOperationRow,
+  AdminAdOperationsFilter,
+} from "@app/model/admin-ad-operations";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
@@ -29,6 +32,13 @@ export class AdsManagementComponent implements OnInit {
   currentPage = 1;
   pageSize = 10;
 
+  colAdvertiserName = "";
+  colPartnerName = "";
+  colBoxIp = "";
+  colScreenContains = "";
+  colSubmissionFrom = "";
+  colSubmissionTo = "";
+
   previewVisible = false;
   previewTitle = "";
   previewUrl: string | null = null;
@@ -44,17 +54,45 @@ export class AdsManagementComponent implements OnInit {
     this.loadApprovedClientAds();
   }
 
+  private buildListFilters(): AdminAdOperationsFilter {
+    const submissionDateFrom = this.dateInputToIsoStart(this.colSubmissionFrom);
+    const submissionDateTo = this.dateInputToIsoEnd(this.colSubmissionTo);
+    return {
+      page: this.currentPage,
+      size: this.pageSize,
+      genericFilter: this.searchTerm,
+      validation: "APPROVED",
+      sortBy: "submissionDate",
+      sortDir: "desc",
+      advertiserName: this.colAdvertiserName.trim() || undefined,
+      partnerName: this.colPartnerName.trim() || undefined,
+      boxIp: this.colBoxIp.trim() || undefined,
+      screenContains: this.colScreenContains.trim() || undefined,
+      submissionDateFrom,
+      submissionDateTo,
+    };
+  }
+
+  private dateInputToIsoStart(value: string): string | undefined {
+    const t = value?.trim();
+    if (!t) {
+      return undefined;
+    }
+    return `${t}T00:00:00.000Z`;
+  }
+
+  private dateInputToIsoEnd(value: string): string | undefined {
+    const t = value?.trim();
+    if (!t) {
+      return undefined;
+    }
+    return `${t}T23:59:59.999Z`;
+  }
+
   loadApprovedClientAds(): void {
     this.loading = true;
     this.adminAdOperationsService
-      .findPage({
-        page: this.currentPage,
-        size: this.pageSize,
-        genericFilter: this.searchTerm,
-        validation: "APPROVED",
-        sortBy: "adName",
-        sortDir: "asc",
-      })
+      .findPage(this.buildListFilters())
       .subscribe({
         next: (response) => {
           this.approvedRows = response.list ?? [];
@@ -70,6 +108,22 @@ export class AdsManagementComponent implements OnInit {
   }
 
   onSearch(): void {
+    this.currentPage = 1;
+    this.loadApprovedClientAds();
+  }
+
+  onApplyColumnFilters(): void {
+    this.currentPage = 1;
+    this.loadApprovedClientAds();
+  }
+
+  onClearColumnFilters(): void {
+    this.colAdvertiserName = "";
+    this.colPartnerName = "";
+    this.colBoxIp = "";
+    this.colScreenContains = "";
+    this.colSubmissionFrom = "";
+    this.colSubmissionTo = "";
     this.currentPage = 1;
     this.loadApprovedClientAds();
   }

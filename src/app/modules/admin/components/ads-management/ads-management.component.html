@@ -1,7 +1,7 @@
 <p-card styleClass="card-header">
   <div class="card-header-content">
     <div class="p-card-content">
-      <div class="w-full flex align-items-center gap-2">
+      <div class="w-full flex align-items-center gap-2 flex-wrap">
         <span class="p-input-icon-left">
           <app-icon-search
             class="search-icon search-icon-color"
@@ -24,6 +24,69 @@
         ></span>
       </div>
     </div>
+  </div>
+</p-card>
+
+<p-card styleClass="mt-3">
+  <ng-template pTemplate="title">Column filters</ng-template>
+  <div class="flex flex-wrap gap-2 align-items-end">
+    <input
+      pInputText
+      class="filter-field"
+      placeholder="Advertiser"
+      [(ngModel)]="colAdvertiserName"
+      [ngModelOptions]="{ standalone: true }"
+    />
+    <input
+      pInputText
+      class="filter-field"
+      placeholder="Partner"
+      [(ngModel)]="colPartnerName"
+      [ngModelOptions]="{ standalone: true }"
+    />
+    <input
+      pInputText
+      class="filter-field"
+      placeholder="Box IP"
+      [(ngModel)]="colBoxIp"
+      [ngModelOptions]="{ standalone: true }"
+    />
+    <input
+      pInputText
+      class="filter-field filter-field-wide"
+      placeholder="Screen / address contains"
+      [(ngModel)]="colScreenContains"
+      [ngModelOptions]="{ standalone: true }"
+    />
+    <input
+      type="date"
+      class="filter-field"
+      pInputText
+      title="Submitted from"
+      [(ngModel)]="colSubmissionFrom"
+      [ngModelOptions]="{ standalone: true }"
+    />
+    <input
+      type="date"
+      class="filter-field"
+      pInputText
+      title="Submitted to"
+      [(ngModel)]="colSubmissionTo"
+      [ngModelOptions]="{ standalone: true }"
+    />
+    <button
+      pButton
+      type="button"
+      label="Apply filters"
+      (click)="onApplyColumnFilters()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Clear"
+      class="p-button-text"
+      (click)="onClearColumnFilters()"
+    ></button>
   </div>
 </p-card>
 

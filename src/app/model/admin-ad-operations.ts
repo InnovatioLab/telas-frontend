@@ -5,6 +5,12 @@ export interface AdminAdOperationsFilter {
   sortDir?: string;
   genericFilter?: string;
   validation?: string;
+  advertiserName?: string;
+  partnerName?: string;
+  boxIp?: string;
+  screenContains?: string;
+  submissionDateFrom?: string;
+  submissionDateTo?: string;
 }
 
 export interface AdminAdOperationRow {
