@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { CanActivate, Router } from "@angular/router";
-import { Client, isPrivilegedPanelRole } from "@app/model/client";
+import { Client, isPrivilegedPanelRole, Role } from "@app/model/client";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { firstValueFrom, of } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { ClientService } from "../api/client.service";
@@ -34,7 +35,14 @@ export class AdminAuthenticatedGuard implements CanActivate {
       return false;
     }
 
-    if (!isPrivilegedPanelRole(authenticatedClient.role)) {
+    const role = String(authenticatedClient.role ?? "").trim().toUpperCase();
+    const partnerAdsAccess =
+      role === Role.PARTNER &&
+      (authenticatedClient.permissions ?? []).includes(
+        MonitoringPermission.ADMIN_ADS_MANAGE
+      );
+
+    if (!isPrivilegedPanelRole(authenticatedClient.role) && !partnerAdsAccess) {
       this.router.navigate(["/client"]);
       return false;
     }

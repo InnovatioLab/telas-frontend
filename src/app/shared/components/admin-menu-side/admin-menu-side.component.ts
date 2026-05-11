@@ -103,7 +103,26 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     const perms = c?.permissions ?? [];
     const isDev = role === Role.DEVELOPER;
 
+    const isPartnerAdsPanel =
+      role === Role.PARTNER &&
+      perms.includes(MonitoringPermission.ADMIN_ADS_MANAGE);
+
     return this.menuItems.filter((item) => {
+      if (isPartnerAdsPanel) {
+        const allowedForPartnerAds = new Set([
+          "home",
+          "profile",
+          "screens",
+          "ads",
+          "adRequests",
+          "adOperations",
+          "changePassword",
+          "logout",
+        ]);
+        if (!allowedForPartnerAds.has(item.id)) {
+          return false;
+        }
+      }
       if (item.id === "logs") {
         return (
           isDev ||
