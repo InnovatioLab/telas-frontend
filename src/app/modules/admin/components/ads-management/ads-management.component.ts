@@ -54,7 +54,21 @@ export class AdsManagementComponent implements OnInit {
     this.loadApprovedClientAds();
   }
 
+  private ensureCoherentSubmissionDateRange(): void {
+    if (!this.colSubmissionFrom || !this.colSubmissionTo) {
+      return;
+    }
+    if (this.colSubmissionFrom.getTime() <= this.colSubmissionTo.getTime()) {
+      return;
+    }
+    this.toastService.aviso(
+      "A data inicial não pode ser maior que a data final. Ajustei automaticamente."
+    );
+    this.colSubmissionTo = new Date(this.colSubmissionFrom);
+  }
+
   private buildListFilters(): AdminAdOperationsFilter {
+    this.ensureCoherentSubmissionDateRange();
     const submissionDateFrom = this.dateToIsoStartUtc(this.colSubmissionFrom);
     const submissionDateTo = this.dateToIsoEndUtc(this.colSubmissionTo);
     return {

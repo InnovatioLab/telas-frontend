@@ -58,16 +58,13 @@
       [(ngModel)]="colScreenContains"
       [ngModelOptions]="{ standalone: true }"
     />
-    <input
-      class="filter-field"
-      title="Submitted from"
-    />
     <p-calendar
       class="filter-field"
       [(ngModel)]="colSubmissionFrom"
       [ngModelOptions]="{ standalone: true }"
       [showIcon]="true"
       [appendTo]="'body'"
+      [maxDate]="colSubmissionTo"
       dateFormat="dd/mm/yy"
       placeholder="dd/mm/aaaa"
       inputId="submission-from"
@@ -79,6 +76,7 @@
       [ngModelOptions]="{ standalone: true }"
       [showIcon]="true"
       [appendTo]="'body'"
+      [minDate]="colSubmissionFrom"
       dateFormat="dd/mm/yy"
       placeholder="dd/mm/aaaa"
       inputId="submission-to"
