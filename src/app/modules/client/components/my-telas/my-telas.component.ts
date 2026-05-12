@@ -27,6 +27,7 @@ import { AdItemComponent } from "../ad-item/ad-item.component";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { ConfirmationService } from "primeng/api";
+import { BUSINESS_QUESTIONNAIRE_FIELD_META } from "@app/model/dto/request/business-questionnaire-answers.dto";
 
 @Component({
   selector: "app-my-telas",
@@ -72,7 +73,12 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   readonly maxFileSize = 10 * 1024 * 1024;
   readonly acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
 
-  requestAdForm: FormGroup;
+  readonly questionnaireFields = BUSINESS_QUESTIONNAIRE_FIELD_META;
+
+  adRequestWizardStep: 1 | 2 = 1;
+
+  newRequestQuestionnaireForm: FormGroup;
+  activeQuestionnaireForm: FormGroup;
   validateAdForm: FormGroup;
   uploadAdForm: FormGroup;
 
@@ -96,7 +102,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly clientService: ClientService,
     private readonly confirmationService: ConfirmationService
   ) {
-    this.requestAdForm = this.myTelasService.createRequestAdForm();
+    this.newRequestQuestionnaireForm = this.myTelasService.createBusinessQuestionnaireForm();
+    this.activeQuestionnaireForm = this.myTelasService.createBusinessQuestionnaireForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
     this.uploadAdForm = this.myTelasService.createUploadAdForm();
   }
@@ -129,6 +136,16 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   async loadClientData(): Promise<void> {
     try {
       await this.myTelasService.loadClientData();
+      const client = this.myTelasService.authenticatedClient();
+      if (client?.adRequest?.businessAnswers) {
+        this.myTelasService.patchQuestionnaireForm(
+          this.activeQuestionnaireForm,
+          client.adRequest.businessAnswers
+        );
+      }
+      if (this.canCreateAdRequest()) {
+        await this.myTelasService.loadQuestionnaireDraftIntoForm(this.newRequestQuestionnaireForm);
+      }
     } catch (error) {
     }
   }
@@ -391,6 +408,31 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     return this.attachmentCheckboxStates[attachmentId] || false;
   }
 
+  goToAttachmentsStep(): void {
+    if (this.newRequestQuestionnaireForm.invalid) {
+      this.newRequestQuestionnaireForm.markAllAsTouched();
+      this.toastService.aviso("Answer all business questions before continuing.");
+      return;
+    }
+    this.adRequestWizardStep = 2;
+  }
+
+  goBackToQuestionnaire(): void {
+    this.adRequestWizardStep = 1;
+  }
+
+  async saveQuestionnaireDraft(): Promise<void> {
+    await this.myTelasService.saveQuestionnaireDraft(this.newRequestQuestionnaireForm);
+  }
+
+  async updateActiveQuestionnaire(): Promise<void> {
+    const id = this.myTelasService.authenticatedClient()?.adRequest?.id;
+    if (!id) {
+      return;
+    }
+    await this.myTelasService.updateActiveQuestionnaire(id, this.activeQuestionnaireForm);
+  }
+
   async submitAdRequest(): Promise<void> {
     if (!this.canCreateAdRequest()) {
       this.toastService.aviso(
@@ -398,7 +440,11 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       );
       return;
     }
-    if (this.requestAdForm.valid) {
+    if (this.adRequestWizardStep !== 2) {
+      this.toastService.aviso("Use Next to choose your attachment before sending.");
+      return;
+    }
+    if (this.newRequestQuestionnaireForm.valid) {
       const files =
         this.selectedFiles.length > 0 ? [...this.selectedFiles] : null;
       const hasUpload = !!(files?.length);
@@ -436,17 +482,16 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       }
 
       const selected = oneSelected ? [...this.selectedClientAttachments] : null;
-      const slogan = this.requestAdForm.get("slogan")?.value || undefined;
-      const brandGuidelineUrl =
-        this.requestAdForm.get("brandGuidelineUrl")?.value || undefined;
+      const businessAnswers = this.myTelasService.buildAnswersFromForm(this.newRequestQuestionnaireForm);
 
       try {
         await this.myTelasService.createAdRequestWithOptionalUploads(
           files,
-          { slogan, brandGuidelineUrl },
+          businessAnswers,
           selected
         );
-        this.requestAdForm.reset();
+        this.adRequestWizardStep = 1;
+        this.newRequestQuestionnaireForm = this.myTelasService.createBusinessQuestionnaireForm();
         this.selectedClientAttachments = [];
         this.attachmentCheckboxStates = {};
         this.clearUploadData();

@@ -26,6 +26,7 @@ jest.mock('@app/modules/client/components/ad-item/ad-item.component', () => ({
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
@@ -207,6 +208,20 @@ describe('MyTelasComponent - New Features', () => {
   let cdr: ChangeDetectorRef;
 
   beforeEach(async () => {
+    const fb = new FormBuilder();
+    const qGroup = () =>
+      fb.group({
+        productOrService: ['a', [Validators.required, Validators.maxLength(2000)]],
+        idealCustomer: ['a', [Validators.required, Validators.maxLength(2000)]],
+        problemSolved: ['a', [Validators.required, Validators.maxLength(2000)]],
+        desiredResult: ['a', [Validators.required, Validators.maxLength(2000)]],
+        concernBeforeChoosing: ['a', [Validators.required, Validators.maxLength(2000)]],
+        whyTrust: ['a', [Validators.required, Validators.maxLength(2000)]],
+        oneMessageToRemember: ['a', [Validators.required, Validators.maxLength(2000)]],
+        nextAction: ['a', [Validators.required, Validators.maxLength(2000)]],
+        visualHappyOutcome: ['a', [Validators.required, Validators.maxLength(2000)]],
+        adTone: ['a', [Validators.required, Validators.maxLength(2000)]],
+      });
     myTelasService = {
       authenticatedClient: signal(null),
       ads: signal([]),
@@ -216,9 +231,37 @@ describe('MyTelasComponent - New Features', () => {
       activeTabIndex: signal(0),
       hasActiveAdRequest: signal(false),
       isClientDataLoaded: signal(false),
-      createRequestAdForm: jest.fn(),
-      createValidateAdForm: jest.fn(),
-      createUploadAdForm: jest.fn(),
+      createBusinessQuestionnaireForm: jest.fn().mockImplementation(qGroup),
+      buildAnswersFromForm: jest.fn().mockReturnValue({
+        productOrService: 'a',
+        idealCustomer: 'a',
+        problemSolved: 'a',
+        desiredResult: 'a',
+        concernBeforeChoosing: 'a',
+        whyTrust: 'a',
+        oneMessageToRemember: 'a',
+        nextAction: 'a',
+        visualHappyOutcome: 'a',
+        adTone: 'a',
+      }),
+      patchQuestionnaireForm: jest.fn(),
+      loadQuestionnaireDraftIntoForm: jest.fn().mockResolvedValue(undefined),
+      saveQuestionnaireDraft: jest.fn().mockResolvedValue(undefined),
+      updateActiveQuestionnaire: jest.fn().mockResolvedValue(undefined),
+      createValidateAdForm: jest.fn().mockImplementation(() =>
+        fb.group({
+          validation: [''],
+          justification: [''],
+          description: [''],
+        })
+      ),
+      createUploadAdForm: jest.fn().mockImplementation(() =>
+        fb.group({
+          name: [''],
+          type: [''],
+          adFile: [null],
+        })
+      ),
       loadClientData: jest.fn().mockResolvedValue(null),
       uploadFilesToLibrary: jest.fn().mockResolvedValue(null),
       createAdRequest: jest.fn().mockResolvedValue(null),

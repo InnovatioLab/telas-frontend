@@ -8,12 +8,15 @@ import { AuthService } from '@app/core/service/auth/auth.service';
 import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
 import { AdValidationType } from '@app/model/client';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
+import {
+  BUSINESS_QUESTIONNAIRE_FIELD_META,
+  BusinessQuestionnaireAnswersDto,
+} from '@app/model/dto/request/business-questionnaire-answers.dto';
 import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
 import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
 import { AttachmentResponseDto } from '@app/model/dto/response/attachment-response.dto';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
-import { AbstractControlUtils } from '@app/shared/utils/abstract-control.utils';
 import { ImageValidationUtil } from '@app/utility/src/utils/image-validation.util';
 import { take } from 'rxjs/operators';
 
@@ -56,11 +59,74 @@ export class MyTelasService {
     private readonly injector: Injector
   ) {}
 
-  createRequestAdForm(): FormGroup {
-    return this.fb.group({
-      slogan: ["", [Validators.maxLength(50)]],
-      brandGuidelineUrl: ["", [AbstractControlUtils.validateUrl(), Validators.maxLength(255)]],
-    });
+  createBusinessQuestionnaireForm(): FormGroup {
+    const rules = [Validators.required, Validators.maxLength(2000)];
+    const group: Record<string, unknown> = {};
+    for (const { key } of BUSINESS_QUESTIONNAIRE_FIELD_META) {
+      group[key as string] = ['', rules];
+    }
+    return this.fb.group(group);
+  }
+
+  patchQuestionnaireForm(
+    form: FormGroup,
+    data: Partial<BusinessQuestionnaireAnswersDto> | null | undefined
+  ): void {
+    if (!data) {
+      return;
+    }
+    for (const { key } of BUSINESS_QUESTIONNAIRE_FIELD_META) {
+      const v = data[key];
+      if (typeof v === 'string') {
+        form.get(key as string)?.setValue(v);
+      }
+    }
+  }
+
+  async loadQuestionnaireDraftIntoForm(form: FormGroup): Promise<void> {
+    try {
+      const draft = await this.clientService
+        .getBusinessQuestionnaireDraft()
+        .pipe(take(1))
+        .toPromise();
+      this.patchQuestionnaireForm(form, draft ?? undefined);
+    } catch {
+    }
+  }
+
+  async saveQuestionnaireDraft(form: FormGroup): Promise<void> {
+    if (form.invalid) {
+      form.markAllAsTouched();
+      this.toastService.erro('Please complete all questions.');
+      return;
+    }
+    const body = this.buildAnswersFromForm(form);
+    await this.clientService.saveBusinessQuestionnaireDraft(body).pipe(take(1)).toPromise();
+    this.toastService.sucesso('Draft saved.');
+  }
+
+  buildAnswersFromForm(form: FormGroup): BusinessQuestionnaireAnswersDto {
+    const raw = form.getRawValue() as Record<string, string>;
+    const out = {} as BusinessQuestionnaireAnswersDto;
+    for (const { key } of BUSINESS_QUESTIONNAIRE_FIELD_META) {
+      out[key] = String(raw[key as string] ?? '').trim();
+    }
+    return out;
+  }
+
+  async updateActiveQuestionnaire(adRequestId: string, form: FormGroup): Promise<void> {
+    if (form.invalid) {
+      form.markAllAsTouched();
+      this.toastService.erro('Please complete all questions.');
+      return;
+    }
+    const body = this.buildAnswersFromForm(form);
+    await this.clientService
+      .updateAdRequestBusinessQuestionnaire(adRequestId, body)
+      .pipe(take(1))
+      .toPromise();
+    this.toastService.sucesso('Questionnaire updated.');
+    await this.loadClientData();
   }
 
   createValidateAdForm(): FormGroup {
@@ -227,7 +293,7 @@ export class MyTelasService {
 
   async createAdRequestWithOptionalUploads(
     files: File[] | null,
-    form: { slogan?: string; brandGuidelineUrl?: string },
+    businessAnswers: BusinessQuestionnaireAnswersDto,
     selectedAttachmentIds: string[] | null
   ): Promise<void> {
     this._isLoading.set(true);
@@ -267,8 +333,7 @@ export class MyTelasService {
 
       const request: ClientAdRequestDto = {
         attachmentIds: ids,
-        slogan: form.slogan,
-        brandGuidelineUrl: form.brandGuidelineUrl,
+        businessAnswers,
       };
 
       await this.clientService.createAdRequest(request).toPromise();

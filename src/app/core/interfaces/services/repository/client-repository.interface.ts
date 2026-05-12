@@ -13,6 +13,7 @@ import { WishlistResponseDto } from '@app/model/dto/response/wishlist-response.d
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { AttachmentRequestDto } from '@app/model/dto/request/attachment-request.dto';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
+import { BusinessQuestionnaireAnswersDto } from '@app/model/dto/request/business-questionnaire-answers.dto';
 import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
 import { FilterClientRequestDto } from '@app/core/service/api/client-management.service';
 import { AdMessageResponseDto } from '@app/model/dto/response/ad-message-response.dto';
@@ -61,6 +62,17 @@ export interface IClientRepository extends IRepository<Client, ClientRequestDTO,
   deleteClientAttachment(attachmentId: string): Observable<unknown>;
 
   createAdRequest(request: ClientAdRequestDto): Observable<any>;
+
+  getBusinessQuestionnaireDraft(): Observable<BusinessQuestionnaireAnswersDto | null>;
+
+  saveBusinessQuestionnaireDraft(body: BusinessQuestionnaireAnswersDto): Observable<unknown>;
+
+  updateAdRequestBusinessQuestionnaire(
+    adRequestId: string,
+    body: BusinessQuestionnaireAnswersDto
+  ): Observable<unknown>;
+
+  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<Blob>;
 
   validateAd(adId: string, validation: string, refusedData?: RefusedAdRequestDto): Observable<any>;
 

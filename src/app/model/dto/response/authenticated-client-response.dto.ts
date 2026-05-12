@@ -1,4 +1,5 @@
 import { AdResponseDto } from "./ad-response.dto";
+import { BusinessQuestionnaireAnswersDto } from "@app/model/dto/request/business-questionnaire-answers.dto";
 
 export interface AuthenticatedClientResponseDto {
   id: string;
@@ -14,12 +15,12 @@ export interface AuthenticatedClientResponseDto {
   socialMedia: Record<string, string> | null;
   adRequest: {
     id: string;
-    message: string;
-    phone?: string;
-    emai?: string;
     attachmentsIds?: string[];
     active?: boolean;
     isActive?: boolean;
+    businessAnswers?: BusinessQuestionnaireAnswersDto | null;
+    businessQuestionnaireVersion?: number | null;
+    businessQuestionnaireUpdatedAt?: string | null;
   } | null;
   addresses: Array<{
     id: string;

@@ -561,6 +561,18 @@ describe('ClientService', () => {
     it('deve criar ad request', (done) => {
       const adRequest: ClientAdRequestDto = {
         attachmentIds: ['1', '2'],
+        businessAnswers: {
+          productOrService: 'p',
+          idealCustomer: 'i',
+          problemSolved: 'pr',
+          desiredResult: 'd',
+          concernBeforeChoosing: 'c',
+          whyTrust: 'w',
+          oneMessageToRemember: 'o',
+          nextAction: 'n',
+          visualHappyOutcome: 'v',
+          adTone: 't',
+        },
       };
 
       mockRepository.createAdRequest.mockReturnValue(of({}));

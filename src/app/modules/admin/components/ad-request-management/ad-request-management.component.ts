@@ -423,4 +423,21 @@ export class AdRequestManagementComponent implements OnInit {
         return role || "Unknown";
     }
   }
+
+  downloadQuestionnaireTxt(adRequest: AdRequestResponseDto): void {
+    const id = adRequest?.id;
+    if (!id) {
+      return;
+    }
+    this.clientService.downloadAdRequestBusinessQuestionnaireTxt(id).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        triggerBrowserFileDownload(url, `business-questionnaire-${id}.txt`);
+        URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.toastService.erro("Could not download questionnaire");
+      },
+    });
+  }
 }

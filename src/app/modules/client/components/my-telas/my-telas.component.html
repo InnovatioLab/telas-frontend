@@ -184,13 +184,18 @@
       <div class="request-ad-section">
         <div class="w-full m-auto">
           <h5 class="mb-3">Request your ad</h5>
-          <p class="mb-5 text-sm">
-            Select <strong>one</strong> attachment above (checkbox), add optional slogan and brand guideline link, then
-            send — one request at a time.
+          @if (adRequestWizardStep === 1) {
+          <p class="mb-3 text-sm">
+            Step 1 of 2 — Answer all business questions. You can save a draft and continue later.
           </p>
+          } @else {
+          <p class="mb-3 text-sm">
+            Step 2 of 2 — Select <strong>one</strong> attachment (checkbox) or upload a single file, then submit your request.
+          </p>
+          }
         </div>
 
-        @if (selectedClientAttachments.length > 0) {
+        @if (selectedClientAttachments.length > 0 && adRequestWizardStep === 2) {
         <div class="selection-info">
           <p>
             <span class="pi pi-check-circle" style="color: var(--cor-primaria)"></span>
@@ -199,33 +204,39 @@
         </div>
         }
 
-        <form [formGroup]="requestAdForm" class="flex flex-column gap-5"
+        @if (adRequestWizardStep === 1) {
+        <form [formGroup]="newRequestQuestionnaireForm" class="flex flex-column gap-4"
           [class.pointer-events-none]="myTelasService.isLoading()"
           [class.opacity-60]="myTelasService.isLoading()">
-          <div class="grid form-group">
-            <div class="col-12 md:col-6 lg:col-6">
-              <label for="slogan" htmlFor="slogan" class="text-left">Slogan</label>
-              <input id="slogan" type="text" pInputText formControlName="slogan"
-                placeholder="Enter your slogan (max 50 characters)" [maxlength]="50" id="inp-slogan" />
-              @if (mostrarErro(requestAdForm, "slogan")) {
-              <app-error id="error-msg-slogan" [control]="requestAdForm.get('slogan')"></app-error>
-              }
-            </div>
-            <div class="col-12 md:col-6 lg:col-6">
-              <label for="brandGuidelineUrl" htmlFor="brandGuidelineUrl" class="text-left">Brand Guideline URL</label>
-              <input id="brandGuidelineUrl" type="url" pInputText formControlName="brandGuidelineUrl"
-                placeholder="https://example.com/guidelines" [maxlength]="255" id="inp-brandGuidelineUrl" />
-              @if (mostrarErro(requestAdForm, "brandGuidelineUrl")) {
-              <app-error id="error-msg-brandGuidelineUrl"
-                [control]="requestAdForm.get('brandGuidelineUrl')"></app-error>
-              }
-            </div>
+          @for (f of questionnaireFields; track f.key) {
+          <div class="flex flex-column gap-2">
+            <label class="text-left" [attr.for]="'nq-' + f.key">{{ f.label }}</label>
+            <textarea [id]="'nq-' + f.key" pInputTextarea rows="3" class="w-full" [formControlName]="f.key"></textarea>
+            @if (mostrarErro(newRequestQuestionnaireForm, f.key)) {
+            <app-error [control]="newRequestQuestionnaireForm.get(f.key)"></app-error>
+            }
           </div>
+          }
+          <div class="form-actions flex flex-wrap gap-2">
+            <button pButton label="Save draft" type="button" class="p-button-secondary" (click)="saveQuestionnaireDraft()"
+              [disabled]="myTelasService.isLoading()"></button>
+            <button pButton label="Next: choose attachment" type="button" icon="pi pi-arrow-right" iconPos="right"
+              (click)="goToAttachmentsStep()" [disabled]="myTelasService.isLoading()"></button>
+          </div>
+        </form>
+        }
 
+        @if (adRequestWizardStep === 2) {
+        <div class="flex flex-column gap-4" [class.pointer-events-none]="myTelasService.isLoading()"
+          [class.opacity-60]="myTelasService.isLoading()">
+          <div class="form-actions flex gap-2">
+            <button pButton label="Back" type="button" class="p-button-text" (click)="goBackToQuestionnaire()"
+              [disabled]="myTelasService.isLoading()"></button>
+          </div>
           <div class="form-actions">
             <button pButton label="Send ad request" icon="pi pi-send" (click)="submitAdRequest()"
               [disabled]="
-                requestAdForm.invalid ||
+                newRequestQuestionnaireForm.invalid ||
                 myTelasService.isLoading() ||
                 !canCreateAdRequest() ||
                 !(
@@ -236,7 +247,8 @@
               [loading]="myTelasService.isLoading()"
               class="p-button-primary"></button>
           </div>
-        </form>
+        </div>
+        }
       </div>
       }
 
@@ -255,6 +267,25 @@
             </p>
           </div>
         </div>
+        @if (myTelasService.authenticatedClient()?.adRequest?.id) {
+        <form [formGroup]="activeQuestionnaireForm" class="flex flex-column gap-4 mt-4">
+          @for (f of questionnaireFields; track f.key) {
+          <div class="flex flex-column gap-2">
+            <label class="text-left" [attr.for]="'aq-' + f.key">{{ f.label }}</label>
+            <textarea [id]="'aq-' + f.key" pInputTextarea rows="3" class="w-full" [formControlName]="f.key"></textarea>
+            @if (mostrarErro(activeQuestionnaireForm, f.key)) {
+            <app-error [control]="activeQuestionnaireForm.get(f.key)"></app-error>
+            }
+          </div>
+          }
+          <div class="form-actions">
+            <button pButton label="Update questionnaire" type="button" icon="pi pi-save"
+              (click)="updateActiveQuestionnaire()"
+              [disabled]="activeQuestionnaireForm.invalid || myTelasService.isLoading()"
+              [loading]="myTelasService.isLoading()" class="p-button-primary"></button>
+          </div>
+        </form>
+        }
       </div>
       }
     </div>

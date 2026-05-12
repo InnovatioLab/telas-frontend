@@ -1,16 +1,16 @@
 import { AdValidationType, Role } from "@app/model/client";
+import { BusinessQuestionnaireAnswersDto } from "@app/model/dto/request/business-questionnaire-answers.dto";
 
 export interface AdRequestResponseDto {
   id: string;
   clientId: string;
-  message: string;
   clientName: string;
-  slogan?: string;
-  brandGuidelineUrl?: string;
   clientRole: Role;
   isActive: boolean;
   submissionDate: string;
   waitingDays: number;
+  businessQuestionnaireVersion?: number | null;
+  businessQuestionnaireUpdatedAt?: string | null;
   attachments?: LinkResponseDto[];
   refusedAds?: RefusedAdResponseDto[];
   ad: LinkResponseDto;
@@ -18,8 +18,8 @@ export interface AdRequestResponseDto {
 
 export interface ClientReferenceAttachmentAdminDto {
   attachmentId: string;
-  slogan: string;
-  brandGuidelineUrl: string;
+  businessQuestionnaireVersion?: number | null;
+  businessQuestionnaireUpdatedAt?: string | null;
   previewLink: string;
   downloadLink: string;
 }

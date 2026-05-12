@@ -54,13 +54,12 @@
       <th scope="col" pSortableColumn="role">
         Role <p-sortIcon field="role"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="slogan">
-        Slogan <p-sortIcon field="slogan"></p-sortIcon>
+      <th scope="col" pSortableColumn="questionnaireUpdatedAt">
+        Questions <p-sortIcon field="questionnaireUpdatedAt"></p-sortIcon>
       </th>
       <th scope="col" pSortableColumn="createdAt">
         Submission Date <p-sortIcon field="createdAt"></p-sortIcon>
       </th>
-      <th scope="col">Brand Guideline</th>
       <th scope="col">Waiting Days</th>
       <th scope="col" class="actions">Actions</th>
     </tr>
@@ -76,19 +75,23 @@
         >
         </p-badge>
       </td>
-      <td>{{ adRequest.slogan | sliceString: 75 }}</td>
-      <td>{{ adRequest.submissionDate | date: "MM/dd/yyyy" }}</td>
       <td>
-        <ng-container *ngIf="adRequest.brandGuidelineUrl; else noUrl">
-          <a
-            [href]="getAbsoluteUrl(adRequest.brandGuidelineUrl)"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Link</a
-          >
-        </ng-container>
-        <ng-template #noUrl>N/A</ng-template>
+        <span *ngIf="adRequest.businessQuestionnaireVersion != null; else noQ">
+          v{{ adRequest.businessQuestionnaireVersion }}
+        </span>
+        <ng-template #noQ>—</ng-template>
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-download"
+          class="p-button-rounded p-button-text p-button-sm ml-2"
+          pTooltip="Download questionnaire (.txt)"
+          tooltipPosition="top"
+          (click)="downloadQuestionnaireTxt(adRequest)"
+        ></button>
       </td>
+      <td>{{ adRequest.submissionDate | date: "MM/dd/yyyy" }}</td>
       <td>{{ adRequest.waitingDays }} days</td>
       <td class="actions">
         <div class="action-buttons">
@@ -143,7 +146,7 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="7" class="text-center">No ad requests found.</td>
+      <td colspan="6" class="text-center">No ad requests found.</td>
     </tr>
   </ng-template>
 </p-table>
@@ -161,17 +164,19 @@
   [resizable]="false"
 >
   <div *ngIf="selectedAdRequest" class="details-content">
-    <div *ngIf="selectedAdRequest.slogan" class="detail-row">
-      <strong>Slogan:</strong> {{ selectedAdRequest.slogan }}
-    </div>
-    <div *ngIf="selectedAdRequest.brandGuidelineUrl" class="detail-row">
-      <strong>Brand Guideline URL:</strong>
-      <a
-        [href]="getAbsoluteUrl(selectedAdRequest.brandGuidelineUrl)"
-        target="_blank"
-        rel="noopener noreferrer"
-        >Link</a
-      >
+    <div *ngIf="selectedAdRequest.businessQuestionnaireVersion != null" class="detail-row">
+      <strong>Business questionnaire:</strong> revision
+      {{ selectedAdRequest.businessQuestionnaireVersion }}
+      <span *ngIf="selectedAdRequest.businessQuestionnaireUpdatedAt">
+        — updated {{ selectedAdRequest.businessQuestionnaireUpdatedAt | date: "short" }}
+      </span>
+      <button
+        pButton
+        type="button"
+        label="Download .txt"
+        class="p-button-sm p-button-outlined ml-2"
+        (click)="downloadQuestionnaireTxt(selectedAdRequest)"
+      ></button>
     </div>
 
     <div

@@ -4,6 +4,7 @@ import { ClientDomainService } from "@app/core/service/domain/client.domain.serv
 import { CLIENT_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { Client } from "@app/model/client";
 import { ClientAdRequestDto } from "@app/model/dto/request/client-ad-request.dto";
+import { BusinessQuestionnaireAnswersDto } from "@app/model/dto/request/business-questionnaire-answers.dto";
 import { ClientRequestDTO } from "@app/model/dto/request/client-request.dto";
 import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
 import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
@@ -120,6 +121,25 @@ export class ClientService {
 
   createAdRequest(request: ClientAdRequestDto): Observable<any> {
     return this.clientRepository.createAdRequest(request);
+  }
+
+  getBusinessQuestionnaireDraft(): Observable<BusinessQuestionnaireAnswersDto | null> {
+    return this.clientRepository.getBusinessQuestionnaireDraft();
+  }
+
+  saveBusinessQuestionnaireDraft(body: BusinessQuestionnaireAnswersDto): Observable<unknown> {
+    return this.clientRepository.saveBusinessQuestionnaireDraft(body);
+  }
+
+  updateAdRequestBusinessQuestionnaire(
+    adRequestId: string,
+    body: BusinessQuestionnaireAnswersDto
+  ): Observable<unknown> {
+    return this.clientRepository.updateAdRequestBusinessQuestionnaire(adRequestId, body);
+  }
+
+  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<Blob> {
+    return this.clientRepository.downloadAdRequestBusinessQuestionnaireTxt(adRequestId);
   }
 
   validateAd(

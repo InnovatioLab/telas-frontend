@@ -16,6 +16,7 @@ import { WishlistResponseDto } from '@app/model/dto/response/wishlist-response.d
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { AttachmentRequestDto } from '@app/model/dto/request/attachment-request.dto';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
+import { BusinessQuestionnaireAnswersDto } from '@app/model/dto/request/business-questionnaire-answers.dto';
 import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
 import { FilterClientRequestDto } from '@app/core/service/api/client-management.service';
 import { BaseRepository } from './base.repository';
@@ -302,6 +303,37 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
 
   createAdRequest(request: ClientAdRequestDto): Observable<any> {
     return this.http.post(`${this.baseUrl}/request-ad`, request, this.getHeaders());
+  }
+
+  getBusinessQuestionnaireDraft(): Observable<BusinessQuestionnaireAnswersDto | null> {
+    return this.http
+      .get<ResponseDTO<BusinessQuestionnaireAnswersDto | null>>(
+        `${this.baseUrl}/me/business-questionnaire-draft`,
+        this.getHeaders()
+      )
+      .pipe(map((r) => r.data ?? null));
+  }
+
+  saveBusinessQuestionnaireDraft(body: BusinessQuestionnaireAnswersDto): Observable<unknown> {
+    return this.http.put(`${this.baseUrl}/me/business-questionnaire-draft`, body, this.getHeaders());
+  }
+
+  updateAdRequestBusinessQuestionnaire(
+    adRequestId: string,
+    body: BusinessQuestionnaireAnswersDto
+  ): Observable<unknown> {
+    return this.http.patch(
+      `${this.baseUrl}/ad-requests/${adRequestId}/business-questionnaire`,
+      body,
+      this.getHeaders()
+    );
+  }
+
+  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/ads-requests/${adRequestId}/business-questionnaire.txt`, {
+      ...this.getHeaders(),
+      responseType: 'blob',
+    });
   }
 
   validateAd(adId: string, validation: string, refusedData?: RefusedAdRequestDto): Observable<any> {

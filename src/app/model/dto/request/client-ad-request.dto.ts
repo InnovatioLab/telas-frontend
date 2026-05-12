@@ -1,5 +1,6 @@
+import { BusinessQuestionnaireAnswersDto } from "./business-questionnaire-answers.dto";
+
 export interface ClientAdRequestDto {
   attachmentIds?: string[];
-  slogan?: string;
-  brandGuidelineUrl?: string;
-} 
+  businessAnswers: BusinessQuestionnaireAnswersDto;
+}

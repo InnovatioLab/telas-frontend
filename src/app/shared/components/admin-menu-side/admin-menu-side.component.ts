@@ -446,7 +446,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
       case "ads":
         return "Validate ads: pending and approved placements";
       case "adRequests":
-        return "Client attachment requests (slogan & guidelines)";
+        return "Client attachment requests (business questionnaire)";
       case "clients":
         return "Manage clients";
       case "adOperations":
