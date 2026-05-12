@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <div class="item-actions">
+      <div class="item-actions" *ngIf="item.hasAvailableSlots && item.active">
         <button
           pButton
           label="Add Screen"

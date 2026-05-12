@@ -115,14 +115,17 @@ export class WishlistItemComponent implements OnInit, OnChanges {
   }
 
   private checkIfItemInCart(): void {
+    if (!this.item.hasAvailableSlots || !this.item.active) {
+      this.isButtonDisabled = true;
+      return;
+    }
     if (this.activeCart) {
       const isItemInCart = this.activeCart.items.some(
         (cartItem) => cartItem.monitorId === this.item.id
       );
-      this.isButtonDisabled =
-        isItemInCart || !this.item.hasAvailableSlots || !this.item.active;
+      this.isButtonDisabled = isItemInCart;
     } else {
-      this.isButtonDisabled = !this.item.hasAvailableSlots || !this.item.active;
+      this.isButtonDisabled = false;
     }
   }
 

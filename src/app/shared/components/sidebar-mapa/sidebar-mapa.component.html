@@ -81,6 +81,7 @@
           (click)="addToWishlist()"
         ></button>
         <button
+          *ngIf="getMonitorData()?.hasAvailableSlots === true"
           pButton
           pRipple
           label="Add Screen"

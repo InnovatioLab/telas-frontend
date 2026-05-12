@@ -14,6 +14,12 @@ export class MonitorCartActionsService {
   ) {}
 
   addMonitorToCart(monitor: MapPoint): void {
+    if (monitor.hasAvailableSlots !== true) {
+      this.toastService.aviso(
+        "Esta tela não tem vagas disponíveis no momento. Use a lista de desejos para ser avisado quando houver disponibilidade."
+      );
+      return;
+    }
     this.cartService.getLoggedUserCart().subscribe({
       next: (activeCart) => {
         if (activeCart) {

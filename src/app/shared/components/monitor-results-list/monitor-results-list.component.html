@@ -83,6 +83,7 @@
           (click)="onNotify(item, $event)"
         ></button>
         <button
+          *ngIf="item.hasAvailableSlots === true"
           pButton
           pRipple
           type="button"

@@ -8,7 +8,7 @@
   
   <div class="point-menu-options">
     <button
-      *ngIf="showCartButton"
+      *ngIf="showCartButton && selectedPoint?.hasAvailableSlots === true"
       pButton
       type="button"
       icon="pi pi-list"

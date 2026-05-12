@@ -43,10 +43,19 @@ export class PopUpStepAddListComponent {
   }
 
   addToList(): void {
-    if (this.selectedPoint) {
-      this.addToCart();
-      this.addToListClicked.emit(this.selectedPoint);
+    if (!this.selectedPoint) {
+      this.close();
+      return;
     }
+    if (this.selectedPoint.hasAvailableSlots !== true) {
+      this.toastService.aviso(
+        "Esta tela não tem vagas disponíveis no momento."
+      );
+      this.close();
+      return;
+    }
+    this.addToCart();
+    this.addToListClicked.emit(this.selectedPoint);
     this.close();
   }
 
