@@ -59,6 +59,22 @@ small {
     flex-direction: column;
     border-top: 1px solid #e0e0e0;
   }
+
+  .request-ad-section.questionnaire-block {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  ::ng-deep .questionnaire-accordion {
+    .p-accordion-header-link {
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      min-height: 5rem;
+    }
+  }
 }
 
 // Ads Tab

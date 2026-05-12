@@ -2,6 +2,43 @@
   <!-- Tab 1: Attachments -->
   <p-tabPanel header="Attachments">
     <div class="attachments-content">
+      @if (myTelasService.isClientDataLoaded() && canCreateAdRequest()) {
+      <div class="request-ad-section questionnaire-block mb-4">
+        <h3 class="mt-0 mb-2">Request your ad</h3>
+        @if (adRequestWizardStep === 1) {
+        <p class="mb-3 text-sm text-color-secondary">
+          Step 1 of 2 — Open each item to answer. You can save a draft and continue later.
+        </p>
+        <form [formGroup]="newRequestQuestionnaireForm" class="flex flex-column gap-3"
+          [class.pointer-events-none]="myTelasService.isLoading()"
+          [class.opacity-60]="myTelasService.isLoading()">
+          <p-accordion [multiple]="false" styleClass="questionnaire-accordion">
+            @for (f of questionnaireFields; track f.key; let qi = $index) {
+            <p-accordionTab [header]="(qi + 1) + '. ' + f.label">
+              <div class="flex flex-column gap-2 pt-1">
+                <textarea [id]="'nq-' + f.key" pInputTextarea rows="4" class="w-full" [formControlName]="f.key"></textarea>
+                @if (mostrarErro(newRequestQuestionnaireForm, f.key)) {
+                <app-error [control]="newRequestQuestionnaireForm.get(f.key)"></app-error>
+                }
+              </div>
+            </p-accordionTab>
+            }
+          </p-accordion>
+          <div class="form-actions flex flex-wrap gap-2">
+            <button pButton label="Save draft" type="button" class="p-button-secondary" (click)="saveQuestionnaireDraft()"
+              [disabled]="myTelasService.isLoading()"></button>
+            <button pButton label="Next: attachments" type="button" icon="pi pi-arrow-down" iconPos="right"
+              (click)="goToAttachmentsStep()" [disabled]="myTelasService.isLoading()"></button>
+          </div>
+        </form>
+        } @else {
+        <p class="mb-0 text-sm text-color-secondary">
+          <strong>Step 2 of 2</strong> — Below you will find your library. Select exactly <strong>one</strong> attachment (checkbox) or upload a single file, then use <strong>Send ad request</strong> at the end of this page.
+        </p>
+        }
+      </div>
+      }
+
       <div class="upload-section">
         <h3>Attachments</h3>
         <p>
@@ -150,6 +187,38 @@
       </div>
       }
 
+      @if (myTelasService.isClientDataLoaded() && canCreateAdRequest() && adRequestWizardStep === 2) {
+      <div class="request-ad-section request-ad-step2 mt-4 pt-3 border-top-1 surface-border">
+        @if (selectedClientAttachments.length > 0) {
+        <div class="selection-info mb-3">
+          <p class="mb-0">
+            <span class="pi pi-check-circle" style="color: var(--cor-primaria)"></span>
+            1 attachment selected for this request
+          </p>
+        </div>
+        }
+        <div class="flex flex-column gap-3" [class.pointer-events-none]="myTelasService.isLoading()"
+          [class.opacity-60]="myTelasService.isLoading()">
+          <div class="form-actions flex flex-wrap gap-2">
+            <button pButton label="Back to questions" type="button" class="p-button-text" (click)="goBackToQuestionnaire()"
+              [disabled]="myTelasService.isLoading()"></button>
+            <button pButton label="Send ad request" icon="pi pi-send" (click)="submitAdRequest()"
+              [disabled]="
+                newRequestQuestionnaireForm.invalid ||
+                myTelasService.isLoading() ||
+                !canCreateAdRequest() ||
+                !(
+                  selectedClientAttachments.length === 1 ||
+                  selectedFiles.length === 1
+                )
+              "
+              [loading]="myTelasService.isLoading()"
+              class="p-button-primary"></button>
+          </div>
+        </div>
+      </div>
+      }
+
       @if (
       myTelasService.authenticatedClient() &&
       myTelasService.clientAttachments().length === 0 &&
@@ -180,78 +249,6 @@
       </div>
       }
 
-      @if (myTelasService.isClientDataLoaded() && canCreateAdRequest()) {
-      <div class="request-ad-section">
-        <div class="w-full m-auto">
-          <h5 class="mb-3">Request your ad</h5>
-          @if (adRequestWizardStep === 1) {
-          <p class="mb-3 text-sm">
-            Step 1 of 2 — Answer all business questions. You can save a draft and continue later.
-          </p>
-          } @else {
-          <p class="mb-3 text-sm">
-            Step 2 of 2 — Select <strong>one</strong> attachment (checkbox) or upload a single file, then submit your request.
-          </p>
-          }
-        </div>
-
-        @if (selectedClientAttachments.length > 0 && adRequestWizardStep === 2) {
-        <div class="selection-info">
-          <p>
-            <span class="pi pi-check-circle" style="color: var(--cor-primaria)"></span>
-            1 attachment selected for this request
-          </p>
-        </div>
-        }
-
-        @if (adRequestWizardStep === 1) {
-        <form [formGroup]="newRequestQuestionnaireForm" class="flex flex-column gap-4"
-          [class.pointer-events-none]="myTelasService.isLoading()"
-          [class.opacity-60]="myTelasService.isLoading()">
-          @for (f of questionnaireFields; track f.key) {
-          <div class="flex flex-column gap-2">
-            <label class="text-left" [attr.for]="'nq-' + f.key">{{ f.label }}</label>
-            <textarea [id]="'nq-' + f.key" pInputTextarea rows="3" class="w-full" [formControlName]="f.key"></textarea>
-            @if (mostrarErro(newRequestQuestionnaireForm, f.key)) {
-            <app-error [control]="newRequestQuestionnaireForm.get(f.key)"></app-error>
-            }
-          </div>
-          }
-          <div class="form-actions flex flex-wrap gap-2">
-            <button pButton label="Save draft" type="button" class="p-button-secondary" (click)="saveQuestionnaireDraft()"
-              [disabled]="myTelasService.isLoading()"></button>
-            <button pButton label="Next: choose attachment" type="button" icon="pi pi-arrow-right" iconPos="right"
-              (click)="goToAttachmentsStep()" [disabled]="myTelasService.isLoading()"></button>
-          </div>
-        </form>
-        }
-
-        @if (adRequestWizardStep === 2) {
-        <div class="flex flex-column gap-4" [class.pointer-events-none]="myTelasService.isLoading()"
-          [class.opacity-60]="myTelasService.isLoading()">
-          <div class="form-actions flex gap-2">
-            <button pButton label="Back" type="button" class="p-button-text" (click)="goBackToQuestionnaire()"
-              [disabled]="myTelasService.isLoading()"></button>
-          </div>
-          <div class="form-actions">
-            <button pButton label="Send ad request" icon="pi pi-send" (click)="submitAdRequest()"
-              [disabled]="
-                newRequestQuestionnaireForm.invalid ||
-                myTelasService.isLoading() ||
-                !canCreateAdRequest() ||
-                !(
-                  selectedClientAttachments.length === 1 ||
-                  selectedFiles.length === 1
-                )
-              "
-              [loading]="myTelasService.isLoading()"
-              class="p-button-primary"></button>
-          </div>
-        </div>
-        }
-      </div>
-      }
-
       @if (
       myTelasService.hasActiveAdRequest() &&
       myTelasService.clientAttachments().length > 0
@@ -268,16 +265,20 @@
           </div>
         </div>
         @if (myTelasService.authenticatedClient()?.adRequest?.id) {
-        <form [formGroup]="activeQuestionnaireForm" class="flex flex-column gap-4 mt-4">
-          @for (f of questionnaireFields; track f.key) {
-          <div class="flex flex-column gap-2">
-            <label class="text-left" [attr.for]="'aq-' + f.key">{{ f.label }}</label>
-            <textarea [id]="'aq-' + f.key" pInputTextarea rows="3" class="w-full" [formControlName]="f.key"></textarea>
-            @if (mostrarErro(activeQuestionnaireForm, f.key)) {
-            <app-error [control]="activeQuestionnaireForm.get(f.key)"></app-error>
+        <h5 class="mt-4 mb-2">Update your answers</h5>
+        <form [formGroup]="activeQuestionnaireForm" class="flex flex-column gap-3 mt-2">
+          <p-accordion [multiple]="false" styleClass="questionnaire-accordion">
+            @for (f of questionnaireFields; track f.key; let qi = $index) {
+            <p-accordionTab [header]="(qi + 1) + '. ' + f.label">
+              <div class="flex flex-column gap-2 pt-1">
+                <textarea [id]="'aq-' + f.key" pInputTextarea rows="4" class="w-full" [formControlName]="f.key"></textarea>
+                @if (mostrarErro(activeQuestionnaireForm, f.key)) {
+                <app-error [control]="activeQuestionnaireForm.get(f.key)"></app-error>
+                }
+              </div>
+            </p-accordionTab>
             }
-          </div>
-          }
+          </p-accordion>
           <div class="form-actions">
             <button pButton label="Update questionnaire" type="button" icon="pi pi-save"
               (click)="updateActiveQuestionnaire()"
