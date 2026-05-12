@@ -12,6 +12,9 @@
         </p>
         <p class="mb-3 text-sm text-color-secondary">You’ll also be able to upload your logo, images, and any other
           files you want us to use.</p>
+        <p class="mb-3 text-sm text-color-secondary">
+          Each answer is limited to {{ questionnaireAnswerMaxLength }} characters.
+        </p>
         <form [formGroup]="newRequestQuestionnaireForm" class="flex flex-column gap-3"
           [class.pointer-events-none]="myTelasService.isLoading()" [class.opacity-60]="myTelasService.isLoading()">
           <p-accordion [multiple]="false" styleClass="questionnaire-accordion">
@@ -19,7 +22,7 @@
             <p-accordionTab [header]="(qi + 1) + '. ' + f.label">
               <div class="flex flex-column gap-2 pt-1">
                 <textarea [id]="'nq-' + f.key" pInputTextarea rows="4" class="w-full"
-                  [formControlName]="f.key"></textarea>
+                  [formControlName]="f.key" [attr.maxlength]="questionnaireAnswerMaxLength"></textarea>
                 @if (mostrarErro(newRequestQuestionnaireForm, f.key)) {
                 <app-error [control]="newRequestQuestionnaireForm.get(f.key)"></app-error>
                 }
@@ -266,13 +269,16 @@
         </div>
         @if (myTelasService.authenticatedClient()?.adRequest?.id) {
         <h5 class="mt-4 mb-2">Update your answers</h5>
+        <p class="mb-2 text-sm text-color-secondary">
+          Each answer is limited to {{ questionnaireAnswerMaxLength }} characters.
+        </p>
         <form [formGroup]="activeQuestionnaireForm" class="flex flex-column gap-3 mt-2">
           <p-accordion [multiple]="false" styleClass="questionnaire-accordion">
             @for (f of questionnaireFields; track f.key; let qi = $index) {
             <p-accordionTab [header]="(qi + 1) + '. ' + f.label">
               <div class="flex flex-column gap-2 pt-1">
                 <textarea [id]="'aq-' + f.key" pInputTextarea rows="4" class="w-full"
-                  [formControlName]="f.key"></textarea>
+                  [formControlName]="f.key" [attr.maxlength]="questionnaireAnswerMaxLength"></textarea>
                 @if (mostrarErro(activeQuestionnaireForm, f.key)) {
                 <app-error [control]="activeQuestionnaireForm.get(f.key)"></app-error>
                 }

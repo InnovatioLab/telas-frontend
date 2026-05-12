@@ -211,16 +211,16 @@ describe('MyTelasComponent - New Features', () => {
     const fb = new FormBuilder();
     const qGroup = () =>
       fb.group({
-        productOrService: ['a', [Validators.required, Validators.maxLength(2000)]],
-        idealCustomer: ['a', [Validators.required, Validators.maxLength(2000)]],
-        problemSolved: ['a', [Validators.required, Validators.maxLength(2000)]],
-        desiredResult: ['a', [Validators.required, Validators.maxLength(2000)]],
-        concernBeforeChoosing: ['a', [Validators.required, Validators.maxLength(2000)]],
-        whyTrust: ['a', [Validators.required, Validators.maxLength(2000)]],
-        oneMessageToRemember: ['a', [Validators.required, Validators.maxLength(2000)]],
-        nextAction: ['a', [Validators.required, Validators.maxLength(2000)]],
-        visualHappyOutcome: ['a', [Validators.required, Validators.maxLength(2000)]],
-        adTone: ['a', [Validators.required, Validators.maxLength(2000)]],
+        productOrService: ['a', [Validators.required, Validators.maxLength(150)]],
+        idealCustomer: ['a', [Validators.required, Validators.maxLength(150)]],
+        problemSolved: ['a', [Validators.required, Validators.maxLength(150)]],
+        desiredResult: ['a', [Validators.required, Validators.maxLength(150)]],
+        concernBeforeChoosing: ['a', [Validators.required, Validators.maxLength(150)]],
+        whyTrust: ['a', [Validators.required, Validators.maxLength(150)]],
+        oneMessageToRemember: ['a', [Validators.required, Validators.maxLength(150)]],
+        nextAction: ['a', [Validators.required, Validators.maxLength(150)]],
+        visualHappyOutcome: ['a', [Validators.required, Validators.maxLength(150)]],
+        adTone: ['a', [Validators.required, Validators.maxLength(150)]],
       });
     myTelasService = {
       authenticatedClient: signal(null),

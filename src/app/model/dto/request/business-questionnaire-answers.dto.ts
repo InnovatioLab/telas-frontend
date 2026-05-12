@@ -1,3 +1,5 @@
+export const BUSINESS_QUESTIONNAIRE_ANSWER_MAX_LENGTH = 150;
+
 export interface BusinessQuestionnaireAnswersDto {
   productOrService: string;
   idealCustomer: string;

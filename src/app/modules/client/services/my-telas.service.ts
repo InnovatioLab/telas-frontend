@@ -9,6 +9,7 @@ import { AutenticacaoService } from '@app/core/service/api/autenticacao.service'
 import { AdValidationType } from '@app/model/client';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
 import {
+  BUSINESS_QUESTIONNAIRE_ANSWER_MAX_LENGTH,
   BUSINESS_QUESTIONNAIRE_FIELD_META,
   BusinessQuestionnaireAnswersDto,
 } from '@app/model/dto/request/business-questionnaire-answers.dto';
@@ -60,7 +61,10 @@ export class MyTelasService {
   ) {}
 
   createBusinessQuestionnaireForm(): FormGroup {
-    const rules = [Validators.required, Validators.maxLength(2000)];
+    const rules = [
+      Validators.required,
+      Validators.maxLength(BUSINESS_QUESTIONNAIRE_ANSWER_MAX_LENGTH),
+    ];
     const group: Record<string, unknown> = {};
     for (const { key } of BUSINESS_QUESTIONNAIRE_FIELD_META) {
       group[key as string] = ['', rules];

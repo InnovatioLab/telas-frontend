@@ -27,7 +27,10 @@ import { AdItemComponent } from "../ad-item/ad-item.component";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { ConfirmationService } from "primeng/api";
-import { BUSINESS_QUESTIONNAIRE_FIELD_META } from "@app/model/dto/request/business-questionnaire-answers.dto";
+import {
+  BUSINESS_QUESTIONNAIRE_ANSWER_MAX_LENGTH,
+  BUSINESS_QUESTIONNAIRE_FIELD_META,
+} from "@app/model/dto/request/business-questionnaire-answers.dto";
 
 @Component({
   selector: "app-my-telas",
@@ -74,6 +77,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   readonly acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
 
   readonly questionnaireFields = BUSINESS_QUESTIONNAIRE_FIELD_META;
+  readonly questionnaireAnswerMaxLength = BUSINESS_QUESTIONNAIRE_ANSWER_MAX_LENGTH;
 
   adRequestWizardStep: 1 | 2 = 1;
 
