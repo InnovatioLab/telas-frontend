@@ -4,19 +4,22 @@
     <div class="attachments-content">
       @if (myTelasService.isClientDataLoaded() && canCreateAdRequest()) {
       <div class="request-ad-section questionnaire-block mb-4">
-        <h3 class="mt-0 mb-2">Request your ad</h3>
+        <h3 class="mt-0 mb-2">Tell Us About Your Business</h3>
         @if (adRequestWizardStep === 1) {
         <p class="mb-3 text-sm text-color-secondary">
-          Step 1 of 2 — Open each item to answer. You can save a draft and continue later.
+          Step 1 of 2 — To create your ad, we’ll ask you a few simple questions about your business, your customer, and
+          the message you want people to remember.
         </p>
+        <p class="mb-3 text-sm text-color-secondary">You’ll also be able to upload your logo, images, and any other
+          files you want us to use.</p>
         <form [formGroup]="newRequestQuestionnaireForm" class="flex flex-column gap-3"
-          [class.pointer-events-none]="myTelasService.isLoading()"
-          [class.opacity-60]="myTelasService.isLoading()">
+          [class.pointer-events-none]="myTelasService.isLoading()" [class.opacity-60]="myTelasService.isLoading()">
           <p-accordion [multiple]="false" styleClass="questionnaire-accordion">
             @for (f of questionnaireFields; track f.key; let qi = $index) {
             <p-accordionTab [header]="(qi + 1) + '. ' + f.label">
               <div class="flex flex-column gap-2 pt-1">
-                <textarea [id]="'nq-' + f.key" pInputTextarea rows="4" class="w-full" [formControlName]="f.key"></textarea>
+                <textarea [id]="'nq-' + f.key" pInputTextarea rows="4" class="w-full"
+                  [formControlName]="f.key"></textarea>
                 @if (mostrarErro(newRequestQuestionnaireForm, f.key)) {
                 <app-error [control]="newRequestQuestionnaireForm.get(f.key)"></app-error>
                 }
@@ -25,15 +28,17 @@
             }
           </p-accordion>
           <div class="form-actions flex flex-wrap gap-2">
-            <button pButton label="Save draft" type="button" class="p-button-secondary" (click)="saveQuestionnaireDraft()"
-              [disabled]="myTelasService.isLoading()"></button>
+            <button pButton label="Save draft" type="button" class="p-button-secondary"
+              (click)="saveQuestionnaireDraft()" [disabled]="myTelasService.isLoading()"></button>
             <button pButton label="Next: attachments" type="button" icon="pi pi-arrow-down" iconPos="right"
               (click)="goToAttachmentsStep()" [disabled]="myTelasService.isLoading()"></button>
           </div>
         </form>
         } @else {
         <p class="mb-0 text-sm text-color-secondary">
-          <strong>Step 2 of 2</strong> — Below you will find your library. Select exactly <strong>one</strong> attachment (checkbox) or upload a single file, then use <strong>Send ad request</strong> at the end of this page.
+          <strong>Step 2 of 2</strong> — Below you will find your library. Select exactly <strong>one</strong>
+          attachment (checkbox) or upload a single file, then use <strong>Send ad request</strong> at the end of this
+          page.
         </p>
         }
       </div>
@@ -47,12 +52,11 @@
         </p>
 
         @if (myTelasService.clientAttachments().length < maxAttachments) { <p-fileUpload #attachmentFileUpload
-          [multiple]="maxSelectableInPicker() > 1" [accept]="acceptedFileTypes" [maxFileSize]="maxFileSize" [customUpload]="true"
-          (onSelect)="onFileUpload($event)"
-          [disabled]="myTelasService.isLoading()"
-          chooseLabel="Select files"
-          uploadLabel="Upload" cancelLabel="Cancel" [auto]="false" [fileLimit]="maxSelectableInPicker()"
-          [showUploadButton]="false" [showCancelButton]="selectedFiles.length > 0">
+          [multiple]="maxSelectableInPicker() > 1" [accept]="acceptedFileTypes" [maxFileSize]="maxFileSize"
+          [customUpload]="true" (onSelect)="onFileUpload($event)" [disabled]="myTelasService.isLoading()"
+          chooseLabel="Select files" uploadLabel="Upload" cancelLabel="Cancel" [auto]="false"
+          [fileLimit]="maxSelectableInPicker()" [showUploadButton]="false"
+          [showCancelButton]="selectedFiles.length > 0">
           <ng-template pTemplate="file" let-file>
             <div class="p-fileupload-file">
               <div class="p-fileupload-file-info">
@@ -91,16 +95,16 @@
 
           <div class="upload-info flex flex-column gap-2">
             <small>Accepted formats: JPG, PNG, GIF, SVG, BMP, TIFF, PDF — max 10MB per file.
-              Library limit: {{ maxAttachments }} files. Use <strong>Add to library</strong> to store files without a request,
+              Library limit: {{ maxAttachments }} files. Use <strong>Add to library</strong> to store files without a
+              request,
               or choose exactly one file and <strong>Send ad request</strong>.</small>
             @if (selectedFiles.length > 0) {
             <div class="flex flex-wrap gap-2 align-items-center">
-              <button pButton type="button" label="Add to library" icon="pi pi-cloud-upload"
-                class="p-button-secondary"
-                [disabled]="myTelasService.isLoading()"
-                [loading]="myTelasService.isLoading()"
+              <button pButton type="button" label="Add to library" icon="pi pi-cloud-upload" class="p-button-secondary"
+                [disabled]="myTelasService.isLoading()" [loading]="myTelasService.isLoading()"
                 (click)="addSelectedFilesToLibrary()"></button>
-              <span class="text-sm text-color-secondary">{{ selectedFiles.length }} file(s) selected — only one can be sent per request.</span>
+              <span class="text-sm text-color-secondary">{{ selectedFiles.length }} file(s) selected — only one can be
+                sent per request.</span>
             </div>
             }
           </div>
@@ -129,8 +133,7 @@
                         attachment.attachmentId,
                         $event
                       )
-                    "
-                    [disabled]="selectedFiles.length > 0 || myTelasService.isLoading()">
+                    " [disabled]="selectedFiles.length > 0 || myTelasService.isLoading()">
               </p-checkbox>
             </div>
             <div class="attachment-preview">
@@ -200,10 +203,9 @@
         <div class="flex flex-column gap-3" [class.pointer-events-none]="myTelasService.isLoading()"
           [class.opacity-60]="myTelasService.isLoading()">
           <div class="form-actions flex flex-wrap gap-2">
-            <button pButton label="Back to questions" type="button" class="p-button-text" (click)="goBackToQuestionnaire()"
-              [disabled]="myTelasService.isLoading()"></button>
-            <button pButton label="Send ad request" icon="pi pi-send" (click)="submitAdRequest()"
-              [disabled]="
+            <button pButton label="Back to questions" type="button" class="p-button-text"
+              (click)="goBackToQuestionnaire()" [disabled]="myTelasService.isLoading()"></button>
+            <button pButton label="Send ad request" icon="pi pi-send" (click)="submitAdRequest()" [disabled]="
                 newRequestQuestionnaireForm.invalid ||
                 myTelasService.isLoading() ||
                 !canCreateAdRequest() ||
@@ -211,9 +213,7 @@
                   selectedClientAttachments.length === 1 ||
                   selectedFiles.length === 1
                 )
-              "
-              [loading]="myTelasService.isLoading()"
-              class="p-button-primary"></button>
+              " [loading]="myTelasService.isLoading()" class="p-button-primary"></button>
           </div>
         </div>
       </div>
@@ -271,7 +271,8 @@
             @for (f of questionnaireFields; track f.key; let qi = $index) {
             <p-accordionTab [header]="(qi + 1) + '. ' + f.label">
               <div class="flex flex-column gap-2 pt-1">
-                <textarea [id]="'aq-' + f.key" pInputTextarea rows="4" class="w-full" [formControlName]="f.key"></textarea>
+                <textarea [id]="'aq-' + f.key" pInputTextarea rows="4" class="w-full"
+                  [formControlName]="f.key"></textarea>
                 @if (mostrarErro(activeQuestionnaireForm, f.key)) {
                 <app-error [control]="activeQuestionnaireForm.get(f.key)"></app-error>
                 }
@@ -308,17 +309,11 @@
       <div class="ads-list w-full">
         @for (ad of myTelasService.ads(); track ad.id) {
         <app-ad-item [ad]="ad" [loading]="myTelasService.isLoading()" (view)="viewAttachment($event)"
-          (download)="downloadAttachment(ad.downloadLink ?? ad.link, ad.name)"
-          (approve)="approveAd($event)" (reject)="openRejectAdDialog($event)" />
+          (download)="downloadAttachment(ad.downloadLink ?? ad.link, ad.name)" (approve)="approveAd($event)"
+          (reject)="openRejectAdDialog($event)" />
         <div class="w-full flex justify-content-end mb-4">
-          <button
-            pButton
-            [text]="true"
-            icon="pi pi-comments"
-            label="Messages"
-            (click)="openAdMessagesDialog(ad)"
-            [disabled]="myTelasService.isLoading()"
-          ></button>
+          <button pButton [text]="true" icon="pi pi-comments" label="Messages" (click)="openAdMessagesDialog(ad)"
+            [disabled]="myTelasService.isLoading()"></button>
         </div>
         }
       </div>
@@ -388,15 +383,8 @@
   </ng-template>
 </p-dialog>
 
-<p-dialog
-  header="Messages"
-  [(visible)]="showAdMessagesDialog"
-  [modal]="true"
-  [style]="{ width: '650px' }"
-  [draggable]="false"
-  [resizable]="false"
-  (onHide)="closeAdMessagesDialog()"
->
+<p-dialog header="Messages" [(visible)]="showAdMessagesDialog" [modal]="true" [style]="{ width: '650px' }"
+  [draggable]="false" [resizable]="false" (onHide)="closeAdMessagesDialog()">
   <div class="w-full flex flex-column gap-3">
     <div *ngIf="messagesLoading">Loading...</div>
 
@@ -415,26 +403,15 @@
 
     <div class="w-full">
       <label for="newMsg">Send a message</label>
-      <textarea
-        id="newMsg"
-        pTextarea
-        [(ngModel)]="newMessageText"
-        rows="4"
-        class="w-full"
-        placeholder="Type your message..."
-      ></textarea>
+      <textarea id="newMsg" pTextarea [(ngModel)]="newMessageText" rows="4" class="w-full"
+        placeholder="Type your message..."></textarea>
     </div>
   </div>
 
   <ng-template pTemplate="footer">
     <button pButton id="btnSecundario" label="Close" (click)="closeAdMessagesDialog()"></button>
-    <button
-      pButton
-      label="Send"
-      (click)="sendNewMessage()"
-      [disabled]="!newMessageText?.trim() || messagesLoading"
-      [loading]="messagesLoading"
-    ></button>
+    <button pButton label="Send" (click)="sendNewMessage()" [disabled]="!newMessageText?.trim() || messagesLoading"
+      [loading]="messagesLoading"></button>
   </ng-template>
 </p-dialog>
 
