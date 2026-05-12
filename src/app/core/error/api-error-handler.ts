@@ -2,35 +2,52 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 export class ApiErrorHandler {
+  static readonly GENERIC_FORBIDDEN_MESSAGE =
+    'You do not have permission to perform this operation.';
+
+  private static firstMessageFromBody(body: unknown): string | null {
+    if (!body || typeof body !== 'object') {
+      return null;
+    }
+    const o = body as Record<string, unknown>;
+    const direct =
+      (typeof o.message === 'string' && o.message.trim()) ||
+      (typeof o.mensagem === 'string' && o.mensagem.trim()) ||
+      null;
+    if (direct) {
+      return direct;
+    }
+    const errors = o.errors;
+    if (Array.isArray(errors) && errors.length > 0) {
+      const first = errors[0];
+      if (typeof first === 'string' && first.trim().length > 0) {
+        return first.trim();
+      }
+    }
+    return null;
+  }
+
   static handleApiError(error: HttpErrorResponse): string {
     if (!environment.production) {
       console.error('API Error:', error);
     }
 
     if (error.status === 401 || error.status === 403) {
-      return 'You do not have permission to perform this operation.';
+      const fromBody = ApiErrorHandler.firstMessageFromBody(error.error);
+      if (fromBody) {
+        return fromBody;
+      }
+      return ApiErrorHandler.GENERIC_FORBIDDEN_MESSAGE;
     }
 
     if (error.status === 422) {
+      const fromBody = ApiErrorHandler.firstMessageFromBody(error.error);
+      if (fromBody) {
+        return fromBody;
+      }
       const body = error.error as {
-        message?: string;
-        mensagem?: string;
-        errors?: unknown;
         detail?: unknown;
       } | undefined;
-      const msg =
-        (typeof body?.message === "string" && body.message) ||
-        (typeof body?.mensagem === "string" && body.mensagem) ||
-        null;
-      if (msg) {
-        return msg;
-      }
-      if (Array.isArray(body?.errors) && body!.errors.length > 0) {
-        const first = body!.errors[0];
-        if (typeof first === "string" && first.trim().length > 0) {
-          return first.trim();
-        }
-      }
       if (body?.detail) {
         const validationErrors = body.detail;
         if (Array.isArray(validationErrors) && validationErrors.length > 0) {

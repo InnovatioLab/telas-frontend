@@ -1,4 +1,5 @@
 import { ErrorHandler, Injectable, inject } from '@angular/core';
+import { ApiErrorHandler } from './api-error-handler';
 import { ToastService } from '../service/state/toast.service';
 import { environment } from '../../../environments/environment';
 
@@ -14,7 +15,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     
     const errorMessage = this.extractErrorMessage(error);
     
-    if (errorMessage === 'You do not have permission to perform this operation.') {
+    if (errorMessage === ApiErrorHandler.GENERIC_FORBIDDEN_MESSAGE) {
       this.toastService.aviso(errorMessage);
     } else {
       this.toastService.erro(errorMessage);

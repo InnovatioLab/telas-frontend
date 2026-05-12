@@ -69,7 +69,11 @@ export function errorInterceptor(
 
       if (!ignorarToastErro) {
         if (status === HttpStatusCode.Forbidden) {
-          toastService.aviso(errorMessage);
+          if (errorMessage === ApiErrorHandler.GENERIC_FORBIDDEN_MESSAGE) {
+            toastService.aviso(errorMessage);
+          } else {
+            toastService.erro(errorMessage);
+          }
           return throwError(() => {
             const customError = new Error(errorMessage);
             (customError as any).handled = true;

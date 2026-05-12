@@ -10,6 +10,16 @@
             : "Date not available"
         }}&nbsp;
       </p>
+      <p class="ad-date" *ngIf="ad?.onAirSince">
+        On screens since:
+        {{ ad.onAirSince | date: "dd/MM/yyyy" }}
+      </p>
+      <p
+        class="ad-date text-color-secondary"
+        *ngIf="ad?.validation === 'APPROVED' && !ad?.onAirSince"
+      >
+        Not on screens yet. You will be notified when this ad goes live.
+      </p>
     </div>
     <div
       class="ad-status flex flex-column justify-content-center align-items-center gap-2"

@@ -4,6 +4,7 @@ export interface AdResponseDto {
   id: string;
   name: string;
   submissionDate: string;
+  onAirSince?: string | null;
   link: string;
   downloadLink?: string;
   validation: AdValidationType;

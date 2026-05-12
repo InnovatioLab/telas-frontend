@@ -345,7 +345,6 @@ export class MyTelasService {
       this._hasActiveAdRequest.set(true);
       await this.loadClientData();
     } catch (error) {
-      this.toastService.erro("Error submitting request");
       throw error;
     } finally {
       this._isLoading.set(false);
@@ -407,7 +406,6 @@ export class MyTelasService {
       this._hasActiveAdRequest.set(true);
       await this.loadClientData();
     } catch (error) {
-      this.toastService.erro("Error submitting request");
       throw error;
     } finally {
       this._isLoading.set(false);
