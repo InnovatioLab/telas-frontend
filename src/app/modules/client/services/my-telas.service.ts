@@ -118,21 +118,6 @@ export class MyTelasService {
     return out;
   }
 
-  async updateActiveQuestionnaire(adRequestId: string, form: FormGroup): Promise<void> {
-    if (form.invalid) {
-      form.markAllAsTouched();
-      this.toastService.erro('Please complete all questions.');
-      return;
-    }
-    const body = this.buildAnswersFromForm(form);
-    await this.clientService
-      .updateAdRequestBusinessQuestionnaire(adRequestId, body)
-      .pipe(take(1))
-      .toPromise();
-    this.toastService.sucesso('Questionnaire updated.');
-    await this.loadClientData();
-  }
-
   createValidateAdForm(): FormGroup {
     return this.fb.group({
       validation: ["", [Validators.required]],

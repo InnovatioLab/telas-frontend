@@ -247,7 +247,6 @@ describe('MyTelasComponent - New Features', () => {
       patchQuestionnaireForm: jest.fn(),
       loadQuestionnaireDraftIntoForm: jest.fn().mockResolvedValue(undefined),
       saveQuestionnaireDraft: jest.fn().mockResolvedValue(undefined),
-      updateActiveQuestionnaire: jest.fn().mockResolvedValue(undefined),
       createValidateAdForm: jest.fn().mockImplementation(() =>
         fb.group({
           validation: [''],

@@ -82,7 +82,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   adRequestWizardStep: 1 | 2 = 1;
 
   newRequestQuestionnaireForm: FormGroup;
-  activeQuestionnaireForm: FormGroup;
   validateAdForm: FormGroup;
   uploadAdForm: FormGroup;
 
@@ -107,7 +106,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     private readonly confirmationService: ConfirmationService
   ) {
     this.newRequestQuestionnaireForm = this.myTelasService.createBusinessQuestionnaireForm();
-    this.activeQuestionnaireForm = this.myTelasService.createBusinessQuestionnaireForm();
     this.validateAdForm = this.myTelasService.createValidateAdForm();
     this.uploadAdForm = this.myTelasService.createUploadAdForm();
   }
@@ -140,13 +138,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   async loadClientData(): Promise<void> {
     try {
       await this.myTelasService.loadClientData();
-      const client = this.myTelasService.authenticatedClient();
-      if (client?.adRequest?.businessAnswers) {
-        this.myTelasService.patchQuestionnaireForm(
-          this.activeQuestionnaireForm,
-          client.adRequest.businessAnswers
-        );
-      }
       if (this.canCreateAdRequest()) {
         await this.myTelasService.loadQuestionnaireDraftIntoForm(this.newRequestQuestionnaireForm);
       }
@@ -427,14 +418,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   async saveQuestionnaireDraft(): Promise<void> {
     await this.myTelasService.saveQuestionnaireDraft(this.newRequestQuestionnaireForm);
-  }
-
-  async updateActiveQuestionnaire(): Promise<void> {
-    const id = this.myTelasService.authenticatedClient()?.adRequest?.id;
-    if (!id) {
-      return;
-    }
-    await this.myTelasService.updateActiveQuestionnaire(id, this.activeQuestionnaireForm);
   }
 
   async submitAdRequest(): Promise<void> {
