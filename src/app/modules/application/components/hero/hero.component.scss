@@ -52,6 +52,12 @@ body.dark-theme .hero-section {
   font-weight: var(--fonte-peso-negrito);
   color: #111519 !important;
   margin-bottom: 1.5rem;
+  display: block;
+  white-space: nowrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
