@@ -23,7 +23,8 @@ import {
 import { FilterMonitorRequestDto } from "@app/model/dto/request/filter-monitor.request.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { AvailablePartnerAddressResponseDto } from "@app/model/dto/response/available-partner-address.response.dto";
-import { Role } from "@app/model/client";
+import { Role, isPrivilegedPanelRole } from "@app/model/client";
+import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
@@ -530,10 +531,18 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   shouldShowManageAdsButton(monitor: Monitor): boolean {
+    const client = this.authenticatedClient;
+    if (isPrivilegedPanelRole(client?.role)) {
+      return true;
+    }
+    if (
+      client?.role === Role.PARTNER &&
+      (client.permissions ?? []).includes(MonitoringPermission.ADMIN_ADS_MANAGE)
+    ) {
+      return true;
+    }
     const monitorHasNoAds = !monitor.adLinks || monitor.adLinks.length === 0;
-    const clientHasNoAds =
-      !this.authenticatedClient?.ads ||
-      this.authenticatedClient.ads.length === 0;
+    const clientHasNoAds = !client?.ads || client.ads.length === 0;
 
     return !(monitorHasNoAds && clientHasNoAds);
   }
