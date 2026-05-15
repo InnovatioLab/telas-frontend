@@ -6,7 +6,25 @@
 html[data-theme="dark"] .hero-section,
 html.dark-theme .hero-section,
 body.dark-theme .hero-section {
-  background: linear-gradient(135deg, #f9fafb 0%, #fff 100%);
+  background: linear-gradient(135deg, #1a1f26 0%, #0f1419 100%);
+}
+
+html[data-theme="dark"] .hero-title,
+html.dark-theme .hero-title,
+body.dark-theme .hero-title {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .hero-subtitle,
+html.dark-theme .hero-subtitle,
+body.dark-theme .hero-subtitle {
+  color: rgba(241, 245, 249, 0.92);
+}
+
+html[data-theme="dark"] .hero-feature-title,
+html.dark-theme .hero-feature-title,
+body.dark-theme .hero-feature-title {
+  color: #f1f5f9 !important;
 }
 
 .hero-container {
@@ -75,8 +93,6 @@ body.dark-theme .hero-section {
   color: var(--cor-preto-claro);
   margin-bottom: 2rem;
   max-width: 42rem;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .hero-actions {
