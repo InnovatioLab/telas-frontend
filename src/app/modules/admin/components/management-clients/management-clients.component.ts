@@ -31,8 +31,8 @@ import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.uti
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { MessageService } from "primeng/api";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
-import { of } from "rxjs";
-import { switchMap, take } from "rxjs/operators";
+import { firstValueFrom, of } from "rxjs";
+import { catchError, take } from "rxjs/operators";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { EditClientModalComponent } from "../edit-client-modal/edit-client-modal.component";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
@@ -101,17 +101,39 @@ export class ManagementClientsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.clientService.clientAtual$
-      .pipe(
-        take(1),
-        switchMap((c) => (c ? of(c) : this.clientService.getAuthenticatedClient()))
-      )
-      .subscribe((client) => {
-        this.panelClient = (client as Client) ?? null;
-        this.currentUserId = client?.id ?? null;
-      });
+    this.refreshPanelClient();
     this.loadClients();
     this.refreshUnreadMessageCounters();
+  }
+
+  private refreshPanelClient(): void {
+    this.clientService
+      .getAuthenticatedClient()
+      .pipe(
+        take(1),
+        catchError(() => of(null))
+      )
+      .subscribe((client) => {
+        if (!client) {
+          return;
+        }
+        this.panelClient = client as Client;
+        this.currentUserId = client.id ?? null;
+        this.clientService.setClientAtual(this.panelClient);
+      });
+  }
+
+  private hasPermanentDeleteAccess(): boolean {
+    return (
+      hasMonitoringPermission(
+        this.panelClient,
+        MonitoringPermission.ADMIN_CLIENTS_PERMANENT_DELETE
+      ) ||
+      hasMonitoringPermission(
+        this.panelClient,
+        MonitoringPermission.ADMIN_CLIENTS_SOFT_DELETE
+      )
+    );
   }
 
   refreshUnreadMessageCounters(): void {
@@ -189,11 +211,7 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   canPermanentDeleteClient(client: Client): boolean {
-    const c = this.panelClient;
-    const canDelete =
-      hasMonitoringPermission(c, MonitoringPermission.ADMIN_CLIENTS_PERMANENT_DELETE) ||
-      hasMonitoringPermission(c, MonitoringPermission.ADMIN_CLIENTS_SOFT_DELETE);
-    if (!client.id || !canDelete) {
+    if (!client.id || !this.hasPermanentDeleteAccess()) {
       return false;
     }
     if (client.id === this.currentUserId) {
@@ -571,6 +589,19 @@ export class ManagementClientsComponent implements OnInit {
     if (!client.id) {
       return;
     }
+    try {
+      const fresh = await firstValueFrom(this.clientService.getAuthenticatedClient());
+      this.panelClient = fresh as Client;
+      this.currentUserId = fresh.id ?? null;
+      this.clientService.setClientAtual(this.panelClient);
+    } catch {
+      this.toastService.erro("Could not verify your permissions. Try again.");
+      return;
+    }
+    if (!this.hasPermanentDeleteAccess()) {
+      this.toastService.erro("You do not have permission to perform this operation.");
+      return;
+    }
     this.loading = true;
     this.clientManagementService.getPermanentDeletionRequirements(client.id).subscribe({
       next: async (req) => {
@@ -647,6 +678,9 @@ export class ManagementClientsComponent implements OnInit {
   armDeletionPasswordField(): void {
     this.adminDeletionPassword = "";
     this.deletionPasswordReadonly = true;
+    setTimeout(() => {
+      this.deletionPasswordReadonly = false;
+    }, 0);
   }
 
   onDeletionPasswordFocus(): void {
@@ -715,8 +749,14 @@ export class ManagementClientsComponent implements OnInit {
         this.closePermanentDeleteSimpleDialog();
         this.loadClients();
       },
-      error: () => {
+      error: (error) => {
         this.loading = false;
+        const msg =
+          error?.error?.message ||
+          error?.error?.data?.message ||
+          error?.message ||
+          "Failed to permanently delete account";
+        this.toastService.erro(msg);
       },
     });
   }
