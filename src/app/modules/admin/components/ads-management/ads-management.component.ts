@@ -267,16 +267,7 @@ export class AdsManagementComponent implements OnInit {
         this.deletingAdId = null;
         this.loadApprovedClientAds();
       },
-      error: (error) => {
-        const status = error?.status;
-        const msg =
-          status === 404
-            ? "O endpoint de exclusão não está disponível na API. Faça deploy da versão mais recente do telas-backend."
-            : error?.error?.detail ||
-              error?.error?.message ||
-              error?.message ||
-              "Failed to delete ad.";
-        this.toastService.erro(msg);
+      error: () => {
         this.deletingAdId = null;
       },
     });

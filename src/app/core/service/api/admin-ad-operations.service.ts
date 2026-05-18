@@ -92,7 +92,11 @@ export class AdminAdOperationsService {
 
   deleteAd(adId: string): Observable<void> {
     return this.http
-      .delete<ResponseDTO<unknown>>(`${this.baseUrl}/ads/${adId}`, this.getJsonHeaders())
+      .post<ResponseDTO<unknown>>(
+        `${this.baseUrl}/ads/${adId}/delete`,
+        {},
+        this.getJsonHeaders()
+      )
       .pipe(map((): void => undefined));
   }
 
