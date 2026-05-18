@@ -18,6 +18,7 @@ import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { triggerBrowserFileDownload } from "@app/shared/utils/file-download.util";
+import { buildQuestionnaireExportFileName } from "@app/shared/utils/questionnaire-export-filename.util";
 import {
   resolveLazyTableRequestPage,
   TableLazyPageEvent,
@@ -432,7 +433,11 @@ export class AdRequestManagementComponent implements OnInit {
     this.clientService.downloadAdRequestBusinessQuestionnaireTxt(id).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
-        triggerBrowserFileDownload(url, `business-questionnaire-${id}.txt`);
+        const fileName = buildQuestionnaireExportFileName(
+          adRequest.clientName,
+          adRequest.ad?.attachmentName
+        );
+        triggerBrowserFileDownload(url, fileName);
         URL.revokeObjectURL(url);
       },
       error: () => {

@@ -13,6 +13,7 @@ import { IconCreditCardComponent } from "./credit-card.icon";
 import { IconDashboardComponent } from "./dashboard.icon";
 import { IconEtiquetaComponent } from "./etiqueta.icon";
 import { IconFavoriteComponent } from "./favorite.icon";
+import { IconGrupoComponent } from "./grupo.icon";
 import { IconFecharComponent } from "./fechar.icon";
 import { IconFilterComponent } from "./filter.icon";
 import { IconHelpComponent } from "./help.icon";
@@ -55,6 +56,7 @@ import { IconRecarregarComponent } from "./recarregar.icon";
     IconArquivoComponent,
     IconHomeComponent,
     IconFavoriteComponent,
+    IconGrupoComponent,
     IconPlaceComponent,
     IconSettingsComponent,
     IconHelpComponent,
@@ -105,6 +107,7 @@ import { IconRecarregarComponent } from "./recarregar.icon";
     IconArquivoComponent,
     IconHomeComponent,
     IconFavoriteComponent,
+    IconGrupoComponent,
     IconPlaceComponent,
     IconSettingsComponent,
     IconHelpComponent,

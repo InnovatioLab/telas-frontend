@@ -151,6 +151,17 @@
           tooltipPosition="left"
           (click)="openPreview(row)"
         ></button>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-trash"
+          class="p-button-rounded p-button-text p-button-danger"
+          [loading]="isDeleting(row)"
+          [disabled]="isDeleting(row)"
+          pTooltip="Delete ad"
+          tooltipPosition="left"
+          (click)="deleteAd(row)"
+        ></button>
       </td>
     </tr>
   </ng-template>

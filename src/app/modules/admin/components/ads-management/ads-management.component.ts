@@ -5,6 +5,7 @@ import { RouterModule } from "@angular/router";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { AdminAdOperationsService } from "@app/core/service/api/admin-ad-operations.service";
 import { ToastService } from "@app/core/service/state/toast.service";
+import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
 import {
   AdminAdOperationRow,
   AdminAdOperationsFilter,
@@ -44,10 +45,13 @@ export class AdsManagementComponent implements OnInit {
   previewUrl: string | null = null;
   safePdfUrl: SafeResourceUrl | null = null;
 
+  deletingAdId: string | null = null;
+
   constructor(
     private readonly adminAdOperationsService: AdminAdOperationsService,
     private readonly toastService: ToastService,
-    private readonly sanitizer: DomSanitizer
+    private readonly sanitizer: DomSanitizer,
+    private readonly confirmationDialogService: ConfirmationDialogService
   ) {}
 
   ngOnInit(): void {
@@ -230,5 +234,43 @@ export class AdsManagementComponent implements OnInit {
     if (this.previewUrl) {
       window.open(this.previewUrl, "_blank", "noopener,noreferrer");
     }
+  }
+
+  isDeleting(row: AdminAdOperationRow): boolean {
+    return this.deletingAdId === row.adId;
+  }
+
+  async deleteAd(row: AdminAdOperationRow): Promise<void> {
+    const adId = row.adId?.trim();
+    if (!adId) {
+      return;
+    }
+    const adName = row.adName?.trim() || "this ad";
+    const onScreen = this.isSentToBox(row);
+    const message = onScreen
+      ? `Delete "${adName}"? It is on a screen or box and will be removed from playback permanently.`
+      : `Delete "${adName}"? This action cannot be undone.`;
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Delete ad",
+      message,
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+      severity: "warn",
+    });
+    if (!confirmed) {
+      return;
+    }
+    this.deletingAdId = adId;
+    this.adminAdOperationsService.deleteAd(adId).subscribe({
+      next: () => {
+        this.toastService.sucesso("Ad deleted.");
+        this.deletingAdId = null;
+        this.loadApprovedClientAds();
+      },
+      error: (error) => {
+        this.toastService.erro(error?.error?.message || "Failed to delete ad.");
+        this.deletingAdId = null;
+      },
+    });
   }
 }

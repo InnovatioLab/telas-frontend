@@ -90,6 +90,12 @@ export class AdminAdOperationsService {
       );
   }
 
+  deleteAd(adId: string): Observable<void> {
+    return this.http
+      .delete<ResponseDTO<unknown>>(`${this.baseUrl}/ads/${adId}`, this.getJsonHeaders())
+      .pipe(map((): void => undefined));
+  }
+
   downloadSubscriptionsCsv(): Observable<Blob> {
     const token = localStorage.getItem(this.storageName);
     const headers = new HttpHeaders({
