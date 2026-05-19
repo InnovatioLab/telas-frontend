@@ -1,38 +1,43 @@
 import { Role } from "@app/model/client";
-import { PartnerPermission } from "@app/model/partner-permission";
 import {
   hasPartnerGlobalSlotsPermission,
   resolvePartnerCartBlockQuantity,
 } from "./partner-permission.util";
 
 describe("partner-permission.util", () => {
-  it("returns false without explicit grant", () => {
-    expect(
-      hasPartnerGlobalSlotsPermission({ role: Role.PARTNER, permissions: [] })
-    ).toBe(false);
-  });
-
-  it("returns true with PARTNER_SLOTS_ANY_LOCATION", () => {
+  it("returns false when global flag is off", () => {
     expect(
       hasPartnerGlobalSlotsPermission({
         role: Role.PARTNER,
-        permissions: [PartnerPermission.PARTNER_SLOTS_ANY_LOCATION],
+        partnerSlotsAnyLocationEnabled: false,
+      })
+    ).toBe(false);
+  });
+
+  it("returns true when global flag is on for any partner", () => {
+    expect(
+      hasPartnerGlobalSlotsPermission({
+        role: Role.PARTNER,
+        partnerSlotsAnyLocationEnabled: true,
       })
     ).toBe(true);
   });
 
-  it("resolves cart block quantity to 5 for permitted partner", () => {
+  it("resolves cart block quantity to 5 for all partners when global flag is on", () => {
     expect(
       resolvePartnerCartBlockQuantity({
         role: Role.PARTNER,
-        permissions: [PartnerPermission.PARTNER_SLOTS_ANY_LOCATION],
+        partnerSlotsAnyLocationEnabled: true,
       })
     ).toBe(5);
   });
 
-  it("resolves cart block quantity to 1 for regular client", () => {
-    expect(resolvePartnerCartBlockQuantity({ role: Role.CLIENT, permissions: [] })).toBe(
-      1
-    );
+  it("resolves cart block quantity to 1 when global flag is off", () => {
+    expect(
+      resolvePartnerCartBlockQuantity({
+        role: Role.PARTNER,
+        partnerSlotsAnyLocationEnabled: false,
+      })
+    ).toBe(1);
   });
 });

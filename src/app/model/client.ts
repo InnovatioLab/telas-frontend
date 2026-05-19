@@ -19,6 +19,7 @@ export interface Client {
   notifications?: Notification[];
   currentSubscriptionFlowStep?: number;
   permissions?: string[];
+  partnerSlotsAnyLocationEnabled?: boolean;
   cart?: CartResponse;
   createdAt?: string;
   updatedAt?: string;

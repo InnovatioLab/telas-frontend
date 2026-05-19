@@ -34,13 +34,13 @@ export class DeveloperPermissionsComponent implements OnInit {
   errorMessage: string | null = null;
 
   rows: AdminRowView[] = [];
-  partnerRows: AdminPermissionRow[] = [];
   catalog: string[] = [];
-  partnerCatalog: string[] = [];
   emailAlertCategories: EmailAlertCategoryOption[] = [];
 
+  partnerSlotsAnyLocationEnabled = false;
+  savingPartnerPlatformSettings = false;
+
   savingClientId: string | null = null;
-  savingPartnerClientId: string | null = null;
   savingEmailClientId: string | null = null;
 
   constructor(private readonly developerPermissionService: DeveloperPermissionService) {}
@@ -54,19 +54,13 @@ export class DeveloperPermissionsComponent implements OnInit {
     this.errorMessage = null;
     forkJoin({
       admins: this.developerPermissionService.listAdmins(),
-      partners: this.developerPermissionService.listPartners(),
-      catalog: this.developerPermissionService.permissionCatalog("ADMIN"),
-      partnerCatalog: this.developerPermissionService.permissionCatalog("PARTNER"),
+      catalog: this.developerPermissionService.permissionCatalog(),
       emailAlertCategories: this.developerPermissionService.emailAlertCatalog(),
+      partnerPlatformSettings: this.developerPermissionService.getPartnerPlatformSettings(),
     })
       .pipe(
-        switchMap(({ admins, partners, catalog, partnerCatalog, emailAlertCategories }) => {
+        switchMap(({ admins, catalog, emailAlertCategories, partnerPlatformSettings }) => {
           const sortedCatalog = [...catalog].sort((a, b) =>
-            this.labelForPermission(a).localeCompare(this.labelForPermission(b), undefined, {
-              sensitivity: "base",
-            }),
-          );
-          const sortedPartnerCatalog = [...partnerCatalog].sort((a, b) =>
             this.labelForPermission(a).localeCompare(this.labelForPermission(b), undefined, {
               sensitivity: "base",
             }),
@@ -75,9 +69,9 @@ export class DeveloperPermissionsComponent implements OnInit {
             x.labelEn.localeCompare(y.labelEn, undefined, { sensitivity: "base" }),
           );
           this.catalog = sortedCatalog;
-          this.partnerCatalog = sortedPartnerCatalog;
-          this.partnerRows = partners;
           this.emailAlertCategories = sortedCats;
+          this.partnerSlotsAnyLocationEnabled =
+            partnerPlatformSettings.partnerSlotsAnyLocationEnabled;
 
           if (admins.length === 0) {
             this.rows = [];
@@ -116,6 +110,20 @@ export class DeveloperPermissionsComponent implements OnInit {
       });
   }
 
+  togglePartnerPlatformSettings(checked: boolean): void {
+    this.savingPartnerPlatformSettings = true;
+    this.developerPermissionService.updatePartnerPlatformSettings(checked).subscribe({
+      next: (settings) => {
+        this.partnerSlotsAnyLocationEnabled = settings.partnerSlotsAnyLocationEnabled;
+        this.savingPartnerPlatformSettings = false;
+      },
+      error: () => {
+        this.savingPartnerPlatformSettings = false;
+        this.errorMessage = "Could not update partner platform settings.";
+      },
+    });
+  }
+
   labelForPermission(code: string): string {
     return PERMISSION_LABELS[code] ?? code.replaceAll("_", " ");
   }
@@ -134,27 +142,6 @@ export class DeveloperPermissionsComponent implements OnInit {
 
   isGranted(row: AdminPermissionRow, code: string): boolean {
     return row.grantedPermissions.includes(code);
-  }
-
-  togglePartner(row: AdminPermissionRow, code: string, checked: boolean): void {
-    const next = new Set(row.grantedPermissions);
-    if (checked) {
-      next.add(code);
-    } else {
-      next.delete(code);
-    }
-    const list = Array.from(next);
-    this.savingPartnerClientId = row.clientId;
-    this.developerPermissionService.replacePermissions(row.clientId, list).subscribe({
-      next: () => {
-        row.grantedPermissions = list;
-        this.savingPartnerClientId = null;
-      },
-      error: () => {
-        this.savingPartnerClientId = null;
-        this.errorMessage = "Could not update partner permissions.";
-      },
-    });
   }
 
   toggle(row: AdminRowView, code: string, checked: boolean): void {

@@ -44,6 +44,7 @@ export interface AuthenticatedClientResponseDto {
   ads: AdResponseDto[];
   termAccepted: boolean;
   permissions?: string[];
+  partnerSlotsAnyLocationEnabled?: boolean;
   currentSubscriptionFlowStep: number;
   hasSubscription: boolean;
   shouldDisplayAttachments: boolean;

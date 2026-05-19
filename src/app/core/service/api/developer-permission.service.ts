@@ -24,6 +24,10 @@ export interface EmailAlertPreferences {
   preferences: Record<string, boolean>;
 }
 
+export interface PartnerPlatformSettings {
+  partnerSlotsAnyLocationEnabled: boolean;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -43,25 +47,34 @@ export class DeveloperPermissionService {
       .pipe(map((res) => res.data ?? []));
   }
 
-  permissionCatalog(role: "ADMIN" | "PARTNER" = "ADMIN"): Observable<string[]> {
+  permissionCatalog(): Observable<string[]> {
     return this.http
       .get<ResponseDto<string[]>>(
         `${this.env.apiUrl}developer/permissions/catalog`,
-        {
-          headers: new HttpHeaders(this.getAuthHeaders()),
-          params: { role },
-        }
+        { headers: new HttpHeaders(this.getAuthHeaders()) }
       )
       .pipe(map((res) => res.data ?? []));
   }
 
-  listPartners(): Observable<AdminPermissionRow[]> {
+  getPartnerPlatformSettings(): Observable<PartnerPlatformSettings> {
     return this.http
-      .get<ResponseDto<AdminPermissionRow[]>>(
-        `${this.env.apiUrl}developer/partners`,
+      .get<ResponseDto<PartnerPlatformSettings>>(
+        `${this.env.apiUrl}developer/partner-platform-settings`,
         { headers: new HttpHeaders(this.getAuthHeaders()) }
       )
-      .pipe(map((res) => res.data ?? []));
+      .pipe(map((res) => res.data ?? { partnerSlotsAnyLocationEnabled: false }));
+  }
+
+  updatePartnerPlatformSettings(
+    partnerSlotsAnyLocationEnabled: boolean
+  ): Observable<PartnerPlatformSettings> {
+    return this.http
+      .put<ResponseDto<PartnerPlatformSettings>>(
+        `${this.env.apiUrl}developer/partner-platform-settings`,
+        { partnerSlotsAnyLocationEnabled },
+        { headers: new HttpHeaders(this.getAuthHeaders()) }
+      )
+      .pipe(map((res) => res.data ?? { partnerSlotsAnyLocationEnabled }));
   }
 
   replacePermissions(clientId: string, permissions: string[]): Observable<void> {

@@ -23,7 +23,6 @@ export const PERMISSION_LABELS: Record<string, string> = {
   MONITORING_SMART_PLUG_TEST_READ: "Smart plug — test read",
   MONITORING_TESTING_EXECUTE: "Run monitoring tests",
   MONITORING_TESTING_VIEW: "View monitoring tests",
-  PARTNER_SLOTS_ANY_LOCATION: "5 ads on any screen",
 };
 
 export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
@@ -75,8 +74,6 @@ export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
     "Execute monitoring test routines (e.g. probes or checks) from the admin testing UI.",
   MONITORING_TESTING_VIEW:
     "See monitoring test definitions and results without launching new test runs.",
-  PARTNER_SLOTS_ANY_LOCATION:
-    "Allows this partner to place up to 5 ads on any screen (monitor), at any location—not only on their registered address. Unchecked partners keep the default rule (5 ads only on their own location).",
 };
 
 export const EMAIL_ALERT_DESCRIPTIONS: Record<string, string> = {
