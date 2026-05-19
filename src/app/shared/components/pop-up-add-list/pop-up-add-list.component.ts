@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CartService } from '@app/core/service/api/cart.service';
+import { Authentication } from '@app/core/service/auth/autenthication';
+import { resolvePartnerCartBlockQuantity } from '@app/core/utils/partner-permission.util';
 import { MapPoint } from '@app/core/service/state/map-point.interface';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { CartRequestDto } from '@app/model/dto/request/cart-request.dto';
@@ -27,8 +29,13 @@ export class PopUpStepAddListComponent {
 
   constructor(
     private readonly cartService: CartService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly authentication: Authentication
   ) {}
+
+  private cartBlockQuantity(): number {
+    return resolvePartnerCartBlockQuantity(this.authentication.client());
+  }
 
   close(): void {
     this.visible = false;
@@ -83,7 +90,7 @@ export class PopUpStepAddListComponent {
       recurrence: Recurrence.MONTHLY,
       items: [{
         monitorId: this.selectedPoint!.id,
-        blockQuantity: 1
+        blockQuantity: this.cartBlockQuantity()
       }]
     };
 
@@ -110,7 +117,7 @@ export class PopUpStepAddListComponent {
         })),
         {
           monitorId: this.selectedPoint!.id,
-          blockQuantity: 1
+          blockQuantity: this.cartBlockQuantity()
         }
       ];
 

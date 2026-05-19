@@ -20,6 +20,7 @@ import {
   buildStreetViewThumbnailUrl,
 } from "@app/shared/utils/google-maps-thumb-url.util";
 import { resolvePhotoUrl } from "@app/shared/utils/photo-url.utils";
+import { resolvePartnerCartBlockQuantity } from "@app/core/utils/partner-permission.util";
 import { ENVIRONMENT } from "src/environments/environment-token";
 
 @Component({
@@ -141,13 +142,17 @@ export class WishlistItemComponent implements OnInit, OnChanges {
     }
   }
 
+  private cartBlockQuantity(): number {
+    return resolvePartnerCartBlockQuantity(this.authenticatedClient);
+  }
+
   private createNewCart(): void {
     const cartRequest: CartRequestDto = {
       recurrence: Recurrence.MONTHLY,
       items: [
         {
           monitorId: this.item.id,
-          blockQuantity: 1,
+          blockQuantity: this.cartBlockQuantity(),
         },
       ],
     };
@@ -171,7 +176,7 @@ export class WishlistItemComponent implements OnInit, OnChanges {
       })),
       {
         monitorId: this.item.id,
-        blockQuantity: 1,
+        blockQuantity: this.cartBlockQuantity(),
       },
     ];
 

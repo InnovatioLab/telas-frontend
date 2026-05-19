@@ -27,6 +27,7 @@ import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
 import { PrimengModule } from "../../primeng/primeng.module";
 import { DialogoComponent } from "../dialogo/dialogo.component";
+import { resolvePartnerCartBlockQuantity } from "@app/core/utils/partner-permission.util";
 
 @Component({
   selector: "app-checkout-list-side-bar",
@@ -97,14 +98,19 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     }
   }
 
+  private expectedCartBlockQuantity(): number {
+    return resolvePartnerCartBlockQuantity(this.authentication.client());
+  }
+
   private enforceMonthlyRecurrenceIfNeeded(cart: CartResponseDto): void {
     if (cart.recurrence === Recurrence.MONTHLY) return;
 
+    const blockQuantity = this.expectedCartBlockQuantity();
     const cartRequest: CartRequestDto = {
       recurrence: Recurrence.MONTHLY,
       items: cart.items.map((item) => ({
         monitorId: item.monitorId,
-        blockQuantity: 1,
+        blockQuantity,
       })),
     };
 
@@ -119,10 +125,11 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   private ensureBlockQuantityDefaults(): void {
     if (!this.cart) return;
 
+    const expected = this.expectedCartBlockQuantity();
     let needsUpdate = false;
     this.cart.items.forEach((item) => {
-      if (!item.blockQuantity || item.blockQuantity !== 1) {
-        item.blockQuantity = 1;
+      if (!item.blockQuantity || item.blockQuantity !== expected) {
+        item.blockQuantity = expected;
         needsUpdate = true;
       }
     });
@@ -180,7 +187,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
             (cartItem) => cartItem.id !== item.id
           ).map((cartItem) => ({
             monitorId: cartItem.monitorId,
-            blockQuantity: 1,
+            blockQuantity: cartItem.blockQuantity ?? this.expectedCartBlockQuantity(),
           }));
 
           const cartRequest: CartRequestDto = {
@@ -279,11 +286,12 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
     this.checkoutEmProgresso = true;
 
+    const blockQuantity = this.expectedCartBlockQuantity();
     const cartRequest: CartRequestDto = {
       recurrence: Recurrence.MONTHLY,
       items: this.cart.items.map((item) => ({
         monitorId: item.monitorId,
-        blockQuantity: 1,
+        blockQuantity,
       })),
     };
 
@@ -351,7 +359,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
               recurrence: this.selectedRecurrence,
               items: this.cart.items.map((item) => ({
                 monitorId: item.monitorId,
-                blockQuantity: 1,
+                blockQuantity: this.expectedCartBlockQuantity(),
               })),
             };
 

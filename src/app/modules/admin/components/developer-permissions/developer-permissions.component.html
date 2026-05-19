@@ -64,6 +64,68 @@
 <p-card styleClass="card-header mt-4">
   <div class="card-header-content">
     <div class="p-card-content">
+      <h2 class="m-0">Partner screen quota</h2>
+      <p class="text-muted mt-2 mb-0">
+        When checked, the partner may place up to 5 ads on any screen at any location. Unchecked partners keep the
+        default rule (5 ads only on their own location).
+      </p>
+    </div>
+  </div>
+</p-card>
+
+<p-table
+  [value]="partnerRows"
+  [loading]="loading"
+  styleClass="p-datatable-sm mt-3 developer-permissions-table"
+  [paginator]="true"
+  [rows]="10"
+  responsiveLayout="scroll"
+  paginatorDropdownAppendTo="body"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th scope="col" class="perm-sticky-name">Name</th>
+      <th scope="col" class="perm-sticky-email">Email</th>
+      <th
+        scope="col"
+        *ngFor="let code of partnerCatalog"
+        class="perm-col"
+        [pTooltip]="permissionTooltip(code)"
+        tooltipPosition="top"
+        [showDelay]="200"
+        tooltipStyleClass="developer-perm-tooltip"
+        [attr.aria-label]="labelForPermission(code) + ' (' + code + ')'"
+      >
+        <span class="perm-col__head">{{ labelForPermission(code) }}</span>
+        <i class="pi pi-info-circle perm-col__hint" aria-hidden="true"></i>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td class="perm-sticky-name">{{ row.businessName }}</td>
+      <td class="perm-sticky-email">{{ row.email }}</td>
+      <td *ngFor="let code of partnerCatalog" class="perm-col">
+        <p-checkbox
+          [binary]="true"
+          [ngModel]="isGranted(row, code)"
+          (ngModelChange)="togglePartner(row, code, $event)"
+          [disabled]="savingPartnerClientId === row.clientId"
+          [inputId]="'partner-' + row.clientId + '-' + code"
+        ></p-checkbox>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="2 + partnerCatalog.length">No partners.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-card styleClass="card-header mt-4">
+  <div class="card-header-content">
+    <div class="p-card-content">
       <h2 class="m-0">Email alerts (admins)</h2>
       <p class="text-muted mt-2 mb-0">
         When checked, the administrator receives an email for that alert type (in-app notifications are always recorded).

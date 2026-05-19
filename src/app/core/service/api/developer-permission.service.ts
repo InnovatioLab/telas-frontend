@@ -43,10 +43,22 @@ export class DeveloperPermissionService {
       .pipe(map((res) => res.data ?? []));
   }
 
-  permissionCatalog(): Observable<string[]> {
+  permissionCatalog(role: "ADMIN" | "PARTNER" = "ADMIN"): Observable<string[]> {
     return this.http
       .get<ResponseDto<string[]>>(
         `${this.env.apiUrl}developer/permissions/catalog`,
+        {
+          headers: new HttpHeaders(this.getAuthHeaders()),
+          params: { role },
+        }
+      )
+      .pipe(map((res) => res.data ?? []));
+  }
+
+  listPartners(): Observable<AdminPermissionRow[]> {
+    return this.http
+      .get<ResponseDto<AdminPermissionRow[]>>(
+        `${this.env.apiUrl}developer/partners`,
         { headers: new HttpHeaders(this.getAuthHeaders()) }
       )
       .pipe(map((res) => res.data ?? []));

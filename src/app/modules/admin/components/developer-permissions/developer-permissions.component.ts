@@ -34,10 +34,13 @@ export class DeveloperPermissionsComponent implements OnInit {
   errorMessage: string | null = null;
 
   rows: AdminRowView[] = [];
+  partnerRows: AdminPermissionRow[] = [];
   catalog: string[] = [];
+  partnerCatalog: string[] = [];
   emailAlertCategories: EmailAlertCategoryOption[] = [];
 
   savingClientId: string | null = null;
+  savingPartnerClientId: string | null = null;
   savingEmailClientId: string | null = null;
 
   constructor(private readonly developerPermissionService: DeveloperPermissionService) {}
@@ -51,12 +54,19 @@ export class DeveloperPermissionsComponent implements OnInit {
     this.errorMessage = null;
     forkJoin({
       admins: this.developerPermissionService.listAdmins(),
-      catalog: this.developerPermissionService.permissionCatalog(),
+      partners: this.developerPermissionService.listPartners(),
+      catalog: this.developerPermissionService.permissionCatalog("ADMIN"),
+      partnerCatalog: this.developerPermissionService.permissionCatalog("PARTNER"),
       emailAlertCategories: this.developerPermissionService.emailAlertCatalog(),
     })
       .pipe(
-        switchMap(({ admins, catalog, emailAlertCategories }) => {
+        switchMap(({ admins, partners, catalog, partnerCatalog, emailAlertCategories }) => {
           const sortedCatalog = [...catalog].sort((a, b) =>
+            this.labelForPermission(a).localeCompare(this.labelForPermission(b), undefined, {
+              sensitivity: "base",
+            }),
+          );
+          const sortedPartnerCatalog = [...partnerCatalog].sort((a, b) =>
             this.labelForPermission(a).localeCompare(this.labelForPermission(b), undefined, {
               sensitivity: "base",
             }),
@@ -65,6 +75,8 @@ export class DeveloperPermissionsComponent implements OnInit {
             x.labelEn.localeCompare(y.labelEn, undefined, { sensitivity: "base" }),
           );
           this.catalog = sortedCatalog;
+          this.partnerCatalog = sortedPartnerCatalog;
+          this.partnerRows = partners;
           this.emailAlertCategories = sortedCats;
 
           if (admins.length === 0) {
@@ -122,6 +134,27 @@ export class DeveloperPermissionsComponent implements OnInit {
 
   isGranted(row: AdminPermissionRow, code: string): boolean {
     return row.grantedPermissions.includes(code);
+  }
+
+  togglePartner(row: AdminPermissionRow, code: string, checked: boolean): void {
+    const next = new Set(row.grantedPermissions);
+    if (checked) {
+      next.add(code);
+    } else {
+      next.delete(code);
+    }
+    const list = Array.from(next);
+    this.savingPartnerClientId = row.clientId;
+    this.developerPermissionService.replacePermissions(row.clientId, list).subscribe({
+      next: () => {
+        row.grantedPermissions = list;
+        this.savingPartnerClientId = null;
+      },
+      error: () => {
+        this.savingPartnerClientId = null;
+        this.errorMessage = "Could not update partner permissions.";
+      },
+    });
   }
 
   toggle(row: AdminRowView, code: string, checked: boolean): void {

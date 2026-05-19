@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
 import { CartService } from "@app/core/service/api/cart.service";
+import { Authentication } from "@app/core/service/auth/autenthication";
+import { resolvePartnerCartBlockQuantity } from "@app/core/utils/partner-permission.util";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { CartRequestDto } from "@app/model/dto/request/cart-request.dto";
@@ -10,8 +12,13 @@ import { Recurrence } from "@app/model/enums/recurrence.enum";
 export class MonitorCartActionsService {
   constructor(
     private readonly cartService: CartService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly authentication: Authentication
   ) {}
+
+  private cartBlockQuantity(): number {
+    return resolvePartnerCartBlockQuantity(this.authentication.client());
+  }
 
   addMonitorToCart(monitor: MapPoint): void {
     if (monitor.hasAvailableSlots !== true) {
@@ -40,7 +47,7 @@ export class MonitorCartActionsService {
       items: [
         {
           monitorId: monitor.id,
-          blockQuantity: 1,
+          blockQuantity: this.cartBlockQuantity(),
         },
       ],
     };
@@ -71,7 +78,7 @@ export class MonitorCartActionsService {
         })),
         {
           monitorId: monitor.id,
-          blockQuantity: 1,
+          blockQuantity: this.cartBlockQuantity(),
         },
       ];
 
