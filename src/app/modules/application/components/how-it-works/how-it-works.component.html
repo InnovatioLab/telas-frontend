@@ -21,19 +21,44 @@
                   <ul class="how-step-flow" [attr.aria-label]="step.title">
                     @for (item of step.subItems; track item.label; let flowLast = $last) {
                       <li class="how-step-flow-item">
-                        <div
-                          class="how-step-flow-icon"
-                          [class.how-step-flow-icon--success]="item.variant === 'success'"
-                        >
-                          <span class="how-step-flow-icon-slot"></span>
+                        <div class="how-step-flow-card">
+                          <app-how-it-works-flow-icon [icon]="item.icon" />
+                          <span class="how-step-flow-label">{{ item.label }}</span>
                         </div>
-                        <span class="how-step-flow-label">{{ item.label }}</span>
                       </li>
                       @if (!flowLast) {
                         <li class="how-step-flow-arrow" aria-hidden="true"></li>
                       }
                     }
                   </ul>
+                } @else if (step.imageSrc) {
+                  @if (step.imageWhiteFrame) {
+                    <div class="how-step-image-wrap">
+                      <img
+                        class="how-step-image"
+                        [src]="step.imageSrc"
+                        [alt]="step.title"
+                        loading="lazy"
+                      />
+                    </div>
+                  } @else if (step.imageMonitor) {
+                    <div class="how-step-image-frame">
+                      <img
+                        class="how-step-image how-step-image--monitor"
+                        [src]="step.imageSrc"
+                        [alt]="step.title"
+                        loading="lazy"
+                      />
+                    </div>
+                  } @else {
+                    <img
+                      class="how-step-image"
+                      [class.how-step-image--cover]="step.imageCover"
+                      [src]="step.imageSrc"
+                      [alt]="step.title"
+                      loading="lazy"
+                    />
+                  }
                 } @else {
                   <div class="how-step-image-slot">
                     <span class="how-step-image-slot-label">Image</span>
