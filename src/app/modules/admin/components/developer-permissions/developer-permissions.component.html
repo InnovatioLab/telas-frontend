@@ -69,7 +69,7 @@
         When enabled, every partner may place up to 5 ads on any screen at any location. When disabled, partners keep
         the default rule (5 ads only on their own location).
       </p>
-      <div class="mt-3 d-flex align-items-center gap-2">
+      <label class="partner-platform-setting" for="partner-platform-slots-any-location">
         <p-checkbox
           [binary]="true"
           inputId="partner-platform-slots-any-location"
@@ -77,10 +77,8 @@
           (ngModelChange)="togglePartnerPlatformSettings($event)"
           [disabled]="savingPartnerPlatformSettings || loading"
         ></p-checkbox>
-        <label for="partner-platform-slots-any-location" class="mb-0">
-          5 ads on any screen (any location)
-        </label>
-      </div>
+        <span class="partner-platform-setting__label">5 ads on any screen (any location)</span>
+      </label>
     </div>
   </div>
 </p-card>

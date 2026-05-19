@@ -5,6 +5,47 @@ $perm-sticky-email-w: 15rem;
   .text-muted {
     opacity: 0.85;
   }
+
+  .partner-platform-setting {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .partner-platform-setting__label {
+    line-height: 1.5;
+    font-weight: var(--fonte-peso-medio, 500);
+  }
+}
+
+:host ::ng-deep label.partner-platform-setting {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem;
+  width: 100%;
+
+  p-checkbox {
+    display: inline-flex !important;
+    flex: 0 0 auto;
+    width: auto !important;
+  }
+
+  .p-checkbox {
+    display: inline-flex !important;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .partner-platform-setting__label {
+    display: block;
+    margin: 0;
+    line-height: 1.5;
+  }
 }
 
 :host ::ng-deep .developer-perm-tooltip {
