@@ -1,68 +1,60 @@
 <section id="how-it-works" class="how-section">
   <div class="how-container">
     <div class="how-max">
-      <div class="how-header">
+      <header class="how-header">
         <h2 class="how-title">How It Works</h2>
-      </div>
-      <div class="how-steps-grid">
-        <!-- Step 1 -->
-        <div class="how-step">
-          <div class="how-step-icon-wrap">
-            <div class="how-step-icon">
-              <app-icon-search
-                class="text-white"
-                width="40"
-                height="40"
-              ></app-icon-search>
-            </div>
-            <div class="how-step-number">1</div>
-          </div>
-          <h3 class="how-step-title">Find desirable location(s)</h3>
-          <p class="how-step-description">
-            Select where you want your ad to appear by choosing your desired ZIP code and available screen location.
-          </p>
-        </div>
-        <!-- Step 2 -->
-        <div class="how-step">
-          <div class="how-step-icon-wrap">
-            <div class="how-step-icon">
-              <app-icon-arquivo
-                class="text-white"
-                width="40"
-                height="40"
-              ></app-icon-arquivo>
-            </div>
-            <div class="how-step-number">2</div>
-          </div>
-          <h3 class="how-step-title">Upload your advertisement material</h3>
-          <p class="how-step-description">
-            Answer a few simple questions about your business and upload any files we need, such as your logo, photos, or brand assets.
-          </p>
-        </div>
-        <!-- Step 3 -->
-        <div class="how-step">
-          <div class="how-step-icon-wrap">
-            <div class="how-step-icon">
-              <app-icon-check
-                class="text-white"
-                width="40"
-                height="40"
-              ></app-icon-check>
-            </div>
-            <div class="how-step-number">3</div>
-          </div>
-          <h3 class="how-step-title">Go Live</h3>
-          <p class="how-step-description">
-            After you approve your ad, it runs daily for one month in your selected location, helping your business become more recognizable and trusted in the community.
-          </p>
-        </div>
-      </div>
+      </header>
+
+      <ol class="how-steps" aria-label="How it works steps">
+        @for (step of steps; track step.number; let last = $last) {
+          <li class="how-steps-item">
+            <article class="how-step-card">
+              <div class="how-step-info">
+                <div class="how-step-badge" aria-hidden="true">
+                  {{ step.number }}
+                </div>
+                <h3 class="how-step-title">{{ step.title }}</h3>
+              </div>
+
+              <div class="how-step-visual">
+                @if (step.subItems?.length) {
+                  <ul class="how-step-flow" [attr.aria-label]="step.title">
+                    @for (item of step.subItems; track item.label; let flowLast = $last) {
+                      <li class="how-step-flow-item">
+                        <div
+                          class="how-step-flow-icon"
+                          [class.how-step-flow-icon--success]="item.variant === 'success'"
+                        >
+                          <span class="how-step-flow-icon-slot"></span>
+                        </div>
+                        <span class="how-step-flow-label">{{ item.label }}</span>
+                      </li>
+                      @if (!flowLast) {
+                        <li class="how-step-flow-arrow" aria-hidden="true"></li>
+                      }
+                    }
+                  </ul>
+                } @else {
+                  <div class="how-step-image-slot">
+                    <span class="how-step-image-slot-label">Image</span>
+                  </div>
+                }
+              </div>
+            </article>
+
+            @if (!last) {
+              <div class="how-step-connector" aria-hidden="true">
+                <span class="how-step-connector-arrow"></span>
+              </div>
+            }
+          </li>
+        }
+      </ol>
+
       <div class="how-cta-section">
-        
-          <button class="how-cta-btn" (click)="onStartCampaign()">
-            Start Advertising Today
-          </button>
-        
+        <button type="button" class="how-cta-btn" (click)="onStartCampaign()">
+          Start Advertising Today
+        </button>
       </div>
     </div>
   </div>

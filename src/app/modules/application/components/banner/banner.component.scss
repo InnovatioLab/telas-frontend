@@ -58,37 +58,6 @@ body.dark-theme .banner-screen-cta:hover {
   margin: 0 auto;
 }
 
-.banner-main {
-  position: relative;
-  margin-bottom: var(--espacamento-extra-grande);
-}
-
-.banner-main-bg {
-  background: linear-gradient(
-    135deg,
-    var(--cor-cinza-escuro) 0%,
-    var(--cor-primaria-escura) 100%
-  );
-  border-radius: var(--borda-raio-padrao);
-  padding: var(--espacamento-grande);
-  box-shadow: var(--sombra-hover);
-
-  @media (max-width: 600px) {
-    padding: var(--espacamento-padrao);
-  }
-}
-
-.banner-main-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--espacamento-grande);
-  align-items: center;
-
-  @media (min-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 .banner-screen-mockup {
   position: relative;
 }
