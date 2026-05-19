@@ -16,12 +16,6 @@ body.dark-theme .hero-title {
   color: #f8fafc !important;
 }
 
-html[data-theme="dark"] .hero-subtitle,
-html.dark-theme .hero-subtitle,
-body.dark-theme .hero-subtitle {
-  color: rgba(241, 245, 249, 0.92);
-}
-
 html[data-theme="dark"] .hero-feature-title,
 html.dark-theme .hero-feature-title,
 body.dark-theme .hero-feature-title {
@@ -108,7 +102,7 @@ body.dark-theme .hero-feature-title {
 
 .hero-subtitle {
   font-size: 1.25rem;
-  color: #16191B;
+  color: var(--cor-preto-fixo);
   margin-bottom: 2rem;
   max-width: 60rem;
   margin-left: auto;

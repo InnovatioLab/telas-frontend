@@ -19,6 +19,7 @@ $colors: (
   'error-escuro': #b02a37,
   'disabled': #696F74CC,
   'white': #FFFFFF,
+  'black': #000000,
   'black-light': #16191B,
   'alerta': #f59c00
 );
@@ -138,6 +139,8 @@ $modal: (
   --cor-erro-escuro: #{map.get($colors, 'error-escuro')};
   --cor-desabilitado: #{map.get($colors, 'disabled')};
   --cor-branca: #{map.get($colors, 'white')};
+  --cor-preto: #{map.get($colors, 'black')};
+  --cor-preto-fixo: #{map.get($colors, 'black')};
   --cor-preto-claro: #{map.get($colors, 'black-light')};
   --cor-alerta: #{map.get($colors, 'alerta')};
 
