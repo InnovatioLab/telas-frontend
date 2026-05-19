@@ -8,7 +8,7 @@
 }
 
 .how-step-flow-icon--outline {
-  color: var(--cor-primaria);
+  color: var(--cor-primaria-escura);
 }
 
 .how-step-flow-icon--check,
@@ -16,7 +16,7 @@
   width: 3rem;
   height: 3rem;
   border-radius: 9999px;
-  background: var(--cor-primaria);
+  background-color: var(--cor-primaria-escura);
   color: var(--cor-texto-clara);
 }
 
@@ -24,7 +24,7 @@
   width: 3rem;
   height: 3rem;
   border-radius: 9999px;
-  background: #22c55e;
+  background-color: var(--cor-sucesso);
   color: var(--cor-texto-clara);
 }
 
