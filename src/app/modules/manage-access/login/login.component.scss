@@ -65,39 +65,7 @@
     font-weight: 600;
   }
 
-  .login-type-picker {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
-  .login-type-picker__hint {
-    text-align: center;
-    color: var(--cor-legenda);
-    margin: 0;
-    font-size: 15px;
-  }
-
-  .login-type-picker__actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .login-type-btn {
-    height: 47px;
-    border-radius: 15px;
-    font-weight: 500;
-    font-size: 18px;
-  }
-
-  .login-type-btn--partner {
-    background: var(--cor-primaria);
-    border-color: var(--cor-primaria);
-  }
-
-  .back-type-link {
+  .back-link {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -237,6 +205,27 @@
 :host-context(body.dark-theme) #test-link-retomar-cadastro,
 :host-context(body.dark-theme) #test-link-clique-aqui {
   color: var(--cor-primaria-clara);
+}
+
+:host-context(html[data-theme="dark"]) .formulario-login .partner-badge,
+:host-context(html.dark-theme) .formulario-login .partner-badge,
+:host-context(body.dark-theme) .formulario-login .partner-badge {
+  color: var(--cor-primaria-clara);
+  background: rgba(4, 157, 217, 0.18);
+
+  .pi {
+    color: var(--cor-primaria-clara);
+  }
+}
+
+:host-context(html[data-theme="dark"]) .formulario-login .back-link,
+:host-context(html.dark-theme) .formulario-login .back-link,
+:host-context(body.dark-theme) .formulario-login .back-link {
+  color: var(--text-on-dark-muted);
+
+  &:hover {
+    color: var(--cor-texto-clara);
+  }
 }
 
 .formulario-login--partner ::ng-deep .p-card,

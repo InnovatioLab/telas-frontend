@@ -23,7 +23,6 @@ import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { catchError, finalize, of } from "rxjs";
 
-type LoginStep = "chooseType" | "credentials";
 type LoginMode = "client" | "partner";
 
 @Component({
@@ -45,8 +44,7 @@ export class LoginComponent implements OnInit {
   form: FormGroup;
   ref: DynamicDialogRef | undefined;
   loading = false;
-  loginStep: LoginStep = "chooseType";
-  loginMode: LoginMode | null = null;
+  loginMode!: LoginMode;
 
   constructor(
     private readonly formBuilder: FormBuilder,
@@ -56,10 +54,18 @@ export class LoginComponent implements OnInit {
     private readonly autenticacaoService: AutenticacaoService,
     private readonly clientService: ClientService,
     private readonly authentication: Authentication
-  ) {}
+  ) {
+    this.iniciarFormulario();
+  }
 
   ngOnInit(): void {
-    this.iniciarFormulario();
+    const modeParam = this.route.snapshot.queryParamMap.get("mode");
+    if (modeParam !== "partner" && modeParam !== "client") {
+      void this.router.navigate(["/"]);
+      return;
+    }
+
+    this.loginMode = modeParam;
     this.form.markAsPristine();
     this.form.markAsUntouched();
     Object.values(this.form.controls).forEach((control) => {
@@ -67,11 +73,6 @@ export class LoginComponent implements OnInit {
       control.markAsUntouched();
       control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
     });
-
-    const modeParam = this.route.snapshot.queryParamMap.get("mode");
-    if (modeParam === "partner" || modeParam === "client") {
-      this.selectLoginMode(modeParam);
-    }
   }
 
   iniciarFormulario(): void {
@@ -88,14 +89,8 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  selectLoginMode(mode: LoginMode): void {
-    this.loginMode = mode;
-    this.loginStep = "credentials";
-  }
-
-  backToTypeSelection(): void {
-    this.loginStep = "chooseType";
-    this.loginMode = null;
+  goBack(): void {
+    this.router.navigate(["/"]);
   }
 
   get isPartnerMode(): boolean {
@@ -175,10 +170,6 @@ export class LoginComponent implements OnInit {
   private isRoleAllowedForLoginMode(
     role: Role | string | undefined
   ): boolean {
-    if (!this.loginMode) {
-      return true;
-    }
-
     const normalizedRole = String(role ?? "")
       .trim()
       .toUpperCase();
@@ -261,7 +252,7 @@ export class LoginComponent implements OnInit {
 
   logout(): void {
     this.autenticacaoService.logout();
-    this.router.navigate(["/login"]);
+    this.router.navigate(["/"]);
   }
 
   habilitarBotao(): boolean {

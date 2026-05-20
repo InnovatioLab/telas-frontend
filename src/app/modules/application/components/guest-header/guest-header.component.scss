@@ -160,6 +160,17 @@ header {
   align-items: center;
 }
 
+.login-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.login-dropdown-chevron {
+  margin-left: 0.35rem;
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
 html[data-theme="dark"] .guest-header,
 html.dark-theme .guest-header,
 body.dark-theme .guest-header {
