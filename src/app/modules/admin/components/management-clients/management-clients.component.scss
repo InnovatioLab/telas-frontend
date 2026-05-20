@@ -1,3 +1,14 @@
+.clients-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.create-partner-btn {
+  flex-shrink: 0;
+}
+
 .wrap-address {
   max-width: 22rem;
   white-space: normal;

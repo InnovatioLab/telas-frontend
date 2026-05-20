@@ -45,8 +45,82 @@
     }
   }
 
+  .login-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: var(--cor-legenda);
+    text-align: center;
+  }
+
+  .partner-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 999px;
+    background: rgba(73, 99, 130, 0.12);
+    color: var(--cor-primaria);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .login-type-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .login-type-picker__hint {
+    text-align: center;
+    color: var(--cor-legenda);
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .login-type-picker__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .login-type-btn {
+    height: 47px;
+    border-radius: 15px;
+    font-weight: 500;
+    font-size: 18px;
+  }
+
+  .login-type-btn--partner {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+  }
+
+  .back-type-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--cor-primaria-escura);
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .partner-login-note {
+    color: var(--cor-legenda);
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .btn-enter {
-    margin-top: 107px;
+    margin-top: 2rem;
 
     display: flex;
     align-items: center;
@@ -163,6 +237,19 @@
 :host-context(body.dark-theme) #test-link-retomar-cadastro,
 :host-context(body.dark-theme) #test-link-clique-aqui {
   color: var(--cor-primaria-clara);
+}
+
+.formulario-login--partner ::ng-deep .p-card,
+:host ::ng-deep .formulario-login--partner .p-card {
+  border-top: 4px solid var(--cor-primaria);
+}
+
+:host ::ng-deep .formulario-login--partner .card .p-card .p-card-content {
+  background: linear-gradient(
+    180deg,
+    rgba(73, 99, 130, 0.04) 0%,
+    transparent 120px
+  );
 }
 
 @media screen and (max-height: 800px) {

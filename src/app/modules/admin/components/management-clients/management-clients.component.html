@@ -1,6 +1,6 @@
 <p-card styleClass="card-header">
   <div class="card-header-content">
-    <div class="p-card-content">
+    <div class="p-card-content clients-header-actions">
       <span class="p-input-icon-left">
         <app-icon-search
           style="color: #496382"
@@ -22,6 +22,14 @@
           pTooltip="Search by BusinessName, Phone, Email, Industry or Role"
         ></span>
       </span>
+      <button
+        type="button"
+        pButton
+        label="Create Partner"
+        icon="pi pi-user-plus"
+        class="p-button-outlined create-partner-btn"
+        (click)="openCreatePartnerModal()"
+      ></button>
     </div>
   </div>
 </p-card>

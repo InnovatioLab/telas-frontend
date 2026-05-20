@@ -35,6 +35,7 @@ import { firstValueFrom, of } from "rxjs";
 import { catchError, take } from "rxjs/operators";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { EditClientModalComponent } from "../edit-client-modal/edit-client-modal.component";
+import { CreatePartnerModalComponent } from "../create-partner-modal/create-partner-modal.component";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
 import { Notification } from "@app/modules/notificacao/models/notification";
 
@@ -430,9 +431,35 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   createClient(): void {
-    this.toastService.sucesso(
-      "Create client functionality will be implemented"
+    this.openCreatePartnerModal();
+  }
+
+  openCreatePartnerModal(): void {
+    const ref: DynamicDialogRef = this.dialogService.open(
+      CreatePartnerModalComponent,
+      {
+        header: "Create Partner",
+        closable: true,
+        closeOnEscape: true,
+        draggable: false,
+        resizable: false,
+        contentStyle: {
+          overflow: "auto",
+          padding: "0",
+          display: "flex",
+          "flex-direction": "column",
+          width: "98vw",
+          "max-width": "800px",
+        },
+        baseZIndex: 10000,
+      }
     );
+
+    ref.onClose.subscribe((result: { success?: boolean } | undefined) => {
+      if (result?.success) {
+        this.loadClients();
+      }
+    });
   }
 
   editClient(client: Client): void {

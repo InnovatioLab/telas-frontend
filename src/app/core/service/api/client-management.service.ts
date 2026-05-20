@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { IClientManagementRepository } from '@app/core/interfaces/services/repository/client-management-repository.interface';
 import { CLIENT_MANAGEMENT_REPOSITORY_TOKEN } from '@app/core/tokens/injection-tokens';
 import { AdminClientMessageRowDto } from '@app/model/dto/response/admin-client-message-row.dto';
+import { CreatePartnerRequestDTO } from '@app/model/dto/request/create-partner-request.dto';
 
 export interface FilterClientRequestDto {
   page?: number;
@@ -57,6 +58,10 @@ export class ClientManagementService {
 
   makePartner(clientId: string): Observable<void> {
     return this.repository.makePartner(clientId);
+  }
+
+  createPartner(request: CreatePartnerRequestDTO): Observable<Client> {
+    return this.repository.createPartner(request);
   }
 
   deactivateClient(clientId: string): Observable<void> {

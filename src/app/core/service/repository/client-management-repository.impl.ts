@@ -13,6 +13,7 @@ import {
   PermanentDeleteClientPayload,
 } from '@app/core/service/api/client-management.service';
 import { AdminClientMessageRowDto } from '@app/model/dto/response/admin-client-message-row.dto';
+import { CreatePartnerRequestDTO } from '@app/model/dto/request/create-partner-request.dto';
 
 @Injectable({ providedIn: 'root' })
 export class ClientManagementRepositoryImpl implements IClientManagementRepository {
@@ -75,6 +76,28 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
 
   makePartner(clientId: string): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}/partner/${clientId}`, {});
+  }
+
+  createPartner(request: CreatePartnerRequestDTO): Observable<Client> {
+    return this.http
+      .post<ResponseDTO<ClientResponseDto>>(`${this.baseUrl}/partner`, request)
+      .pipe(
+        map((response) => {
+          const dto = response.data;
+          return {
+            id: dto.id,
+            businessName: dto.businessName,
+            industry: dto.industry,
+            status: dto.status,
+            contact: dto.contact,
+            partnerAddressSummary: dto.partnerAddressSummary ?? null,
+            adsCount: dto.adsCount,
+            role: dto.role as Client['role'],
+            createdAt: dto.createdAt,
+            updatedAt: dto.updatedAt,
+          } as Client;
+        })
+      );
   }
 
   deactivateClient(clientId: string): Observable<void> {

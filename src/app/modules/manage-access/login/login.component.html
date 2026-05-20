@@ -1,113 +1,172 @@
-<app-card-centralizado type="formulario-login" class="formulario-login">
+<app-card-centralizado
+  type="formulario-login"
+  class="formulario-login"
+  [class.formulario-login--partner]="isPartnerMode"
+>
   <ng-template pTemplate="content">
     <ng-container>
       <div class="flex justify-content-center">
         @if (logoSrc) {
           <img src="{{ logoSrc }}" alt="Logo" class="logo" id="logo" />
-        } @else {
-          <!-- <img src="assets/img/ematece.png" alt="EMATECE LOGO" class="imagem-logo" /> -->
         }
       </div>
 
       <div class="header-container">
-        <h1 id="test-descricao" class="descricao">Telas</h1>
+        @if (isPartnerMode) {
+          <span class="partner-badge">
+            <i class="pi pi-briefcase"></i>
+            Partner
+          </span>
+        }
+        <h1 id="test-descricao" class="descricao">{{ pageTitle }}</h1>
+        @if (loginStep === "credentials") {
+          <p class="login-subtitle">{{ pageSubtitle }}</p>
+        }
       </div>
     </ng-container>
 
-    <form
-      [formGroup]="form"
-      class="flex flex-column justify-content-center sm:justify-content-between"
-    >
-      <div class="col-12">
-        <div class="label-input">
-          <label htmlFor="login" id="lb-login">
-            <app-icon-user
-              class="icon-custon"
-              id="test-icon-person"
-              width="20"
-              height="20"
-            ></app-icon-user>
-            Login
-          </label>
+    @if (loginStep === "chooseType") {
+      <div class="login-type-picker">
+        <p class="login-type-picker__hint">Choose how you want to sign in</p>
+        <div class="login-type-picker__actions">
+          <button
+            pButton
+            type="button"
+            id="test-btn-login-client"
+            class="login-type-btn login-type-btn--client w-full"
+            label="Login Client"
+            icon="pi pi-user"
+            (click)="selectLoginMode('client')"
+          ></button>
+          <button
+            pButton
+            type="button"
+            id="test-btn-login-partner"
+            class="login-type-btn login-type-btn--partner w-full"
+            label="Login Partner"
+            icon="pi pi-briefcase"
+            (click)="selectLoginMode('partner')"
+          ></button>
         </div>
-        <input
-          type="text"
-          pInputText
-          formControlName="login"
-          id="test-input-login"
-          class="w-full input-form"
-          placeholder="Email"
-          (keyup.enter)="login()"
-        />
-        <app-error
-          *ngIf="form.get('login').errors"
-          id="error-msg-login"
-          [control]="form.get('login')"
-          class="error-msg"
-        ></app-error>
       </div>
+    } @else {
+      <button
+        type="button"
+        class="back-type-link"
+        id="test-link-voltar-tipo-login"
+        (click)="backToTypeSelection()"
+      >
+        <i class="pi pi-arrow-left"></i>
+        Change login type
+      </button>
 
-      <div class="col-12">
-        <div class="label-input">
-          <label htmlFor="senha" id="lb-senha">
-            <app-icon-lock
-              class="icon-custon"
-              id="test-icon-lock"
-              width="20"
-              height="20"
-            ></app-icon-lock>
-            Password
-          </label>
+      <form
+        [formGroup]="form"
+        class="flex flex-column justify-content-center sm:justify-content-between"
+      >
+        <div class="col-12">
+          <div class="label-input">
+            <label htmlFor="login" id="lb-login">
+              <app-icon-user
+                class="icon-custon"
+                id="test-icon-person"
+                width="20"
+                height="20"
+              ></app-icon-user>
+              Login
+            </label>
+          </div>
+          <input
+            type="text"
+            pInputText
+            formControlName="login"
+            id="test-input-login"
+            class="w-full input-form"
+            placeholder="Email"
+            (keyup.enter)="login()"
+          />
+          <app-error
+            *ngIf="form.get('login')?.errors"
+            id="error-msg-login"
+            [control]="form.get('login')"
+            class="error-msg"
+          ></app-error>
         </div>
-        <p-password
-          [toggleMask]="true"
-          [feedback]="false"
-          formControlName="senha"
-          placeholder="Enter your password"
-          class="w-full password"
-          id="test-input-senha"
-          minlength="8"
-          maxLength="32"
-          (onKeyup.enter)="login()"
-        >
-        </p-password>
-        <app-error
-          id="error-msg-senha"
-          [control]="form.get('senha')"
-          class="error-msg"
-        ></app-error>
-      </div>
 
-      <span id="test-texto-esqueceu-senha" class="ml-3 mb-3 font-normal">
-        Forgot your password?
-        <a id="test-link-clique-aqui" routerLink="/auth/recover-password"
-          >Click here.</a
-        >
-      </span>
+        <div class="col-12">
+          <div class="label-input">
+            <label htmlFor="senha" id="lb-senha">
+              <app-icon-lock
+                class="icon-custon"
+                id="test-icon-lock"
+                width="20"
+                height="20"
+              ></app-icon-lock>
+              Password
+            </label>
+          </div>
+          <p-password
+            [toggleMask]="true"
+            [feedback]="false"
+            formControlName="senha"
+            placeholder="Enter your password"
+            class="w-full password"
+            id="test-input-senha"
+            minlength="8"
+            maxLength="32"
+            (onKeyup.enter)="login()"
+          >
+          </p-password>
+          <app-error
+            id="error-msg-senha"
+            [control]="form.get('senha')"
+            class="error-msg"
+          ></app-error>
+        </div>
 
-      <div class="flex justify-content-center btn-enter">
-        <button
-          pButton
-          id="test-btn-entrar"
-          class="botao-entrar justify-content-center w-full p-button-primary"
-          [disabled]="habilitarBotao()"
-          (click)="login()"
-        >
-          <span *ngIf="loading" class="pi pi-spin pi-spinner mr-2"></span>
-          Login
-        </button>
-      </div>
-    </form>
+        <span id="test-texto-esqueceu-senha" class="ml-3 mb-3 font-normal">
+          Forgot your password?
+          <a id="test-link-clique-aqui" routerLink="/auth/recover-password"
+            >Click here.</a
+          >
+        </span>
 
-    <div class="flex flex-column align-items-center mt-3">
-      <p id="test-texto-nao-possui-conta" class="text-center font-normal mb-3">
-        Don't have an account?
-        <a id="test-link-cadastre-se" routerLink="/register"> Sign up </a>
-      </p>
+        <div class="flex justify-content-center btn-enter">
+          <button
+            pButton
+            id="test-btn-entrar"
+            class="botao-entrar justify-content-center w-full"
+            [class.p-button-primary]="!isPartnerMode"
+            [class.p-button-help]="isPartnerMode"
+            [disabled]="habilitarBotao()"
+            (click)="login()"
+          >
+            <span *ngIf="loading" class="pi pi-spin pi-spinner mr-2"></span>
+            {{ isPartnerMode ? "Login Partner" : "Login Client" }}
+          </button>
+        </div>
+      </form>
 
-      <a id="test-link-retomar-cadastro" routerLink="/register/resume">
-        Resume Registration
-      </a>
-    </div>
+      @if (!isPartnerMode) {
+        <div class="flex flex-column align-items-center mt-3">
+          <p
+            id="test-texto-nao-possui-conta"
+            class="text-center font-normal mb-3"
+          >
+            Don't have an account?
+            <a id="test-link-cadastre-se" routerLink="/register"> Sign up </a>
+          </p>
+
+          <a id="test-link-retomar-cadastro" routerLink="/register/resume">
+            Resume Registration
+          </a>
+        </div>
+      } @else {
+        <p class="partner-login-note text-center mt-3">
+          Partner accounts are created by Telas administration. Sign in with the
+          credentials provided by your administrator.
+        </p>
+      }
+    }
   </ng-template>
 </app-card-centralizado>

@@ -1,0 +1,256 @@
+<div class="create-partner-modal w-full">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-content">
+      <div class="form-section">
+        <h4>Business Information</h4>
+        <div class="form-row">
+          <div class="form-field full-width">
+            <label for="businessName" class="required">Business Name</label>
+            <input
+              pInputText
+              type="text"
+              maxlength="255"
+              id="businessName"
+              formControlName="businessName"
+              uiReservedBusinessName
+              placeholder="Enter business name"
+            />
+            <app-error
+              id="error-msg-business-name"
+              [control]="form.get('businessName')"
+            ></app-error>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="industry">Industry</label>
+            <input
+              pInputText
+              type="text"
+              id="industry"
+              formControlName="industry"
+              uiTextOnly
+              placeholder="Enter industry"
+            />
+            <app-error
+              [control]="form.get('industry')"
+            ></app-error>
+          </div>
+          <div class="form-field">
+            <label for="websiteUrl">Website URL</label>
+            <input
+              pInputText
+              type="text"
+              id="websiteUrl"
+              formControlName="websiteUrl"
+              placeholder="Enter website URL"
+            />
+            <app-error
+              [control]="form.get('websiteUrl')"
+            ></app-error>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>Contact Information</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="contactEmail" class="required">Email</label>
+            <input
+              type="email"
+              pInputText
+              formControlName="contactEmail"
+              class="w-full input-form"
+              id="contactEmail"
+              maxLength="255"
+              placeholder="Enter contact email"
+            />
+            <app-error
+              [control]="form.get('contactEmail')"
+            ></app-error>
+          </div>
+          <div class="form-field">
+            <label for="contactPhone" class="required">Phone</label>
+            <p-inputMask
+              id="contactPhone"
+              mask="+1 999 999 9999"
+              [unmask]="true"
+              class="w-full"
+              formControlName="contactPhone"
+              placeholder="Enter contact phone"
+            />
+            <app-error
+              [control]="form.get('contactPhone')"
+            ></app-error>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4>Access</h4>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="password" class="required">Password</label>
+            <p-password
+              id="password"
+              formControlName="password"
+              [toggleMask]="true"
+              [feedback]="false"
+              placeholder="Create partner password"
+              class="w-full"
+              minlength="8"
+              maxLength="32"
+              uiSenha
+            ></p-password>
+            <app-error [control]="form.get('password')"></app-error>
+          </div>
+          <div class="form-field">
+            <label for="confirmPassword" class="required">Confirm Password</label>
+            <p-password
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              [toggleMask]="true"
+              [feedback]="false"
+              placeholder="Confirm password"
+              class="w-full"
+              minlength="8"
+              maxLength="32"
+              uiSenha
+            ></p-password>
+            <app-error [control]="form.get('confirmPassword')"></app-error>
+          </div>
+        </div>
+        <p class="password-hint">
+          8 to 32 characters. Partner must accept terms on first login.
+        </p>
+      </div>
+
+      <div class="form-section">
+        <h4>Partner Address</h4>
+        <div formArrayName="addresses">
+          <div
+            class="address-item"
+            *ngFor="
+              let addressGroup of addressesFormArray.controls;
+              let i = index
+            "
+            [formGroupName]="i"
+          >
+            <div class="form-row">
+              <div class="form-field">
+                <label class="required">Street</label>
+                <input
+                  type="text"
+                  pInputText
+                  formControlName="street"
+                  placeholder="Enter street"
+                  maxlength="100"
+                />
+                <app-error
+                  [control]="addressGroup.get('street')"
+                ></app-error>
+              </div>
+              <div class="form-field">
+                <label class="required">Zip Code</label>
+                <input
+                  type="text"
+                  pInputText
+                  formControlName="zipCode"
+                  placeholder="Enter 5-digit Zip Code"
+                  minlength="5"
+                  maxlength="5"
+                  pKeyFilter="int"
+                  (input)="
+                    onZipCodeChange(
+                      getAddressGroup(i),
+                      addressGroup.get('zipCode')?.value
+                    )
+                  "
+                />
+                <app-error
+                  [control]="addressGroup.get('zipCode')"
+                ></app-error>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="required">City</label>
+                <input
+                  type="text"
+                  pInputText
+                  formControlName="city"
+                  placeholder="Enter city"
+                  maxlength="50"
+                />
+                <app-error
+                  [control]="addressGroup.get('city')"
+                ></app-error>
+              </div>
+              <div class="form-field">
+                <label class="required">State</label>
+                <input
+                  type="text"
+                  pInputText
+                  formControlName="state"
+                  placeholder="FL"
+                  minlength="2"
+                  maxlength="2"
+                  uiTextOnly
+                />
+                <app-error
+                  [control]="addressGroup.get('state')"
+                ></app-error>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="required">Country</label>
+                <input
+                  type="text"
+                  pInputText
+                  formControlName="country"
+                  placeholder="US"
+                  maxlength="100"
+                />
+                <app-error
+                  [control]="addressGroup.get('country')"
+                ></app-error>
+              </div>
+              <div class="form-field">
+                <label>Address 2</label>
+                <input
+                  type="text"
+                  pInputText
+                  formControlName="address2"
+                  placeholder="Suite, unit, etc."
+                  maxlength="100"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="button"
+        pButton
+        class="p-button-outlined"
+        label="Cancel"
+        (click)="onCancel()"
+        [disabled]="loading"
+      ></button>
+      <button
+        type="submit"
+        pButton
+        label="Create Partner"
+        [loading]="loading"
+        [disabled]="loading"
+      >
+        <app-icon-check *ngIf="!loading"></app-icon-check>
+      </button>
+    </div>
+  </form>
+</div>

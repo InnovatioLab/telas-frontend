@@ -7,6 +7,7 @@ import {
   PermanentDeleteClientPayload,
 } from '@app/core/service/api/client-management.service';
 import { AdminClientMessageRowDto } from '@app/model/dto/response/admin-client-message-row.dto';
+import { CreatePartnerRequestDTO } from '@app/model/dto/request/create-partner-request.dto';
 
 /**
  * Interface para operações de repositório de Gerenciamento de Clientes
@@ -26,6 +27,8 @@ export interface IClientManagementRepository {
    * @returns Observable vazio
    */
   makePartner(clientId: string): Observable<void>;
+
+  createPartner(request: CreatePartnerRequestDTO): Observable<Client>;
 
   deactivateClient(clientId: string): Observable<void>;
 

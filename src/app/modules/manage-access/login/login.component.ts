@@ -1,12 +1,17 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { AuthenticationStorage } from "@app/core/service/auth/authentication-storage";
-import { Client, DefaultStatus, Role } from "@app/model/client";
+import {
+  Client,
+  DefaultStatus,
+  Role,
+  isPrivilegedPanelRole,
+} from "@app/model/client";
 import { ILoginRequest } from "@app/model/dto/request/login.request";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
@@ -17,6 +22,10 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { catchError, finalize, of } from "rxjs";
+
+type LoginStep = "chooseType" | "credentials";
+type LoginMode = "client" | "partner";
+
 @Component({
   selector: "app-login",
   imports: [
@@ -36,10 +45,13 @@ export class LoginComponent implements OnInit {
   form: FormGroup;
   ref: DynamicDialogRef | undefined;
   loading = false;
+  loginStep: LoginStep = "chooseType";
+  loginMode: LoginMode | null = null;
 
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     public dialogService: DialogService,
     private readonly autenticacaoService: AutenticacaoService,
     private readonly clientService: ClientService,
@@ -55,6 +67,11 @@ export class LoginComponent implements OnInit {
       control.markAsUntouched();
       control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
     });
+
+    const modeParam = this.route.snapshot.queryParamMap.get("mode");
+    if (modeParam === "partner") {
+      this.selectLoginMode("partner");
+    }
   }
 
   iniciarFormulario(): void {
@@ -69,6 +86,30 @@ export class LoginComponent implements OnInit {
         ],
       ],
     });
+  }
+
+  selectLoginMode(mode: LoginMode): void {
+    this.loginMode = mode;
+    this.loginStep = "credentials";
+  }
+
+  backToTypeSelection(): void {
+    this.loginStep = "chooseType";
+    this.loginMode = null;
+  }
+
+  get isPartnerMode(): boolean {
+    return this.loginMode === "partner";
+  }
+
+  get pageTitle(): string {
+    return this.isPartnerMode ? "Telas Partner" : "Telas";
+  }
+
+  get pageSubtitle(): string {
+    return this.isPartnerMode
+      ? "Partner access area"
+      : "Sign in to your account";
   }
 
   login(): void {
@@ -89,39 +130,77 @@ export class LoginComponent implements OnInit {
       .login(payload)
       .pipe(
         finalize(() => (this.loading = false)),
-        catchError((error) => {
+        catchError(() => {
           this.mensagemLoginInvalidoDialog();
           return of(null);
         })
       )
       .subscribe((response) => {
-        if (response && response.client) {
-          const r = response as {
-            token?: string;
-            accessToken?: string;
-            refreshToken?: string;
-            client: AuthenticatedClientResponseDto;
-          };
+        if (!response?.client) {
+          return;
+        }
 
-          const accessToken = r.accessToken ?? r.token;
-          if (accessToken) {
-            AuthenticationStorage.setToken(accessToken);
-          }
-          if (r.refreshToken) {
-            AuthenticationStorage.setRefreshToken(r.refreshToken);
-          }
+        const r = response as {
+          token?: string;
+          accessToken?: string;
+          refreshToken?: string;
+          client: AuthenticatedClientResponseDto;
+        };
 
-          const client = this.toClient(r.client);
-          this.clientService.setClientAtual(client);
-          this.authentication.updateClientData(client);
+        if (!this.isRoleAllowedForLoginMode(r.client.role)) {
+          this.mensagemLoginInvalidoDialog(this.getLoginRoleMismatchMessage());
+          return;
+        }
 
-          if (r.client.termAccepted) {
-            this.redirecionarParaHome(r.client);
-          } else {
-            this.router.navigate(["/terms-of-service"]);
-          }
+        const accessToken = r.accessToken ?? r.token;
+        if (accessToken) {
+          AuthenticationStorage.setToken(accessToken);
+        }
+        if (r.refreshToken) {
+          AuthenticationStorage.setRefreshToken(r.refreshToken);
+        }
+
+        const client = this.toClient(r.client);
+        this.clientService.setClientAtual(client);
+        this.authentication.updateClientData(client);
+
+        if (r.client.termAccepted) {
+          this.redirecionarParaHome(r.client);
+        } else {
+          this.router.navigate(["/terms-of-service"]);
         }
       });
+  }
+
+  private isRoleAllowedForLoginMode(
+    role: Role | string | undefined
+  ): boolean {
+    if (!this.loginMode) {
+      return true;
+    }
+
+    const normalizedRole = String(role ?? "")
+      .trim()
+      .toUpperCase();
+
+    if (this.loginMode === "partner") {
+      return normalizedRole === Role.PARTNER;
+    }
+
+    if (normalizedRole === Role.PARTNER) {
+      return false;
+    }
+
+    return (
+      normalizedRole === Role.CLIENT || isPrivilegedPanelRole(normalizedRole)
+    );
+  }
+
+  private getLoginRoleMismatchMessage(): string {
+    if (this.loginMode === "partner") {
+      return "This account is not a partner. Please sign in using Login Client.";
+    }
+    return "This account is a partner. Please sign in using Login Partner.";
   }
 
   redirecionarParaHome(client: AuthenticatedClientResponseDto): void {
