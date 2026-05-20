@@ -174,6 +174,10 @@ export class LoginComponent implements OnInit {
       .trim()
       .toUpperCase();
 
+    if (isPrivilegedPanelRole(normalizedRole)) {
+      return true;
+    }
+
     if (this.loginMode === "partner") {
       return normalizedRole === Role.PARTNER;
     }
@@ -182,9 +186,7 @@ export class LoginComponent implements OnInit {
       return false;
     }
 
-    return (
-      normalizedRole === Role.CLIENT || isPrivilegedPanelRole(normalizedRole)
-    );
+    return normalizedRole === Role.CLIENT;
   }
 
   private getLoginRoleMismatchMessage(): string {

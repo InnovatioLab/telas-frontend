@@ -12,4 +12,7 @@
   <small  *ngIf="control.errors.invalidStreet && !control.errors.required"><small>Invalid street format</small></small>
   <small  *ngIf="control.errors.invalidPhone && (control.value.length === 10 || control.value.length === 11)"><small>Invalid phone format, valid phone should be in the format +1 999 999 9999</small></small>
    <small  *ngIf="control.errors.invalidUrl"><small>Invalid URL format</small></small>
+  <small *ngIf="control.errors.pattern && !control.errors.required"><small>Enter a valid 5-digit zip code</small></small>
+  <small *ngIf="control.errors.passwordMismatch"><small>Passwords do not match</small></small>
+  <small *ngIf="control.errors.reservedBusinessName"><small>This business name is not allowed</small></small>
 </div>

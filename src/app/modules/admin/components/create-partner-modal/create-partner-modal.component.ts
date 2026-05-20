@@ -94,6 +94,13 @@ export class CreatePartnerModalComponent implements OnInit {
     return password === confirmPassword;
   }
 
+  private static readonly ZIP_CODE_VALIDATORS = [
+    Validators.required,
+    Validators.minLength(5),
+    Validators.maxLength(5),
+    Validators.pattern(/^\d{5}$/),
+  ];
+
   private buildAddressGroup(): FormGroup {
     return this.fb.group({
       street: [
@@ -104,7 +111,7 @@ export class CreatePartnerModalComponent implements OnInit {
           AbstractControlUtils.validateStreet(),
         ],
       ],
-      zipCode: ["", Validators.required],
+      zipCode: ["", CreatePartnerModalComponent.ZIP_CODE_VALIDATORS],
       city: ["", [Validators.required, Validators.maxLength(50)]],
       state: [
         "",
@@ -123,9 +130,22 @@ export class CreatePartnerModalComponent implements OnInit {
     return this.addressesFormArray.at(index) as FormGroup;
   }
 
+  onZipCodeBlur(addressGroup: FormGroup): void {
+    const zipControl = addressGroup.get("zipCode");
+    const digits = String(zipControl?.value ?? "").replace(/\D/g, "");
+    if (digits.length > 0 && digits.length < 5) {
+      const padded = digits.padStart(5, "0");
+      zipControl?.setValue(padded);
+      zipControl?.markAsTouched();
+      zipControl?.updateValueAndValidity();
+      this.onZipCodeChange(addressGroup, padded);
+    }
+  }
+
   onZipCodeChange(addressGroup: FormGroup, zipCode: string): void {
-    if (zipCode && zipCode.length >= 5) {
-      this.zipCodeService.findLocationByZipCode(zipCode).subscribe({
+    const normalized = String(zipCode ?? "").replace(/\D/g, "");
+    if (normalized.length >= 5) {
+      this.zipCodeService.findLocationByZipCode(normalized.slice(0, 5)).subscribe({
         next: (addressData) => {
           if (addressData) {
             addressGroup.patchValue({
@@ -140,13 +160,31 @@ export class CreatePartnerModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+    const confirmControl = this.form.get("confirmPassword");
+
+    if (!this.passwordsMatch()) {
+      confirmControl?.setErrors({
+        ...(confirmControl.errors ?? {}),
+        passwordMismatch: true,
+      });
+      confirmControl?.markAsTouched();
+      this.toastService.erro("Passwords do not match");
       return;
     }
 
-    if (!this.passwordsMatch()) {
-      this.toastService.erro("Passwords do not match");
+    if (confirmControl?.hasError("passwordMismatch")) {
+      const nextErrors = { ...(confirmControl.errors ?? {}) };
+      delete nextErrors["passwordMismatch"];
+      confirmControl.setErrors(
+        Object.keys(nextErrors).length > 0 ? nextErrors : null
+      );
+    }
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.toastService.aviso(
+        "Please fix the highlighted fields before creating the partner."
+      );
       return;
     }
 
@@ -155,7 +193,7 @@ export class CreatePartnerModalComponent implements OnInit {
     const addressesDTO: AddressRequestDTO[] = formValue.addresses.map(
       (addr: AddressRequestDTO & { address2?: string | null }) => ({
         street: addr.street,
-        zipCode: addr.zipCode,
+        zipCode: this.normalizeZipCode(addr.zipCode),
         city: addr.city,
         state: addr.state,
         country: addr.country,
@@ -187,11 +225,21 @@ export class CreatePartnerModalComponent implements OnInit {
         this.ref.close({ success: true });
         this.loading = false;
       },
-      error: () => {
-        this.toastService.erro("Failed to create partner");
+      error: (err: unknown) => {
+        if (!(err instanceof Error && (err as Error & { handled?: boolean }).handled)) {
+          this.toastService.erro("Failed to create partner");
+        }
         this.loading = false;
       },
     });
+  }
+
+  private normalizeZipCode(value: string | null | undefined): string {
+    const digits = String(value ?? "").replace(/\D/g, "");
+    if (!digits) {
+      return "";
+    }
+    return digits.length < 5 ? digits.padStart(5, "0") : digits.slice(0, 5);
   }
 
   onCancel(): void {

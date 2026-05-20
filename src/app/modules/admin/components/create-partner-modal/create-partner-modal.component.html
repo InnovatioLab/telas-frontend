@@ -1,5 +1,5 @@
 <div class="create-partner-modal w-full">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
     <div class="form-content">
       <div class="form-section">
         <h4>Business Information</h4>
@@ -157,10 +157,10 @@
                   type="text"
                   pInputText
                   formControlName="zipCode"
-                  placeholder="Enter 5-digit Zip Code"
-                  minlength="5"
+                  placeholder="Enter 5-digit zip (e.g. 32216)"
                   maxlength="5"
                   pKeyFilter="int"
+                  (blur)="onZipCodeBlur(getAddressGroup(i))"
                   (input)="
                     onZipCodeChange(
                       getAddressGroup(i),
