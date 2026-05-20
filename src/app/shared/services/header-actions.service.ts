@@ -4,6 +4,7 @@ import { CartService } from '@app/core/service/api/cart.service';
 import { NotificationsService } from '@app/core/service/api/notifications.service';
 import { Authentication } from '@app/core/service/auth/autenthication';
 import { ToastService } from '@app/core/service/state/toast.service';
+import { LoginEntryService } from '@app/shared/services/login-entry.service';
 import { Client, isPrivilegedPanelRole } from '@app/model/client';
 
 @Injectable({
@@ -23,7 +24,8 @@ export class HeaderActionsService {
     private cartService: CartService,
     private notificationsService: NotificationsService,
     private authentication: Authentication,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private loginEntryService: LoginEntryService
   ) {
     this.initializeSubscriptions();
   }
@@ -63,7 +65,7 @@ export class HeaderActionsService {
   }
 
   navigateToLogin(): void {
-    this.router.navigate(['/authentication/login']);
+    this.loginEntryService.openLoginTypePicker();
   }
 
   navigateToRegister(): void {

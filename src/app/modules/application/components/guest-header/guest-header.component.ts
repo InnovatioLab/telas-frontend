@@ -2,6 +2,7 @@ import { AsyncPipe } from "@angular/common";
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
+import { LoginEntryService } from "@app/shared/services/login-entry.service";
 import { ToggleComponent } from "@app/shared/components/toogle/toogle.component";
 import { IconsModule } from "@app/shared/icons/icons.module";
 
@@ -15,11 +16,12 @@ import { IconsModule } from "@app/shared/icons/icons.module";
 export class GuestHeaderComponent {
   constructor(
     private readonly router: Router,
-    readonly toggleMode: ToggleModeService
+    readonly toggleMode: ToggleModeService,
+    private readonly loginEntryService: LoginEntryService
   ) {}
 
-  onLogin() {
-    this.router.navigate(["/auth/login"]);
+  onLogin(): void {
+    this.loginEntryService.openLoginTypePicker();
   }
 
   onRegister() {

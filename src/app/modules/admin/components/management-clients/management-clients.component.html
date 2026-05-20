@@ -22,14 +22,16 @@
           pTooltip="Search by BusinessName, Phone, Email, Industry or Role"
         ></span>
       </span>
-      <button
-        type="button"
-        pButton
-        label="Create Partner"
-        icon="pi pi-user-plus"
-        class="p-button-outlined create-partner-btn"
-        (click)="openCreatePartnerModal()"
-      ></button>
+      @if (canCreatePartner()) {
+        <button
+          type="button"
+          pButton
+          label="Create Partner"
+          icon="pi pi-user-plus"
+          class="p-button-outlined create-partner-btn"
+          (click)="openCreatePartnerModal()"
+        ></button>
+      }
     </div>
   </div>
 </p-card>
@@ -197,6 +199,15 @@
             class="p-button-rounded p-button-success p-button-text"
             (click)="reactivateClient(client)"
             pTooltip="Reactivate user"
+          ></button>
+          <button
+            *ngIf="client.restorableFromDeletedByCurrentUser"
+            pButton
+            pRipple
+            icon="pi pi-replay"
+            class="p-button-rounded p-button-success p-button-text"
+            (click)="restoreDeletedClient(client)"
+            pTooltip="Restore to active"
           ></button>
           <button
             *ngIf="canDeactivateClient(client)"

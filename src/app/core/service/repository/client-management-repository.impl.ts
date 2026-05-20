@@ -49,6 +49,7 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
             createdAt: clientDto.createdAt,
             updatedAt: clientDto.updatedAt,
             reactivatableByCurrentUser: clientDto.reactivatableByCurrentUser,
+            restorableFromDeletedByCurrentUser: clientDto.restorableFromDeletedByCurrentUser,
           } as Client));
           
           return {
@@ -110,6 +111,10 @@ export class ClientManagementRepositoryImpl implements IClientManagementReposito
 
   softDeleteClient(clientId: string): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}/${clientId}/soft-delete`, {});
+  }
+
+  restoreDeletedClient(clientId: string): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${clientId}/restore-deleted`, {});
   }
 
   getPermanentDeletionRequirements(

@@ -74,10 +74,32 @@
           [binary]="true"
           inputId="partner-platform-slots-any-location"
           [ngModel]="partnerSlotsAnyLocationEnabled"
-          (ngModelChange)="togglePartnerPlatformSettings($event)"
+          (ngModelChange)="togglePartnerSlotsAnyLocation($event)"
           [disabled]="savingPartnerPlatformSettings || loading"
         ></p-checkbox>
         <span class="partner-platform-setting__label">5 ads on any screen (any location)</span>
+      </label>
+    </div>
+  </div>
+</p-card>
+
+<p-card styleClass="card-header mt-4">
+  <div class="card-header-content">
+    <div class="p-card-content">
+      <h2 class="m-0">Partner creation (admins)</h2>
+      <p class="text-muted mt-2 mb-0">
+        When enabled, every administrator may create partner accounts from the Clients page. When disabled, only
+        developers can create partners.
+      </p>
+      <label class="partner-platform-setting" for="admin-can-create-partner">
+        <p-checkbox
+          [binary]="true"
+          inputId="admin-can-create-partner"
+          [ngModel]="adminCanCreatePartnerEnabled"
+          (ngModelChange)="toggleAdminCanCreatePartner($event)"
+          [disabled]="savingPartnerPlatformSettings || loading"
+        ></p-checkbox>
+        <span class="partner-platform-setting__label">Allow admins to create partners</span>
       </label>
     </div>
   </div>

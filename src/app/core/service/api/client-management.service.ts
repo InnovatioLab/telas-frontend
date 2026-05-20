@@ -41,6 +41,7 @@ export interface ClientResponseDto {
   ads?: unknown[];
   adsCount?: number;
   reactivatableByCurrentUser?: boolean;
+  restorableFromDeletedByCurrentUser?: boolean;
 }
 
 @Injectable({
@@ -74,6 +75,10 @@ export class ClientManagementService {
 
   softDeleteClient(clientId: string): Observable<void> {
     return this.repository.softDeleteClient(clientId);
+  }
+
+  restoreDeletedClient(clientId: string): Observable<void> {
+    return this.repository.restoreDeletedClient(clientId);
   }
 
   getPermanentDeletionRequirements(

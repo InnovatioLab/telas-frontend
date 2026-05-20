@@ -20,10 +20,12 @@ export interface Client {
   currentSubscriptionFlowStep?: number;
   permissions?: string[];
   partnerSlotsAnyLocationEnabled?: boolean;
+  adminCanCreatePartnerEnabled?: boolean;
   cart?: CartResponse;
   createdAt?: string;
   updatedAt?: string;
   reactivatableByCurrentUser?: boolean;
+  restorableFromDeletedByCurrentUser?: boolean;
 }
 
 export interface TermCondition {

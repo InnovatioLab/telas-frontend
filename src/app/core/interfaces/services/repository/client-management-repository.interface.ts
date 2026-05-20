@@ -36,6 +36,8 @@ export interface IClientManagementRepository {
 
   softDeleteClient(clientId: string): Observable<void>;
 
+  restoreDeletedClient(clientId: string): Observable<void>;
+
   getPermanentDeletionRequirements(
     clientId: string
   ): Observable<PermanentDeletionRequirementsDto>;

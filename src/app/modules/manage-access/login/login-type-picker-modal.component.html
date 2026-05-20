@@ -1,0 +1,21 @@
+<div class="login-type-picker-modal">
+  <p class="login-type-picker-modal__hint">Choose how you want to sign in</p>
+  <div class="login-type-picker-modal__actions">
+    <button
+      pButton
+      type="button"
+      class="login-type-picker-modal__btn login-type-picker-modal__btn--client w-full"
+      label="Login Client"
+      icon="pi pi-user"
+      (click)="select('client')"
+    ></button>
+    <button
+      pButton
+      type="button"
+      class="login-type-picker-modal__btn login-type-picker-modal__btn--partner w-full"
+      label="Login Partner"
+      icon="pi pi-briefcase"
+      (click)="select('partner')"
+    ></button>
+  </div>
+</div>

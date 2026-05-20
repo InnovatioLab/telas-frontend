@@ -34,6 +34,7 @@ import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { firstValueFrom, of } from "rxjs";
 import { catchError, take } from "rxjs/operators";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
+import { canAdminCreatePartner } from "@app/core/utils/admin-partner.util";
 import { EditClientModalComponent } from "../edit-client-modal/edit-client-modal.component";
 import { CreatePartnerModalComponent } from "../create-partner-modal/create-partner-modal.component";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
@@ -105,6 +106,10 @@ export class ManagementClientsComponent implements OnInit {
     this.refreshPanelClient();
     this.loadClients();
     this.refreshUnreadMessageCounters();
+  }
+
+  canCreatePartner(): boolean {
+    return canAdminCreatePartner(this.panelClient);
   }
 
   private refreshPanelClient(): void {
@@ -511,6 +516,39 @@ export class ManagementClientsComponent implements OnInit {
       error: (error) => {
         
         this.toastService.erro("Failed to load client details");
+        this.loading = false;
+      },
+    });
+  }
+
+  async restoreDeletedClient(client: Client): Promise<void> {
+    const clientName = client.businessName ?? "Unknown";
+
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Restore account",
+      message: `Restore ${clientName} to active status? The user will be able to sign in again.`,
+      confirmLabel: "Restore",
+      cancelLabel: "Cancel",
+      severity: "info",
+    });
+
+    if (!confirmed || !client.id) {
+      return;
+    }
+
+    this.loading = true;
+    this.clientManagementService.restoreDeletedClient(client.id).subscribe({
+      next: () => {
+        this.toastService.sucesso("Account restored to active");
+        this.loadClients();
+      },
+      error: (error) => {
+        const msg =
+          error?.error?.message ||
+          error?.error?.data?.message ||
+          error?.message ||
+          "Failed to restore account";
+        this.toastService.erro(msg);
         this.loading = false;
       },
     });

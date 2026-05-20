@@ -26,6 +26,7 @@ export interface EmailAlertPreferences {
 
 export interface PartnerPlatformSettings {
   partnerSlotsAnyLocationEnabled: boolean;
+  adminCanCreatePartnerEnabled: boolean;
 }
 
 @Injectable({
@@ -62,19 +63,35 @@ export class DeveloperPermissionService {
         `${this.env.apiUrl}developer/partner-platform-settings`,
         { headers: new HttpHeaders(this.getAuthHeaders()) }
       )
-      .pipe(map((res) => res.data ?? { partnerSlotsAnyLocationEnabled: false }));
+      .pipe(
+        map(
+          (res) =>
+            res.data ?? {
+              partnerSlotsAnyLocationEnabled: false,
+              adminCanCreatePartnerEnabled: false,
+            }
+        )
+      );
   }
 
   updatePartnerPlatformSettings(
-    partnerSlotsAnyLocationEnabled: boolean
+    settings: PartnerPlatformSettings
   ): Observable<PartnerPlatformSettings> {
     return this.http
       .put<ResponseDto<PartnerPlatformSettings>>(
         `${this.env.apiUrl}developer/partner-platform-settings`,
-        { partnerSlotsAnyLocationEnabled },
+        settings,
         { headers: new HttpHeaders(this.getAuthHeaders()) }
       )
-      .pipe(map((res) => res.data ?? { partnerSlotsAnyLocationEnabled }));
+      .pipe(
+        map(
+          (res) =>
+            res.data ?? {
+              partnerSlotsAnyLocationEnabled: false,
+              adminCanCreatePartnerEnabled: false,
+            }
+        )
+      );
   }
 
   replacePermissions(clientId: string, permissions: string[]): Observable<void> {

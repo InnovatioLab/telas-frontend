@@ -69,8 +69,8 @@ export class LoginComponent implements OnInit {
     });
 
     const modeParam = this.route.snapshot.queryParamMap.get("mode");
-    if (modeParam === "partner") {
-      this.selectLoginMode("partner");
+    if (modeParam === "partner" || modeParam === "client") {
+      this.selectLoginMode(modeParam);
     }
   }
 
@@ -233,6 +233,8 @@ export class LoginComponent implements OnInit {
       industry: dto.industry,
       status,
       termAccepted: dto.termAccepted,
+      partnerSlotsAnyLocationEnabled: dto.partnerSlotsAnyLocationEnabled,
+      adminCanCreatePartnerEnabled: dto.adminCanCreatePartnerEnabled,
       permissions: dto.permissions,
       contact: dto.contact,
       addresses: dto.addresses?.map((a) => ({

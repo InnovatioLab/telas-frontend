@@ -5,6 +5,7 @@ export const PERMISSION_LABELS: Record<string, string> = {
   ADMIN_CLIENTS_VIEW_INACTIVE: "View inactive clients",
   ADMIN_CLIENTS_VIEW_DELETED: "View deleted clients",
   ADMIN_CLIENTS_SOFT_DELETE: "Mark deleted (logical)",
+  ADMIN_CLIENTS_RESTORE_DELETED: "Restore marked deleted",
   ADMIN_CLIENTS_PERMANENT_DELETE: "Permanent delete clients",
   MONITORING_BOX_PING_VIEW: "Box ping logs",
   MONITORING_CONNECTIVITY_PROBE_SETTINGS: "Connectivity probe interval",
@@ -38,6 +39,8 @@ export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
     "Shows logically deleted clients in the list (soft-deleted records) for recovery or audit.",
   ADMIN_CLIENTS_SOFT_DELETE:
     "Allows marking a client as deleted in the system without purging all data immediately.",
+  ADMIN_CLIENTS_RESTORE_DELETED:
+    "Allows restoring a logically deleted client back to active status before permanent deletion.",
   ADMIN_CLIENTS_PERMANENT_DELETE:
     "Allows irreversible removal of a client and related data where the product permits it—use only for trusted admins.",
   MONITORING_BOX_PING_VIEW:

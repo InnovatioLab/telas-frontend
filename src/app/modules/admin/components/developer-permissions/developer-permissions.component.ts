@@ -38,6 +38,7 @@ export class DeveloperPermissionsComponent implements OnInit {
   emailAlertCategories: EmailAlertCategoryOption[] = [];
 
   partnerSlotsAnyLocationEnabled = false;
+  adminCanCreatePartnerEnabled = false;
   savingPartnerPlatformSettings = false;
 
   savingClientId: string | null = null;
@@ -72,6 +73,8 @@ export class DeveloperPermissionsComponent implements OnInit {
           this.emailAlertCategories = sortedCats;
           this.partnerSlotsAnyLocationEnabled =
             partnerPlatformSettings.partnerSlotsAnyLocationEnabled;
+          this.adminCanCreatePartnerEnabled =
+            partnerPlatformSettings.adminCanCreatePartnerEnabled;
 
           if (admins.length === 0) {
             this.rows = [];
@@ -110,11 +113,29 @@ export class DeveloperPermissionsComponent implements OnInit {
       });
   }
 
-  togglePartnerPlatformSettings(checked: boolean): void {
+  togglePartnerSlotsAnyLocation(checked: boolean): void {
+    this.persistPartnerPlatformSettings({
+      partnerSlotsAnyLocationEnabled: checked,
+      adminCanCreatePartnerEnabled: this.adminCanCreatePartnerEnabled,
+    });
+  }
+
+  toggleAdminCanCreatePartner(checked: boolean): void {
+    this.persistPartnerPlatformSettings({
+      partnerSlotsAnyLocationEnabled: this.partnerSlotsAnyLocationEnabled,
+      adminCanCreatePartnerEnabled: checked,
+    });
+  }
+
+  private persistPartnerPlatformSettings(settings: {
+    partnerSlotsAnyLocationEnabled: boolean;
+    adminCanCreatePartnerEnabled: boolean;
+  }): void {
     this.savingPartnerPlatformSettings = true;
-    this.developerPermissionService.updatePartnerPlatformSettings(checked).subscribe({
-      next: (settings) => {
-        this.partnerSlotsAnyLocationEnabled = settings.partnerSlotsAnyLocationEnabled;
+    this.developerPermissionService.updatePartnerPlatformSettings(settings).subscribe({
+      next: (saved) => {
+        this.partnerSlotsAnyLocationEnabled = saved.partnerSlotsAnyLocationEnabled;
+        this.adminCanCreatePartnerEnabled = saved.adminCanCreatePartnerEnabled;
         this.savingPartnerPlatformSettings = false;
       },
       error: () => {

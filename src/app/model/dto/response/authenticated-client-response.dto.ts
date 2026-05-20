@@ -45,6 +45,7 @@ export interface AuthenticatedClientResponseDto {
   termAccepted: boolean;
   permissions?: string[];
   partnerSlotsAnyLocationEnabled?: boolean;
+  adminCanCreatePartnerEnabled?: boolean;
   currentSubscriptionFlowStep: number;
   hasSubscription: boolean;
   shouldDisplayAttachments: boolean;
