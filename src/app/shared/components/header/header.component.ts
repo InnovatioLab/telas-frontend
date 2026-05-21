@@ -21,6 +21,7 @@ import { ToastService } from "@app/core/service/state/toast.service";
 import { ToggleModeService } from "@app/core/service/state/toggle-mode.service";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { isClientShoppingRole } from "@app/model/client";
 import { HeaderActionsService } from "@app/shared/services/header-actions.service";
 import { HeaderStateService } from "@app/shared/services/header-state.service";
 import { filter, Subject, Subscription, takeUntil, timer } from "rxjs";
@@ -371,6 +372,14 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       set: (value: number) => this.headerActions.updateSavedItemsCount(value),
       get: () => this.headerActions.savedItemsCount(),
     };
+  }
+
+  get showShoppingCart(): boolean {
+    return (
+      this.isLogado() &&
+      !this.isAdministrador() &&
+      isClientShoppingRole(this.authentication.client()?.role)
+    );
   }
 
   get hasActiveCart(): boolean {

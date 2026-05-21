@@ -1,0 +1,51 @@
+.partner-upload {
+  padding: 1rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.back-btn {
+  margin-bottom: 1rem;
+}
+
+.screen-address {
+  color: var(--cor-legenda);
+  margin: 0.5rem 0 1rem;
+}
+
+.hint {
+  font-size: 0.875rem;
+  color: var(--cor-legenda);
+  margin-bottom: 1.25rem;
+}
+
+.upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.file-name {
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+.preview-image {
+  margin-top: 1rem;
+  max-width: 100%;
+  max-height: 320px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.pdf-note {
+  margin-top: 0.75rem;
+  color: var(--cor-legenda);
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  font-size: 2rem;
+}

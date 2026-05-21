@@ -8,6 +8,7 @@ import { FilterMonitorRequestDto } from "@app/model/dto/request/filter-monitor.r
 import { AvailablePartnerAddressResponseDto } from "@app/model/dto/response/available-partner-address.response.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
 import { Monitor } from "@app/model/monitors";
+import { MonitorResponseDto } from "@app/model/dto/response/monitor-response.dto";
 import { Observable, of } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { IMonitorRepository } from "@app/core/interfaces/services/repository/monitor-repository.interface";
@@ -79,6 +80,22 @@ export class MonitorService {
 
   getValidAds(monitorId: string): Observable<any[]> {
     return this.repository.findValidAds(monitorId);
+  }
+
+  getPartnerScreens(): Observable<Monitor[]> {
+    const headers = this.getAuthHeaders();
+    return this.http
+      .get<ApiEnvelope<MonitorResponseDto[]>>(
+        `${this.env.apiUrl}monitors/partner/my-screens`,
+        { headers }
+      )
+      .pipe(
+        map((res) => {
+          const list = Array.isArray(res?.data) ? res.data : [];
+          return list.map((dto) => this.mapMonitorResponseToMonitor(dto));
+        }),
+        catchError(() => of([]))
+      );
   }
 
   uploadDirectAdToMonitor(
@@ -159,6 +176,34 @@ export class MonitorService {
           this.mapIncidentToAlert(this.requireIncidentPayload(res?.data))
         )
       );
+  }
+
+  private mapMonitorResponseToMonitor(monitorResponse: MonitorResponseDto): Monitor {
+    return {
+      id: monitorResponse.id,
+      active: monitorResponse.active,
+      fullAddress: monitorResponse.fullAddress,
+      address: monitorResponse.address ?? {
+        id: "",
+        street: "",
+        city: "",
+        state: "",
+        country: "",
+        zipCode: "",
+      },
+      adLinks: monitorResponse.adLinks ?? [],
+      canBeDeleted: monitorResponse.canBeDeleted,
+      createdAt: monitorResponse.createdAt,
+      updatedAt: monitorResponse.updatedAt,
+      maxAds: monitorResponse.maxAds,
+      activeAdsCount: monitorResponse.activeAdsCount,
+      partnerAdsCount: monitorResponse.partnerAdsCount,
+      clientAdsCount: monitorResponse.clientAdsCount,
+      remainingTotalSlots: monitorResponse.remainingTotalSlots,
+      remainingPartnerSlots: monitorResponse.remainingPartnerSlots,
+      remainingClientSlots: monitorResponse.remainingClientSlots,
+      availableAdsCount: monitorResponse.availableAdsCount,
+    };
   }
 
   private getAuthHeaders(): HttpHeaders {

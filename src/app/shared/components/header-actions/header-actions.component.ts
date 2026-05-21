@@ -12,7 +12,7 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
     <div class="header-actions">
       <!-- Cart Button (for non-admin users) -->
       <button
-        *ngIf="!isAdministrator"
+        *ngIf="showShoppingCart"
         (click)="onCheckoutClick()"
         class="icon-button"
         [title]="cartTooltip"
@@ -95,6 +95,7 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
 })
 export class HeaderActionsComponent {
   @Input() isAdministrator = false;
+  @Input() showShoppingCart = false;
   @Input() cartItemCount = 0;
   @Input() notificationCount = 0;
   @Input() cartTooltip = "";

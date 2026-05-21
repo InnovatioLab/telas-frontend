@@ -1,0 +1,64 @@
+<div class="partner-upload" *ngIf="!loadingScreen">
+  <button
+    type="button"
+    pButton
+    class="p-button-text back-btn"
+    icon="pi pi-arrow-left"
+    label="Back to screens"
+    (click)="goBack()"
+  ></button>
+
+  <p-card>
+    <h2 class="m-0">Upload ad file</h2>
+    <p class="screen-address">{{ screenAddress() }}</p>
+    <p class="hint">
+      Accepted: JPG, PNG, GIF, SVG, BMP, TIFF, PDF — max 10MB. The file is sent
+      directly to this screen.
+    </p>
+
+    <input
+      #fileInput
+      type="file"
+      hidden
+      [accept]="acceptedFileTypes"
+      (change)="onFileSelected($event)"
+    />
+
+    <div class="upload-actions">
+      <button
+        pButton
+        type="button"
+        label="Select file"
+        icon="pi pi-folder-open"
+        class="p-button-outlined"
+        (click)="chooseFile()"
+        [disabled]="uploading"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Upload to screen"
+        icon="pi pi-upload"
+        [loading]="uploading"
+        [disabled]="!selectedFile || uploading"
+        (click)="upload()"
+      ></button>
+    </div>
+
+    @if (selectedFile) {
+      <p class="file-name">{{ selectedFile.name }}</p>
+      @if (previewUrl && !isPdfPreview()) {
+        <img [src]="previewUrl" alt="Preview" class="preview-image" />
+      }
+      @if (isPdfPreview()) {
+        <p class="pdf-note">PDF selected — preview not available.</p>
+      }
+    }
+  </p-card>
+</div>
+
+@if (loadingScreen) {
+  <div class="loading-wrap">
+    <i class="pi pi-spin pi-spinner"></i>
+  </div>
+}

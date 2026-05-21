@@ -31,6 +31,7 @@
             <div class="icons-container" *ngIf="isLogado()">
               <app-header-actions
                 [isAdministrator]="isAdministrador()"
+                [showShoppingCart]="showShoppingCart"
                 [cartItemCount]="headerActions.cartItemCount()"
                 [notificationCount]="notificationsService.unreadCount()"
                 [cartTooltip]="cartTooltip"
@@ -44,6 +45,7 @@
         <section class="box-actions main-actions mobile-only">
           <app-header-actions
             [isAdministrator]="isAdministrador()"
+            [showShoppingCart]="showShoppingCart"
             [cartItemCount]="headerActions.cartItemCount()"
             [notificationCount]="notificationsService.unreadCount()"
             [cartTooltip]="cartTooltip"
@@ -74,6 +76,7 @@
             <div class="icons-container">
               <app-header-actions
                 [isAdministrator]="isAdministrador()"
+                [showShoppingCart]="showShoppingCart"
                 [cartItemCount]="headerActions.cartItemCount()"
                 [notificationCount]="notificationsService.unreadCount()"
                 [cartTooltip]="cartTooltip"
@@ -107,6 +110,7 @@
         <section class="box-actions main-actions desktop-only">
           <app-header-actions
             [isAdministrator]="isAdministrador()"
+            [showShoppingCart]="showShoppingCart"
             [cartItemCount]="headerActions.cartItemCount()"
             [notificationCount]="notificationsService.unreadCount()"
             [cartTooltip]="cartTooltip"
@@ -118,7 +122,7 @@
     </div>
   </div>
 </header>
-<app-checkout-list-side-bar *ngIf="isLogado()"></app-checkout-list-side-bar>
+<app-checkout-list-side-bar *ngIf="showShoppingCart"></app-checkout-list-side-bar>
 
 <app-notification-sidebar 
   [visible]="isNotificationsSidebarVisible"

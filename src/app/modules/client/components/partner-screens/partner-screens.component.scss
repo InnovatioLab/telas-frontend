@@ -1,0 +1,18 @@
+.partner-screens {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.partner-screens-header .header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subtitle {
+  margin-top: 0.35rem;
+  color: var(--cor-legenda);
+  font-size: 0.9rem;
+}

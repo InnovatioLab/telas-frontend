@@ -4,7 +4,7 @@ import { CartService } from '@app/core/service/api/cart.service';
 import { NotificationsService } from '@app/core/service/api/notifications.service';
 import { Authentication } from '@app/core/service/auth/autenthication';
 import { ToastService } from '@app/core/service/state/toast.service';
-import { Client, isPrivilegedPanelRole } from '@app/model/client';
+import { Client, isPartnerRole, isPrivilegedPanelRole } from '@app/model/client';
 
 @Injectable({
   providedIn: 'root'
@@ -74,6 +74,8 @@ export class HeaderActionsService {
     if (this.isLoggedIn()) {
       if (this.isAdministrator()) {
         this.router.navigate(['/admin']);
+      } else if (isPartnerRole(this.getCurrentUser()?.role)) {
+        this.router.navigate(['/client/screens']);
       } else {
         this.router.navigate(['/client']);
       }

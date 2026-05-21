@@ -10,6 +10,7 @@ import {
   Client,
   DefaultStatus,
   Role,
+  isPartnerRole,
   isPrivilegedPanelRole,
 } from "@app/model/client";
 import { ILoginRequest } from "@app/model/dto/request/login.request";
@@ -201,6 +202,8 @@ export class LoginComponent implements OnInit {
 
     if (client.role === Role.ADMIN || client.role === Role.DEVELOPER) {
       this.router.navigate(["/admin"]);
+    } else if (isPartnerRole(client.role)) {
+      this.router.navigate(["/client/screens"]);
     } else {
       if (client.hasSubscription && !client.hasAdRequest) {
         this.router.navigate(["/client/my-telas"]);

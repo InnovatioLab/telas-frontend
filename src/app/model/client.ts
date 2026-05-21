@@ -121,6 +121,15 @@ export function isClientShoppingRole(
   return String(role).trim().toUpperCase() === Role.CLIENT;
 }
 
+export function isPartnerRole(
+  role: Role | string | undefined | null
+): boolean {
+  if (role == null) {
+    return false;
+  }
+  return String(role).trim().toUpperCase() === Role.PARTNER;
+}
+
 export enum DefaultStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",

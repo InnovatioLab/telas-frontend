@@ -2,6 +2,8 @@ import { Route } from "@angular/router";
 import {
   ClientAuthenticatedGuard,
   MyTelasGuard,
+  partnerScreensGuard,
+  redirectPartnerFromClientShoppingGuard,
 } from "@app/core/service/guard";
 import { SubscriptionsGuard } from "@app/core/service/guard/subscriptions.guard";
 import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
@@ -14,6 +16,8 @@ import { MyTelasComponent } from "./components/my-telas/my-telas.component";
 import { NextStepsComponent } from "./components/next-steps/next-steps.component";
 import { WishListComponent } from "./components/wish-list/wish-list.component";
 import { ClientViewLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
+import { PartnerScreensComponent } from "./components/partner-screens/partner-screens.component";
+import { PartnerScreenUploadComponent } from "./components/partner-screen-upload/partner-screen-upload.component";
 
 export const ROUTES: Route[] = [
   {
@@ -24,35 +28,53 @@ export const ROUTES: Route[] = [
       {
         path: "",
         component: ClientViewComponent,
+        canActivate: [redirectPartnerFromClientShoppingGuard],
         title: "Home",
+      },
+      {
+        path: "screens",
+        canActivate: [partnerScreensGuard],
+        children: [
+          {
+            path: "",
+            component: PartnerScreensComponent,
+            title: "My screens",
+          },
+          {
+            path: ":monitorId/upload",
+            component: PartnerScreenUploadComponent,
+            title: "Upload to screen",
+          },
+        ],
       },
       {
         path: "wishlist",
         component: WishListComponent,
+        canActivate: [redirectPartnerFromClientShoppingGuard],
         title: "Wishlist",
       },
       {
         path: "my-telas",
         component: MyTelasComponent,
-        canActivate: [MyTelasGuard],
+        canActivate: [MyTelasGuard, redirectPartnerFromClientShoppingGuard],
         title: "My Telas",
       },
       {
         path: "next-steps",
         component: NextStepsComponent,
-        canActivate: [MyTelasGuard],
+        canActivate: [MyTelasGuard, redirectPartnerFromClientShoppingGuard],
         title: "Next steps",
       },
       {
         path: "subscriptions",
         component: ManagementSubscriptionsComponent,
-        canActivate: [SubscriptionsGuard],
+        canActivate: [SubscriptionsGuard, redirectPartnerFromClientShoppingGuard],
         title: "Subscriptions",
       },
       {
         path: "subscriptions/:uuid",
         component: ManagementSubscriptionsComponent,
-        canActivate: [SubscriptionsGuard],
+        canActivate: [SubscriptionsGuard, redirectPartnerFromClientShoppingGuard],
         title: "Subscriptions",
       },
       {

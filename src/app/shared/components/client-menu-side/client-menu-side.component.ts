@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { Client, isPrivilegedPanelRole } from "@app/model/client";
+import { Client, isPartnerRole, isPrivilegedPanelRole } from "@app/model/client";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogModule } from "primeng/dialog";
@@ -38,6 +38,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   private allMenuItems: MenuItem[] = [
     { id: "home", label: "Home", icon: "pi-home" },
+    { id: "partnerScreens", label: "My screens", icon: "pi-desktop" },
     { id: "profile", label: "Profile", icon: "pi-cog" },
     { id: "wishList", label: "Wish list", icon: "pi-heart" },
     { id: "myTelas", label: "My telas", icon: "pi-map-marker" },
@@ -88,6 +89,18 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     let filteredItems = [...this.allMenuItems];
 
     if (this.authenticatedClient) {
+      if (isPartnerRole(this.authenticatedClient.role)) {
+        filteredItems = filteredItems.filter(
+          (item) =>
+            item.id === "partnerScreens" ||
+            item.id === "profile" ||
+            item.id === "changePassword" ||
+            item.id === "logout"
+        );
+      } else {
+        filteredItems = filteredItems.filter((item) => item.id !== "partnerScreens");
+      }
+
       if (isPrivilegedPanelRole(this.authenticatedClient.role)) {
         filteredItems = filteredItems.filter((item) => item.id !== "wishList");
       }
@@ -116,6 +129,9 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
     switch (item.id) {
       case "home":
         this.navegarPaginaInicial();
+        break;
+      case "partnerScreens":
+        this.navegarParaPartnerScreens();
         break;
       case "logout":
         this.logout();
@@ -178,7 +194,15 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarPaginaInicial(): void {
+    if (isPartnerRole(this.authenticatedClient?.role)) {
+      this.navegarParaPartnerScreens();
+      return;
+    }
     this.router.navigate(["/client"]);
+  }
+
+  navegarParaPartnerScreens(): void {
+    this.router.navigate(["/client/screens"]);
   }
 
   navegarParaPerfil(): void {
