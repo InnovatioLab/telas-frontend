@@ -2406,9 +2406,16 @@ label.required::after {
 
 .p-button:not(.icon-button) {
   width: auto;
-  max-height: fit-content;
+  height: var(--altura-botao);
+  min-height: var(--altura-botao);
+  max-height: var(--altura-botao);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   border-radius: var(--borda-raio-pequeno);
-  padding: 1rem;
+  padding: 0 1rem;
   font-weight: var(--fonte-peso-semibold);
   background-color: var(--cor-primaria-escura);
   font-size: 1rem;
@@ -2416,6 +2423,38 @@ label.required::after {
   max-width: 200px;
   opacity: 0.85;
   transition: var(--transicao-padrao) !important;
+
+  &:not(.p-button-outlined):not(.p-button-text) {
+    color: var(--cor-branca);
+
+    .p-button-label,
+    .p-button-icon,
+    span,
+    svg,
+    path {
+      color: inherit;
+    }
+  }
+
+  &.p-button-outlined:not(.p-button-text) {
+    color: var(--cor-primaria-escura);
+
+    .p-button-label,
+    .p-button-icon,
+    span,
+    svg,
+    path {
+      color: inherit;
+    }
+  }
+
+  &.p-button-sm {
+    height: var(--altura-botao-pequeno);
+    min-height: var(--altura-botao-pequeno);
+    max-height: var(--altura-botao-pequeno);
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+  }
 
   &.p-button-icon-only {
     opacity: 1;
@@ -3014,8 +3053,18 @@ body:not(.dark-theme) {
         color: var(--cor-cinza-escuro) !important;
         background-color: transparent !important;
 
-        * {
+        *:not(.p-button):not(.p-button *) {
           color: var(--cor-cinza-escuro) !important;
+        }
+
+        .p-button:not(.p-button-outlined):not(.p-button-text) {
+          color: var(--cor-branca) !important;
+
+          *,
+          svg,
+          path {
+            color: inherit !important;
+          }
         }
 
         .p-badge * {
@@ -3036,8 +3085,18 @@ body:not(.dark-theme) {
         color: var(--cor-cinza-escuro) !important;
         background-color: transparent !important;
 
-        * {
+        *:not(.p-button):not(.p-button *) {
           color: var(--cor-cinza-escuro) !important;
+        }
+
+        .p-button:not(.p-button-outlined):not(.p-button-text) {
+          color: var(--cor-branca) !important;
+
+          *,
+          svg,
+          path {
+            color: inherit !important;
+          }
         }
       }
     }

@@ -724,8 +724,18 @@ textarea {
           color: var(--cor-cinza-escuro) !important;
           background-color: transparent !important;
 
-          * {
+          *:not(.p-button):not(.p-button *) {
             color: var(--cor-cinza-escuro) !important;
+          }
+
+          .p-button:not(.p-button-outlined):not(.p-button-text) {
+            color: var(--cor-branca) !important;
+
+            *,
+            svg,
+            path {
+              color: inherit !important;
+            }
           }
         }
       }

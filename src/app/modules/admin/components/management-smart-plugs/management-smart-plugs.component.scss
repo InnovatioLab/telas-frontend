@@ -45,6 +45,14 @@
   gap: 0.5rem;
 }
 
+:host ::ng-deep {
+  .toolbar-actions .p-button:not(.icon-button),
+  .p-datatable .p-button:not(.icon-button) {
+    flex: 0 0 auto;
+    max-width: none;
+  }
+}
+
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
