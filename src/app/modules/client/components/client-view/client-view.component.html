@@ -48,6 +48,7 @@
         #mapsComponent
         height="100%"
         width="100%"
+        [useBrandMonitorColor]="true"
         [zoom]="clientViewService.mapZoom()"
         [center]="clientViewService.mapCenter()"
         (pointClick)="handlePointClick($event)"

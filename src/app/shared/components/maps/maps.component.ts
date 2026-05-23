@@ -92,6 +92,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   @Input() showSearchBar = false;
   @Input() center: { lat: number; lng: number } | null = null;
   @Input() showMonitorHealth = false;
+  @Input() useBrandMonitorColor = false;
 
   @Output() pointClick = new EventEmitter<{
     point: MapPoint;
@@ -108,10 +109,14 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private readonly subscriptions: Subscription[] = [];
   private _mapReady = false;
   private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
+  private static readonly BRAND_MONITOR_COLOR = "#049dd9";
+
   private monitorIcon: L.Icon | null = null;
+  private monitorIconBrand: L.Icon | null = null;
   private monitorIconHealthy: L.Icon | null = null;
   private monitorIconUnhealthy: L.Icon | null = null;
   private monitorIconLarge: L.Icon | null = null;
+  private monitorIconBrandLarge: L.Icon | null = null;
   private monitorIconHealthyLarge: L.Icon | null = null;
   private monitorIconUnhealthyLarge: L.Icon | null = null;
   private redMarkerIcon: L.Icon | null = null;
@@ -167,6 +172,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       "#111519",
       MapsComponent.MONITOR_ICON_SIZE
     );
+    this.monitorIconBrand = this.createMonitorIconVariant(
+      MapsComponent.BRAND_MONITOR_COLOR,
+      MapsComponent.BRAND_MONITOR_COLOR,
+      MapsComponent.MONITOR_ICON_SIZE
+    );
     this.monitorIconHealthy = this.createMonitorIconVariant(
       "#1B5E20",
       "#A5D6A7",
@@ -180,6 +190,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     this.monitorIconLarge = this.createMonitorIconVariant(
       "#111519",
       "#111519",
+      MapsComponent.MONITOR_ICON_HOVER_SIZE
+    );
+    this.monitorIconBrandLarge = this.createMonitorIconVariant(
+      MapsComponent.BRAND_MONITOR_COLOR,
+      MapsComponent.BRAND_MONITOR_COLOR,
       MapsComponent.MONITOR_ICON_HOVER_SIZE
     );
     this.monitorIconHealthyLarge = this.createMonitorIconVariant(
@@ -222,6 +237,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     if (!isMonitor) {
       return this.redMarkerIcon!;
     }
+    if (this.useBrandMonitorColor) {
+      return this.monitorIconBrand!;
+    }
     if (this.showMonitorHealth && point.healthOk === true) {
       return this.monitorIconHealthy!;
     }
@@ -232,6 +250,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   private getMonitorHoverIconForPoint(point: MapPoint): L.Icon {
+    if (this.useBrandMonitorColor) {
+      return this.monitorIconBrandLarge!;
+    }
     if (this.showMonitorHealth && point.healthOk === true) {
       return this.monitorIconHealthyLarge!;
     }
@@ -819,24 +840,27 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   ): L.DivIcon {
     const size = Math.min(50 + count * 4, 80);
 
-    const anyUnhealthy =
-      this.showMonitorHealth && monitors.some((m) => m.healthOk === false);
+    let fillColor = MapsComponent.BRAND_MONITOR_COLOR;
+    if (!this.useBrandMonitorColor) {
+      const anyUnhealthy =
+        this.showMonitorHealth && monitors.some((m) => m.healthOk === false);
 
-    let fillColor = "#FF6B35";
-    if (anyUnhealthy) {
-      fillColor = "#C62828";
-    } else {
-      const availableCount = monitors.filter(
-        (m) => m.hasAvailableSlots === true
-      ).length;
-      const unavailableCount = monitors.filter(
-        (m) => m.hasAvailableSlots === false
-      ).length;
+      fillColor = "#FF6B35";
+      if (anyUnhealthy) {
+        fillColor = "#C62828";
+      } else {
+        const availableCount = monitors.filter(
+          (m) => m.hasAvailableSlots === true
+        ).length;
+        const unavailableCount = monitors.filter(
+          (m) => m.hasAvailableSlots === false
+        ).length;
 
-      if (availableCount === count) {
-        fillColor = "#28a745";
-      } else if (unavailableCount === count) {
-        fillColor = "#6c757d";
+        if (availableCount === count) {
+          fillColor = "#28a745";
+        } else if (unavailableCount === count) {
+          fillColor = "#6c757d";
+        }
       }
     }
 

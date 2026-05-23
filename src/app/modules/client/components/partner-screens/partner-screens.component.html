@@ -21,7 +21,6 @@
         <th scope="col">Status</th>
         <th scope="col">Address</th>
         <th scope="col">Your ads</th>
-        <th scope="col">Actions</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-screen>
@@ -49,8 +48,8 @@
                     <button
                       pButton
                       type="button"
-                      label="Request removal"
-                      icon="pi pi-times"
+                      label="Delete"
+                      icon="pi pi-trash"
                       class="p-button-text p-button-sm p-button-danger"
                       [loading]="isRequestingRemoval(ad)"
                       [disabled]="isRequestingRemoval(ad)"
@@ -62,22 +61,11 @@
             </ul>
           }
         </td>
-        <td>
-          <button
-            pButton
-            type="button"
-            label="Upload files"
-            icon="pi pi-upload"
-            class="p-button-sm"
-            [disabled]="!canUpload(screen)"
-            (click)="openUpload(screen)"
-          ></button>
-        </td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="4" class="text-center">
+        <td colspan="3" class="text-center">
           No screens are linked to your partner account yet.
         </td>
       </tr>

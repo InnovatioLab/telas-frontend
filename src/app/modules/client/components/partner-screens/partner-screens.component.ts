@@ -1,6 +1,5 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
 import { ClientService } from "@app/core/service/api/client.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { ToastService } from "@app/core/service/state/toast.service";
@@ -25,7 +24,6 @@ export class PartnerScreensComponent implements OnInit {
   constructor(
     private readonly monitorService: MonitorService,
     private readonly clientService: ClientService,
-    private readonly router: Router,
     private readonly toastService: ToastService,
     private readonly confirmationDialogService: ConfirmationDialogService
   ) {}
@@ -99,18 +97,6 @@ export class PartnerScreensComponent implements OnInit {
     }
   }
 
-  canUpload(screen: Monitor): boolean {
-    const remaining = screen.remainingPartnerSlots ?? screen.remainingTotalSlots ?? 0;
-    return screen.active !== false && remaining > 0;
-  }
-
-  openUpload(screen: Monitor): void {
-    if (!screen.id) {
-      return;
-    }
-    void this.router.navigate(["/client/screens", screen.id, "upload"]);
-  }
-
   isRequestingRemoval(ad: MonitorAdResponseDto): boolean {
     return this.requestingRemovalAdId === ad.id;
   }
@@ -122,9 +108,9 @@ export class PartnerScreensComponent implements OnInit {
     }
     const adName = ad.fileName?.trim() || "this ad";
     const confirmed = await this.confirmationDialogService.confirm({
-      title: "Request removal",
-      message: `Request removal of "<strong>${adName}</strong>" from this screen? Our team will review your request.`,
-      confirmLabel: "Request",
+      title: "Delete ad",
+      message: `Delete "<strong>${adName}</strong>"? If this ad is currently on a screen, our admin team will remove it from the playlist.`,
+      confirmLabel: "Delete",
     });
     if (!confirmed) {
       return;
@@ -132,7 +118,7 @@ export class PartnerScreensComponent implements OnInit {
     this.requestingRemovalAdId = adId;
     this.clientService.requestPartnerAdRemoval(adId).subscribe({
       next: () => {
-        this.toastService.sucesso("Removal request submitted.");
+        this.toastService.sucesso("Delete request submitted.");
         this.requestingRemovalAdId = null;
       },
       error: () => {

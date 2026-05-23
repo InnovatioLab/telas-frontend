@@ -17,7 +17,6 @@ import { NextStepsComponent } from "./components/next-steps/next-steps.component
 import { WishListComponent } from "./components/wish-list/wish-list.component";
 import { ClientViewLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
 import { PartnerScreensComponent } from "./components/partner-screens/partner-screens.component";
-import { PartnerScreenUploadComponent } from "./components/partner-screen-upload/partner-screen-upload.component";
 import { PartnerMapUploadComponent } from "./components/partner-map-upload/partner-map-upload.component";
 import { PartnerPendingAdsComponent } from "./components/partner-pending-ads/partner-pending-ads.component";
 
@@ -35,19 +34,9 @@ export const ROUTES: Route[] = [
       },
       {
         path: "screens",
+        component: PartnerScreensComponent,
         canActivate: [partnerScreensGuard],
-        children: [
-          {
-            path: "",
-            component: PartnerScreensComponent,
-            title: "My screens",
-          },
-          {
-            path: ":monitorId/upload",
-            component: PartnerScreenUploadComponent,
-            title: "Upload to screen",
-          },
-        ],
+        title: "My screens",
       },
       {
         path: "map-upload/:monitorId",
