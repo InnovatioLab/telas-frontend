@@ -109,7 +109,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private readonly subscriptions: Subscription[] = [];
   private _mapReady = false;
   private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
-  private static readonly BRAND_MONITOR_COLOR = "#049dd9";
+  private static readonly BRAND_MONITOR_COLOR = "#111519";
 
   private monitorIcon: L.Icon | null = null;
   private monitorIconBrand: L.Icon | null = null;
