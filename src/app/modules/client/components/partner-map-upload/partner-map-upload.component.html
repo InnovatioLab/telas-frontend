@@ -16,19 +16,30 @@
     </p>
 
     <div class="mode-field">
-      <label for="submission-mode">Submission type</label>
+      <label for="submission-mode" class="mode-label">
+        Submission type
+        <span
+          class="pi pi-info-circle info-icon"
+          pTooltip="Choose how you want to submit your ad for this screen."
+          tooltipPosition="top"
+        ></span>
+      </label>
       <p-selectButton
         inputId="submission-mode"
-        [options]="[
-          { label: 'Materials for admin', value: 'ADMIN_MATERIALS' },
-          { label: 'Finished creative', value: 'PARTNER_FINISHED_CREATIVE' }
-        ]"
+        [options]="submissionModeOptions"
         [(ngModel)]="submissionMode"
         [ngModelOptions]="{ standalone: true }"
         optionLabel="label"
         optionValue="value"
         (onChange)="onSubmissionModeChange()"
       ></p-selectButton>
+      <p class="mode-option-hint">
+        @if (submissionMode === "ADMIN_MATERIALS") {
+          Send logos/photos; our team creates the final ad for this screen.
+        } @else {
+          Upload your final ad file; admin reviews and publishes it.
+        }
+      </p>
     </div>
 
     <div class="mode-field">
@@ -53,7 +64,7 @@
         [accept]="acceptedFileTypes"
         (change)="onMaterialFilesSelected($event)"
       />
-      <div class="upload-actions">
+      <div class="upload-actions-row">
         <button
           pButton
           type="button"
@@ -63,13 +74,39 @@
           (click)="chooseMaterialFiles()"
           [disabled]="submitting"
         ></button>
+        <button
+          pButton
+          type="button"
+          label="Submit"
+          icon="pi pi-send"
+          severity="success"
+          [loading]="submitting"
+          [disabled]="submitting"
+          (click)="submit()"
+        ></button>
       </div>
       @if (selectedMaterialFiles.length > 0) {
-        <ul class="file-list">
-          @for (file of selectedMaterialFiles; track file.name) {
-            <li>{{ file.name }}</li>
+        <div class="materials-preview-grid">
+          @for (preview of materialPreviews; track preview.name) {
+            <div class="material-preview-card">
+              @if (preview.url && !preview.isPdf) {
+                <img [src]="preview.url" [alt]="preview.name" class="preview-thumb" />
+              } @else {
+                <div class="preview-placeholder">
+                  @if (preview.isPdf) {
+                    <i class="pi pi-file-pdf"></i>
+                  } @else {
+                    <i class="pi pi-image"></i>
+                  }
+                </div>
+              }
+              <span class="preview-name">{{ preview.name }}</span>
+            </div>
           }
-        </ul>
+        </div>
+        @if (hasPdfMaterials()) {
+          <p class="pdf-note">PDF files are listed without image preview.</p>
+        }
       }
     } @else {
       <input
@@ -79,7 +116,7 @@
         [accept]="acceptedFileTypes"
         (change)="onCreativeFileSelected($event)"
       />
-      <div class="upload-actions">
+      <div class="upload-actions-row">
         <button
           pButton
           type="button"
@@ -88,6 +125,16 @@
           class="p-button-outlined"
           (click)="chooseCreativeFile()"
           [disabled]="submitting"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Submit"
+          icon="pi pi-send"
+          severity="success"
+          [loading]="submitting"
+          [disabled]="submitting"
+          (click)="submit()"
         ></button>
       </div>
       @if (selectedCreativeFile) {
@@ -100,18 +147,6 @@
         }
       }
     }
-
-    <div class="upload-actions mt-3">
-      <button
-        pButton
-        type="button"
-        label="Submit"
-        icon="pi pi-send"
-        [loading]="submitting"
-        [disabled]="submitting"
-        (click)="submit()"
-      ></button>
-    </div>
   </p-card>
 </div>
 

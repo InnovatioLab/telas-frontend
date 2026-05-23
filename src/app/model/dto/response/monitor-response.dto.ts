@@ -44,4 +44,8 @@ export interface MonitorAdResponseDto {
   clientName?: string | null;
   subscriptionEndsAt?: string | null;
   subscriptionDaysLeft?: number | null;
+  validation?: string | null;
+  onAirSince?: string | null;
+  deploymentStatus?: "APPROVED_PENDING" | "STAGED" | "ON_AIR" | string;
+  canRequestRemoval?: boolean;
 }

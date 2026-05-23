@@ -172,13 +172,13 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
   }
 
   get filteredValidAds(): MonitorAdItem[] {
+    const attachedIds = new Set(this.monitorAds.map((ad) => ad.id));
     const term = this.availableAdsSearchTerm.trim().toLowerCase();
+    const available = this.validAds.filter((ad) => !attachedIds.has(ad.id));
     if (!term) {
-      return this.validAds;
+      return available;
     }
-    return this.validAds.filter((ad) =>
-      ad.fileName.toLowerCase().includes(term)
-    );
+    return available.filter((ad) => ad.fileName.toLowerCase().includes(term));
   }
 
   selectPreview(ad: MonitorAdItem): void {
@@ -199,6 +199,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     };
 
     this.monitorAds = [...this.monitorAds, newItem];
+    this.validAds = this.validAds.filter((a) => a.id !== ad.id);
   }
 
   async removeAvailableAd(ad: MonitorAdItem): Promise<void> {
@@ -257,6 +258,14 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
             ...item,
             orderIndex: index + 1,
           }));
+
+        this.validAds = [
+          ...this.validAds,
+          {
+            ...ad,
+            isAttachedToMonitor: false,
+          },
+        ];
 
         if (this.selectedPreviewAd?.id === ad.id) {
           this.selectedPreviewAd = this.monitorAds[0] || this.validAds[0] || null;
@@ -359,7 +368,12 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
             this.toastService.erro("Failed to save ads");
           }
         },
-        error: () => {},
+        error: (error) => {
+          const message =
+            this.apiErrorFirstMessage(error) ||
+            "Failed to save ads. The ad may not be eligible for this screen.";
+          this.toastService.erro(message);
+        },
       });
   }
 

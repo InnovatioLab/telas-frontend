@@ -4,7 +4,7 @@
       <div>
         <h1 class="m-0">My screens</h1>
         <p class="subtitle m-0">
-          Select a screen linked to your partner account and upload your ad file.
+          Your screens and approved ads — including ads awaiting publication on the box.
         </p>
       </div>
     </div>
@@ -20,7 +20,7 @@
       <tr>
         <th scope="col">Status</th>
         <th scope="col">Address</th>
-        <th scope="col">Ads on screen</th>
+        <th scope="col">Your ads</th>
         <th scope="col">Actions</th>
       </tr>
     </ng-template>
@@ -33,7 +33,35 @@
           ></p-tag>
         </td>
         <td>{{ screenAddress(screen) }}</td>
-        <td>{{ adsLabel(screen) }}</td>
+        <td>
+          @if (screenAds(screen).length === 0) {
+            <span class="text-color-secondary">No approved ads yet</span>
+          } @else {
+            <ul class="ads-list">
+              @for (ad of screenAds(screen); track ad.id) {
+                <li class="ads-list-item">
+                  <span class="ad-name">{{ ad.fileName }}</span>
+                  <p-tag
+                    [value]="deploymentLabel(ad)"
+                    [severity]="deploymentSeverity(ad)"
+                  ></p-tag>
+                  @if (ad.canRequestRemoval) {
+                    <button
+                      pButton
+                      type="button"
+                      label="Request removal"
+                      icon="pi pi-times"
+                      class="p-button-text p-button-sm p-button-danger"
+                      [loading]="isRequestingRemoval(ad)"
+                      [disabled]="isRequestingRemoval(ad)"
+                      (click)="requestRemoval(ad)"
+                    ></button>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </td>
         <td>
           <button
             pButton

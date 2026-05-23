@@ -94,6 +94,9 @@ export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitor
       .pipe(
         map(() => {
           return {} as Monitor;
+        }),
+        catchError((error) => {
+          throw error;
         })
       );
   }

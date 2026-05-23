@@ -47,6 +47,7 @@ export class AdsManagementComponent implements OnInit {
 
   deletingAdId: string | null = null;
   dispatchingAdId: string | null = null;
+  addingToPlaylistAdId: string | null = null;
 
   constructor(
     private readonly adminAdOperationsService: AdminAdOperationsService,
@@ -245,6 +246,15 @@ export class AdsManagementComponent implements OnInit {
     return this.dispatchingAdId === row.adId;
   }
 
+  isAddingToPlaylist(row: AdminAdOperationRow): boolean {
+    return this.addingToPlaylistAdId === row.adId;
+  }
+
+  canAddToPlaylist(row: AdminAdOperationRow): boolean {
+    const monitorId = row.monitorId?.trim();
+    return !!monitorId && !this.isSentToBox(row);
+  }
+
   canDispatchToBox(row: AdminAdOperationRow): boolean {
     const monitorId = row.monitorId?.trim();
     return !!monitorId && !this.isSentToBox(row);
@@ -264,10 +274,11 @@ export class AdsManagementComponent implements OnInit {
       return;
     }
     const adName = row.adName?.trim() || "this ad";
+    const target = this.screenTargetSummary(row);
     const confirmed = await this.confirmationDialogService.confirm({
-      title: "Send to screen",
-      message: `Stage "${adName}" on the target box for publication?`,
-      confirmLabel: "Send",
+      title: "Stage on box",
+      message: `Stage "${adName}" on the target box${target !== "—" ? ` (${target})` : ""}?`,
+      confirmLabel: "Stage",
     });
     if (!confirmed) {
       return;
@@ -275,13 +286,42 @@ export class AdsManagementComponent implements OnInit {
     this.dispatchingAdId = adId;
     this.adminAdOperationsService.dispatchAdToBox(adId).subscribe({
       next: () => {
-        this.toastService.sucesso("Ad sent to screen.");
+        this.toastService.sucesso("Ad staged on box.");
         this.dispatchingAdId = null;
         this.loadApprovedClientAds();
       },
       error: () => {
         this.dispatchingAdId = null;
-        this.toastService.erro("Failed to send ad to screen");
+        this.toastService.erro("Failed to stage ad on box");
+      },
+    });
+  }
+
+  async addToPlaylist(row: AdminAdOperationRow): Promise<void> {
+    const adId = row.adId?.trim();
+    if (!adId) {
+      return;
+    }
+    const adName = row.adName?.trim() || "this ad";
+    const target = this.screenTargetSummary(row);
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Add to playlist",
+      message: `Add "${adName}" to the screen playlist${target !== "—" ? ` at ${target}` : ""}? The client will be notified.`,
+      confirmLabel: "Add",
+    });
+    if (!confirmed) {
+      return;
+    }
+    this.addingToPlaylistAdId = adId;
+    this.adminAdOperationsService.addAdToPlaylist(adId).subscribe({
+      next: () => {
+        this.toastService.sucesso("Ad added to screen playlist.");
+        this.addingToPlaylistAdId = null;
+        this.loadApprovedClientAds();
+      },
+      error: () => {
+        this.addingToPlaylistAdId = null;
+        this.toastService.erro("Failed to add ad to playlist");
       },
     });
   }
@@ -293,9 +333,21 @@ export class AdsManagementComponent implements OnInit {
     }
     const adName = row.adName?.trim() || "this ad";
     const onScreen = this.isSentToBox(row);
-    const message = onScreen
-      ? `Delete "${adName}"? It is on a screen or box and will be removed from playback permanently.`
-      : `Delete "${adName}"? This action cannot be undone.`;
+    const target = this.screenTargetSummary(row);
+    const stage = row.operationalStage?.trim();
+    let message: string;
+    if (onScreen && target !== "—") {
+      message = `Delete "<strong>${adName}</strong>"? This ad is running on <strong>${target}</strong>. It will be removed from playback permanently.`;
+      if (stage) {
+        message += `<br/><span class="text-sm">Operational stage: ${stage}</span>`;
+      }
+    } else if (row.monitorId?.trim() && target !== "—") {
+      message = `Delete "<strong>${adName}</strong>"? It is linked to <strong>${target}</strong>. This action cannot be undone.`;
+    } else {
+      message = onScreen
+        ? `Delete "<strong>${adName}</strong>"? It is on a screen or box and will be removed from playback permanently.`
+        : `Delete "<strong>${adName}</strong>"? This action cannot be undone.`;
+    }
     const confirmed = await this.confirmationDialogService.confirm({
       title: "Delete ad",
       message,

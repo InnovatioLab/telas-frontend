@@ -50,7 +50,7 @@
       <th scope="col" *ngIf="isPartnerSection">Admin action</th>
       <th scope="col" *ngIf="isPartnerSection">Target screen</th>
       <th scope="col" *ngIf="!isPartnerSection" pSortableColumn="questionnaireUpdatedAt">
-        Questions <p-sortIcon field="questionnaireUpdatedAt"></p-sortIcon>
+        Questionnaire <p-sortIcon field="questionnaireUpdatedAt"></p-sortIcon>
       </th>
       <th scope="col">Status</th>
       <th scope="col" pSortableColumn="createdAt">
@@ -68,21 +68,20 @@
       <td *ngIf="isPartnerSection">{{ adRequest.adminActionLabel || "—" }}</td>
       <td *ngIf="isPartnerSection">{{ adRequest.targetMonitorSummary || "—" }}</td>
       <td *ngIf="!isPartnerSection">
-        <span *ngIf="adRequest.businessQuestionnaireVersion != null; else noQ">
-          v{{ adRequest.businessQuestionnaireVersion }}
-        </span>
-        <ng-template #noQ>—</ng-template>
-        <button
-          pButton
-          pRipple
-          type="button"
-          icon="pi pi-download"
-          class="p-button-rounded p-button-text p-button-sm ml-2"
-          pTooltip="Download questionnaire (.txt)"
-          tooltipPosition="top"
-          (click)="downloadQuestionnaireTxt(adRequest)"
-          *ngIf="adRequest.businessQuestionnaireVersion != null"
-        ></button>
+        <ng-container *ngIf="adRequest.businessQuestionnaireVersion != null; else noQuestionnaire">
+          <span>{{ adRequest.clientName?.trim() || "—" }}</span>
+          <button
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-download"
+            class="p-button-rounded p-button-text p-button-sm ml-2"
+            pTooltip="Download questionnaire (.txt)"
+            tooltipPosition="top"
+            (click)="downloadQuestionnaireTxt(adRequest)"
+          ></button>
+        </ng-container>
+        <ng-template #noQuestionnaire>—</ng-template>
       </td>
       <td>
         <p-badge

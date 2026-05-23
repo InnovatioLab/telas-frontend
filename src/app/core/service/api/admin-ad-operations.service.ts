@@ -110,6 +110,16 @@ export class AdminAdOperationsService {
       .pipe(map((): void => undefined));
   }
 
+  addAdToPlaylist(adId: string): Observable<void> {
+    return this.http
+      .post<ResponseDTO<unknown>>(
+        `${this.baseUrl}/ads/${adId}/add-to-playlist`,
+        {},
+        this.getJsonHeaders()
+      )
+      .pipe(map((): void => undefined));
+  }
+
   downloadSubscriptionsCsv(): Observable<Blob> {
     const token = localStorage.getItem(this.storageName);
     const headers = new HttpHeaders({

@@ -1,3 +1,24 @@
+.ads-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ads-list-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ad-name {
+  font-weight: 500;
+  min-width: 6rem;
+}
+
 .partner-screens {
   display: flex;
   flex-direction: column;

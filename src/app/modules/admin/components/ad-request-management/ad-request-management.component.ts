@@ -582,13 +582,15 @@ export class AdRequestManagementComponent implements OnInit {
       return;
     }
     this.clientService.downloadAdRequestBusinessQuestionnaireTxt(id).subscribe({
-      next: (blob) => {
+      next: ({ blob, fileName }) => {
         const url = URL.createObjectURL(blob);
-        const fileName = buildQuestionnaireExportFileName(
-          adRequest.clientName,
-          adRequest.ad?.attachmentName
-        );
-        triggerBrowserFileDownload(url, fileName);
+        const resolvedName =
+          fileName?.trim() ||
+          buildQuestionnaireExportFileName(
+            adRequest.clientName,
+            adRequest.ad?.attachmentName
+          );
+        triggerBrowserFileDownload(url, resolvedName);
         URL.revokeObjectURL(url);
       },
       error: () => {

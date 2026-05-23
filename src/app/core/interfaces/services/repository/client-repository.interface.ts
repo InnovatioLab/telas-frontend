@@ -72,7 +72,7 @@ export interface IClientRepository extends IRepository<Client, ClientRequestDTO,
     body: BusinessQuestionnaireAnswersDto
   ): Observable<unknown>;
 
-  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<Blob>;
+  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<{ blob: Blob; fileName: string }>;
 
   validateAd(adId: string, validation: string, refusedData?: RefusedAdRequestDto): Observable<any>;
 
@@ -91,6 +91,8 @@ export interface IClientRepository extends IRepository<Client, ClientRequestDTO,
   cancelAdRequest(adRequestId: string): Observable<unknown>;
 
   getPartnerPendingAds(): Observable<PendingAdAdminValidationResponseDto[]>;
+
+  requestPartnerAdRemoval(adId: string, message?: string): Observable<void>;
 }
 
 /**

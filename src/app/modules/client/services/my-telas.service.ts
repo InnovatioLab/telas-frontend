@@ -15,6 +15,10 @@ import {
 } from '@app/model/dto/request/business-questionnaire-answers.dto';
 import { CreateClientAdDto } from '@app/model/dto/request/create-client-ad.dto';
 import { RefusedAdRequestDto } from '@app/model/dto/request/refused-ad-request.dto';
+import {
+  AD_APPROVED_SUCCESS_TOAST,
+  AD_REJECTED_SENT_BACK_TO_ADMIN_TOAST,
+} from '@app/shared/constants/ad-validation-toast.constants';
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
 import { AttachmentResponseDto } from '@app/model/dto/response/attachment-response.dto';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
@@ -403,9 +407,9 @@ export class MyTelasService {
     try {
       await this.clientService.validateAd(adId, validation, refusedData).toPromise();
       if (validation === "APPROVED") {
-        this.toastService.sucesso("Ad approved successfully.");
+        this.toastService.sucesso(AD_APPROVED_SUCCESS_TOAST);
       } else if (validation === "REJECTED") {
-        this.toastService.aviso("Ad sent back to the administrator for review.");
+        this.toastService.aviso(AD_REJECTED_SENT_BACK_TO_ADMIN_TOAST);
       } else {
         this.toastService.sucesso("Ad updated.");
       }

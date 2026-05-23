@@ -36,6 +36,21 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   showPaymentModal = false;
   refDialogo: DynamicDialogRef | undefined;
 
+  private static readonly PARTNER_ONLY_MENU_IDS = new Set([
+    "partnerScreens",
+    "partnerMap",
+    "partnerAds",
+  ]);
+
+  private static readonly PARTNER_MENU_IDS = new Set([
+    "partnerScreens",
+    "partnerMap",
+    "partnerAds",
+    "profile",
+    "changePassword",
+    "logout",
+  ]);
+
   private allMenuItems: MenuItem[] = [
     { id: "home", label: "Home", icon: "pi-home" },
     { id: "partnerScreens", label: "My screens", icon: "pi-desktop" },
@@ -92,17 +107,13 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
     if (this.authenticatedClient) {
       if (isPartnerRole(this.authenticatedClient.role)) {
-        filteredItems = filteredItems.filter(
-          (item) =>
-            item.id === "partnerScreens" ||
-            item.id === "partnerMap" ||
-            item.id === "partnerAds" ||
-            item.id === "profile" ||
-            item.id === "changePassword" ||
-            item.id === "logout"
+        filteredItems = filteredItems.filter((item) =>
+          ClientMenuSideComponent.PARTNER_MENU_IDS.has(item.id)
         );
       } else {
-        filteredItems = filteredItems.filter((item) => item.id !== "partnerScreens");
+        filteredItems = filteredItems.filter(
+          (item) => !ClientMenuSideComponent.PARTNER_ONLY_MENU_IDS.has(item.id)
+        );
       }
 
       if (isPrivilegedPanelRole(this.authenticatedClient.role)) {

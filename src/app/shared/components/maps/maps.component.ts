@@ -91,6 +91,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   @Input() points: MapPoint[] = [];
   @Input() showSearchBar = false;
   @Input() center: { lat: number; lng: number } | null = null;
+  @Input() showMonitorHealth = false;
 
   @Output() pointClick = new EventEmitter<{
     point: MapPoint;
@@ -221,20 +222,20 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     if (!isMonitor) {
       return this.redMarkerIcon!;
     }
-    if (point.healthOk === true) {
+    if (this.showMonitorHealth && point.healthOk === true) {
       return this.monitorIconHealthy!;
     }
-    if (point.healthOk === false) {
+    if (this.showMonitorHealth && point.healthOk === false) {
       return this.monitorIconUnhealthy!;
     }
     return this.monitorIcon!;
   }
 
   private getMonitorHoverIconForPoint(point: MapPoint): L.Icon {
-    if (point.healthOk === true) {
+    if (this.showMonitorHealth && point.healthOk === true) {
       return this.monitorIconHealthyLarge!;
     }
-    if (point.healthOk === false) {
+    if (this.showMonitorHealth && point.healthOk === false) {
       return this.monitorIconUnhealthyLarge!;
     }
     return this.monitorIconLarge!;
@@ -818,7 +819,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   ): L.DivIcon {
     const size = Math.min(50 + count * 4, 80);
 
-    const anyUnhealthy = monitors.some((m) => m.healthOk === false);
+    const anyUnhealthy =
+      this.showMonitorHealth && monitors.some((m) => m.healthOk === false);
 
     let fillColor = "#FF6B35";
     if (anyUnhealthy) {

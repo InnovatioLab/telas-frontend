@@ -15,6 +15,10 @@ import { PendingAdAdminValidationResponseDto } from "@app/model/dto/response/ad-
 import { ErrorComponent } from "@app/shared/components";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { AdItemComponent } from "../ad-item/ad-item.component";
+import {
+  AD_APPROVED_SUCCESS_TOAST,
+  AD_REJECTED_SENT_BACK_TO_ADMIN_TOAST,
+} from "@app/shared/constants/ad-validation-toast.constants";
 
 @Component({
   selector: "app-partner-pending-ads",
@@ -87,7 +91,7 @@ export class PartnerPendingAdsComponent implements OnInit {
     this.clientService.validateAd(ad.id, "APPROVED").subscribe({
       next: () => {
         this.submitting = false;
-        this.toastService.sucesso("Ad approved");
+        this.toastService.sucesso(AD_APPROVED_SUCCESS_TOAST);
         this.notificationsService
           .refreshAndMarkReferencesAsRead([
             "AD_RECEIVED",
@@ -133,7 +137,7 @@ export class PartnerPendingAdsComponent implements OnInit {
       .subscribe({
         next: () => {
           this.submitting = false;
-          this.toastService.sucesso("Ad rejected");
+          this.toastService.aviso(AD_REJECTED_SENT_BACK_TO_ADMIN_TOAST);
           this.closeRejectDialog();
           this.loadAds();
         },

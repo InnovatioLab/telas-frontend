@@ -5,18 +5,23 @@ import { buildMonitorAddressLabel } from '@app/core/service/utils/monitor-addres
 
 @Injectable({ providedIn: 'root' })
 export class MonitorMapPointMapper {
-  convertToMapPoints(monitors: MonitorMapsResponseDto[]): MapPoint[] {
+  convertToMapPoints(
+    monitors: MonitorMapsResponseDto[],
+    options?: { includeHealthStatus?: boolean }
+  ): MapPoint[] {
+    const includeHealthStatus = options?.includeHealthStatus === true;
     return monitors
       .filter(
         (monitor) =>
-          monitor.latitude != null &&
-          monitor.longitude != null &&
-          monitor.boxActive != null
+          monitor.latitude != null && monitor.longitude != null
       )
-      .map((monitor) => this.convertSingleMonitor(monitor));
+      .map((monitor) => this.convertSingleMonitor(monitor, includeHealthStatus));
   }
 
-  private convertSingleMonitor(monitor: MonitorMapsResponseDto): MapPoint {
+  private convertSingleMonitor(
+    monitor: MonitorMapsResponseDto,
+    includeHealthStatus: boolean
+  ): MapPoint {
     const name = monitor.addressLocationName?.trim();
     const addressLabel = buildMonitorAddressLabel({
       addressLocationName: monitor.addressLocationName,
@@ -36,15 +41,15 @@ export class MonitorMapPointMapper {
       hasAvailableSlots: monitor.hasAvailableSlots,
       estimatedSlotReleaseDate: monitor.estimatedSlotReleaseDate,
       data: monitor,
-      healthOk: this.deriveHealthOk(monitor),
+      healthOk: includeHealthStatus ? this.deriveHealthOk(monitor) : undefined,
     };
   }
 
   private deriveHealthOk(m: MonitorMapsResponseDto): boolean {
-    if (m.boxActive === false) {
+    if (m.boxActive === false || m.boxActive == null) {
       return false;
     }
-    return !!m.active;
+    return m.active !== false;
   }
 
 }

@@ -98,8 +98,8 @@
 </p-card>
 
 <p class="mt-3 mb-2 text-sm text-color-secondary" style="max-width: 52rem">
-  Approved ads ready for publication. Use <strong>Send to screen</strong> to stage partner ads on the target box,
-  or open <strong>Manage ads</strong> to sync the playlist when the ad is already linked to a screen.
+  Approved ads ready for publication. Use <strong>Stage on box</strong> for quick file staging, or
+  <strong>Add to playlist</strong> to include the ad in the screen playlist (with client notification).
 </p>
 
 <p-table
@@ -156,10 +156,23 @@
             icon="pi pi-send"
             class="p-button-rounded p-button-text p-button-success"
             [loading]="isDispatching(row)"
-            [disabled]="isDispatching(row)"
-            pTooltip="Send to screen"
+            [disabled]="isDispatching(row) || isAddingToPlaylist(row)"
+            pTooltip="Stage on box"
             tooltipPosition="left"
             (click)="dispatchToBox(row)"
+          ></button>
+        }
+        @if (canAddToPlaylist(row)) {
+          <button
+            pButton
+            type="button"
+            icon="pi pi-list"
+            class="p-button-rounded p-button-text"
+            [loading]="isAddingToPlaylist(row)"
+            [disabled]="isAddingToPlaylist(row) || isDispatching(row)"
+            pTooltip="Add to screen playlist"
+            tooltipPosition="left"
+            (click)="addToPlaylist(row)"
           ></button>
         }
         @if (manageAdsLink(row); as link) {

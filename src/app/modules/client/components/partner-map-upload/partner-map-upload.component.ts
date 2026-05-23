@@ -36,6 +36,22 @@ export class PartnerMapUploadComponent implements OnInit {
   selectedCreativeFile: File | null = null;
   creativePreviewUrl: string | null = null;
   selectedMaterialFiles: File[] = [];
+  materialPreviews: Array<{ name: string; url: string | null; isPdf: boolean }> = [];
+
+  readonly submissionModeOptions = [
+    {
+      label: "Materials for admin",
+      value: "ADMIN_MATERIALS" as SubmissionChoice,
+      tooltip:
+        "Send logos/photos; our team creates the final ad for this screen.",
+    },
+    {
+      label: "Finished creative",
+      value: "PARTNER_FINISHED_CREATIVE" as SubmissionChoice,
+      tooltip:
+        "Upload your final ad file; admin reviews and publishes it.",
+    },
+  ];
 
   readonly maxFileSize = 10 * 1024 * 1024;
   readonly acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
@@ -96,6 +112,7 @@ export class PartnerMapUploadComponent implements OnInit {
     this.selectedCreativeFile = null;
     this.creativePreviewUrl = null;
     this.selectedMaterialFiles = [];
+    this.materialPreviews = [];
   }
 
   chooseCreativeFile(): void {
@@ -132,6 +149,29 @@ export class PartnerMapUploadComponent implements OnInit {
       valid.push(file);
     }
     this.selectedMaterialFiles = valid;
+    this.buildMaterialPreviews(valid);
+  }
+
+  private buildMaterialPreviews(files: File[]): void {
+    this.materialPreviews = [];
+    for (const file of files) {
+      const isPdf = isPdfFile(file.name);
+      if (isPdf) {
+        this.materialPreviews.push({ name: file.name, url: null, isPdf: true });
+        continue;
+      }
+      const reader = new FileReader();
+      const entry = { name: file.name, url: null as string | null, isPdf: false };
+      this.materialPreviews.push(entry);
+      reader.onload = () => {
+        entry.url = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  hasPdfMaterials(): boolean {
+    return this.materialPreviews.some((p) => p.isPdf);
   }
 
   private async validateAndSetCreativeFile(file: File): Promise<void> {

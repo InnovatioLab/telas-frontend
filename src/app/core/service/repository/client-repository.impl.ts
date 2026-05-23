@@ -332,11 +332,20 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
     );
   }
 
-  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<Blob> {
+  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<{ blob: Blob; fileName: string }> {
     return this.http.get(`${this.baseUrl}/ads-requests/${adRequestId}/business-questionnaire.txt`, {
       ...this.getHeaders(),
       responseType: 'blob',
-    });
+      observe: 'response',
+    }).pipe(
+      map((response) => {
+        const blob = response.body ?? new Blob();
+        const header = response.headers.get('Content-Disposition') ?? '';
+        const match = /filename="([^"]+)"/i.exec(header);
+        const fileName = match?.[1]?.trim() || 'questionnaire.txt';
+        return { blob, fileName };
+      })
+    );
   }
 
   validateAd(adId: string, validation: string, refusedData?: RefusedAdRequestDto): Observable<any> {
@@ -411,6 +420,17 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
         this.getHeaders()
       )
       .pipe(map((r) => r.data ?? []));
+  }
+
+  requestPartnerAdRemoval(adId: string, message?: string): Observable<void> {
+    const body = message?.trim() ? { message: message.trim() } : {};
+    return this.http
+      .post<ResponseDTO<unknown>>(
+        `${this.baseUrl}/me/partner-ads/${adId}/request-removal`,
+        body,
+        this.getHeaders()
+      )
+      .pipe(map((): void => undefined));
   }
 }
 

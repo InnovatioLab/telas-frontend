@@ -139,7 +139,7 @@ export class ClientService {
     return this.clientRepository.updateAdRequestBusinessQuestionnaire(adRequestId, body);
   }
 
-  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<Blob> {
+  downloadAdRequestBusinessQuestionnaireTxt(adRequestId: string): Observable<{ blob: Blob; fileName: string }> {
     return this.clientRepository.downloadAdRequestBusinessQuestionnaireTxt(adRequestId);
   }
 
@@ -188,5 +188,9 @@ export class ClientService {
 
   getPartnerPendingAds(): Observable<PendingAdAdminValidationResponseDto[]> {
     return this.clientRepository.getPartnerPendingAds();
+  }
+
+  requestPartnerAdRemoval(adId: string, message?: string): Observable<void> {
+    return this.clientRepository.requestPartnerAdRemoval(adId, message);
   }
 }

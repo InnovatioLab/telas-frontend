@@ -13,7 +13,6 @@ import { ManagementClientsComponent } from "./components/management-clients/mana
 import { ManagementMonitorsComponent } from "./components/management-monitors/management-monitors.component";
 import { MonitorAdsManagementComponent } from "./components/monitor-ads-management/monitor-ads-management.component";
 import { AdminViewLayoutComponent } from "./pages/admin-view-layout/admin-view-layout.component";
-import { AdRequestManagementComponent } from "./components/ad-request-management/ad-request-management.component";
 import { ApplicationLogsComponent } from "./components/application-logs/application-logs.component";
 import { MonitoringTestingComponent } from "./components/monitoring-testing/monitoring-testing.component";
 import { DeveloperPermissionsComponent } from "./components/developer-permissions/developer-permissions.component";
@@ -66,7 +65,7 @@ export const ROUTES: Route[] = [
       },
       {
         path: "ad-requests",
-        component: AdRequestManagementComponent,
+        component: ManagementAdvertisementsComponent,
         title: "Ad Requests",
       },
       {

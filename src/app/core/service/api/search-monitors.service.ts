@@ -70,7 +70,9 @@ export class SearchMonitorsService {
       .pipe(
         map((response) => {
           const monitors = response.data || [];
-          const allPoints = this.mapper.convertToMapPoints(monitors);
+          const allPoints = this.mapper.convertToMapPoints(monitors, {
+            includeHealthStatus: true,
+          });
           this.nearestMonitorsSubject.next(allPoints);
           this.loadingSubject.next(false);
           return monitors;

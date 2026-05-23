@@ -47,6 +47,7 @@ import { MapViewportFacadeService } from "../../../client/services/map-viewport-
           height="100%"
           width="100%"
           [zoom]="9"
+          [showMonitorHealth]="true"
           (markerClicked)="onMarkerClick($event)"
           (mapInitialized)="onMapLeafletInitialized($event)"
           (mapReady)="onMapReady($event)"
