@@ -18,7 +18,12 @@ import { FormsModule } from "@angular/forms";
 import { LeafletModule } from "@bluehalo/ngx-leaflet";
 import * as L from "leaflet";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
+import {
+  LeafletClusterService,
+  MonitorCluster,
+} from "@app/core/service/api/leaflet-cluster.service";
 import { LeafletMapService } from "@app/core/service/api/leaflet-map.service";
+import { MapMarkerIconService } from "@app/core/service/api/map-marker-icon.service";
 import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { getMonitorAddressLines } from "@app/core/service/utils/monitor-address-label.util";
@@ -34,59 +39,12 @@ declare global {
   }
 }
 
-interface MonitorCluster {
-  position: { lat: number; lng: number };
-  monitors: MapPoint[];
-  count: number;
-}
-
 @Component({
   selector: "app-maps",
   standalone: true,
   imports: [CommonModule, LeafletModule, FormsModule, IconsModule],
-  template: `
-    <div #mapContainer class="map-root" [style.width]="width" [style.height]="height"></div>
-  `,
-  styles: [
-    `
-      :host {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        height: 100%;
-        min-height: 0;
-        width: 100%;
-        box-sizing: border-box;
-      }
-
-      .map-root {
-        flex: 1;
-        min-height: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 8px;
-        box-sizing: border-box;
-        overflow: hidden;
-      }
-
-      .map-root ::ng-deep .leaflet-container {
-        border-radius: 0 !important;
-      }
-
-      .map-root ::ng-deep .leaflet-tile-container {
-        border-radius: 0 !important;
-      }
-
-      .map-root ::ng-deep .leaflet-tile-container img {
-        border-radius: 0 !important;
-      }
-
-      .map-root ::ng-deep .leaflet-tile {
-        border-radius: 0 !important;
-      }
-
-    `,
-  ],
+  templateUrl: "./maps.component.html",
+  styleUrls: ["./maps.component.scss"],
 })
 export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @ViewChild("mapContainer") mapContainer!: ElementRef;
@@ -115,18 +73,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private clusterMarkers: L.Marker[] = [];
   private readonly subscriptions: Subscription[] = [];
   private _mapReady = false;
-  private readonly MIN_ZOOM_FOR_CLUSTERING = 14;
-  private static readonly BRAND_MONITOR_COLOR = "#111519";
-
-  private monitorIcon: L.Icon | null = null;
-  private monitorIconBrand: L.Icon | null = null;
-  private monitorIconHealthy: L.Icon | null = null;
-  private monitorIconUnhealthy: L.Icon | null = null;
-  private monitorIconLarge: L.Icon | null = null;
-  private monitorIconBrandLarge: L.Icon | null = null;
-  private monitorIconHealthyLarge: L.Icon | null = null;
-  private monitorIconUnhealthyLarge: L.Icon | null = null;
-  private redMarkerIcon: L.Icon | null = null;
   private monitorMarkers: Map<L.Marker, MapPoint> = new Map();
   private markersByMonitorId = new Map<string, L.Marker>();
   private hoveredMarkerId: string | null = null;
@@ -137,11 +83,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   constructor(
     private readonly mapsService: GoogleMapsService,
     private readonly leafletMapService: LeafletMapService,
+    private readonly leafletClusterService: LeafletClusterService,
+    private readonly markerIconService: MapMarkerIconService,
     private readonly sidebarService: SidebarService,
     private readonly ngZone: NgZone,
     private readonly loadingService: LoadingService
   ) {
-    this.initializeIcons();
     effect(() => {
       const isVisible = this.sidebarService.visibilidade();
       const tipo = this.sidebarService.tipo();
@@ -173,118 +120,11 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     });
   }
 
-  private static readonly MONITOR_ICON_SIZE = 40;
-  private static readonly MONITOR_ICON_HOVER_SIZE = 52;
-
-  private initializeIcons(): void {
-    this.monitorIcon = this.createMonitorIconVariant(
-      "#111519",
-      "#111519",
-      MapsComponent.MONITOR_ICON_SIZE
-    );
-    this.monitorIconBrand = this.createMonitorIconVariant(
-      MapsComponent.BRAND_MONITOR_COLOR,
-      MapsComponent.BRAND_MONITOR_COLOR,
-      MapsComponent.MONITOR_ICON_SIZE
-    );
-    this.monitorIconHealthy = this.createMonitorIconVariant(
-      "#1B5E20",
-      "#A5D6A7",
-      MapsComponent.MONITOR_ICON_SIZE
-    );
-    this.monitorIconUnhealthy = this.createMonitorIconVariant(
-      "#B71C1C",
-      "#EF9A9A",
-      MapsComponent.MONITOR_ICON_SIZE
-    );
-    this.monitorIconLarge = this.createMonitorIconVariant(
-      "#111519",
-      "#111519",
-      MapsComponent.MONITOR_ICON_HOVER_SIZE
-    );
-    this.monitorIconBrandLarge = this.createMonitorIconVariant(
-      MapsComponent.BRAND_MONITOR_COLOR,
-      MapsComponent.BRAND_MONITOR_COLOR,
-      MapsComponent.MONITOR_ICON_HOVER_SIZE
-    );
-    this.monitorIconHealthyLarge = this.createMonitorIconVariant(
-      "#1B5E20",
-      "#A5D6A7",
-      MapsComponent.MONITOR_ICON_HOVER_SIZE
-    );
-    this.monitorIconUnhealthyLarge = this.createMonitorIconVariant(
-      "#B71C1C",
-      "#EF9A9A",
-      MapsComponent.MONITOR_ICON_HOVER_SIZE
-    );
-    this.redMarkerIcon = this.createRedMarkerIcon();
-  }
-
-  private createMonitorIconVariant(
-    frameColor: string,
-    screenColor: string,
-    sizePx: number
-  ): L.Icon {
-    const svg = `
-      <svg width="${sizePx}" height="${sizePx}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17Z" fill="${frameColor}"/>
-        <path d="M6 7H18V15H6V7Z" fill="${screenColor}"/>
-      </svg>
-    `;
-    const svgBlob = new Blob([svg], { type: "image/svg+xml" });
-    const svgUrl = URL.createObjectURL(svgBlob);
-    const half = sizePx / 2;
-    return L.icon({
-      iconUrl: svgUrl,
-      iconSize: [sizePx, sizePx],
-      iconAnchor: [half, sizePx],
-      popupAnchor: [0, -sizePx],
-    });
-  }
-
-  private getMonitorBaseIconForPoint(point: MapPoint): L.Icon {
-    const isMonitor = point.category === "MONITOR" || point.type === "MONITOR";
-    if (!isMonitor) {
-      return this.redMarkerIcon!;
-    }
-    if (this.useBrandMonitorColor) {
-      return this.monitorIconBrand!;
-    }
-    if (this.showMonitorHealth && point.healthOk === true) {
-      return this.monitorIconHealthy!;
-    }
-    if (this.showMonitorHealth && point.healthOk === false) {
-      return this.monitorIconUnhealthy!;
-    }
-    return this.monitorIcon!;
-  }
-
-  private getMonitorHoverIconForPoint(point: MapPoint): L.Icon {
-    if (this.useBrandMonitorColor) {
-      return this.monitorIconBrandLarge!;
-    }
-    if (this.showMonitorHealth && point.healthOk === true) {
-      return this.monitorIconHealthyLarge!;
-    }
-    if (this.showMonitorHealth && point.healthOk === false) {
-      return this.monitorIconUnhealthyLarge!;
-    }
-    return this.monitorIconLarge!;
-  }
-
-  private createRedMarkerIcon(): L.Icon {
-    const svg = `
-      <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="8" cy="8" r="8" fill="#FF0000" stroke="#FFFFFF" stroke-width="1"/>
-      </svg>
-    `;
-    const svgBlob = new Blob([svg], { type: "image/svg+xml" });
-    const svgUrl = URL.createObjectURL(svgBlob);
-    return L.icon({
-      iconUrl: svgUrl,
-      iconSize: [16, 16],
-      iconAnchor: [8, 8],
-    });
+  private getMarkerIconOptions() {
+    return {
+      useBrandMonitorColor: this.useBrandMonitorColor,
+      showMonitorHealth: this.showMonitorHealth,
+    };
   }
 
   public reloadMapApi(): void {
@@ -554,33 +394,21 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
     const currentZoom = this._map.getZoom() || 15;
 
-    if (currentZoom <= this.MIN_ZOOM_FOR_CLUSTERING) {
+    if (this.leafletClusterService.shouldCluster(currentZoom)) {
       this.createClusteredMarkers();
     } else {
       this.createIndividualMarkers();
     }
   }
 
-  private calculateOffsetPosition(
-    lat: number,
-    lng: number,
-    index: number,
-    total: number
-  ): { lat: number; lng: number } {
-    const offset = 0.0002;
-    const angle = (index / total) * 2 * Math.PI;
-
-    return {
-      lat: lat + offset * Math.cos(angle),
-      lng: lng + offset * Math.sin(angle),
-    };
-  }
-
   private createMarker(point: MapPoint, lat: number, lng: number): void {
     if (!this._map) return;
 
     const isMonitor = point.category === "MONITOR" || point.type === "MONITOR";
-    const icon = this.getMonitorBaseIconForPoint(point);
+    const icon = this.markerIconService.getBaseIconForPoint(
+      point,
+      this.getMarkerIconOptions()
+    );
 
     const marker = L.marker([lat, lng], {
       icon: icon,
@@ -792,7 +620,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     const currentZoom = this._map.getZoom() || 15;
     this.clearMarkers();
 
-    if (currentZoom <= this.MIN_ZOOM_FOR_CLUSTERING) {
+    if (this.leafletClusterService.shouldCluster(currentZoom)) {
       this.createClusteredMarkers();
     } else {
       this.createIndividualMarkers();
@@ -802,7 +630,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private createClusteredMarkers(): void {
     if (!this._map) return;
 
-    const clusters = this.createClusters(this.points);
+    const clusters = this.leafletClusterService.createClusters(this.points);
 
     clusters.forEach((cluster) => {
       if (cluster.count === 1) {
@@ -837,7 +665,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
         );
       } else {
         groupPoints.forEach((point, index) => {
-          const offsetPosition = this.calculateOffsetPosition(
+          const offsetPosition = this.leafletClusterService.calculateOffsetPosition(
             point.latitude,
             point.longitude,
             index,
@@ -849,37 +677,17 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     });
   }
 
-  private createClusters(points: MapPoint[]): MonitorCluster[] {
-    const clusters: MonitorCluster[] = [];
-    const locationGroups = new Map<string, MapPoint[]>();
-
-    points.forEach((point) => {
-      const locationKey = `${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`;
-      if (!locationGroups.has(locationKey)) {
-        locationGroups.set(locationKey, []);
-      }
-      locationGroups.get(locationKey)!.push(point);
-    });
-
-    locationGroups.forEach((groupPoints, locationKey) => {
-      const [lat, lng] = locationKey
-        .split(",")
-        .map((coord) => parseFloat(coord));
-
-      clusters.push({
-        position: { lat, lng },
-        monitors: groupPoints,
-        count: groupPoints.length,
-      });
-    });
-
-    return clusters;
-  }
-
   private createClusterMarker(cluster: MonitorCluster): void {
     if (!this._map) return;
 
-    const clusterIcon = this.createClusterIcon(cluster.count, cluster.monitors);
+    const clusterIcon = this.leafletClusterService.createClusterIcon(
+      cluster.count,
+      cluster.monitors,
+      {
+        useBrandMonitorColor: this.useBrandMonitorColor,
+        showMonitorHealth: this.showMonitorHealth,
+      }
+    );
 
     const clusterMarker = L.marker([cluster.position.lat, cluster.position.lng], {
       icon: clusterIcon,
@@ -921,82 +729,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     }
   }
 
-  private createClusterIcon(
-    count: number,
-    monitors: MapPoint[]
-  ): L.DivIcon {
-    const size = Math.min(50 + count * 4, 80);
-
-    let fillColor = MapsComponent.BRAND_MONITOR_COLOR;
-    if (!this.useBrandMonitorColor) {
-      const anyUnhealthy =
-        this.showMonitorHealth && monitors.some((m) => m.healthOk === false);
-
-      fillColor = "#FF6B35";
-      if (anyUnhealthy) {
-        fillColor = "#C62828";
-      } else {
-        const availableCount = monitors.filter(
-          (m) => m.hasAvailableSlots === true
-        ).length;
-        const unavailableCount = monitors.filter(
-          (m) => m.hasAvailableSlots === false
-        ).length;
-
-        if (availableCount === count) {
-          fillColor = "#28a745";
-        } else if (unavailableCount === count) {
-          fillColor = "#6c757d";
-        }
-      }
-    }
-
-    const html = `
-      <div style="
-        width: ${size}px;
-        height: ${size}px;
-        border-radius: 50%;
-        background-color: ${fillColor};
-        border: 4px solid #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #FFFFFF;
-        font-weight: bold;
-        font-size: ${Math.min(14 + count, 18)}px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        position: relative;
-      ">
-        <div style="
-          position: absolute;
-          top: -8px;
-          right: -8px;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background-color: #FFFFFF;
-          border: 3px solid ${fillColor};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: ${fillColor};
-          font-weight: bold;
-          font-size: 12px;
-        ">${count}</div>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-          <path d="M20 3H4C2.9 3 2 3.9 2 5V17C2 18.1 2.9 19 4 19H8V21H16V19H20C21.1 19 22 18.1 22 17V5C22 3.9 21.1 3 20 3ZM20 17H4V5H20V17ZM6 7H18V15H6V7Z"/>
-        </svg>
-      </div>
-    `;
-
-    return L.divIcon({
-      html: html,
-      className: "custom-cluster-icon",
-      iconSize: [size, size],
-      iconAnchor: [size / 2, size / 2],
-    });
-  }
-
   private clearMarkers(): void {
     this.resetHoveredMarkerVisual();
     this.markers.forEach((marker) => {
@@ -1024,7 +756,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     const prevMarker = this.markersByMonitorId.get(id);
     const prevPoint = this.points.find((p) => p.id === id);
     if (prevMarker && prevPoint) {
-      prevMarker.setIcon(this.getMonitorBaseIconForPoint(prevPoint));
+      prevMarker.setIcon(
+        this.markerIconService.getBaseIconForPoint(
+          prevPoint,
+          this.getMarkerIconOptions()
+        )
+      );
       prevMarker.setZIndexOffset(0);
     }
   }
@@ -1046,7 +783,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       return;
     }
 
-    marker.setIcon(this.getMonitorHoverIconForPoint(point));
+    marker.setIcon(
+      this.markerIconService.getHoverIconForPoint(
+        point,
+        this.getMarkerIconOptions()
+      )
+    );
     marker.setZIndexOffset(600);
     this.hoveredMarkerId = monitorId;
   }
@@ -1113,7 +855,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
             this.clearMarkers();
             const marker = L.marker([newCenter.lat, newCenter.lng], {
-              icon: this.redMarkerIcon!,
+              icon: this.markerIconService.getRedMarkerIcon(),
               title: location.title ?? "Localização do CEP",
             });
             marker.addTo(this._map);
@@ -1137,7 +879,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
 
             this.clearMarkers();
             const marker = L.marker([newCenter.lat, newCenter.lng], {
-              icon: this.redMarkerIcon!,
+              icon: this.markerIconService.getRedMarkerIcon(),
               title: "Localização atual",
             });
             marker.addTo(this._map);

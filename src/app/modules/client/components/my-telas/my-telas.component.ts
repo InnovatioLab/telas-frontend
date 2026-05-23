@@ -15,8 +15,8 @@ import { ErrorComponent } from "@app/shared/components";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
+import { FileUploadPipelineService } from "@app/shared/services/file-upload-pipeline.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
-import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { triggerBrowserFileDownload } from "@app/shared/utils/file-download.util";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { FileUpload } from "primeng/fileupload";
@@ -94,6 +94,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   constructor(
     public readonly myTelasService: MyTelasService,
+    public readonly fileUploadPipeline: FileUploadPipelineService,
     private readonly toastService: ToastService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
@@ -220,8 +221,9 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           continue;
         }
 
-        const validation =
-          await this.myTelasService.validateAttachmentFile(file);
+        const validation = await this.fileUploadPipeline.validateFile(file, {
+          mode: "attachment",
+        });
         if (!validation.isValid) {
           validation.errors.forEach((err) => this.toastService.erro(err));
           continue;
@@ -238,11 +240,9 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       this.selectedFiles = accepted;
       this.uploadPreviews = [];
       accepted.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.uploadPreviews[index] = reader.result as string;
-        };
-        reader.readAsDataURL(file);
+        void this.fileUploadPipeline.readAsDataUrl(file).then((dataUrl) => {
+          this.uploadPreviews[index] = dataUrl;
+        });
       });
 
       this.pendingUpload = true;
@@ -281,7 +281,9 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const validation = await this.myTelasService.validateAttachmentFile(file);
+      const validation = await this.fileUploadPipeline.validateFile(file, {
+        mode: "attachment",
+      });
       if (!validation.isValid) {
         validation.errors.forEach((error) => this.toastService.erro(error));
         if (input) {
@@ -347,13 +349,6 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-  }
 
   clearUploadData(): void {
     this.selectedFiles = [];
@@ -680,8 +675,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       }
 
       try {
-        const validationResult =
-          await ImageValidationUtil.validateImageFile(file);
+        const validationResult = await this.fileUploadPipeline.validateFile(file);
         if (!validationResult.isValid) {
           validationResult.errors.forEach((error) => {
             this.toastService.erro(error);
@@ -689,29 +683,23 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           return;
         }
 
-        const reader = new FileReader();
-        reader.onload = async () => {
-          const base64String = reader.result as string;
-          const base64Data = base64String.split(",")[1];
+        const base64Data = await this.fileUploadPipeline.readAsBase64(file);
 
-          const createAdDto = {
-            name: formValue.name,
-            type: formValue.type,
-            bytes: base64Data,
-          };
-
-          const client = this.myTelasService.authenticatedClient();
-          if (client) {
-            await this.myTelasService.uploadAd(client.id, createAdDto);
-            this.selectedAdFile = null;
-            if (this.fileUploadComponent) {
-              this.fileUploadComponent.clear();
-            }
-            await this.loadClientData();
-          }
+        const createAdDto = {
+          name: formValue.name,
+          type: formValue.type,
+          bytes: base64Data,
         };
 
-        reader.readAsDataURL(file);
+        const client = this.myTelasService.authenticatedClient();
+        if (client) {
+          await this.myTelasService.uploadAd(client.id, createAdDto);
+          this.selectedAdFile = null;
+          if (this.fileUploadComponent) {
+            this.fileUploadComponent.clear();
+          }
+          await this.loadClientData();
+        }
       } catch (error) {
         this.toastService.erro("Error validating image file");
       }
@@ -721,7 +709,8 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   onAdFileSelect(event: any): void {
     const file = event.files[0];
     if (file) {
-      ImageValidationUtil.validateImageFile(file)
+      this.fileUploadPipeline
+        .validateFile(file)
         .then((validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
@@ -742,11 +731,11 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           this.uploadAdForm.patchValue({
             adFile: file,
             name: file.name,
-            type: this.myTelasService.getFileType(file),
+            type: this.fileUploadPipeline.getFileType(file),
           });
           this.selectedAdFile = file;
         })
-        .catch((error) => {
+        .catch(() => {
           this.toastService.erro("Error validating image file");
           if (this.fileUploadComponent) {
             this.fileUploadComponent.clear();

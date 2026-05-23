@@ -19,6 +19,7 @@ import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
 import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
 import { PartnerAdSubmissionRequestDto } from "@app/model/dto/request/partner-ad-submission.request.dto";
+import { MonitorResponseMapper } from "../mapper/monitor-response.mapper";
 
 interface ApiEnvelope<T> {
   data?: T;
@@ -34,7 +35,8 @@ export class MonitorService {
     @Inject(MONITOR_REPOSITORY_TOKEN) 
     private readonly repository: IMonitorRepository,
     private readonly http: HttpClient,
-    @Inject(ENVIRONMENT) private readonly env: Environment
+    @Inject(ENVIRONMENT) private readonly env: Environment,
+    private readonly monitorResponseMapper: MonitorResponseMapper
   ) {}
 
   getMonitorsWithPagination(filters?: FilterMonitorRequestDto): Observable<PaginationResponseDto<Monitor>> {
@@ -93,7 +95,7 @@ export class MonitorService {
       .pipe(
         map((res) => {
           const list = Array.isArray(res?.data) ? res.data : [];
-          return list.map((dto) => this.mapMonitorResponseToMonitor(dto));
+          return list.map((dto) => this.monitorResponseMapper.toMonitor(dto));
         }),
         catchError(() => of([]))
       );
@@ -126,7 +128,7 @@ export class MonitorService {
           if (!dto?.id) {
             throw new Error("Monitor not found");
           }
-          return this.mapMonitorResponseToMonitor(dto);
+          return this.monitorResponseMapper.toMonitor(dto);
         })
       );
   }
@@ -209,34 +211,6 @@ export class MonitorService {
           this.mapIncidentToAlert(this.requireIncidentPayload(res?.data))
         )
       );
-  }
-
-  private mapMonitorResponseToMonitor(monitorResponse: MonitorResponseDto): Monitor {
-    return {
-      id: monitorResponse.id,
-      active: monitorResponse.active,
-      fullAddress: monitorResponse.fullAddress,
-      address: monitorResponse.address ?? {
-        id: "",
-        street: "",
-        city: "",
-        state: "",
-        country: "",
-        zipCode: "",
-      },
-      adLinks: monitorResponse.adLinks ?? [],
-      canBeDeleted: monitorResponse.canBeDeleted,
-      createdAt: monitorResponse.createdAt,
-      updatedAt: monitorResponse.updatedAt,
-      maxAds: monitorResponse.maxAds,
-      activeAdsCount: monitorResponse.activeAdsCount,
-      partnerAdsCount: monitorResponse.partnerAdsCount,
-      clientAdsCount: monitorResponse.clientAdsCount,
-      remainingTotalSlots: monitorResponse.remainingTotalSlots,
-      remainingPartnerSlots: monitorResponse.remainingPartnerSlots,
-      remainingClientSlots: monitorResponse.remainingClientSlots,
-      availableAdsCount: monitorResponse.availableAdsCount,
-    };
   }
 
   private getAuthHeaders(): HttpHeaders {

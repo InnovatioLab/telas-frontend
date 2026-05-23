@@ -1,7 +1,8 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Output } from "@angular/core";
+import { Component, EventEmitter, inject, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
+import { MonitorMapsResponseDto, SearchMonitorsService } from "@app/core/service/api/search-monitors.service";
+import { MonitorMapPointMapper } from "@app/core/service/mapper/monitor-map-point.mapper";
 import { LoadingService } from "@app/core/service/state/loading.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { ToastService } from "@app/core/service/state/toast.service";
@@ -19,11 +20,10 @@ export class SearchBarComponent {
   @Output() monitorsFound = new EventEmitter<MapPoint[]>();
   searchText: string = "";
 
-  constructor(
-    private readonly searchMonitorsService: SearchMonitorsService,
-    private readonly loadingService: LoadingService,
-    private readonly toastService: ToastService
-  ) {}
+  private readonly searchMonitorsService = inject(SearchMonitorsService);
+  private readonly loadingService = inject(LoadingService);
+  private readonly toastService = inject(ToastService);
+  private readonly monitorMapPointMapper = inject(MonitorMapPointMapper);
 
   get isSearching(): boolean {
     return this.loadingService.loadingSub.getValue();
@@ -38,11 +38,11 @@ export class SearchBarComponent {
 
     if (zipRegex.test(searchTextCopy)) {
       this.searchMonitorsService.findNearestMonitors(searchTextCopy).subscribe({
-        next: (monitors) => {
+        next: (monitors: MonitorMapsResponseDto[]) => {
           this.loadingService.setLoading(false, "address-search");
 
           if (monitors && monitors.length > 0) {
-            const mapPoints = this.convertMonitorsToMapPoints(monitors);
+            const mapPoints = this.monitorMapPointMapper.convertToMapPoints(monitors);
             this.monitorsFound.emit(mapPoints);
             this.toastService.sucesso(
               `Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`
@@ -103,40 +103,5 @@ export class SearchBarComponent {
         this.searchText = filteredText;
       }
     }
-  }
-
-  private convertMonitorsToMapPoints(monitors: any[]): MapPoint[] {
-    return monitors.map((monitor) => ({
-      id: monitor.id,
-      title: `Monitor ${monitor.type} - ${monitor.size}"`,
-      description: this.buildMonitorDescription(monitor),
-      latitude: monitor.latitude,
-      longitude: monitor.longitude,
-      category: "MONITOR",
-      addressLocationName: monitor.addressLocationName,
-      addressLocationDescription: monitor.addressLocationDescription,
-      hasAvailableSlots: monitor.hasAvailableSlots,
-      photoUrl: monitor.photoUrl,
-      data: monitor,
-    }));
-  }
-
-  private buildMonitorDescription(monitor: any): string {
-    const parts: string[] = [];
-    if (monitor.hasAvailableSlots !== undefined) {
-      parts.push(
-        `Available Slots: ${monitor.hasAvailableSlots ? "Yes" : "No"}`
-      );
-    }
-    if (monitor.adsDailyDisplayTimeInMinutes) {
-      parts.push(
-        `Daily Display Time: ${monitor.adsDailyDisplayTimeInMinutes} min`
-      );
-    }
-    if (monitor.estimatedSlotReleaseDate && !monitor.hasAvailableSlots) {
-      const releaseDate = new Date(monitor.estimatedSlotReleaseDate);
-      parts.push(`Next Available: ${releaseDate.toLocaleDateString()}`);
-    }
-    return parts.join(" | ") || "Monitor Information";
   }
 }

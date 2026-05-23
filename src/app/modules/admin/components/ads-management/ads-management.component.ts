@@ -13,10 +13,9 @@ import {
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
-import {
-  resolveLazyTableRequestPage,
-  TableLazyPageEvent,
-} from "@app/shared/utils/table-lazy-pagination.utils";
+import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
+import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-ads-management",
@@ -26,12 +25,12 @@ import {
   styleUrls: ["./ads-management.component.scss"],
 })
 export class AdsManagementComponent implements OnInit {
-  approvedRows: AdminAdOperationRow[] = [];
-  loading = false;
   searchTerm = "";
-  totalRecords = 0;
-  currentPage = 1;
-  pageSize = 10;
+
+  readonly tableController: LazyTableController<
+    AdminAdOperationRow,
+    AdminAdOperationsFilter & LazyTableFilterState
+  >;
 
   colAdvertiserName = "";
   colPartnerName = "";
@@ -54,7 +53,47 @@ export class AdsManagementComponent implements OnInit {
     private readonly toastService: ToastService,
     private readonly sanitizer: DomSanitizer,
     private readonly confirmationDialogService: ConfirmationDialogService
-  ) {}
+  ) {
+    this.tableController = new LazyTableController<
+      AdminAdOperationRow,
+      AdminAdOperationsFilter & LazyTableFilterState
+    >(
+      {
+        page: 1,
+        size: 10,
+        sortBy: "submissionDate",
+        sortDir: "desc",
+      },
+      (filters) =>
+        this.adminAdOperationsService.findPage(this.buildListFilters(filters)).pipe(
+          map((response) => ({
+            list: response.list ?? [],
+            totalElements: response.totalRecords ?? response.totalElements ?? 0,
+          }))
+        ),
+      () => this.toastService.erro("Failed to load client-approved ads")
+    );
+  }
+
+  get approvedRows(): AdminAdOperationRow[] {
+    return this.tableController.items;
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading;
+  }
+
+  get totalRecords(): number {
+    return this.tableController.totalRecords;
+  }
+
+  get currentPage(): number {
+    return this.tableController.currentFilters.page ?? 1;
+  }
+
+  get pageSize(): number {
+    return this.tableController.currentFilters.size ?? 10;
+  }
 
   ngOnInit(): void {
     this.loadApprovedClientAds();
@@ -73,17 +112,19 @@ export class AdsManagementComponent implements OnInit {
     this.colSubmissionTo = new Date(this.colSubmissionFrom);
   }
 
-  private buildListFilters(): AdminAdOperationsFilter {
+  private buildListFilters(
+    base: AdminAdOperationsFilter & LazyTableFilterState
+  ): AdminAdOperationsFilter {
     this.ensureCoherentSubmissionDateRange();
     const submissionDateFrom = this.dateToIsoStartUtc(this.colSubmissionFrom);
     const submissionDateTo = this.dateToIsoEndUtc(this.colSubmissionTo);
     return {
-      page: this.currentPage,
-      size: this.pageSize,
-      genericFilter: this.searchTerm,
+      page: base.page ?? 1,
+      size: base.size ?? 10,
+      genericFilter: base.genericFilter,
       validation: "APPROVED",
-      sortBy: "submissionDate",
-      sortDir: "desc",
+      sortBy: base.sortBy ?? "submissionDate",
+      sortDir: base.sortDir ?? "desc",
       advertiserName: this.colAdvertiserName.trim() || undefined,
       partnerName: this.colPartnerName.trim() || undefined,
       boxIp: this.colBoxIp.trim() || undefined,
@@ -130,31 +171,18 @@ export class AdsManagementComponent implements OnInit {
   }
 
   loadApprovedClientAds(): void {
-    this.loading = true;
-    this.adminAdOperationsService
-      .findPage(this.buildListFilters())
-      .subscribe({
-        next: (response) => {
-          this.approvedRows = response.list ?? [];
-          this.totalRecords =
-            response.totalRecords ?? response.totalElements ?? 0;
-          this.loading = false;
-        },
-        error: () => {
-          this.toastService.erro("Failed to load client-approved ads");
-          this.loading = false;
-        },
-      });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
   onSearch(): void {
-    this.currentPage = 1;
-    this.loadApprovedClientAds();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onApplyColumnFilters(): void {
-    this.currentPage = 1;
-    this.loadApprovedClientAds();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onClearColumnFilters(): void {
@@ -164,15 +192,13 @@ export class AdsManagementComponent implements OnInit {
     this.colScreenContains = "";
     this.colSubmissionFrom = null;
     this.colSubmissionTo = null;
-    this.currentPage = 1;
-    this.loadApprovedClientAds();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    const { page, rows } = resolveLazyTableRequestPage(event, this.pageSize);
-    this.currentPage = page;
-    this.pageSize = rows;
-    this.loadApprovedClientAds();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onPageChange(event);
   }
 
   isSentToBox(row: AdminAdOperationRow): boolean {

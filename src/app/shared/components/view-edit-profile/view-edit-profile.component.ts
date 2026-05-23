@@ -5,8 +5,8 @@ import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
-  Validators,
 } from "@angular/forms";
+import { ClientProfileFormFactory } from "@app/shared/forms/client-profile-form.factory";
 import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
 import { ReservedBusinessNameDirective } from "@app/core/directives/reserved-business-name.directive";
 import { ClientService } from "@app/core/service/api/client.service";
@@ -55,20 +55,9 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   createForm(): void {
-    this.profileForm = this.fb.group({
-      businessName: ["", [Validators.required, Validators.maxLength(255)]],
-      industry: ["", [Validators.maxLength(50)]],
-      websiteUrl: [
-        "",
-        [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
-      ],
-      email: [
-        "",
-        [Validators.required, Validators.email, Validators.maxLength(255)],
-      ],
-      phone: ["", [Validators.required, AbstractControlUtils.validatePhone()]],
-      addresses: this.fb.array([]),
-      socialMedia: this.fb.array([]),
+    this.profileForm = ClientProfileFormFactory.createProfileForm(this.fb, {
+      contactFields: "profile",
+      includeSocialMedia: true,
     });
   }
 
@@ -78,29 +67,7 @@ export class ViewEditProfileComponent implements OnInit {
 
   addAddress(): void {
     this.addressesFormArray.push(
-      this.fb.group({
-        id: [null],
-        street: [
-          "",
-          [
-            Validators.required,
-            Validators.maxLength(100),
-            AbstractControlUtils.validateStreet(),
-          ],
-        ],
-        zipCode: ["", Validators.required],
-        city: ["", [Validators.required, Validators.maxLength(50)]],
-        state: [
-          "",
-          [
-            Validators.required,
-            Validators.maxLength(2),
-            Validators.minLength(2),
-          ],
-        ],
-        country: ["US", Validators.maxLength(100)],
-        address2: ["", Validators.maxLength(100)],
-      })
+      ClientProfileFormFactory.createEmptyAddressGroup(this.fb)
     );
   }
 
@@ -116,32 +83,7 @@ export class ViewEditProfileComponent implements OnInit {
     if (addresses && addresses.length > 0) {
       addresses.forEach((addr) => {
         addressesArray.push(
-          this.fb.group({
-            id: [addr.id ?? null],
-            street: [
-              addr.street ?? null,
-              [
-                Validators.required,
-                Validators.maxLength(100),
-                AbstractControlUtils.validateStreet(),
-              ],
-            ],
-            zipCode: [addr.zipCode ?? null, Validators.required],
-            city: [
-              addr.city ?? null,
-              [Validators.required, Validators.maxLength(50)],
-            ],
-            state: [
-              addr.state ?? null,
-              [
-                Validators.required,
-                Validators.maxLength(2),
-                Validators.minLength(2),
-              ],
-            ],
-            country: [addr.country ?? "US", Validators.maxLength(100)],
-            address2: [addr.address2 ?? null, Validators.maxLength(100)],
-          })
+          ClientProfileFormFactory.createAddressGroupFromData(this.fb, addr)
         );
       });
     } else {
@@ -155,17 +97,7 @@ export class ViewEditProfileComponent implements OnInit {
 
   addSocialMedia(): void {
     this.socialMediaArray.push(
-      this.fb.group({
-        platform: ["", Validators.required],
-        url: [
-          "",
-          [
-            Validators.required,
-            Validators.maxLength(255),
-            AbstractControlUtils.validateUrl(),
-          ],
-        ],
-      })
+      ClientProfileFormFactory.createSocialMediaGroup(this.fb)
     );
   }
 
@@ -303,19 +235,10 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   addSocialMediaWithValues(platform: string, url: string): void {
-    const socialMediaGroup = this.fb.group({
-      platform: [platform, Validators.required],
-      url: [
-        url,
-        [
-          Validators.required,
-          Validators.maxLength(255),
-          AbstractControlUtils.validateUrl(),
-        ],
-      ],
-    });
-
-    this.socialMediaArray.push(socialMediaGroup, { emitEvent: false });
+    this.socialMediaArray.push(
+      ClientProfileFormFactory.createSocialMediaGroup(this.fb, platform, url),
+      { emitEvent: false }
+    );
   }
 
   disableForm(): void {

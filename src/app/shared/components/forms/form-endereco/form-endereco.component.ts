@@ -12,7 +12,6 @@ import {
   distinctUntilChanged,
   filter,
   Observable,
-  of,
   switchMap,
 } from "rxjs";
 import { AddressData } from "../../../../model/dto/request/address-data-request";
@@ -71,41 +70,40 @@ export class FormEnderecoComponent implements OnInit {
   }
 
   private setupZipCodeSearch(): void {
-    // const zipCodeControl = this.enderecoForm.get("zipCode");
+    const zipCodeControl = this.enderecoForm.get("zipCode");
 
-    // if (zipCodeControl) {
-    //   zipCodeControl.valueChanges
-    //     .pipe(
-    //       debounceTime(500),
-    //       distinctUntilChanged(),
-    //       filter((zipCode: string) => {
-    //         return zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode);
-    //       }),
-    //       switchMap((zipCode: string): Observable<AddressData | null> => {
-    //         if (zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode)) {
-    //           this.loadingService.setLoading(true, "form-endereco");
-    //           return this.zipCodeService.findLocationByZipCode(zipCode);
-    //         }
-    //         return of(null);
-    //       })
-    //     )
-    //     .subscribe({
-    //       next: (addressData) => {
-    //         if (addressData) {
-    //           this.zipCodeEncontrado = true;
-    //           this.loadingService.setLoading(false, "form-endereco");
-    //           this.fillAddressFields(addressData);
-    //         } else {
-    //           this.zipCodeEncontrado = false;
-    //           this.loadingService.setLoading(false, "form-endereco");
-    //         }
-    //       },
-    //       error: () => {
-    //         this.zipCodeEncontrado = false;
-    //         this.loadingService.setLoading(false, "form-endereco");
-    //       },
-    //     });
-    // }
+    if (!zipCodeControl) {
+      return;
+    }
+
+    zipCodeControl.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        filter(
+          (zipCode: string): zipCode is string =>
+            !!zipCode && zipCode.length === 5 && /^\d{5}$/.test(zipCode)
+        ),
+        switchMap((zipCode: string): Observable<AddressData | null> => {
+          this.loadingService.setLoading(true, "form-endereco");
+          return this.zipCodeService.findLocationByZipCode(zipCode);
+        })
+      )
+      .subscribe({
+        next: (addressData) => {
+          if (addressData) {
+            this.zipCodeEncontrado = true;
+            this.fillAddressFields(addressData);
+          } else {
+            this.zipCodeEncontrado = false;
+          }
+          this.loadingService.setLoading(false, "form-endereco");
+        },
+        error: () => {
+          this.zipCodeEncontrado = false;
+          this.loadingService.setLoading(false, "form-endereco");
+        },
+      });
   }
 
   updatePartnerAddress(value: boolean) {
@@ -121,24 +119,23 @@ export class FormEnderecoComponent implements OnInit {
   }
 
   private fillAddressFields(result: AddressData) {
-    const fields: Array<keyof AddressData & string> = [
-      "street",
-      "city",
-      "state",
-      "country",
+    const fieldMap: Array<{ key: keyof AddressData; control: string }> = [
+      { key: "street", control: "street" },
+      { key: "city", control: "city" },
+      { key: "state", control: "state" },
+      { key: "country", control: "country" },
     ];
 
-    const { payload, touched } = fields.reduce(
-      (acc, field) => {
-        const value = (result as any)[field];
-        if (value != null && value !== "") {
-          acc.payload[field] = value;
-          acc.touched.push(field);
-        }
-        return acc;
-      },
-      { payload: {} as Partial<Record<string, any>>, touched: [] as string[] }
-    );
+    const payload: Partial<Record<string, string>> = {};
+    const touched: string[] = [];
+
+    for (const { key, control } of fieldMap) {
+      const value = result[key];
+      if (typeof value === "string" && value !== "") {
+        payload[control] = value;
+        touched.push(control);
+      }
+    }
 
     if (Object.keys(payload).length > 0) {
       this.enderecoForm.patchValue(payload);
@@ -146,6 +143,7 @@ export class FormEnderecoComponent implements OnInit {
         this.enderecoForm.get(name)?.markAsTouched();
       }
     }
+
 
     if (result.latitude && result.longitude) {
       this.latitude = result.latitude;

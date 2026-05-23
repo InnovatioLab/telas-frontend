@@ -14,10 +14,9 @@ import { SubscriptionStatus } from "@app/model/enums/subscription-status.enum";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
-import {
-  resolveLazyTableRequestPage,
-  TableLazyPageEvent,
-} from "@app/shared/utils/table-lazy-pagination.utils";
+import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
+import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-management-subscriptions",
@@ -27,8 +26,6 @@ import {
   imports: [CommonModule, PrimengModule, IconsModule, FormsModule],
 })
 export class ManagementSubscriptionsComponent implements OnInit {
-  loading = false;
-  subscriptions: SubscriptionMinResponseDto[] = [];
   selectedSubscriptionForUpgrade: SubscriptionMinResponseDto | null = null;
   showUpgradeDialog = false;
 
@@ -43,24 +40,53 @@ export class ManagementSubscriptionsComponent implements OnInit {
   selectedUpgradeRecurrence: Recurrence | null = null;
 
   searchTerm = "";
-  isSorting = false;
-  totalRecords = 0;
-  currentPage = 1;
-  pageSize = 10;
+  private operationLoading = false;
 
-  currentFilters: FilterSubscriptionRequestDto = {
-    page: 1,
-    size: 10,
-    sortBy: "startedAt",
-    sortDir: "desc",
-  };
+  readonly tableController: LazyTableController<
+    SubscriptionMinResponseDto,
+    FilterSubscriptionRequestDto & LazyTableFilterState
+  >;
 
   constructor(
     private readonly toastService: ToastService,
     private readonly subscriptionService: SubscriptionService,
     private readonly dialogService: ConfirmationDialogService,
     private readonly route: ActivatedRoute
-  ) {}
+  ) {
+    this.tableController = new LazyTableController<
+      SubscriptionMinResponseDto,
+      FilterSubscriptionRequestDto & LazyTableFilterState
+    >(
+      { page: 1, size: 10, sortBy: "startedAt", sortDir: "desc" },
+      (filters) =>
+        this.subscriptionService
+          .getClientSubscriptionsFilters(filters as FilterSubscriptionRequestDto)
+          .pipe(
+          map((result) => ({
+            list: result.list || [],
+            totalElements: this.ensureValidNumber(
+              result.totalElements ?? result.totalRecords ?? 0
+            ),
+          }))
+        )
+    );
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading || this.operationLoading;
+  }
+
+  get subscriptions(): SubscriptionMinResponseDto[] {
+    return this.tableController.items;
+  }
+
+  get totalRecords(): number {
+    return this.tableController.totalRecords;
+  }
+
+  get currentFilters(): FilterSubscriptionRequestDto & LazyTableFilterState {
+    return this.tableController.currentFilters;
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -75,92 +101,33 @@ export class ManagementSubscriptionsComponent implements OnInit {
   }
 
   loadInitialData(): void {
-    this.loading = true;
-
-    const filters: FilterSubscriptionRequestDto = { ...this.currentFilters };
-
-    if (this.searchTerm.trim()) {
-      filters.genericFilter = this.searchTerm.trim();
-    }
-
-    this.subscriptionService.getClientSubscriptionsFilters(filters).subscribe({
-      next: (result) => {
-        this.subscriptions = result.list || [];
-        this.totalRecords = this.ensureValidNumber(
-          result.totalElements ?? (result as any).totalRecords ?? 0
-        );
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
-  ensureValidNumber(value: any): number {
+  ensureValidNumber(value: unknown): number {
     const num = Number(value);
     return isNaN(num) ? 0 : num;
   }
 
   onSearch(): void {
-    this.currentFilters.page = 1;
-    this.loadSubscriptions();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    const { page, rows } = resolveLazyTableRequestPage(
-      event,
-      this.currentFilters.size ?? 10
-    );
-    this.currentFilters.page = page;
-    this.currentFilters.size = rows;
-    this.loadSubscriptions();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onPageChange(event);
   }
 
-  onSort(event: any): void {
-    if (this.isSorting || this.loading) {
-      return;
-    }
-
-    const newSortBy = event.field;
-    const newSortDir = event.order === 1 ? "asc" : "desc";
-
-    if (
-      this.currentFilters.sortBy === newSortBy &&
-      this.currentFilters.sortDir === newSortDir
-    ) {
-      return;
-    }
-
-    this.isSorting = true;
-    this.currentFilters.sortBy = event.field;
-    this.currentFilters.sortDir = event.order === 1 ? "asc" : "desc";
-    this.loadSubscriptions();
+  onSort(event: { field?: string; order?: number }): void {
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSort(event);
   }
 
   loadSubscriptions(): void {
-    this.loading = true;
-
-    const filters: FilterSubscriptionRequestDto = { ...this.currentFilters };
-
-    if (this.searchTerm.trim()) {
-      filters.genericFilter = this.searchTerm.trim();
-    }
-
-    this.subscriptionService.getClientSubscriptionsFilters(filters).subscribe({
-      next: (result) => {
-        this.subscriptions = result.list || [];
-        this.totalRecords = this.ensureValidNumber(
-          result.totalElements ?? result.totalRecords ?? 0
-        );
-        this.loading = false;
-        this.isSorting = false;
-      },
-      error: () => {
-        this.loading = false;
-        this.isSorting = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
   getSubscriptionLocations(subscription: SubscriptionMinResponseDto): string {
@@ -285,7 +252,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.operationLoading = true;
 
     this.subscriptionService
       .upgrade(
@@ -294,7 +261,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
       )
       .subscribe({
         next: (checkoutUrl) => {
-          this.loading = false;
+          this.operationLoading = false;
           if (!checkoutUrl) {
             this.toastService.aviso("No checkout URL returned for upgrade.");
             return;
@@ -305,13 +272,13 @@ export class ManagementSubscriptionsComponent implements OnInit {
           window.location.href = checkoutUrl;
         },
         error: () => {
-          this.loading = false;
+          this.operationLoading = false;
         },
       });
   }
 
   initiateRenewCheckout(subscription: SubscriptionMinResponseDto): void {
-    this.loading = true;
+    this.operationLoading = true;
 
     this.subscriptionService.renew(subscription.id).subscribe({
       next: (checkoutUrl) => {
@@ -327,21 +294,21 @@ export class ManagementSubscriptionsComponent implements OnInit {
   }
 
   initiateCustomerPortalSession(): void {
-    this.loading = true;
+    this.operationLoading = true;
 
     this.subscriptionService.getCustomerPortalUrl().subscribe({
       next: (portalUrl) => {
         if (!portalUrl) {
           this.toastService.aviso("No URL returned for customer portal.");
-          this.loading = false;
+          this.operationLoading = false;
           return;
         }
-        this.loading = false;
+        this.operationLoading = false;
 
         window.location.href = portalUrl;
       },
       error: (error) => {
-        this.loading = false;
+        this.operationLoading = false;
         if ((error as any)?.handled) {
           return;
         }

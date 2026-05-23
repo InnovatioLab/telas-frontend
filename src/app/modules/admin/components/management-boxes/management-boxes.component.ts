@@ -15,14 +15,12 @@ import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import {
-  resolveLazyTableRequestPage,
-  TableLazyPageEvent,
-} from "@app/shared/utils/table-lazy-pagination.utils";
+import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
+import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
 import { MessageService, OverlayOptions } from "primeng/api";
 import { Role } from "@app/model/client";
 import { Observable, of } from "rxjs";
-import { switchMap, take } from "rxjs/operators";
+import { map, switchMap, take } from "rxjs/operators";
 
 @Component({
   selector: "app-management-boxes",
@@ -37,16 +35,17 @@ export class ManagementBoxesComponent implements OnInit {
     baseZIndex: 11000,
   };
 
-  boxes: Box[] = [];
   availableBoxAddresses: BoxAddress[] = [];
   selectedBoxForEdit: Box | null = null;
   selectedBoxAddress: BoxAddress | null = null;
-  loading = false;
   createBoxModalVisible = false;
   editBoxModalVisible = false;
   searchTerm = "";
-  totalRecords = 0;
-  private isSorting = false;
+
+  readonly tableController: LazyTableController<
+    Box,
+    FilterBoxRequestDto & LazyTableFilterState
+  >;
 
   newBox: BoxRequestDto = {
     boxAddressId: "",
@@ -66,13 +65,6 @@ export class ManagementBoxesComponent implements OnInit {
   selectedBoxSmartPlugId = "";
   initialBoxSmartPlugId: string | null = null;
 
-  currentFilters: FilterBoxRequestDto = {
-    page: 1,
-    size: 10,
-    sortBy: "active",
-    sortDir: "desc",
-  };
-
   constructor(
     private readonly boxService: BoxService,
     private readonly monitorService: MonitorService,
@@ -80,7 +72,38 @@ export class ManagementBoxesComponent implements OnInit {
     private readonly smartPlugAdmin: SmartPlugAdminService,
     private readonly toastService: ToastService,
     private readonly messageService: MessageService
-  ) {}
+  ) {
+    this.tableController = new LazyTableController<
+      Box,
+      FilterBoxRequestDto & LazyTableFilterState
+    >(
+      { page: 1, size: 10, sortBy: "active", sortDir: "desc" },
+      (filters) =>
+        this.boxService.getBoxesWithPagination(filters as FilterBoxRequestDto).pipe(
+          map((result) => ({
+            list: result.list,
+            totalElements: result.totalElements,
+          }))
+        ),
+      () => this.toastService.erro("Error loading boxes")
+    );
+  }
+
+  get boxes(): Box[] {
+    return this.tableController.items;
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading;
+  }
+
+  get totalRecords(): number {
+    return this.tableController.totalRecords;
+  }
+
+  get currentFilters(): FilterBoxRequestDto & LazyTableFilterState {
+    return this.tableController.currentFilters;
+  }
 
   ngOnInit(): void {
     this.clientService.clientAtual$.pipe(take(1)).subscribe((client) => {
@@ -90,24 +113,8 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   loadInitialData(): void {
-    this.loading = true;
-
-    const filters: FilterBoxRequestDto = { ...this.currentFilters };
-    if (this.searchTerm.trim()) {
-      filters.genericFilter = this.searchTerm.trim();
-    }
-
-    this.boxService.getBoxesWithPagination(filters).subscribe({
-      next: (result) => {
-        this.boxes = result.list;
-        this.totalRecords = result.totalElements;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.toastService.erro("Error loading boxes");
-        this.loading = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
   loadAvailableBoxAddresses(): void {
@@ -224,62 +231,23 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   loadBoxes(): void {
-    this.loading = true;
-
-    const filters: FilterBoxRequestDto = { ...this.currentFilters };
-    if (this.searchTerm.trim()) {
-      filters.genericFilter = this.searchTerm.trim();
-    }
-
-    this.boxService.getBoxesWithPagination(filters).subscribe({
-      next: (result) => {
-        this.boxes = result.list;
-        this.totalRecords = result.totalElements;
-        this.loading = false;
-        this.isSorting = false;
-      },
-      error: (error) => {
-        this.toastService.erro("Error loading boxes");
-        this.loading = false;
-        this.isSorting = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
   onSearch(): void {
-    this.currentFilters.page = 1;
-    this.loadBoxes();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    const { page, rows } = resolveLazyTableRequestPage(
-      event,
-      this.currentFilters.size ?? 10
-    );
-    this.currentFilters.page = page;
-    this.currentFilters.size = rows;
-    this.loadBoxes();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onPageChange(event);
   }
 
-  onSort(event: any): void {
-    if (this.isSorting || this.loading) {
-      return;
-    }
-
-    const newSortBy = event.field;
-    const newSortDir = event.order === 1 ? "asc" : "desc";
-
-    if (
-      this.currentFilters.sortBy === newSortBy &&
-      this.currentFilters.sortDir === newSortDir
-    ) {
-      return;
-    }
-
-    this.isSorting = true;
-    this.currentFilters.sortBy = event.field;
-    this.currentFilters.sortDir = event.order === 1 ? "asc" : "desc";
-    this.loadBoxes();
+  onSort(event: { field?: string; order?: number }): void {
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSort(event);
   }
 
   openCreateBoxModal(): void {

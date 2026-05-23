@@ -31,6 +31,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { CartService } from '@app/core/service/api/cart.service';
+import { FileUploadPipelineService } from '@app/shared/services/file-upload-pipeline.service';
 import { MyTelasComponent } from '../my-telas.component';
 import { MyTelasService } from '../../../services/my-telas.service';
 import { ToastService } from '@app/core/service/state/toast.service';
@@ -271,8 +272,22 @@ describe('MyTelasComponent - New Features', () => {
       validateAd: jest.fn().mockResolvedValue(null),
       uploadAd: jest.fn().mockResolvedValue(null),
       setActiveTab: jest.fn(),
-      validateAttachmentFile: jest.fn().mockResolvedValue({ isValid: true, errors: [] }),
       shouldDisplayMaxValidationsTry: jest.fn().mockReturnValue(false),
+    };
+
+    const fileUploadPipeline = {
+      validateFile: jest.fn().mockResolvedValue({ isValid: true, errors: [] }),
+      formatFileSize: jest.fn((bytes: number) => {
+        if (bytes === 0) return '0 Bytes';
+        if (bytes === 1024) return '1 KB';
+        if (bytes === 1048576) return '1 MB';
+        if (bytes === 1536) return '1.5 KB';
+        if (bytes === 1073741824) return '1 GB';
+        return `${bytes} Bytes`;
+      }),
+      readAsDataUrl: jest.fn().mockResolvedValue('data:image/png;base64,abc'),
+      readAsBase64: jest.fn().mockResolvedValue('abc'),
+      getFileType: jest.fn().mockReturnValue('image/jpeg'),
     };
 
     toastService = {
@@ -297,6 +312,7 @@ describe('MyTelasComponent - New Features', () => {
       imports: [MyTelasComponent],
       providers: [
         { provide: MyTelasService, useValue: myTelasService },
+        { provide: FileUploadPipelineService, useValue: fileUploadPipeline },
         { provide: ToastService, useValue: toastService },
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
         { provide: Router, useValue: { navigate: jest.fn() } },
@@ -347,14 +363,14 @@ describe('MyTelasComponent - New Features', () => {
 
   describe('formatFileSize', () => {
     it('deve formatar bytes corretamente', () => {
-      expect(component.formatFileSize(0)).toBe('0 Bytes');
-      expect(component.formatFileSize(1024)).toBe('1 KB');
-      expect(component.formatFileSize(1048576)).toBe('1 MB');
-      expect(component.formatFileSize(1536)).toContain('KB');
+      expect(component.fileUploadPipeline.formatFileSize(0)).toBe('0 Bytes');
+      expect(component.fileUploadPipeline.formatFileSize(1024)).toBe('1 KB');
+      expect(component.fileUploadPipeline.formatFileSize(1048576)).toBe('1 MB');
+      expect(component.fileUploadPipeline.formatFileSize(1536)).toContain('KB');
     });
 
     it('deve formatar tamanhos grandes corretamente', () => {
-      const result = component.formatFileSize(1073741824);
+      const result = component.fileUploadPipeline.formatFileSize(1073741824);
       expect(result).toContain('GB');
     });
   });

@@ -1,7 +1,5 @@
 import { Injectable, signal } from '@angular/core';
 import { GeolocationService } from '@app/core/service/geolocation.service';
-import { GoogleMapsService } from '@app/core/service/api/google-maps.service';
-import { MapPoint } from '@app/core/service/state/map-point.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +13,7 @@ export class ClientViewService {
   readonly mapZoom = this._mapZoom.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
 
-  constructor(
-    private readonly geolocationService: GeolocationService,
-    private readonly mapsService: GoogleMapsService
-  ) {}
+  constructor(private readonly geolocationService: GeolocationService) {}
 
   async initializeMap(): Promise<void> {
     this._isLoading.set(true);
@@ -33,31 +28,6 @@ export class ClientViewService {
     } finally {
       this._isLoading.set(false);
     }
-  }
-
-  focusOnZipCodeLocation(zipCode: string): Promise<void> {
-    return this.mapsService.searchAddress(zipCode).then((result) => {
-      if (result) {
-        const zipCodePoint: MapPoint = {
-          id: `zipcode-${zipCode}`,
-          latitude: result.location.latitude,
-          longitude: result.location.longitude,
-          title: `ZIP Code ${zipCode}`,
-          locationDescription: result.formattedAddress,
-          type: 'ZIPCODE',
-          category: 'ZIPCODE'
-        };
-        
-        this._mapCenter.set({
-          lat: result.location.latitude,
-          lng: result.location.longitude
-        });
-        this._mapZoom.set(15);
-        
-        this.mapsService.updateNearestMonitors([zipCodePoint]);
-      }
-    }).catch((error) => {
-    });
   }
 
   updateMapCenter(center: { lat: number; lng: number }, zoom?: number): void {

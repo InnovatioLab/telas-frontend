@@ -21,12 +21,25 @@ import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TableLazyLoadEvent } from "primeng/table";
+import {
+  LazyTableController,
+  LazyTableFilterState,
+} from "@app/shared/utils/lazy-table.controller";
+import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
+import { map } from "rxjs/operators";
 import { ActivatedRoute } from "@angular/router";
 import { SmartPlugLogsComponent } from "../smart-plug-logs/smart-plug-logs.component";
 
 interface SelectOption {
   label: string;
   value: string;
+}
+
+interface ApplicationLogsFilter extends LazyTableFilterState {
+  source?: string;
+  level?: string;
+  from?: string;
+  to?: string;
 }
 
 @Component({
@@ -53,9 +66,6 @@ export class ApplicationLogsComponent implements OnInit {
   private readonly authentication = inject(Authentication);
   private readonly route = inject(ActivatedRoute);
 
-  logs: ApplicationLogEntry[] = [];
-  loading = false;
-  totalRecords = 0;
   rows = 20;
   first = 0;
   messageDialogVisible = false;
@@ -80,6 +90,11 @@ export class ApplicationLogsComponent implements OnInit {
   filterFrom = "";
   filterTo = "";
 
+  readonly tableController: LazyTableController<
+    ApplicationLogEntry,
+    ApplicationLogsFilter
+  >;
+
   readonly sourceOptions: SelectOption[] = [
     { label: "All sources", value: "" },
     { label: "BOX", value: "BOX" },
@@ -99,6 +114,51 @@ export class ApplicationLogsComponent implements OnInit {
     { label: "TRACE", value: "TRACE" },
   ];
 
+  constructor() {
+    this.tableController = new LazyTableController<
+      ApplicationLogEntry,
+      ApplicationLogsFilter
+    >(
+      { page: 1, size: 20 },
+      (filters) =>
+        this.monitoringLogService
+          .getLogs({
+            page: (filters.page ?? 1) - 1,
+            size: filters.size ?? 20,
+            source: this.filterSource.trim() || undefined,
+            level: this.filterLevel.trim() || undefined,
+            q: filters.genericFilter,
+            from: this.filterFrom.trim() || undefined,
+            to: this.filterTo.trim() || undefined,
+          })
+          .pipe(
+            map((res) => ({
+              list: res.list ?? [],
+              totalElements: res.totalRecords ?? 0,
+            }))
+          ),
+      (err: { status?: number }) => {
+        this.tableController.items = [];
+        this.tableController.totalRecords = 0;
+        if (err?.status === 403) {
+          this.toastService.erro("You do not have permission to view logs.");
+        }
+      }
+    );
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading;
+  }
+
+  get totalRecords(): number {
+    return this.tableController.totalRecords;
+  }
+
+  get logs(): ApplicationLogEntry[] {
+    return this.tableController.items;
+  }
+
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((qp) => {
       const src = (qp.get("source") ?? "").trim();
@@ -114,8 +174,7 @@ export class ApplicationLogsComponent implements OnInit {
         this.filterQ = q;
       }
       if (this.canViewLogs()) {
-        this.first = 0;
-        this.loadPage();
+        this.reloadLogs(true);
       }
     });
     if (this.hasSchedulerView()) {
@@ -202,14 +261,36 @@ export class ApplicationLogsComponent implements OnInit {
   }
 
   onLazyLoad(event: TableLazyLoadEvent): void {
-    this.first = event.first ?? 0;
-    this.rows = event.rows ?? 20;
-    this.loadPage();
+    if (!this.canViewLogs()) {
+      return;
+    }
+    this.tableController.setSearchTerm(this.filterQ);
+    this.tableController.onPageChange(event as TableLazyPageEvent);
+    this.syncPaginationView();
   }
 
   applyFilters(): void {
-    this.first = 0;
-    this.loadPage();
+    this.reloadLogs(true);
+  }
+
+  private reloadLogs(resetPage = false): void {
+    if (!this.canViewLogs()) {
+      return;
+    }
+    this.tableController.setSearchTerm(this.filterQ);
+    if (resetPage) {
+      this.tableController.onSearch();
+    } else {
+      this.tableController.load();
+    }
+    this.syncPaginationView();
+  }
+
+  private syncPaginationView(): void {
+    const page = this.tableController.currentFilters.page ?? 1;
+    const size = this.tableController.currentFilters.size ?? 20;
+    this.first = (page - 1) * size;
+    this.rows = size;
   }
 
   levelSeverity(level: string): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
@@ -350,38 +431,5 @@ export class ApplicationLogsComponent implements OnInit {
         }
       },
     });
-  }
-
-  private loadPage(): void {
-    if (!this.canViewLogs()) {
-      return;
-    }
-    this.loading = true;
-    const page = Math.floor(this.first / this.rows);
-    this.monitoringLogService
-      .getLogs({
-        page,
-        size: this.rows,
-        source: this.filterSource.trim() || undefined,
-        level: this.filterLevel.trim() || undefined,
-        q: this.filterQ.trim() || undefined,
-        from: this.filterFrom.trim() || undefined,
-        to: this.filterTo.trim() || undefined,
-      })
-      .subscribe({
-        next: (res) => {
-          this.logs = res.list ?? [];
-          this.totalRecords = res.totalRecords ?? 0;
-          this.loading = false;
-        },
-        error: (err) => {
-          this.logs = [];
-          this.totalRecords = 0;
-          this.loading = false;
-          if (err?.status === 403) {
-            this.toastService.erro("You do not have permission to view logs.");
-          }
-        },
-      });
   }
 }

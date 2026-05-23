@@ -79,6 +79,59 @@ export class MapViewportFacadeService implements OnDestroy {
     this.viewportCache.reset();
   }
 
+  focusOnZipCodeLocation(
+    zipCode?: string
+  ): Promise<{ lat: number; lng: number } | null> {
+    let targetZipCode = zipCode;
+
+    if (!targetZipCode) {
+      const searchInput = document.getElementById(
+        "search-zipcode"
+      ) as HTMLInputElement | null;
+      targetZipCode = searchInput?.value;
+    }
+
+    if (!targetZipCode || targetZipCode.length !== 5) {
+      return Promise.resolve(null);
+    }
+
+    return this.connectOptions!.googleMapsService
+      .searchAddress(targetZipCode)
+      .then((result) => {
+        if (!result) {
+          return null;
+        }
+
+        const zipCodePoint: MapPoint = {
+          id: `zipcode-${targetZipCode}`,
+          latitude: result.location.latitude,
+          longitude: result.location.longitude,
+          title: `ZIP Code ${targetZipCode}`,
+          locationDescription: result.formattedAddress,
+          type: "ZIPCODE",
+          category: "ZIPCODE",
+        };
+
+        const center = {
+          lat: result.location.latitude,
+          lng: result.location.longitude,
+        };
+
+        this.connectOptions?.getMapsComponent()?.setMapPoints([zipCodePoint]);
+        this.connectOptions
+          ?.getMapsComponent()
+          ?.fitBoundsToPoints([zipCodePoint]);
+        this.connectOptions?.googleMapsService.updateNearestMonitors([
+          zipCodePoint,
+        ]);
+        this.connectOptions?.onMarkersChanged?.([zipCodePoint]);
+        this.triggerViewportFromMap();
+
+        return center;
+      })
+      .catch((): null => null);
+  }
+
   triggerViewportFromMap(): void {
     const leafletMap = this.connectOptions?.getMapsComponent()?.getLeafletMap();
     if (leafletMap) {

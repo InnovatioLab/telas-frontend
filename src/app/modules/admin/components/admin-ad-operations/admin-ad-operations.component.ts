@@ -12,10 +12,9 @@ import {
 } from "@app/model/admin-ad-operations";
 import { IconSearchComponent } from "@app/shared/icons/search.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import {
-  resolveLazyTableRequestPage,
-  TableLazyPageEvent,
-} from "@app/shared/utils/table-lazy-pagination.utils";
+import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
+import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-admin-ad-operations",
@@ -31,17 +30,13 @@ import {
   styleUrls: ["./admin-ad-operations.component.scss"],
 })
 export class AdminAdOperationsComponent implements OnInit {
-  rows: AdminAdOperationRow[] = [];
-  loading = false;
   searchTerm = "";
   validationFilter: string | null = null;
-  totalRecords = 0;
-  currentFilters: AdminAdOperationsFilter = {
-    page: 1,
-    size: 10,
-    sortBy: "adName",
-    sortDir: "asc",
-  };
+
+  readonly tableController: LazyTableController<
+    AdminAdOperationRow,
+    AdminAdOperationsFilter & LazyTableFilterState
+  >;
 
   notificationsDialogVisible = false;
   expiryNotifications: AdminExpiryNotification[] = [];
@@ -73,49 +68,66 @@ export class AdminAdOperationsComponent implements OnInit {
   constructor(
     private readonly adminAdOperationsService: AdminAdOperationsService,
     private readonly toastService: ToastService
-  ) {}
+  ) {
+    this.tableController = new LazyTableController<
+      AdminAdOperationRow,
+      AdminAdOperationsFilter & LazyTableFilterState
+    >(
+      { page: 1, size: 10, sortBy: "adName", sortDir: "asc" },
+      (filters) =>
+        this.adminAdOperationsService
+          .findPage({
+            page: filters.page || 1,
+            size: filters.size || 10,
+            sortBy: filters.sortBy,
+            sortDir: filters.sortDir,
+            genericFilter: filters.genericFilter,
+            validation: this.validationFilter || undefined,
+          })
+          .pipe(
+            map((result) => ({
+              list: result.list ?? [],
+              totalElements:
+                result.totalRecords ?? result.totalElements ?? result.list?.length ?? 0,
+            }))
+          ),
+      () => this.toastService.erro("Could not load data.")
+    );
+  }
+
+  get rows(): AdminAdOperationRow[] {
+    return this.tableController.items;
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading;
+  }
+
+  get totalRecords(): number {
+    return this.tableController.totalRecords;
+  }
+
+  get currentFilters(): AdminAdOperationsFilter & LazyTableFilterState {
+    return this.tableController.currentFilters;
+  }
 
   ngOnInit(): void {
     this.loadRows();
   }
 
   loadRows(): void {
-    this.loading = true;
-    const filters: AdminAdOperationsFilter = {
-      page: this.currentFilters.page || 1,
-      size: this.currentFilters.size || 10,
-      sortBy: this.currentFilters.sortBy,
-      sortDir: this.currentFilters.sortDir,
-      genericFilter: this.searchTerm.trim() || undefined,
-      validation: this.validationFilter || undefined,
-    };
-    this.adminAdOperationsService.findPage(filters).subscribe({
-      next: (result) => {
-        this.rows = result.list ?? [];
-        this.totalRecords =
-          result.totalRecords ?? result.totalElements ?? this.rows.length;
-        this.loading = false;
-      },
-      error: () => {
-        this.toastService.erro("Could not load data.");
-        this.loading = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
   onSearch(): void {
-    this.currentFilters.page = 1;
-    this.loadRows();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    const { page, rows } = resolveLazyTableRequestPage(
-      event,
-      this.currentFilters.size ?? 10
-    );
-    this.currentFilters.page = page;
-    this.currentFilters.size = rows;
-    this.loadRows();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onPageChange(event);
   }
 
   getUrgencySeverity(

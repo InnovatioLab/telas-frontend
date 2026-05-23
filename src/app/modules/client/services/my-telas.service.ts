@@ -22,7 +22,6 @@ import {
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
 import { AttachmentResponseDto } from '@app/model/dto/response/attachment-response.dto';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
-import { ImageValidationUtil } from '@app/utility/src/utils/image-validation.util';
 import { take } from 'rxjs/operators';
 
 @Injectable({
@@ -434,67 +433,6 @@ export class MyTelasService {
       throw error;
     } finally {
       this._isLoading.set(false);
-    }
-  }
-
-  validateAttachmentFile(file: File): Promise<{ isValid: boolean; errors: string[] }> {
-    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-    
-    if (!isPdf && !ImageValidationUtil.isValidFileType(file)) {
-      return Promise.resolve({
-        isValid: false,
-        errors: [`File "${file.name}" is invalid. Only images in JPG, PNG, GIF, SVG, BMP, TIFF formats or PDF files are allowed.`],
-      });
-    }
-
-    if (isPdf) {
-      // Para PDF, apenas validar extensão
-      if (!/.*\.pdf$/i.test(file.name)) {
-        return Promise.resolve({
-          isValid: false,
-          errors: [`File "${file.name}" is invalid. Only PDF files are allowed.`],
-        });
-      }
-    }
-
-    if (!ImageValidationUtil.isValidFileSize(file, 10)) {
-      return Promise.resolve({
-        isValid: false,
-        errors: [`File "${file.name}" must be at most 10MB.`],
-      });
-    }
-
-    if (!ImageValidationUtil.isValidFileName(file, 255)) {
-      return Promise.resolve({
-        isValid: false,
-        errors: [`File name "${file.name}" is too long. Maximum of 255 characters allowed.`],
-      });
-    }
-
-    return Promise.resolve({
-      isValid: true,
-      errors: [],
-    });
-  }
-
-  getFileType(file: File): string {
-    const extension = file.name.split(".").pop()?.toLowerCase();
-    switch (extension) {
-      case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      case "svg":
-        return "image/svg+xml";
-      case "bmp":
-        return "image/bmp";
-      case "tiff":
-        return "image/tiff";
-      default:
-        return "image/jpeg";
     }
   }
 

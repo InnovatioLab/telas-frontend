@@ -19,7 +19,7 @@ import { ErrorComponent } from "@app/shared";
 import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
+import { ClientProfileFormFactory } from "@app/shared/forms/client-profile-form.factory";
 import { ButtonModule } from "primeng/button";
 import { DynamicDialogRef } from "primeng/dynamicdialog";
 import { InputTextModule } from "primeng/inputtext";
@@ -60,70 +60,34 @@ export class CreatePartnerModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      businessName: ["", [Validators.required, Validators.maxLength(255)]],
-      industry: ["", [Validators.maxLength(50)]],
-      websiteUrl: [
-        "",
-        [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
-      ],
-      contactEmail: [
-        "",
-        [Validators.required, Validators.email, Validators.maxLength(255)],
-      ],
-      contactPhone: [
-        "",
-        [Validators.required, AbstractControlUtils.validatePhone()],
-      ],
-      addresses: this.fb.array([this.buildAddressGroup()]),
-      password: [
-        "",
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.maxLength(32),
-        ],
-      ],
-      confirmPassword: ["", [Validators.required]],
+    this.form = ClientProfileFormFactory.createProfileForm(this.fb, {
+      contactFields: "modal",
+      includeSocialMedia: false,
+      addressOptions: {
+        includeId: false,
+        strictZipCode: true,
+        requireCountry: true,
+      },
+      initialAddressCount: 1,
     });
+    this.form.addControl(
+      "password",
+      this.fb.control("", [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(32),
+      ])
+    );
+    this.form.addControl(
+      "confirmPassword",
+      this.fb.control("", [Validators.required])
+    );
   }
 
   passwordsMatch(): boolean {
     const password = this.form.get("password")?.value;
     const confirmPassword = this.form.get("confirmPassword")?.value;
     return password === confirmPassword;
-  }
-
-  private static readonly ZIP_CODE_VALIDATORS = [
-    Validators.required,
-    Validators.minLength(5),
-    Validators.maxLength(5),
-    Validators.pattern(/^\d{5}$/),
-  ];
-
-  private buildAddressGroup(): FormGroup {
-    return this.fb.group({
-      street: [
-        "",
-        [
-          Validators.required,
-          Validators.maxLength(100),
-          AbstractControlUtils.validateStreet(),
-        ],
-      ],
-      zipCode: ["", CreatePartnerModalComponent.ZIP_CODE_VALIDATORS],
-      city: ["", [Validators.required, Validators.maxLength(50)]],
-      state: [
-        "",
-        [
-          Validators.required,
-          Validators.maxLength(2),
-          Validators.minLength(2),
-        ],
-      ],
-      country: ["US", [Validators.required, Validators.maxLength(100)]],
-      address2: ["", Validators.maxLength(100)],
-    });
   }
 
   getAddressGroup(index: number): FormGroup {

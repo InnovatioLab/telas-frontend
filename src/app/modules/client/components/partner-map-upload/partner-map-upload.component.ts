@@ -9,8 +9,8 @@ import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.
 import { PartnerAdSubmissionRequestDto } from "@app/model/dto/request/partner-ad-submission.request.dto";
 import { Monitor } from "@app/model/monitors";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { FileUploadPipelineService } from "@app/shared/services/file-upload-pipeline.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
-import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { firstValueFrom } from "rxjs";
 
 type SubmissionChoice = "ADMIN_MATERIALS" | "PARTNER_FINISHED_CREATIVE";
@@ -61,7 +61,8 @@ export class PartnerMapUploadComponent implements OnInit {
     private readonly router: Router,
     private readonly monitorService: MonitorService,
     private readonly clientService: ClientService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly fileUploadPipeline: FileUploadPipelineService
   ) {}
 
   ngOnInit(): void {
@@ -160,13 +161,11 @@ export class PartnerMapUploadComponent implements OnInit {
         this.materialPreviews.push({ name: file.name, url: null, isPdf: true });
         continue;
       }
-      const reader = new FileReader();
       const entry = { name: file.name, url: null as string | null, isPdf: false };
       this.materialPreviews.push(entry);
-      reader.onload = () => {
-        entry.url = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+      void this.fileUploadPipeline.readAsDataUrl(file).then((dataUrl) => {
+        entry.url = dataUrl;
+      });
     }
   }
 
@@ -179,21 +178,16 @@ export class PartnerMapUploadComponent implements OnInit {
       this.toastService.erro("File must be at most 10MB");
       return;
     }
-    const validate = isPdfFile(file.name)
-      ? Promise.resolve({ isValid: true, errors: [] as string[] })
-      : ImageValidationUtil.validateImageFile(file);
     try {
-      const result = await validate;
+      const result = isPdfFile(file.name)
+        ? { isValid: true, errors: [] as string[] }
+        : await this.fileUploadPipeline.validateFile(file);
       if (!result.isValid) {
         result.errors.forEach((msg) => this.toastService.erro(msg));
         return;
       }
       this.selectedCreativeFile = file;
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.creativePreviewUrl = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+      this.creativePreviewUrl = await this.fileUploadPipeline.readAsDataUrl(file);
     } catch {
       this.toastService.erro("Could not validate file");
     }
@@ -280,39 +274,13 @@ export class PartnerMapUploadComponent implements OnInit {
     }
   }
 
-  private fileToAttachment(file: File): Promise<AttachmentRequestDto> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = (reader.result as string).split(",")[1] ?? "";
-        resolve({
-          name: file.name,
-          type: this.resolveFileType(file),
-          bytes: base64,
-        });
-      };
-      reader.onerror = () => reject(new Error("read failed"));
-      reader.readAsDataURL(file);
-    });
-  }
-
-  private resolveFileType(file: File): string {
-    if (file.type) {
-      return file.type;
-    }
-    const ext = file.name.split(".").pop()?.toLowerCase();
-    switch (ext) {
-      case "pdf":
-        return "application/pdf";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      case "svg":
-        return "image/svg+xml";
-      default:
-        return "image/jpeg";
-    }
+  private async fileToAttachment(file: File): Promise<AttachmentRequestDto> {
+    const bytes = await this.fileUploadPipeline.readAsBase64(file);
+    return {
+      name: file.name,
+      type: this.fileUploadPipeline.getFileType(file),
+      bytes,
+    };
   }
 
   private normalizeAttachments(raw: unknown): Array<{

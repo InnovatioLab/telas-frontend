@@ -29,12 +29,11 @@ import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { IconTvDisplayComponent } from "@app/shared/icons/tv-display.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
+import { FileUploadPipelineService } from "@app/shared/services/file-upload-pipeline.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
-import {
-  resolveLazyTableRequestPage,
-  TableLazyPageEvent,
-} from "@app/shared/utils/table-lazy-pagination.utils";
-import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
+import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
+import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
+import { map } from "rxjs/operators";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { MessageService } from "primeng/api";
 import { GalleriaModule } from "primeng/galleria";
@@ -79,32 +78,27 @@ export class ManagementMonitorsComponent implements OnInit {
   @ViewChild("editMonitorModal") editMonitorModal!: EditMonitorModalComponent;
   @ViewChild("fileInput") fileInput!: ElementRef;
 
-  monitors: Monitor[] = [];
   selectedMonitorForEdit: Monitor | null = null;
   selectedMonitorForDelete: Monitor | null = null;
-  loading = false;
-  isSorting = false;
+  private operationLoading = false;
   advertisements: Advertisement[] = [];
   createMonitorModalVisible = false;
   editMonitorModalVisible = false;
   deleteConfirmModalVisible = false;
   searchTerm = "";
-  totalRecords = 0;
   newAdLink = "";
-  currentPage = 1;
-  pageSize = 10;
   showCreateAdModal = false;
   loadingCreateAd = false;
   selectedFile: File | null = null;
   newAd: any = { name: "", type: "", bytes: "" };
   uploadAdPreview: string | null = null;
   selectedMonitorForUpload: Monitor | null = null;
-  currentFilters: FilterMonitorRequestDto = {
-    page: 1,
-    size: 10,
-    sortBy: "active",
-    sortDir: "desc",
-  };
+
+  readonly tableController: LazyTableController<
+    Monitor,
+    FilterMonitorRequestDto & LazyTableFilterState
+  >;
+
   authenticatedClient: AuthenticatedClientResponseDto | null = null;
 
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
@@ -121,8 +115,52 @@ export class ManagementMonitorsComponent implements OnInit {
     private readonly autenticacaoService: AutenticacaoService,
     private readonly adService: AdService,
     private readonly clientService: ClientService,
-    private readonly smartPlugAdmin: SmartPlugAdminService
-  ) {}
+    private readonly smartPlugAdmin: SmartPlugAdminService,
+    private readonly fileUploadPipeline: FileUploadPipelineService
+  ) {
+    this.tableController = new LazyTableController<
+      Monitor,
+      FilterMonitorRequestDto & LazyTableFilterState
+    >(
+      { page: 1, size: 10, sortBy: "active", sortDir: "desc" },
+      (filters) =>
+        this.monitorService
+          .getMonitorsWithPagination(filters as FilterMonitorRequestDto)
+          .pipe(
+          map((result) => ({
+            list: result.list || [],
+            totalElements: this.ensureValidNumber(
+              result.totalElements ?? result.totalRecords ?? 0
+            ),
+          }))
+        ),
+      () => this.toastService.erro("Error loading monitors")
+    );
+  }
+
+  get monitors(): Monitor[] {
+    return this.tableController.items;
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading || this.operationLoading;
+  }
+
+  get totalRecords(): number {
+    return this.tableController.totalRecords;
+  }
+
+  get currentFilters(): FilterMonitorRequestDto & LazyTableFilterState {
+    return this.tableController.currentFilters;
+  }
+
+  get currentPage(): number {
+    return this.tableController.currentFilters.page ?? 1;
+  }
+
+  get pageSize(): number {
+    return this.tableController.currentFilters.size ?? 10;
+  }
 
   ngOnInit(): void {
     this.loadInitialData();
@@ -153,52 +191,14 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   loadInitialData(): void {
-    this.loading = true;
-
-    const filters: FilterMonitorRequestDto = { ...this.currentFilters };
-    if (this.searchTerm.trim()) {
-      filters.genericFilter = this.searchTerm.trim();
-    }
-
-    this.monitorService.getMonitorsWithPagination(filters).subscribe({
-      next: (result) => {
-        this.monitors = result.list || [];
-        this.totalRecords = this.ensureValidNumber(
-          result.totalElements ?? (result as any).totalRecords ?? 0
-        );
-        this.loading = false;
-      },
-      error: (error) => {
-        this.toastService.erro("Error loading monitors");
-        this.loading = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
   loadMonitors(): void {
-    this.loading = true;
-
-    const filters: FilterMonitorRequestDto = { ...this.currentFilters };
-    if (this.searchTerm.trim()) {
-      filters.genericFilter = this.searchTerm.trim();
-    }
-
-    this.monitorService.getMonitorsWithPagination(filters).subscribe({
-      next: (result) => {
-        this.monitors = result.list || [];
-        this.totalRecords = this.ensureValidNumber(
-          result.totalElements ?? result.totalRecords ?? 0
-        );
-        this.loading = false;
-        this.isSorting = false;
-        this.refreshAvailablePartnerAddresses();
-      },
-      error: (error) => {
-        this.toastService.erro("Error loading monitors");
-        this.loading = false;
-        this.isSorting = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
+    this.refreshAvailablePartnerAddresses();
   }
 
   refreshAvailablePartnerAddresses(): void {
@@ -215,45 +215,24 @@ export class ManagementMonitorsComponent implements OnInit {
     });
   }
 
-  ensureValidNumber(value: any): number {
+  ensureValidNumber(value: unknown): number {
     const num = Number(value);
     return isNaN(num) ? 0 : num;
   }
 
   onSearch(): void {
-    this.currentFilters.page = 1;
-    this.loadMonitors();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    const { page, rows } = resolveLazyTableRequestPage(
-      event,
-      this.currentFilters.size ?? 10
-    );
-    this.currentFilters.page = page;
-    this.currentFilters.size = rows;
-    this.loadMonitors();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onPageChange(event);
   }
 
-  onSort(event: any): void {
-    if (this.isSorting || this.loading) {
-      return;
-    }
-
-    const newSortBy = event.field;
-    const newSortDir = event.order === 1 ? "asc" : "desc";
-
-    if (
-      this.currentFilters.sortBy === newSortBy &&
-      this.currentFilters.sortDir === newSortDir
-    ) {
-      return;
-    }
-
-    this.isSorting = true;
-    this.currentFilters.sortBy = event.field;
-    this.currentFilters.sortDir = event.order === 1 ? "asc" : "desc";
-    this.loadMonitors();
+  onSort(event: { field?: string; order?: number }): void {
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSort(event);
   }
 
   openCreateMonitorModal(): void {
@@ -331,19 +310,19 @@ export class ManagementMonitorsComponent implements OnInit {
     if (!monitor?.id) {
       return;
     }
-    this.loading = true;
+    this.operationLoading = true;
     this.monitorService.getMonitorById(monitor.id).subscribe({
       next: (full) => {
         this.selectedMonitorForEdit = full ?? { ...monitor };
         this.refreshAvailablePartnerAddresses();
         this.editMonitorModalVisible = true;
-        this.loading = false;
+        this.operationLoading = false;
       },
       error: () => {
         this.selectedMonitorForEdit = { ...monitor };
         this.refreshAvailablePartnerAddresses();
         this.editMonitorModalVisible = true;
-        this.loading = false;
+        this.operationLoading = false;
       },
     });
   }
@@ -354,7 +333,7 @@ export class ManagementMonitorsComponent implements OnInit {
     smartPlugId: string | null;
     initialSmartPlugId: string | null;
   }): void {
-    this.loading = true;
+    this.operationLoading = true;
 
     this.monitorService
       .updateMonitor(updateData.id, updateData.data)
@@ -376,7 +355,7 @@ export class ManagementMonitorsComponent implements OnInit {
           });
           this.onEditMonitorModalClose();
           this.loadMonitors();
-          this.loading = false;
+          this.operationLoading = false;
         },
         error: () => {
           this.messageService.add({
@@ -385,7 +364,7 @@ export class ManagementMonitorsComponent implements OnInit {
             detail:
               "Error updating monitor. Please check the data and try again.",
           });
-          this.loading = false;
+          this.operationLoading = false;
         },
       });
   }
@@ -438,7 +417,7 @@ export class ManagementMonitorsComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.operationLoading = true;
 
     this.monitorService
       .deleteMonitor(this.selectedMonitorForDelete.id)
@@ -458,7 +437,7 @@ export class ManagementMonitorsComponent implements OnInit {
               detail: "Error deleting monitor.",
             });
           }
-          this.loading = false;
+          this.operationLoading = false;
           this.closeDeleteConfirmModal();
         },
         error: (error) => {
@@ -469,7 +448,7 @@ export class ManagementMonitorsComponent implements OnInit {
           });
         },
         complete: () => {
-          this.loading = false;
+          this.operationLoading = false;
           this.closeDeleteConfirmModal();
         },
       });
@@ -556,7 +535,7 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   loadAdvertisements(): void {
-    this.loading = true;
+    this.operationLoading = true;
 
     this.clientService.getAllAds(this.currentPage, this.pageSize).subscribe({
       next: (response) => {
@@ -575,13 +554,12 @@ export class ManagementMonitorsComponent implements OnInit {
           endDate: "",
           priority: 0,
         }));
-        this.totalRecords = response.totalElements || 0;
-        this.loading = false;
+        this.operationLoading = false;
       },
       error: (error) => {
         
         this.toastService.erro("Failed to load ads");
-        this.loading = false;
+        this.operationLoading = false;
       },
     });
   }
@@ -601,8 +579,9 @@ export class ManagementMonitorsComponent implements OnInit {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      ImageValidationUtil.validateImageFile(file)
-        .then((validationResult) => {
+      this.fileUploadPipeline
+        .validateFile(file)
+        .then(async (validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
               this.toastService.erro(error);
@@ -612,19 +591,14 @@ export class ManagementMonitorsComponent implements OnInit {
 
           this.selectedFile = file;
           this.newAd.name = file.name;
-          this.newAd.type = file.type;
-          const reader = new FileReader();
-          reader.onload = () => {
-            const base64 = (reader.result as string).split(",")[1];
-            this.newAd.bytes = base64;
-            this.uploadAdPreview = reader.result as string;
-            this.showCreateAdModal = true;
-            this.cdr.markForCheck();
-          };
-          reader.readAsDataURL(file);
+          this.newAd.type = this.fileUploadPipeline.getFileType(file);
+          const dataUrl = await this.fileUploadPipeline.readAsDataUrl(file);
+          this.newAd.bytes = dataUrl.split(",")[1] ?? "";
+          this.uploadAdPreview = dataUrl;
+          this.showCreateAdModal = true;
+          this.cdr.markForCheck();
         })
-        .catch((error) => {
-          
+        .catch(() => {
           this.toastService.erro("Error validating image file");
         });
     }
@@ -632,14 +606,6 @@ export class ManagementMonitorsComponent implements OnInit {
 
   isPdfFile(fileName: string): boolean {
     return isPdfFile(fileName);
-  }
-
-  formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   }
 
   createAdvertisement(): void {

@@ -1,22 +1,23 @@
-<app-search-section (monitorsFound)="onMonitorsFound($event)"></app-search-section>
+<app-search-section
+  [useAdminMapSearch]="true"
+  (monitorsFound)="onMonitorsFound($event.monitors, $event.zipCode)"
+></app-search-section>
 
 <app-sidebar-mapa></app-sidebar-mapa>
 
-<div class="map-container">
-  <app-maps 
-    [zoom]="15" 
-    height="600px" 
-    width="100%"
-    [showMonitorHealth]="true"
-    (pointClick)="handlePointClick($event)"
-    (markerClicked)="handleMarkerClick($event)">
-  </app-maps>
+<div class="admin-view">
+  <div class="map-container">
+    <app-maps
+      #mapsComponent
+      [center]="mapCenter"
+      height="100%"
+      width="100%"
+      [zoom]="9"
+      [showMonitorHealth]="true"
+      (markerClicked)="onMarkerClick($event)"
+      (mapInitialized)="onMapLeafletInitialized($event)"
+      (mapReady)="onMapReady($event)"
+    >
+    </app-maps>
+  </div>
 </div>
-
-<app-pop-up-add-list 
-  [(visible)]="showPointMenu" 
-  [position]="menuPosition" 
-  [selectedPoint]="selectedPoint"
-  (detailsClicked)="showPointDetails($event)"
-  (addToListClicked)="addPointToList($event)">
-</app-pop-up-add-list>

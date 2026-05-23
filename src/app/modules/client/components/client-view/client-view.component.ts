@@ -240,12 +240,11 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
       this.lastZipCode = zipCode;
       this.locationsPanelOpen = false;
       this.viewportFacade.onZipSearchEmpty();
-      this.clientViewService.focusOnZipCodeLocation(zipCode).then(() => {
-        const center = this.clientViewService.mapCenter();
+      void this.viewportFacade.focusOnZipCodeLocation(zipCode).then((center) => {
         if (center) {
+          this.clientViewService.updateMapCenter(center, 15);
           this.mapsComponent?.setMapCenter(center);
         }
-        this.viewportFacade.triggerViewportFromMap();
       });
     } else {
       this.zipSearchResults = [];

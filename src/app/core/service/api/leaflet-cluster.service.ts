@@ -8,6 +8,12 @@ export interface MonitorCluster {
   count: number;
 }
 
+export interface ClusterIconOptions {
+  useBrandMonitorColor?: boolean;
+  showMonitorHealth?: boolean;
+  brandColor?: string;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -51,22 +57,35 @@ export class LeafletClusterService {
 
   createClusterIcon(
     count: number,
-    monitors: MapPoint[]
+    monitors: MapPoint[],
+    options?: ClusterIconOptions
   ): L.DivIcon {
     const size = Math.min(50 + count * 4, 80);
+    const brandColor = options?.brandColor ?? "#111519";
 
-    let fillColor = "#FF6B35";
-    const availableCount = monitors.filter(
-      (m) => m.hasAvailableSlots === true
-    ).length;
-    const unavailableCount = monitors.filter(
-      (m) => m.hasAvailableSlots === false
-    ).length;
+    let fillColor = brandColor;
+    if (!options?.useBrandMonitorColor) {
+      const anyUnhealthy =
+        options?.showMonitorHealth === true &&
+        monitors.some((m) => m.healthOk === false);
 
-    if (availableCount === count) {
-      fillColor = "#28a745";
-    } else if (unavailableCount === count) {
-      fillColor = "#6c757d";
+      fillColor = "#FF6B35";
+      if (anyUnhealthy) {
+        fillColor = "#C62828";
+      } else {
+        const availableCount = monitors.filter(
+          (m) => m.hasAvailableSlots === true
+        ).length;
+        const unavailableCount = monitors.filter(
+          (m) => m.hasAvailableSlots === false
+        ).length;
+
+        if (availableCount === count) {
+          fillColor = "#28a745";
+        } else if (unavailableCount === count) {
+          fillColor = "#6c757d";
+        }
+      }
     }
 
     const html = `

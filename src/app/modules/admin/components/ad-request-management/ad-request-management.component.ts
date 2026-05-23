@@ -18,14 +18,13 @@ import {
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { PdfViewerService } from "@app/shared/services/pdf-viewer.service";
+import { FileUploadPipelineService } from "@app/shared/services/file-upload-pipeline.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
-import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
 import { triggerBrowserFileDownload } from "@app/shared/utils/file-download.util";
 import { buildQuestionnaireExportFileName } from "@app/shared/utils/questionnaire-export-filename.util";
-import {
-  resolveLazyTableRequestPage,
-  TableLazyPageEvent,
-} from "@app/shared/utils/table-lazy-pagination.utils";
+import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
+import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
+import { map, tap } from "rxjs/operators";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { Router } from "@angular/router";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
@@ -48,13 +47,12 @@ import { ConfirmationDialogService } from "@app/shared/services/confirmation-dia
 export class AdRequestManagementComponent implements OnInit {
   @Input() requestOrigin: AdRequestOrigin = "CLIENT";
 
-  adRequests: AdRequestResponseDto[] = [];
-  loading = false;
   searchTerm = "";
-  totalRecords = 0;
-  currentPage = 1;
-  pageSize = 10;
-  private isSorting = false;
+
+  readonly tableController: LazyTableController<
+    AdRequestResponseDto,
+    FilterBoxRequestDto & LazyTableFilterState
+  >;
 
   showViewDetailsDialog = false;
   showUploadAdDialog = false;
@@ -67,23 +65,63 @@ export class AdRequestManagementComponent implements OnInit {
   maxFileSize = 10 * 1024 * 1024;
   acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
 
-  currentFilters: FilterBoxRequestDto = {
-    page: 1,
-    size: 10,
-    sortBy: "createdAt",
-    sortDir: "desc",
-    includeInactiveRequests: false,
-  };
-
   constructor(
     private readonly clientService: ClientService,
     private readonly adService: AdService,
     private readonly toastService: ToastService,
     private readonly pdfViewerService: PdfViewerService,
+    private readonly fileUploadPipeline: FileUploadPipelineService,
     private readonly router: Router,
     private readonly notificationsService: NotificationsService,
     private readonly confirmationDialogService: ConfirmationDialogService
-  ) {}
+  ) {
+    this.tableController = new LazyTableController<
+      AdRequestResponseDto,
+      FilterBoxRequestDto & LazyTableFilterState
+    >(
+      {
+        page: 1,
+        size: 10,
+        sortBy: "createdAt",
+        sortDir: "desc",
+        includeInactiveRequests: false,
+      },
+      (filters) =>
+        this.clientService
+          .getAllAdRequests({
+            ...(filters as FilterBoxRequestDto),
+            requestOrigin: this.requestOrigin,
+          })
+          .pipe(
+            map((response) => ({
+              list: response.list || [],
+              totalElements: response.totalElements || 0,
+            })),
+            tap(() => this.refreshUnreadMessageCounters())
+          ),
+      () => this.toastService.erro("Failed to load ad requests")
+    );
+  }
+
+  get adRequests(): AdRequestResponseDto[] {
+    return this.tableController.items;
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading;
+  }
+
+  get totalRecords(): number {
+    return this.tableController.totalRecords;
+  }
+
+  get currentFilters(): FilterBoxRequestDto & LazyTableFilterState {
+    return this.tableController.currentFilters;
+  }
+
+  get pageSize(): number {
+    return this.tableController.currentFilters.size ?? 10;
+  }
 
   private unreadMessagesByClientId = new Map<string, number>();
 
@@ -93,29 +131,8 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   loadAdRequests(): void {
-    this.loading = true;
-    const filters = {
-      ...this.currentFilters,
-      page: this.currentPage,
-      size: this.pageSize,
-      genericFilter: this.searchTerm,
-      requestOrigin: this.requestOrigin,
-    };
-
-    this.clientService.getAllAdRequests(filters).subscribe({
-      next: (response) => {
-        this.adRequests = response.list || [];
-        this.totalRecords = response.totalElements || 0;
-        this.loading = false;
-        this.isSorting = false;
-        this.refreshUnreadMessageCounters();
-      },
-      error: (error) => {
-        this.toastService.erro("Failed to load ad requests");
-        this.loading = false;
-        this.isSorting = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
   openMessagesHistory(adRequest: AdRequestResponseDto): void {
@@ -148,36 +165,18 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.currentPage = 1;
-    this.loadAdRequests();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    const { page, rows } = resolveLazyTableRequestPage(event, this.pageSize);
-    this.currentPage = page;
-    this.pageSize = rows;
-    this.loadAdRequests();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onPageChange(event);
   }
 
-  onSort(event: any): void {
-    if (this.isSorting || this.loading) {
-      return;
-    }
-
-    const newSortBy = event.field;
-    const newSortDir = event.order === 1 ? "asc" : "desc";
-
-    if (
-      this.currentFilters.sortBy === newSortBy &&
-      this.currentFilters.sortDir === newSortDir
-    ) {
-      return;
-    }
-
-    this.isSorting = true;
-    this.currentFilters.sortBy = event.field;
-    this.currentFilters.sortDir = event.order === 1 ? "asc" : "desc";
-    this.loadAdRequests();
+  onSort(event: { field?: string; order?: number }): void {
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSort(event);
   }
 
   openViewDetailsDialog(adRequest: AdRequestResponseDto): void {
@@ -245,8 +244,9 @@ export class AdRequestManagementComponent implements OnInit {
     if (file) {
       this.selectedAdRequest = adRequest;
 
-      ImageValidationUtil.validateImageFile(file)
-        .then((validationResult) => {
+      this.fileUploadPipeline
+        .validateFile(file)
+        .then(async (validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
               this.toastService.erro(error);
@@ -255,14 +255,10 @@ export class AdRequestManagementComponent implements OnInit {
           }
 
           this.selectedFile = file;
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.filePreview = reader.result as string;
-          };
-          reader.readAsDataURL(file);
+          this.filePreview = await this.fileUploadPipeline.readAsDataUrl(file);
           this.showUploadAdDialog = true;
         })
-        .catch((error) => {
+        .catch(() => {
           this.toastService.erro("Error validating image file");
         });
     }
@@ -271,8 +267,9 @@ export class AdRequestManagementComponent implements OnInit {
   onFileSelect(event: any): void {
     const file = event.files[0];
     if (file) {
-      ImageValidationUtil.validateImageFile(file)
-        .then((validationResult) => {
+      this.fileUploadPipeline
+        .validateFile(file)
+        .then(async (validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
               this.toastService.erro(error);
@@ -281,55 +278,12 @@ export class AdRequestManagementComponent implements OnInit {
           }
 
           this.selectedFile = file;
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.filePreview = reader.result as string;
-          };
-          reader.readAsDataURL(file);
+          this.filePreview = await this.fileUploadPipeline.readAsDataUrl(file);
           this.showUploadAdDialog = true;
         })
-        .catch((error) => {
+        .catch(() => {
           this.toastService.erro("Error validating image file");
         });
-    }
-  }
-
-  isValidFileType(file: File): boolean {
-    const validTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-      "image/svg+xml",
-      "image/bmp",
-      "image/tiff",
-    ];
-    const isValidType = validTypes.includes(file.type);
-
-    const nameRegex = /.*\.(jpg|jpeg|png|gif|svg|bmp|tiff)$/i;
-    const isValidName = nameRegex.test(file.name);
-
-    return isValidType && isValidName;
-  }
-
-  getFileType(file: File): string {
-    const extension = file.name.split(".").pop()?.toLowerCase();
-    switch (extension) {
-      case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      case "svg":
-        return "image/svg+xml";
-      case "bmp":
-        return "image/bmp";
-      case "tiff":
-        return "image/tiff";
-      default:
-        return "image/jpeg";
     }
   }
 
@@ -484,41 +438,34 @@ export class AdRequestManagementComponent implements OnInit {
 
     this.loadingUpload = true;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64String = reader.result as string;
-      const base64Data = base64String.split(",")[1];
+    void this.fileUploadPipeline
+      .readAsBase64(this.selectedFile)
+      .then((base64Data) => {
+        const payload: CreateClientAdDto = {
+          name: this.selectedFile!.name,
+          type: this.fileUploadPipeline.getFileType(this.selectedFile!),
+          bytes: base64Data,
+        };
 
-      const payload: CreateClientAdDto = {
-        name: this.selectedFile!.name,
-        type: this.getFileType(this.selectedFile!),
-        bytes: base64Data,
-      };
+        if (this.requestOrigin === "PARTNER") {
+          this.uploadPartnerAd(payload);
+          return;
+        }
 
-      if (this.requestOrigin === "PARTNER") {
-        this.uploadPartnerAd(payload);
-        return;
-      }
-
-      this.adService
-        .createClientAd(this.selectedAdRequest!.clientId, payload)
-        .subscribe({
-          next: () => this.onUploadSuccess(),
-          error: () => {
-            this.toastService.erro("Failed to upload ad");
-            this.loadingUpload = false;
-          },
-        });
-    };
-    reader.readAsDataURL(this.selectedFile);
-  }
-
-  formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        this.adService
+          .createClientAd(this.selectedAdRequest!.clientId, payload)
+          .subscribe({
+            next: () => this.onUploadSuccess(),
+            error: () => {
+              this.toastService.erro("Failed to upload ad");
+              this.loadingUpload = false;
+            },
+          });
+      })
+      .catch(() => {
+        this.toastService.erro("Failed to read file");
+        this.loadingUpload = false;
+      });
   }
 
   isDataPdf(preview: string | null): boolean {

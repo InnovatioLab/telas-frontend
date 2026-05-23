@@ -6,7 +6,6 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  Validators,
 } from "@angular/forms";
 import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
 import { ReservedBusinessNameDirective } from "@app/core/directives/reserved-business-name.directive";
@@ -23,7 +22,7 @@ import { IconCheckComponent } from "@app/shared/icons/check.icon";
 import { IconCloseComponent } from "@app/shared/icons/close.icon";
 import { IconUploadComponent } from "@app/shared/icons/upload.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
+import { ClientProfileFormFactory } from "@app/shared/forms/client-profile-form.factory";
 import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 import { DropdownModule } from "primeng/dropdown";
@@ -93,24 +92,12 @@ export class EditClientModalComponent implements OnInit {
   }
 
   private initForm(): void {
-    this.editForm = this.fb.group({
-      businessName: ["", [Validators.required, Validators.maxLength(255)]],
-      industry: ["", [Validators.maxLength(50)]],
-      websiteUrl: [
-        "",
-        [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
-      ],
-      status: [DefaultStatus.ACTIVE],
-      contactEmail: [
-        "",
-        [Validators.required, Validators.email, Validators.maxLength(255)],
-      ],
-      contactPhone: [
-        "",
-        [Validators.required, AbstractControlUtils.validatePhone()],
-      ],
-      addresses: this.fb.array([]),
+    this.editForm = ClientProfileFormFactory.createProfileForm(this.fb, {
+      contactFields: "modal",
+      includeStatus: true,
+      includeSocialMedia: false,
     });
+    this.editForm.patchValue({ status: DefaultStatus.ACTIVE });
   }
 
   private populateForm(): void {
@@ -136,31 +123,8 @@ export class EditClientModalComponent implements OnInit {
     ) {
       this.client.addresses.forEach((addr) => {
         addressesArray.push(
-          this.fb.group({
-            id: [addr.id],
-            street: [
-              addr.street,
-              [
-                Validators.required,
-                Validators.maxLength(100),
-                AbstractControlUtils.validateStreet(),
-              ],
-            ],
-            zipCode: [addr.zipCode, Validators.required],
-            city: [addr.city, [Validators.required, Validators.maxLength(50)]],
-            state: [
-              addr.state,
-              [
-                Validators.required,
-                Validators.maxLength(2),
-                Validators.minLength(2),
-              ],
-            ],
-            country: [
-              addr.country ?? "US",
-              [Validators.required, Validators.maxLength(100)],
-            ],
-            address2: [addr.address2 ?? null, Validators.maxLength(100)],
+          ClientProfileFormFactory.createAddressGroupFromData(this.fb, addr, {
+            requireCountry: true,
           })
         );
       });
@@ -174,29 +138,7 @@ export class EditClientModalComponent implements OnInit {
     const addressesArray = this.editForm.get("addresses") as FormArray;
 
     addressesArray.push(
-      this.fb.group({
-        id: [null],
-        street: [
-          "",
-          [
-            Validators.required,
-            Validators.maxLength(100),
-            AbstractControlUtils.validateStreet(),
-          ],
-        ],
-        zipCode: ["", Validators.required],
-        city: ["", [Validators.required, Validators.maxLength(50)]],
-        state: [
-          "",
-          [
-            Validators.required,
-            Validators.maxLength(2),
-            Validators.minLength(2),
-          ],
-        ],
-        country: ["US", Validators.maxLength(100)],
-        address2: ["", Validators.maxLength(100)],
-      })
+      ClientProfileFormFactory.createEmptyAddressGroup(this.fb)
     );
   }
 

@@ -12,12 +12,13 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { BaseRepository } from './base.repository';
 import { ENVIRONMENT } from 'src/environments/environment-token';
-import { environment } from 'src/environments/environment';
+import { MonitorResponseMapper } from '../mapper/monitor-response.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitorRequestDto, UpdateMonitorRequestDto> implements IMonitorRepository {
   constructor(
     httpClient: HttpClient,
+    private readonly monitorResponseMapper: MonitorResponseMapper,
     @Optional() @Inject(ENVIRONMENT) env?: any
   ) {
     super(httpClient, 'monitors', env);
@@ -37,7 +38,7 @@ export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitor
           const data = this.extractData(response);
           if (data && typeof data === 'object' && 'list' in data) {
             const paginatedData = data as PaginationResponseDto<MonitorResponseDto>;
-            const mappedList = paginatedData.list.map(this.mapMonitorResponseToMonitor);
+            const mappedList = this.monitorResponseMapper.toMonitors(paginatedData.list);
             return {
               ...paginatedData,
               list: mappedList,
@@ -65,7 +66,7 @@ export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitor
         map((response) => {
           const data = this.extractData(response);
           if (data) {
-            return this.mapMonitorResponseToMonitor(data as MonitorResponseDto);
+            return this.monitorResponseMapper.toMonitor(data as MonitorResponseDto);
           }
           return null;
         }),
@@ -122,33 +123,5 @@ export class MonitorRepositoryImpl extends BaseRepository<Monitor, CreateMonitor
         }),
         catchError(() => of([]))
       );
-  }
-
-  private mapMonitorResponseToMonitor(monitorResponse: MonitorResponseDto): Monitor {
-    return {
-      id: monitorResponse.id,
-      active: monitorResponse.active,
-      fullAddress: monitorResponse.fullAddress,
-      address: monitorResponse.address || {
-        id: '',
-        street: '',
-        city: '',
-        state: '',
-        country: '',
-        zipCode: '',
-      },
-      adLinks: monitorResponse.adLinks || [],
-      canBeDeleted: monitorResponse.canBeDeleted,
-      createdAt: monitorResponse.createdAt,
-      updatedAt: monitorResponse.updatedAt,
-      maxAds: monitorResponse.maxAds,
-      activeAdsCount: monitorResponse.activeAdsCount,
-      partnerAdsCount: monitorResponse.partnerAdsCount,
-      clientAdsCount: monitorResponse.clientAdsCount,
-      remainingTotalSlots: monitorResponse.remainingTotalSlots,
-      remainingPartnerSlots: monitorResponse.remainingPartnerSlots,
-      remainingClientSlots: monitorResponse.remainingClientSlots,
-      availableAdsCount: monitorResponse.availableAdsCount,
-    };
   }
 }

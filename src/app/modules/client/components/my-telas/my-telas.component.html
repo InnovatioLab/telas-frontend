@@ -64,7 +64,7 @@
             <div class="p-fileupload-file">
               <div class="p-fileupload-file-info">
                 <div class="p-fileupload-file-name">{{ file.name }}</div>
-                <span class="p-fileupload-file-size">{{ formatFileSize(file.size) }}</span>
+                <span class="p-fileupload-file-size">{{ fileUploadPipeline.formatFileSize(file.size) }}</span>
               </div>
               <div class="p-fileupload-file-actions">
                 <p-button icon="pi pi-times" (onClick)="removeSelectedFile(file)" [text]="true" [rounded]="true"

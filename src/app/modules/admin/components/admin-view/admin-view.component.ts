@@ -31,112 +31,8 @@ import { MapViewportFacadeService } from "../../../client/services/map-viewport-
     MapsComponent,
     SidebarMapaComponent,
   ],
-  template: `
-    <app-search-section
-      [useAdminMapSearch]="true"
-      (monitorsFound)="onMonitorsFound($event.monitors, $event.zipCode)"
-    ></app-search-section>
-
-    <app-sidebar-mapa></app-sidebar-mapa>
-
-    <div class="admin-view">
-      <div class="map-container">
-        <app-maps
-          #mapsComponent
-          [center]="mapCenter"
-          height="100%"
-          width="100%"
-          [zoom]="9"
-          [showMonitorHealth]="true"
-          (markerClicked)="onMarkerClick($event)"
-          (mapInitialized)="onMapLeafletInitialized($event)"
-          (mapReady)="onMapReady($event)"
-        >
-        </app-maps>
-      </div>
-    </div>
-  `,
-  styles: [
-    `
-      :host {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
-        height: 100%;
-        width: 100%;
-      }
-
-      app-search-section {
-        flex-shrink: 0;
-      }
-
-      .admin-view {
-        display: flex;
-        flex: 1;
-        min-height: 0;
-      }
-
-      .map-container {
-        flex: 1;
-        min-height: 0;
-        height: 100%;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .monitors-list {
-        width: 300px;
-        background: white;
-        border-radius: 8px;
-        padding: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-        h3 {
-          margin: 0 0 1rem;
-          color: #333;
-        }
-
-        ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-
-          li {
-            padding: 0.75rem;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background-color 0.2s;
-
-            &:hover {
-              background-color: #f5f5f5;
-            }
-
-            &:last-child {
-              border-bottom: none;
-            }
-          }
-        }
-
-        .monitor-info {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-
-          .monitor-title {
-            font-weight: 500;
-            color: #333;
-          }
-
-          .monitor-type {
-            font-size: 0.875rem;
-            color: #666;
-          }
-        }
-      }
-    `,
-  ],
+  templateUrl: "./admin-view.component.html",
+  styleUrls: ["./admin-view.component.scss"],
 })
 export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("mapsComponent") mapsComponent!: MapsComponent;
@@ -244,44 +140,11 @@ export class AdminViewComponent implements OnInit, OnDestroy, AfterViewInit {
       this.viewportFacade.onZipSearchWithResults(monitors, true);
     } else {
       this.viewportFacade.onZipSearchEmpty();
-      this.focusOnZipCodeLocation(zipCode);
-    }
-  }
-
-  private focusOnZipCodeLocation(zipCode?: string): void {
-    let targetZipCode = zipCode;
-
-    if (!targetZipCode) {
-      const searchInput = document.getElementById(
-        "search-zipcode"
-      ) as HTMLInputElement;
-      targetZipCode = searchInput?.value;
-    }
-
-    if (targetZipCode && targetZipCode.length === 5) {
-      this.googleMapsService
-        .searchAddress(targetZipCode)
-        .then((result) => {
-          if (result) {
-            const zipCodePoint: MapPoint = {
-              id: `zipcode-${targetZipCode}`,
-              latitude: result.location.latitude,
-              longitude: result.location.longitude,
-              title: `ZIP Code ${targetZipCode}`,
-              locationDescription: result.formattedAddress,
-              type: "ZIPCODE",
-              category: "ZIPCODE",
-            };
-
-            this.mapsComponent?.setMapPoints([zipCodePoint]);
-            this.mapsComponent?.fitBoundsToPoints([zipCodePoint]);
-            this.googleMapsService.updateNearestMonitors([zipCodePoint]);
-            this.monitors = [zipCodePoint];
-            this.viewportFacade.triggerViewportFromMap();
-          }
-        })
-        .catch((error) => {
-        });
+      void this.viewportFacade.focusOnZipCodeLocation(zipCode).then((center) => {
+        if (center) {
+          this.mapCenter = center;
+        }
+      });
     }
   }
 

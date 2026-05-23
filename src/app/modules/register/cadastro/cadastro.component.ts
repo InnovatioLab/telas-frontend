@@ -1,6 +1,8 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { ClientProfileFormFactory } from "@app/shared/forms/client-profile-form.factory";
+import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { Router } from "@angular/router";
 import { ClientService } from "@app/core/service/api/client.service";
 import { LoadingService } from "@app/core/service/state/loading.service";
@@ -18,7 +20,6 @@ import {
 } from "@app/shared/constants/etapas-cadastro.constants";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { AbstractControlUtils } from "@app/shared/utils/abstract-control.utils";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { MENSAGENS } from "@app/utility/src";
 import { MenuItem } from "primeng/api";
@@ -81,57 +82,21 @@ export class CadastroComponent implements OnInit {
     if (!this.formCadastro.cadastroForm.get("dadosCliente")) {
       this.formCadastro.cadastroForm.addControl(
         "dadosCliente",
-        this.fb.group({
-          businessName: ["", [Validators.required, Validators.maxLength(255)]],
-          industry: ["", [Validators.maxLength(50)]],
-          websiteUrl: [
-            "",
-            [Validators.maxLength(255), AbstractControlUtils.validateUrl()],
-          ],
-          socialMedia: this.fb.array([]),
-        })
+        ClientProfileFormFactory.createBusinessFieldsGroup(this.fb)
       );
     }
     if (!this.formCadastro.cadastroForm.get("enderecoCliente")) {
       this.formCadastro.cadastroForm.addControl(
         "enderecoCliente",
-        this.fb.group({
-          zipCode: ["", [Validators.required, Validators.pattern(/^\d{5}$/)]],
-          street: [
-            "",
-            [
-              Validators.required,
-              Validators.maxLength(100),
-              AbstractControlUtils.validateStreet(),
-            ],
-          ],
-          city: ["", [Validators.required, Validators.maxLength(50)]],
-          state: [
-            "",
-            [
-              Validators.required,
-              Validators.maxLength(2),
-              Validators.minLength(2),
-            ],
-          ],
-          country: ["US", [Validators.maxLength(100)]],
-          address2: ["", Validators.maxLength(100)],
+        ClientProfileFormFactory.createSingleAddressGroup(this.fb, {
+          strictZipCode: true,
         })
       );
     }
     if (!this.formCadastro.cadastroForm.get("contato")) {
       this.formCadastro.cadastroForm.addControl(
         "contato",
-        this.fb.group({
-          numeroContato: [
-            "",
-            [Validators.required, AbstractControlUtils.validatePhone()],
-          ],
-          email: [
-            "",
-            [Validators.required, Validators.email, Validators.maxLength(255)],
-          ],
-        })
+        ClientProfileFormFactory.createContactGroup(this.fb, "cadastro")
       );
     }
   }

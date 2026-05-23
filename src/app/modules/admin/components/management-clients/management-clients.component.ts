@@ -22,12 +22,11 @@ import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
 import { IconSearchComponent } from "@app/shared/icons/search.icon";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
+import { FileUploadPipelineService } from "@app/shared/services/file-upload-pipeline.service";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
-import {
-  resolveLazyTableRequestPage,
-  TableLazyPageEvent,
-} from "@app/shared/utils/table-lazy-pagination.utils";
-import { ImageValidationUtil } from "@app/utility/src/utils/image-validation.util";
+import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
+import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
+import { map, tap } from "rxjs/operators";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { MessageService } from "primeng/api";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
@@ -50,18 +49,13 @@ import { Notification } from "@app/modules/notificacao/models/notification";
 export class ManagementClientsComponent implements OnInit {
   @ViewChild("fileInput") fileInput!: ElementRef<HTMLInputElement>;
 
-  clients: Client[] = [];
-  loading = false;
   searchTerm = "";
-  totalRecords = 0;
-  currentPage = 1;
-  pageSize = 10;
-  currentFilters: FilterClientRequestDto = {
-    page: 1,
-    size: 10,
-    sortBy: "name",
-    sortDir: "asc",
-  };
+  private operationLoading = false;
+
+  readonly tableController: LazyTableController<
+    Client,
+    FilterClientRequestDto & LazyTableFilterState
+  >;
 
   showUploadAdDialog = false;
   selectedClient: Client | null = null;
@@ -99,8 +93,43 @@ export class ManagementClientsComponent implements OnInit {
     private readonly confirmationDialogService: ConfirmationDialogService,
     private readonly dialogService: DialogService,
     private readonly router: Router,
-    private readonly notificationsService: NotificationsService
-  ) {}
+    private readonly notificationsService: NotificationsService,
+    public readonly fileUploadPipeline: FileUploadPipelineService
+  ) {
+    this.tableController = new LazyTableController<
+      Client,
+      FilterClientRequestDto & LazyTableFilterState
+    >(
+      { page: 1, size: 10, sortBy: "name", sortDir: "asc" },
+      (filters) =>
+        this.clientManagementService
+          .getClientsWithPagination(filters as FilterClientRequestDto)
+          .pipe(
+          map((result) => ({
+            list: result.list || [],
+            totalElements: result.totalElements || 0,
+          })),
+          tap(() => this.sortClientsByUnreadMessages())
+        ),
+      () => this.toastService.erro("Failed to load clients")
+    );
+  }
+
+  get clients(): Client[] {
+    return this.tableController.items;
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading || this.operationLoading;
+  }
+
+  get totalRecords(): number {
+    return this.tableController.totalRecords;
+  }
+
+  get currentFilters(): FilterClientRequestDto & LazyTableFilterState {
+    return this.tableController.currentFilters;
+  }
 
   ngOnInit(): void {
     this.refreshPanelClient();
@@ -156,11 +185,15 @@ export class ManagementClientsComponent implements OnInit {
         map.set(clientId, (map.get(clientId) ?? 0) + 1);
       }
       this.unreadMessagesByClientId = map;
-      this.clients = [...this.clients].sort(
-        (a, b) =>
-          (this.getUnreadMessagesCount(b) ?? 0) - (this.getUnreadMessagesCount(a) ?? 0)
-      );
+      this.sortClientsByUnreadMessages();
     });
+  }
+
+  private sortClientsByUnreadMessages(): void {
+    this.tableController.items = [...this.tableController.items].sort(
+      (a, b) =>
+        (this.getUnreadMessagesCount(b) ?? 0) - (this.getUnreadMessagesCount(a) ?? 0)
+    );
   }
 
   getUnreadMessagesCount(client: Client): number {
@@ -230,31 +263,8 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   loadClients(): void {
-    this.loading = true;
-
-    const filters: FilterClientRequestDto = {
-      page: this.currentFilters.page || 1,
-      size: this.currentFilters.size || 10,
-      sortBy: this.currentFilters.sortBy || "name",
-      sortDir: this.currentFilters.sortDir || "asc",
-    };
-
-    if (this.currentFilters.genericFilter) {
-      filters.genericFilter = this.currentFilters.genericFilter;
-    }
-
-    this.clientManagementService.getClientsWithPagination(filters).subscribe({
-      next: (result) => {
-        this.clients = result.list || [];
-        this.totalRecords = result.totalElements || 0;
-        this.loading = false;
-      },
-      error: (error) => {
-        
-        this.toastService.erro("Failed to load clients");
-        this.loading = false;
-      },
-    });
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.load();
   }
 
   async ensureClientAddressesLoaded(client: Client): Promise<void> {
@@ -331,25 +341,23 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.currentFilters.page = 1;
-    this.currentFilters.genericFilter = this.searchTerm.trim();
-    this.loadClients();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onSearch();
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    const { page, rows } = resolveLazyTableRequestPage(
-      event,
-      this.currentFilters.size ?? 10
-    );
-    this.currentFilters.page = page;
-    this.currentFilters.size = rows;
-    this.loadClients();
+    this.tableController.setSearchTerm(this.searchTerm);
+    this.tableController.onPageChange(event);
   }
 
-  onSort(event: any): void {
-    this.currentFilters.sortBy = event.field;
-    this.currentFilters.sortDir = event.order === 1 ? "asc" : "desc";
-    this.loadClients();
+  onSort(event: { field?: string; order?: number }): void {
+    this.tableController.setSearchTerm(this.searchTerm);
+    if (event.field) {
+      this.tableController.currentFilters.sortBy = event.field;
+      this.tableController.currentFilters.sortDir =
+        event.order === 1 ? "asc" : "desc";
+    }
+    this.tableController.load();
   }
 
   async makePartner(client: Client): Promise<void> {
@@ -364,7 +372,7 @@ export class ManagementClientsComponent implements OnInit {
     });
 
     if (confirmed) {
-      this.loading = true;
+      this.operationLoading = true;
 
       this.clientManagementService.makePartner(client.id!).subscribe({
         next: () => {
@@ -374,7 +382,7 @@ export class ManagementClientsComponent implements OnInit {
         error: (error) => {
           
           this.toastService.erro("Failed to make client partner");
-          this.loading = false;
+          this.operationLoading = false;
         },
       });
     }
@@ -473,11 +481,11 @@ export class ManagementClientsComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.operationLoading = true;
 
     this.clientService.buscarClient<Client>(client.id).subscribe({
       next: (fullClient) => {
-        this.loading = false;
+        this.operationLoading = false;
 
         const ref: DynamicDialogRef = this.dialogService.open(
           EditClientModalComponent,
@@ -503,10 +511,10 @@ export class ManagementClientsComponent implements OnInit {
 
         ref.onClose.subscribe((result: any) => {
           if (result && result.success) {
-            const index = this.clients.findIndex((c) => c.id === client.id);
+            const index = this.tableController.items.findIndex((c) => c.id === client.id);
             if (index !== -1) {
-              this.clients[index] = {
-                ...this.clients[index],
+              this.tableController.items[index] = {
+                ...this.tableController.items[index],
                 ...result.client,
               };
             }
@@ -516,7 +524,7 @@ export class ManagementClientsComponent implements OnInit {
       error: (error) => {
         
         this.toastService.erro("Failed to load client details");
-        this.loading = false;
+        this.operationLoading = false;
       },
     });
   }
@@ -536,7 +544,7 @@ export class ManagementClientsComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.operationLoading = true;
     this.clientManagementService.restoreDeletedClient(client.id).subscribe({
       next: () => {
         this.toastService.sucesso("Account restored to active");
@@ -549,7 +557,7 @@ export class ManagementClientsComponent implements OnInit {
           error?.message ||
           "Failed to restore account";
         this.toastService.erro(msg);
-        this.loading = false;
+        this.operationLoading = false;
       },
     });
   }
@@ -569,7 +577,7 @@ export class ManagementClientsComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.operationLoading = true;
     this.clientManagementService.reactivateClient(client.id).subscribe({
       next: () => {
         this.toastService.sucesso("User reactivated successfully");
@@ -582,7 +590,7 @@ export class ManagementClientsComponent implements OnInit {
           error?.message ||
           "Failed to reactivate user";
         this.toastService.erro(msg);
-        this.loading = false;
+        this.operationLoading = false;
       },
     });
   }
@@ -602,7 +610,7 @@ export class ManagementClientsComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.operationLoading = true;
     this.clientManagementService.deactivateClient(client.id).subscribe({
       next: () => {
         this.toastService.sucesso("User inactivated successfully");
@@ -615,7 +623,7 @@ export class ManagementClientsComponent implements OnInit {
           error?.message ||
           "Failed to inactivate user";
         this.toastService.erro(msg);
-        this.loading = false;
+        this.operationLoading = false;
       },
     });
   }
@@ -632,7 +640,7 @@ export class ManagementClientsComponent implements OnInit {
     if (!confirmed || !client.id) {
       return;
     }
-    this.loading = true;
+    this.operationLoading = true;
     this.clientManagementService.softDeleteClient(client.id).subscribe({
       next: () => {
         this.toastService.sucesso("Account marked as deleted");
@@ -645,7 +653,7 @@ export class ManagementClientsComponent implements OnInit {
           error?.message ||
           "Failed to update account";
         this.toastService.erro(msg);
-        this.loading = false;
+        this.operationLoading = false;
       },
     });
   }
@@ -667,10 +675,10 @@ export class ManagementClientsComponent implements OnInit {
       this.toastService.erro("You do not have permission to perform this operation.");
       return;
     }
-    this.loading = true;
+    this.operationLoading = true;
     this.clientManagementService.getPermanentDeletionRequirements(client.id).subscribe({
       next: async (req) => {
-        this.loading = false;
+        this.operationLoading = false;
         if (req.requiresMonitorSuccessor) {
           this.openPermanentDeleteSuccessorDialog(client, req.monitorCount);
         } else {
@@ -678,7 +686,7 @@ export class ManagementClientsComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.loading = false;
+        this.operationLoading = false;
         const msg =
           error?.error?.message ||
           error?.error?.data?.message ||
@@ -695,7 +703,7 @@ export class ManagementClientsComponent implements OnInit {
     this.permanentDeleteMonitorCount = monitorCount;
     this.selectedSuccessorId = null;
     this.successorCandidates = [];
-    this.loading = true;
+    this.operationLoading = true;
     this.clientManagementService
       .getClientsWithPagination({
         page: 1,
@@ -708,11 +716,11 @@ export class ManagementClientsComponent implements OnInit {
           this.successorCandidates = (result.list || []).filter((c) =>
             this.isPermanentDeleteSuccessorCandidate(c, client)
           );
-          this.loading = false;
+          this.operationLoading = false;
           this.showPermanentDeleteSuccessorDialog = true;
         },
         error: () => {
-          this.loading = false;
+          this.operationLoading = false;
           this.toastService.erro("Failed to load clients for successor selection");
         },
       });
@@ -801,7 +809,7 @@ export class ManagementClientsComponent implements OnInit {
     monitorSuccessorId: string | null,
     password: string
   ): void {
-    this.loading = true;
+    this.operationLoading = true;
     const payload: PermanentDeleteClientPayload = { password };
     if (monitorSuccessorId) {
       payload.monitorSuccessorClientId = monitorSuccessorId;
@@ -815,7 +823,7 @@ export class ManagementClientsComponent implements OnInit {
         this.loadClients();
       },
       error: (error) => {
-        this.loading = false;
+        this.operationLoading = false;
         const msg =
           error?.error?.message ||
           error?.error?.data?.message ||
@@ -832,10 +840,10 @@ export class ManagementClientsComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.operationLoading = true;
     this.clientService.buscarClient<Client>(client.id).subscribe({
       next: (fullClient) => {
-        this.loading = false;
+        this.operationLoading = false;
         const adsCount = fullClient.ads?.length || 0;
 
         if (adsCount >= this.PARTNER_MAX_ADS) {
@@ -849,7 +857,7 @@ export class ManagementClientsComponent implements OnInit {
         this.fileInput.nativeElement.click();
       },
       error: (error) => {
-        this.loading = false;
+        this.operationLoading = false;
         this.toastService.erro("Failed to load client details");
       },
     });
@@ -860,14 +868,15 @@ export class ManagementClientsComponent implements OnInit {
     if (file) {
       if (file.size > this.maxFileSize) {
         this.toastService.erro(
-          `File size exceeds maximum allowed size of ${this.formatFileSize(this.maxFileSize)}`
+          `File size exceeds maximum allowed size of ${this.fileUploadPipeline.formatFileSize(this.maxFileSize)}`
         );
         event.target.value = "";
         return;
       }
 
-      ImageValidationUtil.validateImageFile(file)
-        .then((validationResult) => {
+      this.fileUploadPipeline
+        .validateFile(file)
+        .then(async (validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
               this.toastService.erro(error);
@@ -877,14 +886,10 @@ export class ManagementClientsComponent implements OnInit {
           }
 
           this.selectedFile = file;
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.filePreview = reader.result as string;
-            this.showUploadAdDialog = true;
-          };
-          reader.readAsDataURL(file);
+          this.filePreview = await this.fileUploadPipeline.readAsDataUrl(file);
+          this.showUploadAdDialog = true;
         })
-        .catch((error) => {
+        .catch(() => {
           this.toastService.erro("Error validating file");
           event.target.value = "";
         });
@@ -896,38 +901,6 @@ export class ManagementClientsComponent implements OnInit {
     this.selectedClient = null;
     this.selectedFile = null;
     this.filePreview = null;
-  }
-
-
-  getFileType(file: File): string {
-    const extension = file.name.split(".").pop()?.toLowerCase();
-    switch (extension) {
-      case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      case "svg":
-        return "image/svg+xml";
-      case "bmp":
-        return "image/bmp";
-      case "tiff":
-        return "image/tiff";
-      case "pdf":
-        return "application/pdf";
-      default:
-        return "image/jpeg";
-    }
-  }
-
-  formatFileSize(bytes: number): string {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
   }
 
   isPdfAttachment(fileName: string): boolean {
@@ -942,33 +915,34 @@ export class ManagementClientsComponent implements OnInit {
 
     this.loadingUpload = true;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64String = reader.result as string;
-      const base64Data = base64String.split(",")[1];
+    void this.fileUploadPipeline
+      .readAsBase64(this.selectedFile)
+      .then((base64Data) => {
+        const payload: CreateClientAdDto = {
+          name: this.selectedFile!.name,
+          type: this.fileUploadPipeline.getFileType(this.selectedFile!),
+          bytes: base64Data,
+        };
 
-      const payload: CreateClientAdDto = {
-        name: this.selectedFile!.name,
-        type: this.getFileType(this.selectedFile!),
-        bytes: base64Data,
-      };
-
-      this.adService.createClientAd(this.selectedClient!.id!, payload).subscribe({
-        next: () => {
-          this.toastService.sucesso("Ad uploaded successfully");
-          this.closeUploadAdDialog();
-          this.loadClients();
-          this.loadingUpload = false;
-        },
-        error: (error) => {
-          this.toastService.erro(
-            error?.error?.message || error?.message || "Failed to upload ad"
-          );
-          this.loadingUpload = false;
-        },
+        this.adService.createClientAd(this.selectedClient!.id!, payload).subscribe({
+          next: () => {
+            this.toastService.sucesso("Ad uploaded successfully");
+            this.closeUploadAdDialog();
+            this.loadClients();
+            this.loadingUpload = false;
+          },
+          error: (error) => {
+            this.toastService.erro(
+              error?.error?.message || error?.message || "Failed to upload ad"
+            );
+            this.loadingUpload = false;
+          },
+        });
+      })
+      .catch(() => {
+        this.toastService.erro("Failed to read file");
+        this.loadingUpload = false;
       });
-    };
-    reader.readAsDataURL(this.selectedFile);
   }
 
   openMessagesHistory(client: Client): void {

@@ -7,9 +7,9 @@
     class="pb-0"
     [breakpoints]="{ '2000px': '841px', '575px': '90vw' }"
   >
-    <h4 class="titulo my-4 text-center w-full sticky top-0">
+    <h1 class="titulo my-4 text-center w-full sticky top-0">
       Terms of Acceptance
-    </h4>
+    </h1>
     <div class="overflow-hidden">
       <div
         class="overflow-auto border-round content"
@@ -22,12 +22,12 @@
       </div>
     </div>
     <div
-      class="gap-3 box-botao sticky bg-white h-full sm:mt-4 sm:px-4 flex flex-column-reverse sm:flex-row justify-content-between"
+      class="gap-3 box-botao sticky bg-white h-full sm:mt-4 sm:px-4 flex flex-column-reverse sm:flex-row justify-content-between align-items-center"
     >
       <button
         pButton
         id="btnSecundario"
-        class="w-full sm:w-4 justify-content-center btn-outline"
+        class="w-full sm:w-4 justify-content-center btn-fill"
         (click)="recusar()"
       >
         Decline

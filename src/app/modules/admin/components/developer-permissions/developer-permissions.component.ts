@@ -5,8 +5,8 @@ import { TableModule } from "primeng/table";
 import { CheckboxModule } from "primeng/checkbox";
 import { CardModule } from "primeng/card";
 import { TooltipModule } from "primeng/tooltip";
-import { forkJoin, of } from "rxjs";
-import { finalize, map, switchMap, tap } from "rxjs/operators";
+import { forkJoin, Observable, of } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 import {
   AdminPermissionRow,
   DeveloperPermissionService,
@@ -19,6 +19,11 @@ import {
   PERMISSION_DESCRIPTIONS,
   PERMISSION_LABELS,
 } from "./developer-permission-meta";
+import {
+  LazyTableController,
+  LazyTableFilterState,
+  LazyTableLoadResult,
+} from "@app/shared/utils/lazy-table.controller";
 
 type AdminRowView = AdminPermissionRow & { emailAlertPreferences: Record<string, boolean> };
 
@@ -30,10 +35,8 @@ type AdminRowView = AdminPermissionRow & { emailAlertPreferences: Record<string,
   styleUrl: "./developer-permissions.component.scss",
 })
 export class DeveloperPermissionsComponent implements OnInit {
-  loading = false;
   errorMessage: string | null = null;
 
-  rows: AdminRowView[] = [];
   catalog: string[] = [];
   emailAlertCategories: EmailAlertCategoryOption[] = [];
 
@@ -44,73 +47,86 @@ export class DeveloperPermissionsComponent implements OnInit {
   savingClientId: string | null = null;
   savingEmailClientId: string | null = null;
 
-  constructor(private readonly developerPermissionService: DeveloperPermissionService) {}
+  readonly tableController: LazyTableController<AdminRowView, LazyTableFilterState>;
+
+  constructor(private readonly developerPermissionService: DeveloperPermissionService) {
+    this.tableController = new LazyTableController(
+      { page: 1, size: 10 },
+      (filters) => this.fetchAdminRows(filters),
+      () => {
+        this.errorMessage = "Could not load permissions.";
+      }
+    );
+  }
+
+  get loading(): boolean {
+    return this.tableController.loading;
+  }
+
+  get rows(): AdminRowView[] {
+    return this.tableController.items;
+  }
 
   ngOnInit(): void {
     this.load();
   }
 
   load(): void {
-    this.loading = true;
     this.errorMessage = null;
-    forkJoin({
+    this.tableController.load();
+  }
+
+  private fetchAdminRows(
+    _filters: LazyTableFilterState
+  ): Observable<LazyTableLoadResult<AdminRowView>> {
+    return forkJoin({
       admins: this.developerPermissionService.listAdmins(),
       catalog: this.developerPermissionService.permissionCatalog(),
       emailAlertCategories: this.developerPermissionService.emailAlertCatalog(),
       partnerPlatformSettings: this.developerPermissionService.getPartnerPlatformSettings(),
-    })
-      .pipe(
-        switchMap(({ admins, catalog, emailAlertCategories, partnerPlatformSettings }) => {
-          const sortedCatalog = [...catalog].sort((a, b) =>
-            this.labelForPermission(a).localeCompare(this.labelForPermission(b), undefined, {
-              sensitivity: "base",
-            }),
-          );
-          const sortedCats = [...emailAlertCategories].sort((x, y) =>
-            x.labelEn.localeCompare(y.labelEn, undefined, { sensitivity: "base" }),
-          );
-          this.catalog = sortedCatalog;
-          this.emailAlertCategories = sortedCats;
-          this.partnerSlotsAnyLocationEnabled =
-            partnerPlatformSettings.partnerSlotsAnyLocationEnabled;
-          this.adminCanCreatePartnerEnabled =
-            partnerPlatformSettings.adminCanCreatePartnerEnabled;
+    }).pipe(
+      switchMap(({ admins, catalog, emailAlertCategories, partnerPlatformSettings }) => {
+        const sortedCatalog = [...catalog].sort((a, b) =>
+          this.labelForPermission(a).localeCompare(this.labelForPermission(b), undefined, {
+            sensitivity: "base",
+          })
+        );
+        const sortedCats = [...emailAlertCategories].sort((x, y) =>
+          x.labelEn.localeCompare(y.labelEn, undefined, { sensitivity: "base" })
+        );
+        this.catalog = sortedCatalog;
+        this.emailAlertCategories = sortedCats;
+        this.partnerSlotsAnyLocationEnabled =
+          partnerPlatformSettings.partnerSlotsAnyLocationEnabled;
+        this.adminCanCreatePartnerEnabled =
+          partnerPlatformSettings.adminCanCreatePartnerEnabled;
 
-          if (admins.length === 0) {
-            this.rows = [];
-            return of(void 0);
-          }
+        if (admins.length === 0) {
+          return of({ list: [], totalElements: 0 });
+        }
 
-          return forkJoin(
-            admins.map((a) =>
-              this.developerPermissionService.getEmailAlertPreferences(a.clientId).pipe(
-                map((p) => {
-                  const emailAlertPreferences: Record<string, boolean> = { ...p.preferences };
-                  for (const opt of sortedCats) {
-                    if (emailAlertPreferences[opt.code] === undefined) {
-                      emailAlertPreferences[opt.code] = false;
-                    }
+        return forkJoin(
+          admins.map((a) =>
+            this.developerPermissionService.getEmailAlertPreferences(a.clientId).pipe(
+              map((p) => {
+                const emailAlertPreferences: Record<string, boolean> = { ...p.preferences };
+                for (const opt of sortedCats) {
+                  if (emailAlertPreferences[opt.code] === undefined) {
+                    emailAlertPreferences[opt.code] = false;
                   }
-                  return { ...a, emailAlertPreferences } satisfies AdminRowView;
-                }),
-              ),
-            ),
-          ).pipe(
-            tap((withPrefs) => {
-              this.rows = withPrefs;
-            }),
-            map((): undefined => undefined),
-          );
-        }),
-        finalize(() => {
-          this.loading = false;
-        }),
-      )
-      .subscribe({
-        error: () => {
-          this.errorMessage = "Could not load permissions.";
-        },
-      });
+                }
+                return { ...a, emailAlertPreferences } satisfies AdminRowView;
+              })
+            )
+          )
+        ).pipe(
+          map((withPrefs) => ({
+            list: withPrefs,
+            totalElements: withPrefs.length,
+          }))
+        );
+      })
+    );
   }
 
   togglePartnerSlotsAnyLocation(checked: boolean): void {
