@@ -11,7 +11,7 @@ import { TextOnlyDirective } from "@app/core/directives/text-only.directive";
 import { ReservedBusinessNameDirective } from "@app/core/directives/reserved-business-name.directive";
 import { ClientService } from "@app/core/service/api/client.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { Client } from "@app/model/client";
+import { Client, isPartnerRole } from "@app/model/client";
 import { ClientRequestDTO } from "@app/model/dto/request/client-request.dto";
 import { ErrorComponent } from "@app/shared/components/error/error.component";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -333,15 +333,23 @@ export class ViewEditProfileComponent implements OnInit {
 
   enableForm(): void {
     Object.keys(this.profileForm.controls).forEach((key) => {
-      if (key !== "socialMedia") {
+      if (key !== "socialMedia" && key !== "email") {
         this.profileForm.get(key)?.enable();
-      } else {
+      } else if (key === "socialMedia") {
         const socialMediaControls = this.socialMediaArray.controls;
         socialMediaControls.forEach((control) => {
           control.enable();
         });
       }
     });
+
+    if (!this.isPartnerProfile()) {
+      this.profileForm.get("email")?.enable();
+    }
+  }
+
+  isPartnerProfile(): boolean {
+    return isPartnerRole(this.clientData?.role);
   }
 
   toggleEditMode(): void {
@@ -356,6 +364,11 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   saveProfile(): void {
+    if (this.profileForm.invalid) {
+      this.profileForm.markAllAsTouched();
+      return;
+    }
+
     this.loading = true;
     const formValues = this.profileForm.getRawValue();
     const clientRequest = this.buildClientRequest(formValues);
@@ -372,7 +385,9 @@ export class ViewEditProfileComponent implements OnInit {
       status: this.clientData?.status,
       socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : null,
       contact: {
-        email: formValues.email,
+        email: this.isPartnerProfile()
+          ? this.clientData?.contact?.email ?? formValues.email
+          : formValues.email,
         phone: formValues.phone,
       },
       addresses: formValues.addresses.map((addr: any) => {
