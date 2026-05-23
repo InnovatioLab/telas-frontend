@@ -28,6 +28,7 @@ import { IconTvDisplayComponent } from "../../icons/tv-display.icon";
 import { IconBoxComponent } from "../../icons/box.icon";
 import { IconEtiquetaComponent } from "../../icons/etiqueta.icon";
 import { IconUserComponent } from "../../icons/user.icon";
+import { IconCheckComponent } from "../../icons/check.icon";
 import { Subscription } from "rxjs";
 
 export interface MenuItem {
@@ -57,6 +58,7 @@ export interface MenuItem {
     IconBoxComponent,
     IconEtiquetaComponent,
     IconUserComponent,
+    IconCheckComponent,
   ],
   templateUrl: "./base-sidebar.component.html",
   styleUrls: ["./base-sidebar.component.scss"],

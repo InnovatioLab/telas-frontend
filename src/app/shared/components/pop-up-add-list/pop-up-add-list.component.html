@@ -5,8 +5,17 @@
       <i class="pi pi-times"></i>
     </button>
   </div>
-  
+
   <div class="point-menu-options">
+    <button
+      *ngIf="showPartnerSubmitButton && selectedPoint?.hasAvailableSlots === true"
+      pButton
+      type="button"
+      icon="pi pi-upload"
+      label="Submit ad"
+      class="p-button-text p-button-success menu-option"
+      (click)="submitAd()"
+    ></button>
     <button
       *ngIf="showCartButton && selectedPoint?.hasAvailableSlots === true"
       pButton
@@ -16,10 +25,14 @@
       class="p-button-text p-button-secondary menu-option"
       (click)="addToList()"
     ></button>
-    
-    <button pButton type="button" icon="pi pi-info-circle" label="Details" 
+
+    <button
+      pButton
+      type="button"
+      icon="pi pi-info-circle"
+      label="Details"
       class="p-button-text p-button-primary menu-option"
-      (click)="viewDetails()">
-    </button>
+      (click)="viewDetails()"
+    ></button>
   </div>
 </div>

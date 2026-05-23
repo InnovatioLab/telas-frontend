@@ -62,6 +62,12 @@ export const ROUTES: Route[] = [
         title: "Review ads",
       },
       {
+        path: "map",
+        component: ClientViewComponent,
+        canActivate: [partnerScreensGuard],
+        title: "Map",
+      },
+      {
         path: "wishlist",
         component: WishListComponent,
         canActivate: [redirectPartnerFromClientShoppingGuard],

@@ -69,10 +69,22 @@
 
       <div
         class="result-actions"
-        *ngIf="showShoppingActions"
+        *ngIf="showShoppingActions || showPartnerActions"
         (click)="$event.stopPropagation()"
       >
         <button
+          *ngIf="showPartnerActions && item.hasAvailableSlots === true"
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-upload"
+          class="p-button-rounded p-button-text p-button-sm result-action-btn"
+          pTooltip="Submit ad"
+          tooltipPosition="left"
+          (click)="onSubmitAd(item, $event)"
+        ></button>
+        <button
+          *ngIf="showShoppingActions"
           pButton
           pRipple
           type="button"
@@ -83,7 +95,7 @@
           (click)="onNotify(item, $event)"
         ></button>
         <button
-          *ngIf="item.hasAvailableSlots === true"
+          *ngIf="showShoppingActions && item.hasAvailableSlots === true"
           pButton
           pRipple
           type="button"

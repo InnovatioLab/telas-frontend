@@ -39,6 +39,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   private allMenuItems: MenuItem[] = [
     { id: "home", label: "Home", icon: "pi-home" },
     { id: "partnerScreens", label: "My screens", icon: "pi-desktop" },
+    { id: "partnerMap", label: "Map", icon: "pi-map-marker" },
     { id: "partnerAds", label: "Review ads", icon: "pi-check-square" },
     { id: "profile", label: "Profile", icon: "pi-cog" },
     { id: "wishList", label: "Wish list", icon: "pi-heart" },
@@ -94,6 +95,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
         filteredItems = filteredItems.filter(
           (item) =>
             item.id === "partnerScreens" ||
+            item.id === "partnerMap" ||
             item.id === "partnerAds" ||
             item.id === "profile" ||
             item.id === "changePassword" ||
@@ -134,6 +136,9 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
         break;
       case "partnerScreens":
         this.navegarParaPartnerScreens();
+        break;
+      case "partnerMap":
+        this.navegarParaPartnerMap();
         break;
       case "partnerAds":
         this.navegarParaPartnerAds();
@@ -208,6 +213,10 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   navegarParaPartnerScreens(): void {
     this.router.navigate(["/client/screens"]);
+  }
+
+  navegarParaPartnerMap(): void {
+    this.router.navigate(["/client/map"]);
   }
 
   navegarParaPartnerAds(): void {

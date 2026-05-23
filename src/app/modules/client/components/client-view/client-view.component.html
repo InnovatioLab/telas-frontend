@@ -9,11 +9,13 @@
         [items]="zipSearchResults"
         [apiUrl]="env.apiUrl"
         [showShoppingActions]="showShoppingActions"
+        [showPartnerActions]="showPartnerMapActions"
         [selectedId]="selectedMonitorId"
         [showCloseButton]="true"
         (selected)="onSelectSearchResult($event)"
         (hoverMonitorIdChange)="onHoverMonitorIdChange($event)"
         (closed)="closeLocationsPanel()"
+        (submitAd)="submitPartnerAd($event)"
       ></app-monitor-results-list>
     </aside>
 
@@ -63,8 +65,10 @@
     [position]="menuPosition"
     [selectedPoint]="selectedPoint"
     [showCartButton]="showPopupCartButton"
+    [showPartnerSubmitButton]="showPartnerMapActions"
     (detailsClicked)="showPointDetails($event)"
     (addToListClicked)="addPointToList($event)"
+    (submitAdClicked)="submitPartnerAd($event)"
   >
   </app-pop-up-add-list>
 </div>

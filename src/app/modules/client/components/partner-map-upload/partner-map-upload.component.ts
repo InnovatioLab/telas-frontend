@@ -89,7 +89,7 @@ export class PartnerMapUploadComponent implements OnInit {
   }
 
   goBack(): void {
-    void this.router.navigate(["/client/screens"]);
+    void this.router.navigate(["/client/map"]);
   }
 
   onSubmissionModeChange(): void {

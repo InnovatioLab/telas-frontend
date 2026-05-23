@@ -10,7 +10,7 @@ import {
   ViewChild,
   inject,
 } from "@angular/core";
-import { RouterModule } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { GoogleMapsService } from "@app/core/service/api/google-maps.service";
 import { MapPoint } from "@app/core/service/state/map-point.interface";
 import { LayoutService } from "@app/core/service/state/layout.service";
@@ -21,6 +21,7 @@ import { SearchSectionComponent } from "@app/shared/components/search-section/se
 import { Authentication } from "@app/core/service/auth/autenthication";
 import {
   isClientShoppingRole,
+  isPartnerRole,
   isPrivilegedPanelRole,
 } from "@app/model/client";
 import {
@@ -107,8 +108,13 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef,
     public readonly clientViewService: ClientViewService,
-    private readonly viewportFacade: MapViewportFacadeService
+    private readonly viewportFacade: MapViewportFacadeService,
+    private readonly router: Router
   ) {}
+
+  get showPartnerMapActions(): boolean {
+    return isPartnerRole(this.authentication.client()?.role);
+  }
 
   get showShoppingActions(): boolean {
     return isClientShoppingRole(this.authentication.client()?.role);
@@ -209,6 +215,19 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addPointToList(point: MapPoint): void {
     this.mapsService.addToSavedPoints(point);
+  }
+
+  submitPartnerAd(point: MapPoint): void {
+    const monitorId = point?.id?.trim();
+    if (!monitorId) {
+      this.toastService.aviso("Screen not available for submission");
+      return;
+    }
+    if (point.hasAvailableSlots === false) {
+      this.toastService.aviso("This screen has no available slots");
+      return;
+    }
+    void this.router.navigate(["/client/map-upload", monitorId]);
   }
 
   onMonitorsFound(monitors: MapPoint[], zipCode?: string): void {

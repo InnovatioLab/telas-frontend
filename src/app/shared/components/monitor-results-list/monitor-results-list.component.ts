@@ -41,12 +41,14 @@ export class MonitorResultsListComponent implements OnChanges {
   @Input({ required: true }) items: MonitorResultListItem[] = [];
   @Input({ required: true }) apiUrl: string;
   @Input() showShoppingActions = false;
+  @Input() showPartnerActions = false;
   @Input() selectedId: string | null = null;
   @Input() showCloseButton = false;
 
   @Output() selected = new EventEmitter<MonitorResultListItem>();
   @Output() hoverMonitorIdChange = new EventEmitter<string | null>();
   @Output() closed = new EventEmitter<void>();
+  @Output() submitAd = new EventEmitter<MonitorResultListItem>();
 
   private readonly brokenImages = new Set<string>();
   private readonly thumbAttempt = new Map<string, number>();
@@ -110,6 +112,11 @@ export class MonitorResultsListComponent implements OnChanges {
   onAddToCart(item: MonitorResultListItem, event: Event): void {
     event.stopPropagation();
     this.monitorCartActions.addMonitorToCart(item);
+  }
+
+  onSubmitAd(item: MonitorResultListItem, event: Event): void {
+    event.stopPropagation();
+    this.submitAd.emit(item);
   }
 
   displayTitle(item: MonitorResultListItem): string {

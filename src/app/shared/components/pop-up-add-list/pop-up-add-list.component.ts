@@ -22,10 +22,12 @@ export class PopUpStepAddListComponent {
   @Input() position: { x: number, y: number } = { x: 0, y: 0 };
   @Input() selectedPoint: MapPoint | null = null;
   @Input() showCartButton = true;
+  @Input() showPartnerSubmitButton = false;
   
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() detailsClicked = new EventEmitter<MapPoint>();
   @Output() addToListClicked = new EventEmitter<MapPoint>();
+  @Output() submitAdClicked = new EventEmitter<MapPoint>();
 
   constructor(
     private readonly cartService: CartService,
@@ -63,6 +65,20 @@ export class PopUpStepAddListComponent {
     }
     this.addToCart();
     this.addToListClicked.emit(this.selectedPoint);
+    this.close();
+  }
+
+  submitAd(): void {
+    if (!this.selectedPoint) {
+      this.close();
+      return;
+    }
+    if (this.selectedPoint.hasAvailableSlots !== true) {
+      this.toastService.aviso("This screen has no available slots");
+      this.close();
+      return;
+    }
+    this.submitAdClicked.emit(this.selectedPoint);
     this.close();
   }
 

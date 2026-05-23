@@ -27,7 +27,7 @@ export class ClientViewLayoutComponent implements OnInit {
 
   readonly isClientMapHome = computed(() => {
     const path = this.url().split("?")[0];
-    return path === "/client" || path === "/client/";
+    return path === "/client" || path === "/client/" || path === "/client/map";
   });
 
   constructor(private readonly cartService: CartService) {
