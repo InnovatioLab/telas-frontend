@@ -58,15 +58,32 @@ import { MapViewportFacadeService } from "../../../client/services/map-viewport-
   `,
   styles: [
     `
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      app-search-section {
+        flex-shrink: 0;
+      }
+
       .admin-view {
         display: flex;
-        height: 100%;
+        flex: 1;
+        min-height: 0;
       }
 
       .map-container {
         flex: 1;
-        min-height: 500px;
+        min-height: 0;
         height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
       }
 
       .monitors-list {

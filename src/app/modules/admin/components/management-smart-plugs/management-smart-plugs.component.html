@@ -22,7 +22,7 @@
         *ngIf="canRunDiscovery"
         pButton
         type="button"
-        class="p-button-outlined mr-2"
+        class="p-button mr-2"
         [disabled]="loading || discoveryRunning"
         (click)="runDiscovery()"
       >
@@ -32,7 +32,7 @@
       <button
         pButton
         type="button"
-        class="p-button-outlined"
+        class="p-button"
         [disabled]="loading || discoveryRunning"
         (click)="load()"
       >
@@ -115,7 +115,7 @@
             pButton
             pRipple
             type="button"
-            class="p-button-sm p-button-outlined mr-2"
+            class="p-button p-button-sm mr-2"
             (click)="openHistory(p)"
           >
             <app-icon-clock></app-icon-clock>
@@ -125,7 +125,7 @@
             pButton
             pRipple
             type="button"
-            class="p-button-sm"
+            class="p-button p-button-sm"
             (click)="testRead(p)"
           >
             <app-icon-bolt></app-icon-bolt>

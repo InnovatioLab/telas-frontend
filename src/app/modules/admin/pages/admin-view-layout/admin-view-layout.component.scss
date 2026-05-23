@@ -45,3 +45,15 @@ app-rodape {
   flex-shrink: 0;
   margin-top: auto;
 }
+
+:host.layout--map-home {
+  height: 100vh;
+  max-height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+
+  app-content-wrapper {
+    min-height: 0;
+    overflow: hidden;
+  }
+}

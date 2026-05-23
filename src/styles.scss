@@ -2417,34 +2417,42 @@ label.required::after {
   border-radius: var(--borda-raio-pequeno);
   padding: 0 1rem;
   font-weight: var(--fonte-peso-semibold);
-  background-color: var(--cor-primaria-escura);
   font-size: 1rem;
-  border: none;
   max-width: 200px;
-  opacity: 0.85;
   transition: var(--transicao-padrao) !important;
 
-  &:not(.p-button-outlined):not(.p-button-text) {
-    color: var(--cor-branca);
+  .p-button-label,
+  .p-button-icon,
+  span,
+  svg,
+  path {
+    color: inherit;
+  }
 
-    .p-button-label,
-    .p-button-icon,
-    span,
-    svg,
-    path {
-      color: inherit;
+  &:not(.p-button-outlined):not(.p-button-text) {
+    background-color: var(--cor-primaria-escura);
+    border: none;
+    color: var(--cor-branca);
+    opacity: 0.85;
+
+    &:hover:not(:disabled) {
+      background-color: var(--cor-primaria-escura);
+      color: var(--cor-branca);
+      opacity: 1;
+      border: none;
     }
   }
 
   &.p-button-outlined:not(.p-button-text) {
+    background-color: transparent;
+    border: 1px solid var(--cor-primaria-escura);
     color: var(--cor-primaria-escura);
+    opacity: 1;
 
-    .p-button-label,
-    .p-button-icon,
-    span,
-    svg,
-    path {
-      color: inherit;
+    &:hover:not(:disabled) {
+      background-color: var(--cor-primaria-escura);
+      border-color: var(--cor-primaria-escura);
+      color: var(--cor-branca);
     }
   }
 
@@ -2458,44 +2466,51 @@ label.required::after {
 
   &.p-button-icon-only {
     opacity: 1;
+    padding: 0.5rem;
   }
 
   &:not(.close-btn) {
     flex: 1;
   }
 
-  &:hover:not(:disabled) {
-    background-color: var(--cor-primaria-escura);
-    color: var(--cor-branca);
-    opacity: 1;
-    border: none;
-  }
-
   &:disabled {
     background-color: var(--cor-desabilitado);
+    border-color: var(--cor-desabilitado);
     color: var(--cor-branca);
+    opacity: 1;
     cursor: not-allowed;
 
     .p-button-icon {
       opacity: 0.5;
     }
   }
-
-  &.p-button-icon-only {
-    padding: 0.5rem;
-  }
 }
 
 html[data-theme="dark"] .p-button:not(.icon-button),
 html.dark-theme .p-button:not(.icon-button),
 body.dark-theme .p-button:not(.icon-button) {
-  border: 1px solid var(--cor-primaria-escura);
-  opacity: 1;
-
-  &:hover:not(:disabled) {
-    background-color: var(--cor-primaria-escura);
+  &:not(.p-button-outlined):not(.p-button-text) {
+    border: 1px solid var(--cor-primaria-escura);
     color: var(--cor-texto-clara);
-    border: 1px solid var(--cor-texto-clara);
+    opacity: 1;
+
+    &:hover:not(:disabled) {
+      background-color: var(--cor-primaria-escura);
+      color: var(--cor-texto-clara);
+      border: 1px solid var(--cor-texto-clara);
+    }
+  }
+
+  &.p-button-outlined:not(.p-button-text) {
+    background-color: transparent;
+    border: 1px solid var(--cor-primaria-escura);
+    color: var(--cor-texto-clara);
+
+    &:hover:not(:disabled) {
+      background-color: var(--cor-primaria-escura);
+      color: var(--cor-texto-clara);
+      border: 1px solid var(--cor-texto-clara);
+    }
   }
 }
 

@@ -36,7 +36,6 @@ import { LayoutService } from "@app/core/service/state/layout.service";
       }
 
       .content-container {
-        padding: 1rem 3rem;
         max-width: min(100%, 150rem);
         margin: 0 auto;
         width: 100%;
@@ -80,6 +79,47 @@ import { LayoutService } from "@app/core/service/state/layout.service";
       .content-container > * {
         max-width: 100%;
         box-sizing: border-box;
+      }
+
+      :host.content-wrapper--map-home {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+
+        .content-wrapper {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .content-container {
+          padding: 0 1.5rem;
+          flex: 1;
+          min-height: 0;
+          max-width: min(100%, 72rem);
+          margin: 0 auto;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+        }
+
+        .content-container > :not(router-outlet) {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+          align-self: stretch;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        :host.content-wrapper--map-home .content-container {
+          padding: 0 1rem;
+        }
       }
     `,
   ],

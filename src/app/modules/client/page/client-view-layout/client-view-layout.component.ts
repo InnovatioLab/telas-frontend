@@ -13,6 +13,9 @@ import { RodapeComponent } from "@app/shared/components/rodape/rodape.component"
   templateUrl: "./client-view-layout.component.html",
   styleUrls: ["./client-view-layout.component.scss"],
   standalone: true,
+  host: {
+    "[class.layout--map-home]": "isClientMapHome()",
+  },
   imports: [
     HeaderComponent,
     RouterModule,

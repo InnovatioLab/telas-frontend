@@ -30,31 +30,6 @@ app-content-wrapper {
   overflow-x: hidden;
 }
 
-:host ::ng-deep app-content-wrapper.content-wrapper--client-map-home .content-container {
-  max-width: none;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 5rem;
-  padding-right: 5rem;
-  padding-top: 1rem;
-  padding-bottom: 3rem;
-}
-
-@media screen and (max-width: 768px) {
-  :host ::ng-deep app-content-wrapper.content-wrapper--client-map-home .content-container {
-    padding-right: 1rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  :host ::ng-deep app-content-wrapper.content-wrapper--client-map-home .content-container {
-    padding-right: 0.75rem;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-  }
-}
 
 app-rodape {
   width: 100%;
@@ -62,4 +37,16 @@ app-rodape {
   min-width: 0;
   flex-shrink: 0;
   margin-top: auto;
+}
+
+:host.layout--map-home {
+  height: 100vh;
+  max-height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+
+  app-content-wrapper {
+    min-height: 0;
+    overflow: hidden;
+  }
 }

@@ -45,36 +45,43 @@ interface MonitorCluster {
   standalone: true,
   imports: [CommonModule, LeafletModule, FormsModule, IconsModule],
   template: `
-    <div #mapContainer [style.width]="width" [style.height]="height"></div>
+    <div #mapContainer class="map-root" [style.width]="width" [style.height]="height"></div>
   `,
   styles: [
     `
       :host {
-        display: block;
-        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
+        min-height: 0;
         width: 100%;
         box-sizing: border-box;
       }
 
-      div {
+      .map-root {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        height: 100%;
         border-radius: 8px;
         box-sizing: border-box;
         overflow: hidden;
       }
 
-      div ::ng-deep .leaflet-container {
+      .map-root ::ng-deep .leaflet-container {
         border-radius: 0 !important;
       }
 
-      div ::ng-deep .leaflet-tile-container {
+      .map-root ::ng-deep .leaflet-tile-container {
         border-radius: 0 !important;
       }
 
-      div ::ng-deep .leaflet-tile-container img {
+      .map-root ::ng-deep .leaflet-tile-container img {
         border-radius: 0 !important;
       }
 
-      div ::ng-deep .leaflet-tile {
+      .map-root ::ng-deep .leaflet-tile {
         border-radius: 0 !important;
       }
 
@@ -123,6 +130,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private monitorMarkers: Map<L.Marker, MapPoint> = new Map();
   private markersByMonitorId = new Map<string, L.Marker>();
   private hoveredMarkerId: string | null = null;
+  private containerResizeObserver: ResizeObserver | null = null;
+  private mapInitPromise: Promise<void> | null = null;
+  private resizeObserverFrameId: number | null = null;
 
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -282,14 +292,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   public forceReinitialize(): void {
-    if (this._map) {
-      this._map.remove();
-      this._map = null;
-    }
-
-    this.clearMarkers();
+    this.destroyMapInstance();
     this._mapReady = false;
-    this.initializeMap();
+    void this.initializeMap();
   }
 
   public ensureMapInitialized(): void {
@@ -315,7 +320,6 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   ngOnInit() {
-    this.initializeMap();
     this.setupEventListeners();
   }
 
@@ -330,38 +334,119 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   ngAfterViewInit(): void {
-    if (!this._map && this.mapContainer?.nativeElement) {
-      setTimeout(() => {
-        this.initializeMap();
-      }, 100);
-    }
+    this.observeContainerAndInitialize();
   }
 
   ngOnDestroy(): void {
+    if (this.resizeObserverFrameId != null) {
+      cancelAnimationFrame(this.resizeObserverFrameId);
+      this.resizeObserverFrameId = null;
+    }
+    this.containerResizeObserver?.disconnect();
+    this.containerResizeObserver = null;
+    this.mapInitPromise = null;
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.clearMarkers();
+    this.destroyMapInstance();
+  }
 
+  private destroyMapInstance(): void {
+    const container = this.mapContainer?.nativeElement as HTMLElement | undefined;
     if (this._map) {
       this._map.remove();
       this._map = null;
     }
+    this.leafletMapService.destroyExistingMap(container ?? null);
+  }
+
+  private observeContainerAndInitialize(): void {
+    const element = this.mapContainer?.nativeElement as HTMLElement | undefined;
+    if (!element) {
+      return;
+    }
+
+    const tryInitialize = (): void => {
+      if (this._map) {
+        this.updateMapDimensions();
+        return;
+      }
+
+      if (!this.hasContainerSize(element)) {
+        return;
+      }
+
+      void this.initializeMap();
+    };
+
+    tryInitialize();
+
+    if (typeof ResizeObserver === "undefined") {
+      setTimeout(tryInitialize, 150);
+      return;
+    }
+
+    this.containerResizeObserver?.disconnect();
+    this.containerResizeObserver = new ResizeObserver(() => {
+      if (this.resizeObserverFrameId != null) {
+        cancelAnimationFrame(this.resizeObserverFrameId);
+      }
+      this.resizeObserverFrameId = requestAnimationFrame(() => {
+        this.resizeObserverFrameId = null;
+        this.ngZone.run(() => tryInitialize());
+      });
+    });
+    this.containerResizeObserver.observe(element);
+  }
+
+  private hasContainerSize(element: HTMLElement): boolean {
+    const candidates = [element, element.parentElement].filter(
+      (node): node is HTMLElement => node instanceof HTMLElement
+    );
+
+    return candidates.some(
+      (node) => node.clientHeight > 0 && node.clientWidth > 0
+    );
   }
 
   private async initializeMap(): Promise<void> {
+    if (this._map) {
+      return;
+    }
+
+    if (this.mapInitPromise) {
+      return this.mapInitPromise;
+    }
+
     if (!this.mapContainer?.nativeElement) {
       return;
     }
 
-    if (this._map) {
+    if (!this.hasContainerSize(this.mapContainer.nativeElement)) {
       return;
     }
+
+    this.mapInitPromise = this.createMapInstance();
+
+    try {
+      await this.mapInitPromise;
+    } finally {
+      this.mapInitPromise = null;
+    }
+  }
+
+  private async createMapInstance(): Promise<void> {
+    if (!this.mapContainer?.nativeElement || this._map) {
+      return;
+    }
+
+    const container = this.mapContainer.nativeElement as HTMLElement;
 
     try {
       const defaultCenter = { lat: 30.3322, lng: -81.6557 };
       const center = this.center || defaultCenter;
 
       this._map = await this.leafletMapService.initializeMap(
-        this.mapContainer.nativeElement,
+        container,
         center,
         this.zoom
       );
@@ -389,13 +474,15 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
           });
         }
       }, 200);
-    } catch (error) {
+    } catch {
+      this.leafletMapService.destroyExistingMap(container);
+      this._map = null;
+      this._mapReady = false;
       this.ngZone.run(() => {
         this.mapError.emit(
           "Falha ao inicializar o mapa. Por favor, tente novamente."
         );
       });
-      this._mapReady = false;
     }
   }
 

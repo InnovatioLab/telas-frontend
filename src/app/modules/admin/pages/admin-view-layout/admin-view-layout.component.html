@@ -1,4 +1,6 @@
 <app-header></app-header>
 <app-menu></app-menu>
-<app-content-wrapper></app-content-wrapper>
+<app-content-wrapper
+  [class.content-wrapper--map-home]="isAdminMapHome()"
+></app-content-wrapper>
 <app-rodape></app-rodape>

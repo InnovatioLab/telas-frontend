@@ -17,6 +17,8 @@ export class LeafletMapService implements IMapService {
     center: { lat: number; lng: number },
     zoom: number
   ): Promise<L.Map> {
+    this.destroyExistingMap(container);
+
     const maxBounds = L.latLngBounds(
       L.latLng(-85, -180),
       L.latLng(85, 180)
@@ -139,6 +141,30 @@ export class LeafletMapService implements IMapService {
 
   getMapInstance(): L.Map | null {
     return this.map;
+  }
+
+  destroyExistingMap(container?: HTMLElement | null): void {
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
+
+    if (container) {
+      this.resetLeafletContainer(container);
+    }
+  }
+
+  private resetLeafletContainer(container: HTMLElement): void {
+    const mappedContainer = container as HTMLElement & {
+      _leaflet_id?: number;
+    };
+
+    if (mappedContainer._leaflet_id == null) {
+      return;
+    }
+
+    container.replaceChildren();
+    delete mappedContainer._leaflet_id;
   }
 
   createCustomIcon(
