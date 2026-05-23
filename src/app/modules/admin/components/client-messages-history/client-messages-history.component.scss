@@ -1,4 +1,103 @@
-.white-space-pre-line {
+.client-messages-history {
+  padding: var(--espacamento-medio);
+  color: var(--cor-cinza-escuro);
+}
+
+.page-title {
+  color: var(--cor-cinza-escuro);
+}
+
+.page-subtitle {
+  color: var(--cor-legenda);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--cor-legenda);
+}
+
+.message-item {
+  padding: 0.5rem;
+  border-radius: var(--borda-raio-pequeno);
+  background: var(--cor-cinza-fundo);
+  border: 1px solid var(--cor-cinza-medio);
+}
+
+.message-meta {
+  font-size: var(--fonte-tamanho-padrao);
+  font-weight: var(--fonte-peso-semibold);
+  color: var(--cor-cinza-escuro);
+}
+
+.message-body {
+  color: var(--cor-cinza-escuro);
   white-space: pre-line;
 }
 
+:host ::ng-deep {
+  .back-link.p-button.p-button-text {
+    color: var(--cor-primaria) !important;
+
+    .p-button-label,
+    .p-button-icon {
+      color: var(--cor-primaria) !important;
+    }
+  }
+
+  .messages-accordion {
+    .p-accordionheader {
+      color: var(--cor-cinza-escuro);
+      background: var(--cor-branca);
+    }
+
+    .p-accordioncontent-content {
+      color: var(--cor-cinza-escuro);
+      background: var(--cor-branca);
+    }
+  }
+}
+
+:host-context(html[data-theme="dark"]),
+:host-context(html.dark-theme),
+:host-context(body.dark-theme) {
+  .client-messages-history {
+    color: var(--cor-texto-clara);
+  }
+
+  .page-title,
+  .message-meta,
+  .message-body {
+    color: var(--cor-texto-clara);
+  }
+
+  .page-subtitle,
+  .empty-state {
+    color: var(--cor-legenda);
+  }
+
+  .message-item {
+    background: var(--cor-cinza-medio-dark);
+    border-color: var(--cor-cinza-medio-dark);
+  }
+}
+
+:host-context(html[data-theme="dark"]) ::ng-deep,
+:host-context(html.dark-theme) ::ng-deep,
+:host-context(body.dark-theme) ::ng-deep {
+  .back-link.p-button.p-button-text {
+    color: var(--cor-texto-clara) !important;
+
+    .p-button-label,
+    .p-button-icon {
+      color: var(--cor-texto-clara) !important;
+    }
+  }
+
+  .messages-accordion {
+    .p-accordionheader,
+    .p-accordioncontent-content {
+      color: var(--cor-texto-clara);
+      background: var(--cor-card-background-dark);
+    }
+  }
+}
