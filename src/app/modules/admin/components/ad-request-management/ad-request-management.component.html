@@ -11,23 +11,17 @@
             type="text"
             class="search-input-width"
             pInputText
-            placeholder="Search Ad Requests"
+            [placeholder]="isPartnerSection ? 'Search partner ad requests' : 'Search client ad requests'"
             [(ngModel)]="searchTerm"
             [ngModelOptions]="{ standalone: true }"
             (keyup.enter)="onSearch()"
           />
         </span>
-        <span
-          class="pi pi-info-circle info-icon"
-          pTooltip="Search by Client BusinessName, Phone, Email or Role"
-          tooltipPosition="top"
-        ></span>
       </div>
     </div>
   </div>
 </p-card>
 
-<!-- Ad Requests Table -->
 <p-table
   [value]="adRequests"
   [loading]="loading"
@@ -49,14 +43,16 @@
   <ng-template pTemplate="header">
     <tr>
       <th scope="col" pSortableColumn="clientName">
-        Client Name <p-sortIcon field="clientName"></p-sortIcon>
+        {{ isPartnerSection ? "Partner" : "Client Name" }}
+        <p-sortIcon field="clientName"></p-sortIcon>
       </th>
-      <th scope="col" pSortableColumn="role">
-        Role <p-sortIcon field="role"></p-sortIcon>
-      </th>
-      <th scope="col" pSortableColumn="questionnaireUpdatedAt">
+      <th scope="col" *ngIf="isPartnerSection">Mode</th>
+      <th scope="col" *ngIf="isPartnerSection">Admin action</th>
+      <th scope="col" *ngIf="isPartnerSection">Target screen</th>
+      <th scope="col" *ngIf="!isPartnerSection" pSortableColumn="questionnaireUpdatedAt">
         Questions <p-sortIcon field="questionnaireUpdatedAt"></p-sortIcon>
       </th>
+      <th scope="col">Status</th>
       <th scope="col" pSortableColumn="createdAt">
         Submission Date <p-sortIcon field="createdAt"></p-sortIcon>
       </th>
@@ -68,14 +64,10 @@
   <ng-template pTemplate="body" let-adRequest>
     <tr>
       <td>{{ adRequest.clientName }}</td>
-      <td>
-        <p-badge
-          [value]="getPartnerStatusLabel(adRequest.clientRole)"
-          [severity]="getPartnerStatusSeverity(adRequest.clientRole)"
-        >
-        </p-badge>
-      </td>
-      <td>
+      <td *ngIf="isPartnerSection">{{ getModeLabel(adRequest.submissionMode) }}</td>
+      <td *ngIf="isPartnerSection">{{ adRequest.adminActionLabel || "—" }}</td>
+      <td *ngIf="isPartnerSection">{{ adRequest.targetMonitorSummary || "—" }}</td>
+      <td *ngIf="!isPartnerSection">
         <span *ngIf="adRequest.businessQuestionnaireVersion != null; else noQ">
           v{{ adRequest.businessQuestionnaireVersion }}
         </span>
@@ -89,12 +81,30 @@
           pTooltip="Download questionnaire (.txt)"
           tooltipPosition="top"
           (click)="downloadQuestionnaireTxt(adRequest)"
+          *ngIf="adRequest.businessQuestionnaireVersion != null"
         ></button>
+      </td>
+      <td>
+        <p-badge
+          [value]="getWorkflowLabel(adRequest.workflowStatus)"
+          [severity]="getWorkflowSeverity(adRequest.workflowStatus)"
+        ></p-badge>
       </td>
       <td>{{ adRequest.submissionDate | date: "MM/dd/yyyy" }}</td>
       <td>{{ adRequest.waitingDays }} days</td>
       <td class="actions">
         <div class="action-buttons">
+          <button
+            pButton
+            pRipple
+            *ngIf="canViewAd(adRequest)"
+            icon="pi pi-eye"
+            class="p-button-rounded p-button-info p-button-text"
+            (click)="openViewAd(adRequest)"
+            pTooltip="View ad"
+            tooltipPosition="top"
+            type="button"
+          ></button>
           <span class="action-with-badge">
             <button
               pButton
@@ -116,12 +126,13 @@
           <button
             pButton
             pRipple
-            *ngIf="adRequest.attachments && adRequest.attachments.length > 0"
-            icon="pi pi-eye"
-            class="p-button-rounded p-button-info p-button-text"
-            (click)="openViewDetailsDialog(adRequest)"
-            pTooltip="View Details"
+            *ngIf="canCancel(adRequest)"
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-danger p-button-text"
+            (click)="cancelRequest(adRequest)"
+            pTooltip="Remove request"
             tooltipPosition="top"
+            type="button"
           ></button>
           <input
             #fileInput
@@ -133,11 +144,24 @@
           <button
             pButton
             pRipple
+            *ngIf="canUpload(adRequest)"
             icon="pi pi-upload"
             class="p-button-rounded p-button-success p-button-text"
             (click)="fileInput.click()"
-            pTooltip="Upload Ad"
+            pTooltip="Upload ad"
             tooltipPosition="top"
+            type="button"
+          ></button>
+          <button
+            pButton
+            pRipple
+            *ngIf="canApproveToAds(adRequest)"
+            icon="pi pi-check"
+            class="p-button-rounded p-button-success p-button-text"
+            (click)="approveToAds(adRequest)"
+            pTooltip="Send to Ads"
+            tooltipPosition="top"
+            type="button"
           ></button>
         </div>
       </td>
@@ -146,12 +170,13 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="6" class="text-center">No ad requests found.</td>
+      <td [attr.colspan]="isPartnerSection ? 8 : 7" class="text-center">
+        No ad requests found.
+      </td>
     </tr>
   </ng-template>
 </p-table>
 
-<!-- View Details Dialog -->
 <p-dialog
   header="Ad Request Details"
   [(visible)]="showViewDetailsDialog"
@@ -164,27 +189,17 @@
   [resizable]="false"
 >
   <div *ngIf="selectedAdRequest" class="details-content">
-    <div *ngIf="selectedAdRequest.businessQuestionnaireVersion != null" class="detail-row">
+    <div class="detail-row" *ngIf="selectedAdRequest.businessQuestionnaireVersion != null">
       <strong>Business questionnaire:</strong> revision
       {{ selectedAdRequest.businessQuestionnaireVersion }}
       <span *ngIf="selectedAdRequest.businessQuestionnaireUpdatedAt">
         — updated {{ selectedAdRequest.businessQuestionnaireUpdatedAt | date: "short" }}
       </span>
-      <button
-        pButton
-        type="button"
-        label="Download .txt"
-        class="p-button-sm p-button-outlined ml-2"
-        (click)="downloadQuestionnaireTxt(selectedAdRequest)"
-      ></button>
     </div>
 
     <div
       class="detail-row"
-      *ngIf="
-        selectedAdRequest.attachments &&
-        selectedAdRequest.attachments.length > 0
-      "
+      *ngIf="selectedAdRequest.attachments && selectedAdRequest.attachments.length > 0"
     >
       <strong>Attachments:</strong>
       <div class="attachments-container mt-2">
@@ -192,49 +207,20 @@
           *ngFor="let attachment of selectedAdRequest.attachments"
           class="attachment-item"
         >
-          <div *ngIf="isPdfAttachment(attachment.attachmentLink)" class="pdf-preview-card">
-            <div class="pdf-preview-icon">
-              <span
-                class="pi pi-file-pdf"
-                style="font-size: 48px; color: var(--cor-erro)"
-              ></span>
-            </div>
-            <div class="pdf-preview-name">
-              {{ attachment.attachmentName || 'PDF Document' }}
-            </div>
-          </div>
           <img
             *ngIf="!isPdfAttachment(attachment.attachmentLink)"
             [src]="attachment.attachmentLink"
             alt="Attachment"
             class="attachment-image"
           />
-          <div
-            class="attachment-actions w-full flex justify-content-center gap-2"
-          >
+          <div class="attachment-actions w-full flex justify-content-center gap-2">
             <p-button
               icon="pi pi-eye"
               (onClick)="viewAttachment(attachment.attachmentLink)"
-              [disabled]="loading"
               severity="info"
               [text]="true"
               pTooltip="View"
-            >
-            </p-button>
-            <p-button
-              icon="pi pi-download"
-              (onClick)="
-                downloadAttachment(
-                  attachment.attachmentDownloadLink || attachment.attachmentLink,
-                  attachment.attachmentName
-                )
-              "
-              [disabled]="loading"
-              severity="success"
-              [text]="true"
-              pTooltip="Download"
-            >
-            </p-button>
+            ></p-button>
           </div>
         </div>
       </div>
@@ -242,14 +228,12 @@
 
     <div
       class="detail-row"
-      *ngIf="
-        selectedAdRequest.ad &&
-        shouldShowSeparateLastAdSection(selectedAdRequest)
-      "
+      *ngIf="selectedAdRequest.ad && (selectedAdRequest.ad.attachmentLink || selectedAdRequest.ad.attachmentId)"
     >
-      <strong>Last Ad Validated:</strong>
+      <strong>Ad creative:</strong>
       <div class="ad-container">
         <img
+          *ngIf="selectedAdRequest.ad.attachmentLink && !isPdfAttachment(selectedAdRequest.ad.attachmentLink)"
           [src]="selectedAdRequest.ad.attachmentLink"
           alt="Ad"
           class="ad-image"
@@ -257,35 +241,18 @@
         <div class="flex justify-content-center gap-2 mt-2">
           <p-button
             icon="pi pi-eye"
-            (onClick)="viewAttachment(selectedAdRequest.ad.attachmentLink)"
-            [disabled]="loading"
+            (onClick)="viewAttachment(selectedAdRequest.ad!.attachmentLink)"
             severity="info"
             [text]="true"
             pTooltip="View"
-          ></p-button>
-          <p-button
-            icon="pi pi-download"
-            (onClick)="
-              downloadAttachment(
-                selectedAdRequest.ad.attachmentDownloadLink || selectedAdRequest.ad.attachmentLink,
-                selectedAdRequest.ad.attachmentName
-              )
-            "
-            [disabled]="loading"
-            severity="success"
-            [text]="true"
-            pTooltip="Download"
           ></p-button>
         </div>
       </div>
     </div>
 
-    <!-- Refused Ads -->
     <div
       class="detail-row"
-      *ngIf="
-        selectedAdRequest.refusedAds && selectedAdRequest.refusedAds.length > 0
-      "
+      *ngIf="selectedAdRequest.refusedAds && selectedAdRequest.refusedAds.length > 0"
     >
       <strong>Refused Ads:</strong>
       <div class="refused-ads-container">
@@ -293,17 +260,11 @@
           *ngFor="let refusedAd of selectedAdRequest.refusedAds; index as i"
           class="refused-ad-item"
         >
-          <div class="refused-ad-content">
-            <p class="mb-0 error">
-              <strong>{{ "Refusal " + (i + 1) }}</strong>
-            </p>
-            <div>
-              <strong>Justification:</strong> {{ refusedAd.justification }}
-            </div>
-            <div *ngIf="refusedAd.description">
-              <strong>Description:</strong>
-              {{ refusedAd.description | sliceString: 70 }}
-            </div>
+          <p class="mb-0 error"><strong>{{ "Refusal " + (i + 1) }}</strong></p>
+          <div><strong>Justification:</strong> {{ refusedAd.justification }}</div>
+          <div *ngIf="refusedAd.description">
+            <strong>Description:</strong>
+            {{ refusedAd.description | sliceString: 70 }}
           </div>
         </div>
       </div>
@@ -315,7 +276,6 @@
   </ng-template>
 </p-dialog>
 
-<!-- Upload Ad Dialog -->
 <p-dialog
   header="Upload Ad"
   [(visible)]="showUploadAdDialog"
@@ -327,33 +287,11 @@
   [resizable]="false"
 >
   <div class="upload-content">
-    <!-- File Preview -->
     <div
       *ngIf="filePreview && selectedFile"
       class="file-preview flex flex-column align-items-center gap-3"
     >
-      <h4 class="align-self-start">Selected File Preview:</h4>
-      
-      <!-- PDF Preview -->
-      <div *ngIf="isPdfAttachment(selectedFile.name)" class="pdf-preview-container">
-        <pdf-viewer
-          [src]="filePreview"
-          [render-text]="true"
-          [original-size]="false"
-          [show-all]="false"
-          [fit-to-page]="true"
-          [zoom]="0.8"
-          [zoom-scale]="'page-width'"
-          [stick-to-page]="true"
-          style="display: block; width: 100%; min-height: 400px; max-height: 500px;"
-        ></pdf-viewer>
-        <div class="pdf-preview-info">
-          <p class="pdf-preview-name">{{ selectedFile.name }}</p>
-          <p class="pdf-preview-size">{{ formatFileSize(selectedFile.size) }}</p>
-        </div>
-      </div>
-
-      <!-- Image Preview -->
+      <h4 class="w-full align-self-start">Selected File Preview:</h4>
       <img
         *ngIf="!isPdfAttachment(selectedFile.name)"
         [src]="filePreview"
@@ -365,12 +303,7 @@
 
   <ng-template pTemplate="footer">
     <div class="upload-dialog-footer w-full flex justify-content-center gap-3">
-      <button
-        pButton
-        id="btnSecundario"
-        label="Cancel"
-        (click)="closeUploadAdDialog()"
-      ></button>
+      <button pButton id="btnSecundario" label="Cancel" (click)="closeUploadAdDialog()"></button>
       <button
         pButton
         label="Upload"

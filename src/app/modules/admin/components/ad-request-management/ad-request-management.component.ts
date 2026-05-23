@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { SliceStringPipe } from "@app/core/pipes/slice-string.pipe";
 import { AdService } from "@app/core/service/api/ad.service";
@@ -9,8 +9,11 @@ import { Role } from "@app/model/client";
 import { CreateClientAdDto } from "@app/model/dto/request/create-client-ad.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import {
+  AdRequestOrigin,
   AdRequestResponseDto,
+  AdRequestWorkflowStatus,
   LinkResponseDto,
+  PartnerSubmissionMode,
 } from "@app/model/dto/response/ad-request-response.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -26,6 +29,7 @@ import {
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { Router } from "@angular/router";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
+import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
 
 @Component({
   selector: "app-ad-request-management",
@@ -42,6 +46,8 @@ import { NotificationsService } from "@app/core/service/api/notifications.servic
   styleUrls: ["./ad-request-management.component.scss"],
 })
 export class AdRequestManagementComponent implements OnInit {
+  @Input() requestOrigin: AdRequestOrigin = "CLIENT";
+
   adRequests: AdRequestResponseDto[] = [];
   loading = false;
   searchTerm = "";
@@ -75,7 +81,8 @@ export class AdRequestManagementComponent implements OnInit {
     private readonly toastService: ToastService,
     private readonly pdfViewerService: PdfViewerService,
     private readonly router: Router,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly confirmationDialogService: ConfirmationDialogService
   ) {}
 
   private unreadMessagesByClientId = new Map<string, number>();
@@ -92,6 +99,7 @@ export class AdRequestManagementComponent implements OnInit {
       page: this.currentPage,
       size: this.pageSize,
       genericFilter: this.searchTerm,
+      requestOrigin: this.requestOrigin,
     };
 
     this.clientService.getAllAdRequests(filters).subscribe({
@@ -325,6 +333,149 @@ export class AdRequestManagementComponent implements OnInit {
     }
   }
 
+  private onUploadSuccess(): void {
+    this.toastService.sucesso("Ad uploaded successfully");
+    this.closeUploadAdDialog();
+    this.loadAdRequests();
+    this.loadingUpload = false;
+  }
+
+  private uploadPartnerAd(payload: CreateClientAdDto): void {
+    const adRequestId = this.selectedAdRequest?.id;
+    if (!adRequestId) {
+      this.loadingUpload = false;
+      return;
+    }
+    this.clientService.uploadAdForAdRequest(adRequestId, payload).subscribe({
+      next: () => this.onUploadSuccess(),
+      error: () => {
+        this.toastService.erro("Failed to upload ad");
+        this.loadingUpload = false;
+      },
+    });
+  }
+
+  approveToAds(adRequest: AdRequestResponseDto): void {
+    void this.approveToAdsAsync(adRequest);
+  }
+
+  private async approveToAdsAsync(adRequest: AdRequestResponseDto): Promise<void> {
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Send to Ads",
+      message:
+        "Approve this finished creative and move it to the approved ads list?",
+      confirmLabel: "Approve",
+    });
+    if (!confirmed) return;
+    this.clientService.approveAdRequestToAds(adRequest.id).subscribe({
+      next: () => {
+        this.toastService.sucesso("Ad approved and moved to Ads");
+        this.loadAdRequests();
+      },
+      error: () => this.toastService.erro("Failed to approve ad"),
+    });
+  }
+
+  cancelRequest(adRequest: AdRequestResponseDto): void {
+    void this.cancelRequestAsync(adRequest);
+  }
+
+  private async cancelRequestAsync(adRequest: AdRequestResponseDto): Promise<void> {
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Cancel request",
+      message: "Remove this ad request from the queue?",
+      confirmLabel: "Remove",
+      severity: "warn",
+    });
+    if (!confirmed) return;
+    this.clientService.cancelAdRequest(adRequest.id).subscribe({
+      next: () => {
+        this.toastService.sucesso("Ad request cancelled");
+        this.loadAdRequests();
+      },
+      error: () => this.toastService.erro("Failed to cancel ad request"),
+    });
+  }
+
+  canUpload(adRequest: AdRequestResponseDto): boolean {
+    const status = adRequest.workflowStatus;
+    return (
+      status === "AWAITING_ADMIN_UPLOAD" ||
+      status === "REOPENED_AFTER_REJECTION"
+    );
+  }
+
+  canApproveToAds(adRequest: AdRequestResponseDto): boolean {
+    return adRequest.workflowStatus === "AWAITING_ADMIN_DIRECT_APPROVAL";
+  }
+
+  canCancel(adRequest: AdRequestResponseDto): boolean {
+    return adRequest.adValidation !== "APPROVED";
+  }
+
+  canViewAd(adRequest: AdRequestResponseDto): boolean {
+    const hasAttachments =
+      adRequest.attachments != null && adRequest.attachments.length > 0;
+    const hasAd =
+      adRequest.ad != null &&
+      (adRequest.ad.attachmentLink != null || adRequest.ad.attachmentId != null);
+    return hasAttachments || hasAd;
+  }
+
+  get isPartnerSection(): boolean {
+    return this.requestOrigin === "PARTNER";
+  }
+
+  getWorkflowLabel(status?: AdRequestWorkflowStatus): string {
+    switch (status) {
+      case "AWAITING_ADMIN_UPLOAD":
+        return "Awaiting admin upload";
+      case "AWAITING_PARTNER_REVIEW":
+        return "Awaiting partner review";
+      case "AWAITING_CLIENT_REVIEW":
+        return "Awaiting client review";
+      case "AWAITING_ADMIN_DIRECT_APPROVAL":
+        return "Awaiting admin approval";
+      case "REOPENED_AFTER_REJECTION":
+        return "Reopened after rejection";
+      default:
+        return status ?? "—";
+    }
+  }
+
+  getModeLabel(mode?: PartnerSubmissionMode | null): string {
+    switch (mode) {
+      case "ADMIN_MATERIALS":
+        return "Admin materials";
+      case "PARTNER_FINISHED_CREATIVE":
+        return "Finished creative";
+      case "READY_CREATIVE":
+        return "Ready creative";
+      default:
+        return "—";
+    }
+  }
+
+  getWorkflowSeverity(
+    status?: AdRequestWorkflowStatus
+  ): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
+    switch (status) {
+      case "REOPENED_AFTER_REJECTION":
+        return "danger";
+      case "AWAITING_PARTNER_REVIEW":
+      case "AWAITING_CLIENT_REVIEW":
+        return "warn";
+      case "AWAITING_ADMIN_DIRECT_APPROVAL":
+        return "info";
+      default:
+        return "secondary";
+    }
+  }
+
+  openViewAd(adRequest: AdRequestResponseDto): void {
+    this.openViewDetailsDialog(adRequest);
+  }
+
   uploadAd(): void {
     if (!this.selectedFile || !this.selectedAdRequest) {
       this.toastService.erro("No file selected");
@@ -344,16 +495,16 @@ export class AdRequestManagementComponent implements OnInit {
         bytes: base64Data,
       };
 
+      if (this.requestOrigin === "PARTNER") {
+        this.uploadPartnerAd(payload);
+        return;
+      }
+
       this.adService
         .createClientAd(this.selectedAdRequest!.clientId, payload)
         .subscribe({
-          next: () => {
-            this.toastService.sucesso("Ad uploaded successfully");
-            this.closeUploadAdDialog();
-            this.loadAdRequests(); 
-            this.loadingUpload = false;
-          },
-          error: (error) => {
+          next: () => this.onUploadSuccess(),
+          error: () => {
             this.toastService.erro("Failed to upload ad");
             this.loadingUpload = false;
           },

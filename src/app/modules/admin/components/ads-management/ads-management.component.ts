@@ -46,6 +46,7 @@ export class AdsManagementComponent implements OnInit {
   safePdfUrl: SafeResourceUrl | null = null;
 
   deletingAdId: string | null = null;
+  dispatchingAdId: string | null = null;
 
   constructor(
     private readonly adminAdOperationsService: AdminAdOperationsService,
@@ -238,6 +239,51 @@ export class AdsManagementComponent implements OnInit {
 
   isDeleting(row: AdminAdOperationRow): boolean {
     return this.deletingAdId === row.adId;
+  }
+
+  isDispatching(row: AdminAdOperationRow): boolean {
+    return this.dispatchingAdId === row.adId;
+  }
+
+  canDispatchToBox(row: AdminAdOperationRow): boolean {
+    const monitorId = row.monitorId?.trim();
+    return !!monitorId && !this.isSentToBox(row);
+  }
+
+  manageAdsLink(row: AdminAdOperationRow): string[] | null {
+    const monitorId = row.monitorId?.trim();
+    if (!monitorId) {
+      return null;
+    }
+    return ["/admin/screens", monitorId, "manage-ads"];
+  }
+
+  async dispatchToBox(row: AdminAdOperationRow): Promise<void> {
+    const adId = row.adId?.trim();
+    if (!adId) {
+      return;
+    }
+    const adName = row.adName?.trim() || "this ad";
+    const confirmed = await this.confirmationDialogService.confirm({
+      title: "Send to screen",
+      message: `Stage "${adName}" on the target box for publication?`,
+      confirmLabel: "Send",
+    });
+    if (!confirmed) {
+      return;
+    }
+    this.dispatchingAdId = adId;
+    this.adminAdOperationsService.dispatchAdToBox(adId).subscribe({
+      next: () => {
+        this.toastService.sucesso("Ad sent to screen.");
+        this.dispatchingAdId = null;
+        this.loadApprovedClientAds();
+      },
+      error: () => {
+        this.dispatchingAdId = null;
+        this.toastService.erro("Failed to send ad to screen");
+      },
+    });
   }
 
   async deleteAd(row: AdminAdOperationRow): Promise<void> {

@@ -159,6 +159,9 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
       if (filters.includeInactiveRequests) {
         params = params.set('includeInactiveRequests', 'true');
       }
+      if (filters.requestOrigin) {
+        params = params.set('requestOrigin', filters.requestOrigin);
+      }
     }
 
     params = params.set('_t', Date.now().toString());
@@ -376,6 +379,38 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
     return this.http
       .get<ResponseDTO<WishlistResponseDto>>(`${this.baseUrl}/wishlist`, this.getHeaders())
       .pipe(map((response) => response.data));
+  }
+
+  uploadAdForAdRequest(adRequestId: string, payload: AttachmentRequestDto): Observable<unknown> {
+    return this.http.post(
+      `${this.baseUrl}/ad-requests/${adRequestId}/ad`,
+      payload,
+      this.getHeaders()
+    );
+  }
+
+  approveAdRequestToAds(adRequestId: string): Observable<unknown> {
+    return this.http.post(
+      `${this.baseUrl}/ad-requests/${adRequestId}/approve-to-ads`,
+      {},
+      this.getHeaders()
+    );
+  }
+
+  cancelAdRequest(adRequestId: string): Observable<unknown> {
+    return this.http.delete(
+      `${this.baseUrl}/ad-requests/${adRequestId}`,
+      this.getHeaders()
+    );
+  }
+
+  getPartnerPendingAds(): Observable<PendingAdAdminValidationResponseDto[]> {
+    return this.http
+      .get<ResponseDTO<PendingAdAdminValidationResponseDto[]>>(
+        `${this.baseUrl}/me/partner-pending-ads`,
+        this.getHeaders()
+      )
+      .pipe(map((r) => r.data ?? []));
   }
 }
 

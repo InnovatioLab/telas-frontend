@@ -1,5 +1,18 @@
 import { AdValidationType, Role } from "@app/model/client";
-import { BusinessQuestionnaireAnswersDto } from "@app/model/dto/request/business-questionnaire-answers.dto";
+
+export type AdRequestWorkflowStatus =
+  | "AWAITING_ADMIN_UPLOAD"
+  | "AWAITING_PARTNER_REVIEW"
+  | "AWAITING_CLIENT_REVIEW"
+  | "AWAITING_ADMIN_DIRECT_APPROVAL"
+  | "REOPENED_AFTER_REJECTION";
+
+export type AdRequestOrigin = "CLIENT" | "PARTNER";
+
+export type PartnerSubmissionMode =
+  | "READY_CREATIVE"
+  | "ADMIN_MATERIALS"
+  | "PARTNER_FINISHED_CREATIVE";
 
 export interface AdRequestResponseDto {
   id: string;
@@ -13,7 +26,14 @@ export interface AdRequestResponseDto {
   businessQuestionnaireUpdatedAt?: string | null;
   attachments?: LinkResponseDto[];
   refusedAds?: RefusedAdResponseDto[];
-  ad: LinkResponseDto;
+  ad?: LinkResponseDto | null;
+  requestOrigin?: AdRequestOrigin;
+  submissionMode?: PartnerSubmissionMode | null;
+  targetMonitorId?: string | null;
+  targetMonitorSummary?: string | null;
+  workflowStatus?: AdRequestWorkflowStatus;
+  adminActionLabel?: string;
+  adValidation?: AdValidationType | null;
 }
 
 export interface ClientReferenceAttachmentAdminDto {

@@ -18,6 +18,8 @@ import { WishListComponent } from "./components/wish-list/wish-list.component";
 import { ClientViewLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
 import { PartnerScreensComponent } from "./components/partner-screens/partner-screens.component";
 import { PartnerScreenUploadComponent } from "./components/partner-screen-upload/partner-screen-upload.component";
+import { PartnerMapUploadComponent } from "./components/partner-map-upload/partner-map-upload.component";
+import { PartnerPendingAdsComponent } from "./components/partner-pending-ads/partner-pending-ads.component";
 
 export const ROUTES: Route[] = [
   {
@@ -46,6 +48,18 @@ export const ROUTES: Route[] = [
             title: "Upload to screen",
           },
         ],
+      },
+      {
+        path: "map-upload/:monitorId",
+        component: PartnerMapUploadComponent,
+        canActivate: [partnerScreensGuard],
+        title: "Submit ad to screen",
+      },
+      {
+        path: "partner-ads",
+        component: PartnerPendingAdsComponent,
+        canActivate: [partnerScreensGuard],
+        title: "Review ads",
       },
       {
         path: "wishlist",

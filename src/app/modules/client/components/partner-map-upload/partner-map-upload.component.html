@@ -1,0 +1,122 @@
+<div class="partner-upload" *ngIf="!loadingScreen">
+  <button
+    type="button"
+    pButton
+    class="p-button-text back-btn"
+    icon="pi pi-arrow-left"
+    label="Back"
+    (click)="goBack()"
+  ></button>
+
+  <p-card>
+    <h2 class="m-0">Submit ad to screen</h2>
+    <p class="screen-address">{{ screenAddress() }}</p>
+    <p class="hint">
+      Send reference materials for admin to create your ad, or upload a finished creative for admin approval.
+    </p>
+
+    <div class="mode-field">
+      <label for="submission-mode">Submission type</label>
+      <p-selectButton
+        inputId="submission-mode"
+        [options]="[
+          { label: 'Materials for admin', value: 'ADMIN_MATERIALS' },
+          { label: 'Finished creative', value: 'PARTNER_FINISHED_CREATIVE' }
+        ]"
+        [(ngModel)]="submissionMode"
+        [ngModelOptions]="{ standalone: true }"
+        optionLabel="label"
+        optionValue="value"
+        (onChange)="onSubmissionModeChange()"
+      ></p-selectButton>
+    </div>
+
+    <div class="mode-field">
+      <label for="optional-label">Label (optional)</label>
+      <input
+        id="optional-label"
+        type="text"
+        pInputText
+        class="w-full"
+        [(ngModel)]="optionalLabel"
+        [ngModelOptions]="{ standalone: true }"
+        maxlength="255"
+      />
+    </div>
+
+    @if (submissionMode === "ADMIN_MATERIALS") {
+      <input
+        #materialsInput
+        type="file"
+        hidden
+        multiple
+        [accept]="acceptedFileTypes"
+        (change)="onMaterialFilesSelected($event)"
+      />
+      <div class="upload-actions">
+        <button
+          pButton
+          type="button"
+          label="Select reference files"
+          icon="pi pi-folder-open"
+          class="p-button-outlined"
+          (click)="chooseMaterialFiles()"
+          [disabled]="submitting"
+        ></button>
+      </div>
+      @if (selectedMaterialFiles.length > 0) {
+        <ul class="file-list">
+          @for (file of selectedMaterialFiles; track file.name) {
+            <li>{{ file.name }}</li>
+          }
+        </ul>
+      }
+    } @else {
+      <input
+        #fileInput
+        type="file"
+        hidden
+        [accept]="acceptedFileTypes"
+        (change)="onCreativeFileSelected($event)"
+      />
+      <div class="upload-actions">
+        <button
+          pButton
+          type="button"
+          label="Select creative"
+          icon="pi pi-folder-open"
+          class="p-button-outlined"
+          (click)="chooseCreativeFile()"
+          [disabled]="submitting"
+        ></button>
+      </div>
+      @if (selectedCreativeFile) {
+        <p class="file-name">{{ selectedCreativeFile.name }}</p>
+        @if (creativePreviewUrl && !isPdfCreativePreview()) {
+          <img [src]="creativePreviewUrl" alt="Preview" class="preview-image" />
+        }
+        @if (isPdfCreativePreview()) {
+          <p class="pdf-note">PDF selected — preview not available.</p>
+        }
+      }
+    }
+
+    <div class="upload-actions mt-3">
+      <button
+        pButton
+        type="button"
+        label="Submit"
+        icon="pi pi-send"
+        [loading]="submitting"
+        [disabled]="submitting"
+        (click)="submit()"
+      ></button>
+    </div>
+  </p-card>
+</div>
+
+@if (loadingScreen) {
+  <div class="loading-wrap">
+    <i class="pi pi-spin pi-spinner"></i>
+  </div>
+}

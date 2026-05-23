@@ -1,0 +1,78 @@
+<div class="partner-pending-ads">
+  <p-card>
+    <h1 class="m-0">Review ads</h1>
+    <p class="subtitle m-0">
+      Approve or reject creatives prepared by the admin before they go live.
+    </p>
+  </p-card>
+
+  @if (loading) {
+    <div class="loading-wrap">
+      <i class="pi pi-spin pi-spinner"></i>
+    </div>
+  } @else if (ads.length === 0) {
+    <p-card styleClass="mt-3">
+      <p class="m-0 text-center text-color-secondary">
+        No ads waiting for your review.
+      </p>
+    </p-card>
+  } @else {
+    <div class="ads-list mt-3">
+      @for (ad of ads; track ad.id) {
+        <app-ad-item
+          [ad]="ad"
+          [loading]="submitting"
+          (approve)="approveAd($event)"
+          (reject)="openRejectDialog($event)"
+        />
+      }
+    </div>
+  }
+</div>
+
+<p-dialog
+  header="Reject ad"
+  [(visible)]="showRejectDialog"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closeRejectDialog()"
+>
+  <form [formGroup]="rejectForm" class="reject-form">
+    <div class="form-field">
+      <label for="justification" class="required">Justification</label>
+      <input
+        id="justification"
+        type="text"
+        pInputText
+        formControlName="justification"
+        placeholder="Reason for rejection"
+      />
+      @if (showFieldError("justification")) {
+        <app-error [control]="rejectForm.get('justification')"></app-error>
+      }
+    </div>
+    <div class="form-field">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        pInputTextarea
+        formControlName="description"
+        rows="3"
+        placeholder="Optional details"
+      ></textarea>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancel" class="p-button-text" (click)="closeRejectDialog()"></button>
+    <button
+      pButton
+      label="Reject"
+      severity="danger"
+      [loading]="submitting"
+      [disabled]="rejectForm.invalid || submitting"
+      (click)="submitReject()"
+    ></button>
+  </ng-template>
+</p-dialog>

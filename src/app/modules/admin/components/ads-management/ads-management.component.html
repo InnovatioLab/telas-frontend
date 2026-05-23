@@ -98,10 +98,8 @@
 </p-card>
 
 <p class="mt-3 mb-2 text-sm text-color-secondary" style="max-width: 52rem">
-  Only ads <strong>approved by clients</strong> are listed. Use
-  <strong>Pending (awaiting review)</strong> under
-  <a routerLink="/admin/ad-operations" class="text-primary">Ads &amp; subscriptions</a>
-  to validate ads before clients see them.
+  Approved ads ready for publication. Use <strong>Send to screen</strong> to stage partner ads on the target box,
+  or open <strong>Manage ads</strong> to sync the playlist when the ad is already linked to a screen.
 </p>
 
 <p-table
@@ -151,6 +149,30 @@
           tooltipPosition="left"
           (click)="openPreview(row)"
         ></button>
+        @if (canDispatchToBox(row)) {
+          <button
+            pButton
+            type="button"
+            icon="pi pi-send"
+            class="p-button-rounded p-button-text p-button-success"
+            [loading]="isDispatching(row)"
+            [disabled]="isDispatching(row)"
+            pTooltip="Send to screen"
+            tooltipPosition="left"
+            (click)="dispatchToBox(row)"
+          ></button>
+        }
+        @if (manageAdsLink(row); as link) {
+          <a
+            pButton
+            type="button"
+            icon="pi pi-desktop"
+            class="p-button-rounded p-button-text"
+            pTooltip="Manage screen ads"
+            tooltipPosition="left"
+            [routerLink]="link"
+          ></a>
+        }
         <button
           pButton
           type="button"

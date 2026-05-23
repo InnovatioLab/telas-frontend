@@ -7,6 +7,7 @@ import { ClientAdRequestDto } from "@app/model/dto/request/client-ad-request.dto
 import { BusinessQuestionnaireAnswersDto } from "@app/model/dto/request/business-questionnaire-answers.dto";
 import { ClientRequestDTO } from "@app/model/dto/request/client-request.dto";
 import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
+import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
 import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
 import {
   AdRequestResponseDto,
@@ -168,5 +169,24 @@ export class ClientService {
 
   getWishlist(): Observable<WishlistResponseDto> {
     return this.clientRepository.getWishlist();
+  }
+
+  uploadAdForAdRequest(
+    adRequestId: string,
+    payload: AttachmentRequestDto
+  ): Observable<unknown> {
+    return this.clientRepository.uploadAdForAdRequest(adRequestId, payload);
+  }
+
+  approveAdRequestToAds(adRequestId: string): Observable<unknown> {
+    return this.clientRepository.approveAdRequestToAds(adRequestId);
+  }
+
+  cancelAdRequest(adRequestId: string): Observable<unknown> {
+    return this.clientRepository.cancelAdRequest(adRequestId);
+  }
+
+  getPartnerPendingAds(): Observable<PendingAdAdminValidationResponseDto[]> {
+    return this.clientRepository.getPartnerPendingAds();
   }
 }

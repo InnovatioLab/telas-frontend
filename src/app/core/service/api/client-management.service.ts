@@ -14,6 +14,7 @@ export interface FilterClientRequestDto {
   sortDir?: string;
   genericFilter?: string;
   includeInactiveRequests?: boolean;
+  requestOrigin?: 'CLIENT' | 'PARTNER';
 }
 
 export interface PermanentDeletionRequirementsDto {

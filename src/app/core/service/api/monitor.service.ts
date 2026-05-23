@@ -18,6 +18,7 @@ import { IncidentApiDto } from "./interfaces/incident-api";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
 import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
+import { PartnerAdSubmissionRequestDto } from "@app/model/dto/request/partner-ad-submission.request.dto";
 
 interface ApiEnvelope<T> {
   data?: T;
@@ -106,6 +107,38 @@ export class MonitorService {
     return this.http
       .post<ApiEnvelope<string>>(
         `${this.env.apiUrl}monitors/${encodeURIComponent(monitorId)}/direct-ad`,
+        payload,
+        { headers }
+      )
+      .pipe(map((res) => String(res?.data ?? "")));
+  }
+
+  getPartnerPlacementTarget(monitorId: string): Observable<Monitor> {
+    const headers = this.getAuthHeaders();
+    return this.http
+      .get<ApiEnvelope<MonitorResponseDto>>(
+        `${this.env.apiUrl}monitors/partner/placement-target/${encodeURIComponent(monitorId)}`,
+        { headers }
+      )
+      .pipe(
+        map((res) => {
+          const dto = res?.data;
+          if (!dto?.id) {
+            throw new Error("Monitor not found");
+          }
+          return this.mapMonitorResponseToMonitor(dto);
+        })
+      );
+  }
+
+  submitPartnerAdSubmission(
+    monitorId: string,
+    payload: PartnerAdSubmissionRequestDto
+  ): Observable<string> {
+    const headers = this.getAuthHeaders();
+    return this.http
+      .post<ApiEnvelope<string>>(
+        `${this.env.apiUrl}monitors/${encodeURIComponent(monitorId)}/partner-submissions`,
         payload,
         { headers }
       )

@@ -83,6 +83,14 @@ export interface IClientRepository extends IRepository<Client, ClientRequestDTO,
   addToWishlist(monitorId: string): Observable<boolean>;
 
   getWishlist(): Observable<WishlistResponseDto>;
+
+  uploadAdForAdRequest(adRequestId: string, payload: AttachmentRequestDto): Observable<unknown>;
+
+  approveAdRequestToAds(adRequestId: string): Observable<unknown>;
+
+  cancelAdRequest(adRequestId: string): Observable<unknown>;
+
+  getPartnerPendingAds(): Observable<PendingAdAdminValidationResponseDto[]>;
 }
 
 /**

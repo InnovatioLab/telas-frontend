@@ -1,18 +1,27 @@
 <div class="management-ads">
   <p-tabs [(value)]="activeTab" [scrollable]="true">
     <p-tablist>
-      <p-tab value="requests">Client ad requests</p-tab>
-      <p-tab value="approved">Ads (client-approved)</p-tab>
+      <p-tab value="requests">Ad requests</p-tab>
+      <p-tab value="approved">Ads (approved)</p-tab>
     </p-tablist>
     <p class="tab-hint mt-2 mb-0 text-sm text-color-secondary" style="max-width: 56rem">
-      <strong>Client ad requests</strong>: incoming requests and admin workflow (API
-      <code class="text-xs">clients/ads-requests</code>). <strong>Ads (client-approved)</strong>: only ads the client
-      already approved — filtered with <code class="text-xs">validation=APPROVED</code> on
-      <code class="text-xs">admin/ad-operations</code>.
+      <strong>Ad requests</strong>: unified workflow for client and partner submissions.
+      Approved ads appear under <strong>Ads (approved)</strong> and can be sent to screens.
     </p>
     <p-tabpanels>
       <p-tabpanel value="requests">
-        <app-ad-request-management></app-ad-request-management>
+        <h3 class="section-title">Client ad requests</h3>
+        <p class="text-sm text-color-secondary mb-3">
+          Incoming client requests and admin workflow (materials → client validation).
+        </p>
+        <app-ad-request-management requestOrigin="CLIENT"></app-ad-request-management>
+
+        <h3 class="section-title mt-5">Partner ads — incoming requests</h3>
+        <p class="text-sm text-color-secondary mb-3">
+          Partner submissions (materials or finished creatives). After admin upload, partners validate at
+          <code class="text-xs">/client/partner-ads</code>.
+        </p>
+        <app-ad-request-management requestOrigin="PARTNER"></app-ad-request-management>
       </p-tabpanel>
       <p-tabpanel value="approved">
         @if (activeTab === "approved") {

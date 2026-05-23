@@ -6,4 +6,5 @@ export interface FilterBoxRequestDto {
   genericFilter?: string;
   active?: boolean;
   includeInactiveRequests?: boolean;
+  requestOrigin?: 'CLIENT' | 'PARTNER';
 }

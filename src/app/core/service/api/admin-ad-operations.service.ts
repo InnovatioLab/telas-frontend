@@ -100,6 +100,16 @@ export class AdminAdOperationsService {
       .pipe(map((): void => undefined));
   }
 
+  dispatchAdToBox(adId: string): Observable<void> {
+    return this.http
+      .post<ResponseDTO<unknown>>(
+        `${this.baseUrl}/ads/${adId}/dispatch-to-box`,
+        {},
+        this.getJsonHeaders()
+      )
+      .pipe(map((): void => undefined));
+  }
+
   downloadSubscriptionsCsv(): Observable<Blob> {
     const token = localStorage.getItem(this.storageName);
     const headers = new HttpHeaders({

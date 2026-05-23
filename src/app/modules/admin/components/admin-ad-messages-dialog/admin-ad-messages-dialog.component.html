@@ -1,0 +1,52 @@
+<p-dialog
+  [header]="adLabel ? 'Messages — ' + adLabel : 'Messages'"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: 'min(650px, 96vw)' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="onHide()"
+>
+  <div class="flex flex-column gap-3">
+    @if (loading && messages.length === 0) {
+      <p class="m-0 text-color-secondary">Loading...</p>
+    }
+    @if (!loading && messages.length === 0) {
+      <p class="m-0 text-color-secondary">No messages yet.</p>
+    }
+    @if (messages.length > 0) {
+      <div class="flex flex-column gap-2 messages-list">
+        @for (m of messages; track m.id) {
+          <div class="p-2 surface-100 border-round">
+            <div class="text-sm font-semibold">
+              {{ m.senderName || m.senderRole }} · {{ m.createdAt | date: "MM/dd/yyyy HH:mm" }}
+            </div>
+            <div class="white-space-pre-line">{{ m.message }}</div>
+          </div>
+        }
+      </div>
+    }
+    <div>
+      <label for="adminAdNewMsg" class="block mb-1">Send a message</label>
+      <textarea
+        id="adminAdNewMsg"
+        pTextarea
+        [(ngModel)]="newMessageText"
+        rows="3"
+        class="w-full"
+        placeholder="Type your message..."
+      ></textarea>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton type="button" label="Close" class="p-button-text" (click)="onHide()"></button>
+    <button
+      pButton
+      type="button"
+      label="Send"
+      [loading]="loading"
+      [disabled]="!newMessageText.trim() || loading"
+      (click)="sendMessage()"
+    ></button>
+  </ng-template>
+</p-dialog>
