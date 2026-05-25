@@ -77,7 +77,14 @@
   <ng-template pTemplate="body" let-row>
     <tr>
       <td>{{ row.advertiserBusinessName ?? "—" }}</td>
-      <td>{{ row.adName ?? "—" }}</td>
+      <td>
+        <div class="flex flex-column gap-1">
+          <span>{{ row.adName ?? "—" }}</span>
+          @if (row.partnerRemovalRequested) {
+            <p-badge value="Removal requested" severity="warn"></p-badge>
+          }
+        </div>
+      </td>
       <td>
         <p-badge [value]="row.validation" severity="info"></p-badge>
       </td>

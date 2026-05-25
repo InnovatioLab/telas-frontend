@@ -128,7 +128,14 @@
   </ng-template>
   <ng-template pTemplate="body" let-row>
     <tr>
-      <td>{{ row.adName ?? "—" }}</td>
+      <td>
+        <div class="flex flex-column gap-1">
+          <span>{{ row.adName ?? "—" }}</span>
+          @if (isPartnerRemovalRequested(row)) {
+            <p-badge value="Removal requested" severity="warn"></p-badge>
+          }
+        </div>
+      </td>
       <td>
         {{
           row.submissionDate
@@ -144,7 +151,8 @@
           type="button"
           icon="pi pi-eye"
           class="p-button-rounded p-button-text"
-          [disabled]="!row.adLink?.trim()"
+          [loading]="isPreviewLoading(row)"
+          [disabled]="isPreviewLoading(row)"
           pTooltip="Preview ad"
           tooltipPosition="left"
           (click)="openPreview(row)"

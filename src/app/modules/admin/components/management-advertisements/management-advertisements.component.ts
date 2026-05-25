@@ -18,4 +18,5 @@ import { AdsManagementComponent } from '../ads-management/ads-management.compone
 })
 export class ManagementAdvertisementsComponent {
   activeTab: string | number = 'requests';
+  requestsOriginTab: 'CLIENT' | 'PARTNER' = 'CLIENT';
 } 

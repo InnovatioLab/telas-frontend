@@ -12,6 +12,7 @@ import { Page } from '@app/model/dto/page.dto';
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
 import { AdRequestResponseDto, PendingAdAdminValidationResponseDto } from '@app/model/dto/response/ad-request-response.dto';
+import { AdRequestMediaResponseDto } from '@app/model/dto/response/ad-request-media-response.dto';
 import { WishlistResponseDto } from '@app/model/dto/response/wishlist-response.dto';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { AttachmentRequestDto } from '@app/model/dto/request/attachment-request.dto';
@@ -147,6 +148,15 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
       .pipe(map((response) => response.data));
   }
 
+  getAdRequestMedia(adRequestId: string): Observable<AdRequestMediaResponseDto> {
+    return this.http
+      .get<ResponseDTO<AdRequestMediaResponseDto>>(
+        `${this.baseUrl}/ads-requests/${adRequestId}/media`,
+        this.getHeaders()
+      )
+      .pipe(map((response) => response.data));
+  }
+
   getAllAdRequests(filters?: FilterClientRequestDto): Observable<PaginationResponseDto<AdRequestResponseDto>> {
     let params = new HttpParams();
 
@@ -163,8 +173,6 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
         params = params.set('requestOrigin', filters.requestOrigin);
       }
     }
-
-    params = params.set('_t', Date.now().toString());
 
     return this.http
       .get<ResponseDTO<PaginationResponseDto<AdRequestResponseDto>>>(

@@ -84,10 +84,15 @@
         <ng-template #noQuestionnaire>—</ng-template>
       </td>
       <td>
-        <p-badge
-          [value]="getWorkflowLabel(adRequest.workflowStatus)"
-          [severity]="getWorkflowSeverity(adRequest.workflowStatus)"
-        ></p-badge>
+        <div class="flex flex-column gap-1">
+          <p-badge
+            [value]="getWorkflowLabel(adRequest.workflowStatus)"
+            [severity]="getWorkflowSeverity(adRequest.workflowStatus)"
+          ></p-badge>
+          @if (isPartnerRemovalRequested(adRequest)) {
+            <p-badge value="Removal requested" severity="warn"></p-badge>
+          }
+        </div>
       </td>
       <td>{{ adRequest.submissionDate | date: "MM/dd/yyyy" }}</td>
       <td>{{ adRequest.waitingDays }} days</td>
@@ -188,6 +193,10 @@
   [resizable]="false"
 >
   <div *ngIf="selectedAdRequest" class="details-content">
+    <div *ngIf="loadingRequestMedia" class="text-center py-4">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
+    <ng-container *ngIf="!loadingRequestMedia">
     <div class="detail-row" *ngIf="selectedAdRequest.businessQuestionnaireVersion != null">
       <strong>Business questionnaire:</strong> revision
       {{ selectedAdRequest.businessQuestionnaireVersion }}
@@ -268,6 +277,7 @@
         </div>
       </div>
     </div>
+    </ng-container>
   </div>
 
   <ng-template pTemplate="footer">

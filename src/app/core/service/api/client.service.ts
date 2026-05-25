@@ -102,6 +102,10 @@ export class ClientService {
     return this.clientRepository.getAllAdRequests(filters);
   }
 
+  getAdRequestMedia(adRequestId: string) {
+    return this.clientRepository.getAdRequestMedia(adRequestId);
+  }
+
   getPendingAds(
     filters?: FilterClientRequestDto
   ): Observable<PaginationResponseDto<PendingAdAdminValidationResponseDto>> {

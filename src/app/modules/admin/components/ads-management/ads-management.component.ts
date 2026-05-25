@@ -47,6 +47,7 @@ export class AdsManagementComponent implements OnInit {
   deletingAdId: string | null = null;
   dispatchingAdId: string | null = null;
   addingToPlaylistAdId: string | null = null;
+  previewLoadingAdId: string | null = null;
 
   constructor(
     private readonly adminAdOperationsService: AdminAdOperationsService,
@@ -235,20 +236,42 @@ export class AdsManagementComponent implements OnInit {
   }
 
   openPreview(row: AdminAdOperationRow): void {
-    const url = row.adLink?.trim();
-    if (!url) {
-      this.toastService.erro("No preview link available for this ad.");
+    const adId = row.adId?.trim();
+    if (!adId) {
       return;
     }
-    this.previewTitle = row.adName?.trim() || "Ad";
-    this.previewUrl = url;
-    const pdf =
-      isPdfFile(url, row.adName) ||
-      (row.adMediaType?.toLowerCase().includes("pdf") ?? false);
-    this.safePdfUrl = pdf
-      ? this.sanitizer.bypassSecurityTrustResourceUrl(url)
-      : null;
-    this.previewVisible = true;
+    this.previewLoadingAdId = adId;
+    this.adminAdOperationsService.getAdPreviewLink(adId).subscribe({
+      next: ({ link, mediaType }) => {
+        this.previewLoadingAdId = null;
+        const url = link?.trim();
+        if (!url) {
+          this.toastService.erro("No preview link available for this ad.");
+          return;
+        }
+        this.previewTitle = row.adName?.trim() || "Ad";
+        this.previewUrl = url;
+        const pdf =
+          isPdfFile(url, row.adName) ||
+          (mediaType?.toLowerCase().includes("pdf") ?? false);
+        this.safePdfUrl = pdf
+          ? this.sanitizer.bypassSecurityTrustResourceUrl(url)
+          : null;
+        this.previewVisible = true;
+      },
+      error: () => {
+        this.previewLoadingAdId = null;
+        this.toastService.erro("Failed to load ad preview");
+      },
+    });
+  }
+
+  isPreviewLoading(row: AdminAdOperationRow): boolean {
+    return this.previewLoadingAdId === row.adId;
+  }
+
+  isPartnerRemovalRequested(row: AdminAdOperationRow): boolean {
+    return row.partnerRemovalRequested === true;
   }
 
   closePreview(): void {

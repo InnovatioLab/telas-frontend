@@ -32,6 +32,7 @@ export interface AdminAdOperationRow {
   operationalStage: string;
   urgencyLevel: AdminUrgencyLevel;
   daysUntilExpiry: number | null;
+  partnerRemovalRequested?: boolean;
 }
 
 export type AdminUrgencyLevel = "NEUTRAL" | "GREEN" | "YELLOW" | "RED";

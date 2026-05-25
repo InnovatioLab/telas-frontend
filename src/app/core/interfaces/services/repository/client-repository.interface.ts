@@ -9,6 +9,7 @@ import { Page } from '@app/model/dto/page.dto';
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
 import { AdRequestResponseDto, PendingAdAdminValidationResponseDto } from '@app/model/dto/response/ad-request-response.dto';
+import { AdRequestMediaResponseDto } from '@app/model/dto/response/ad-request-media-response.dto';
 import { WishlistResponseDto } from '@app/model/dto/response/wishlist-response.dto';
 import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
 import { AttachmentRequestDto } from '@app/model/dto/request/attachment-request.dto';
@@ -52,6 +53,8 @@ export interface IClientRepository extends IRepository<Client, ClientRequestDTO,
   getAllAds(page?: number, size?: number): Observable<Page<AdResponseDto>>;
 
   getAllAdRequests(filters?: FilterClientRequestDto): Observable<PaginationResponseDto<AdRequestResponseDto>>;
+
+  getAdRequestMedia(adRequestId: string): Observable<AdRequestMediaResponseDto>;
 
   getPendingAds(filters?: FilterClientRequestDto): Observable<PaginationResponseDto<PendingAdAdminValidationResponseDto>>;
 

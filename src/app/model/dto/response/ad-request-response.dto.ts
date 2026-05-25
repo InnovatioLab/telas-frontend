@@ -34,6 +34,9 @@ export interface AdRequestResponseDto {
   workflowStatus?: AdRequestWorkflowStatus;
   adminActionLabel?: string;
   adValidation?: AdValidationType | null;
+  attachmentCount?: number;
+  hasAdMedia?: boolean;
+  partnerRemovalRequested?: boolean;
 }
 
 export interface ClientReferenceAttachmentAdminDto {

@@ -58,7 +58,6 @@ export class AdminAdOperationsService {
     if (filters.submissionDateTo?.trim()) {
       params = params.set("submissionDateTo", filters.submissionDateTo.trim());
     }
-    params = params.set("_t", String(Date.now()));
     return this.http
       .get<
         ResponseDTO<PaginationResponseDto<AdminAdOperationRow>>
@@ -86,6 +85,25 @@ export class AdminAdOperationsService {
         map((r) => {
           const d = (r as { data?: AdminExpiryNotification[] }).data;
           return d ?? [];
+        })
+      );
+  }
+
+  getAdPreviewLink(
+    adId: string
+  ): Observable<{ link: string; mediaType: string | null }> {
+    return this.http
+      .get<ResponseDTO<{ link: string; mediaType: string | null }>>(
+        `${this.baseUrl}/ads/${adId}/preview-link`,
+        this.getJsonHeaders()
+      )
+      .pipe(
+        map((r) => {
+          const d = (r as { data?: { link: string; mediaType: string | null } }).data;
+          if (!d?.link) {
+            throw new Error("Resposta sem link de preview");
+          }
+          return d;
         })
       );
   }

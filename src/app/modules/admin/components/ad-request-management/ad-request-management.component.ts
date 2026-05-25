@@ -56,6 +56,7 @@ export class AdRequestManagementComponent implements OnInit {
 
   showViewDetailsDialog = false;
   showUploadAdDialog = false;
+  loadingRequestMedia = false;
   selectedAdRequest: AdRequestResponseDto | null = null;
 
   selectedFile: File | null = null;
@@ -97,7 +98,6 @@ export class AdRequestManagementComponent implements OnInit {
               list: response.list || [],
               totalElements: response.totalElements || 0,
             })),
-            tap(() => this.refreshUnreadMessageCounters())
           ),
       () => this.toastService.erro("Failed to load ad requests")
     );
@@ -180,8 +180,26 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   openViewDetailsDialog(adRequest: AdRequestResponseDto): void {
-    this.selectedAdRequest = adRequest;
+    this.selectedAdRequest = { ...adRequest, attachments: [], ad: null };
     this.showViewDetailsDialog = true;
+    this.loadingRequestMedia = true;
+    this.clientService.getAdRequestMedia(adRequest.id).subscribe({
+      next: (media) => {
+        if (this.selectedAdRequest?.id === adRequest.id) {
+          this.selectedAdRequest = {
+            ...this.selectedAdRequest,
+            ad: media.ad,
+            attachments: media.attachments ?? [],
+          };
+        }
+        this.loadingRequestMedia = false;
+      },
+      error: () => {
+        this.loadingRequestMedia = false;
+        this.toastService.erro("Failed to load ad request media");
+        this.closeViewDetailsDialog();
+      },
+    });
   }
 
   shouldShowSeparateLastAdSection(ar: AdRequestResponseDto): boolean {
@@ -368,12 +386,12 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   canViewAd(adRequest: AdRequestResponseDto): boolean {
-    const hasAttachments =
-      adRequest.attachments != null && adRequest.attachments.length > 0;
-    const hasAd =
-      adRequest.ad != null &&
-      (adRequest.ad.attachmentLink != null || adRequest.ad.attachmentId != null);
-    return hasAttachments || hasAd;
+    const attachmentCount = adRequest.attachmentCount ?? adRequest.attachments?.length ?? 0;
+    return attachmentCount > 0 || adRequest.hasAdMedia === true;
+  }
+
+  isPartnerRemovalRequested(adRequest: AdRequestResponseDto): boolean {
+    return adRequest.partnerRemovalRequested === true;
   }
 
   get isPartnerSection(): boolean {

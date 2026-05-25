@@ -10,18 +10,33 @@
     </p>
     <p-tabpanels>
       <p-tabpanel value="requests">
-        <h3 class="section-title">Client ad requests</h3>
-        <p class="text-sm text-color-secondary mb-3">
-          Incoming client requests and admin workflow (materials → client validation).
-        </p>
-        <app-ad-request-management requestOrigin="CLIENT"></app-ad-request-management>
-
-        <h3 class="section-title mt-5">Partner ads — incoming requests</h3>
-        <p class="text-sm text-color-secondary mb-3">
-          Partner submissions (materials or finished creatives). After admin upload, partners validate at
-          <code class="text-xs">/client/partner-ads</code>.
-        </p>
-        <app-ad-request-management requestOrigin="PARTNER"></app-ad-request-management>
+        @if (activeTab === "requests") {
+          <p-tabs [(value)]="requestsOriginTab" [scrollable]="true">
+            <p-tablist>
+              <p-tab value="CLIENT">Client ad requests</p-tab>
+              <p-tab value="PARTNER">Partner ad requests</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="CLIENT">
+                @if (requestsOriginTab === "CLIENT") {
+                  <p class="text-sm text-color-secondary mb-3">
+                    Incoming client requests and admin workflow (materials → client validation).
+                  </p>
+                  <app-ad-request-management requestOrigin="CLIENT"></app-ad-request-management>
+                }
+              </p-tabpanel>
+              <p-tabpanel value="PARTNER">
+                @if (requestsOriginTab === "PARTNER") {
+                  <p class="text-sm text-color-secondary mb-3">
+                    Partner submissions (materials or finished creatives). After admin upload, partners validate at
+                    <code class="text-xs">/client/partner-ads</code>.
+                  </p>
+                  <app-ad-request-management requestOrigin="PARTNER"></app-ad-request-management>
+                }
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        }
       </p-tabpanel>
       <p-tabpanel value="approved">
         @if (activeTab === "approved") {
