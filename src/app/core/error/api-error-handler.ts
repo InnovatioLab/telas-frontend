@@ -28,7 +28,8 @@ export class ApiErrorHandler {
   }
 
   static handleApiError(error: HttpErrorResponse): string {
-    if (!environment.production) {
+    const isLoginRequest = error.url?.includes('auth/login') ?? false;
+    if (!environment.production && !isLoginRequest) {
       console.error('API Error:', error);
     }
 

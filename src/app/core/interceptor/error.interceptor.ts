@@ -38,6 +38,11 @@ export function errorInterceptor(
       const { error, status, url } = httpError;
       const ignorarToastErro =
         req.headers.get("Ignorar-Error-Interceptor") === "true";
+      const isAuthLoginRequest = req.url.includes("auth/login");
+
+      if (isAuthLoginRequest) {
+        return throwError(() => httpError);
+      }
 
       if (status === HttpStatusCode.Unauthorized && !url?.includes(rotaLogin)) {
         const errorMessage = error?.detail ?? "Unauthorized access. Please log in again.";

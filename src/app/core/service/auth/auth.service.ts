@@ -1,7 +1,21 @@
 import { Injectable, computed, signal, inject } from '@angular/core';
 import { HttpClient, HttpBackend } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject, firstValueFrom } from 'rxjs';
-import { map, switchMap, tap, catchError } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  Observable,
+  catchError,
+  finalize,
+  firstValueFrom,
+  map,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  LoginFlowError,
+  resolveLoginFlowError,
+} from '@app/core/error/login-error.util';
 import { IAuthService } from '@app/core/interfaces/services/auth/auth-service.interface';
 import { Client, isPrivilegedPanelRole } from '@app/model/client';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
@@ -115,42 +129,52 @@ export class AuthService implements IAuthService {
       : usernameOrPayload;
 
     return this.http.post<{ data: string }>(`${this.baseUrl}login`, payload).pipe(
-      map(response => {
+      map((response) => {
         if (!response?.data) {
-          throw new Error('Authentication token not received.');
+          throw new LoginFlowError(
+            'Authentication token not received.',
+            'credentials'
+          );
         }
         return response.data;
       }),
-      switchMap(token => {
+      switchMap((token) => {
         this.tokenStorage.setToken(token);
-        
+
+        const handleProfileError = (profileError: unknown) =>
+          throwError(() => resolveLoginFlowError(profileError, 'profile'));
+
         if (typeof usernameOrPayload === 'object') {
           return this.clientService.getAuthenticatedClient().pipe(
-            tap(client => {
+            tap((client) => {
               AuthenticationStorage.setDataUser(JSON.stringify(client));
               this._loggedClientSignal.set(client);
-              this.updateClientData(client as any);
+              this.updateClientData(client as Client);
             }),
-            map(client => ({ token, client }))
-          );
-        } else {
-          return this.getAuthenticatedClient().pipe(
-            tap(client => {
-              this.userSubject.next(client as Client);
-              this.isAuthenticatedSubject.next(true);
-              this.updateUserData(client as Client);
-            }),
-            map(() => token)
+            map((client) => ({ token, client })),
+            catchError(handleProfileError)
           );
         }
+
+        return this.getAuthenticatedClient().pipe(
+          tap((client) => {
+            this.userSubject.next(client as Client);
+            this.isAuthenticatedSubject.next(true);
+            this.updateUserData(client as Client);
+          }),
+          map(() => token),
+          catchError(handleProfileError)
+        );
       }),
-      catchError(error => {
-        this.isLoadingSubject.next(false);
+      catchError((error) => {
         this.clearToken();
         this._loggedClientSignal.set(null);
-        const friendlyError = new Error('Invalid credentials. Please try again.');
-        return throwError(() => friendlyError);
-      })
+        if (error instanceof LoginFlowError) {
+          return throwError(() => error);
+        }
+        return throwError(() => resolveLoginFlowError(error, 'credentials'));
+      }),
+      finalize(() => this.isLoadingSubject.next(false))
     );
   }
 

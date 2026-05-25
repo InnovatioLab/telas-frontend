@@ -238,17 +238,15 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
   }
 
   isInAllowedRoutes(): boolean {
-    const currentRoute = this.router.url;
-    return (
-      currentRoute === "/client" ||
-      currentRoute === "/admin" ||
-      currentRoute === "/"
-    );
+    return this.isMapSearchArea();
   }
 
   private checkRouteVisibility(): void {
-    const currentRoute = this.router.url;
-    this.showSearchSection =
-      currentRoute.includes("/client") || currentRoute.includes("/admin");
+    this.showSearchSection = this.isMapSearchArea();
+  }
+
+  private isMapSearchArea(): boolean {
+    const path = this.router.url.split("?")[0];
+    return path.startsWith("/client") || path.startsWith("/admin");
   }
 }

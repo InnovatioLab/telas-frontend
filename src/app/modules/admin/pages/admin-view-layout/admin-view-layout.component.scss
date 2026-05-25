@@ -56,4 +56,38 @@ app-rodape {
     min-height: 0;
     overflow: hidden;
   }
+
+  app-rodape ::ng-deep .rodape-container {
+    padding-top: 0.5rem;
+    padding-bottom: max(0.65rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  app-rodape ::ng-deep .header-logo {
+    width: min(130px, 100%);
+    margin-bottom: 0.5rem;
+  }
+
+  app-rodape ::ng-deep .footer-grid {
+    gap: 0.85rem;
+  }
+
+  app-rodape ::ng-deep .footer-brand p.mb-3 {
+    margin-bottom: 0.5rem !important;
+    font-size: 0.8125rem;
+    line-height: 1.3;
+  }
+
+  app-rodape ::ng-deep .footer-grid h4 {
+    font-size: 0.9375rem;
+    margin-bottom: 0.35rem !important;
+  }
+
+  app-rodape ::ng-deep .footer-bottom {
+    padding-top: 0.5rem;
+
+    p {
+      font-size: 0.75rem;
+      line-height: 1.25;
+    }
+  }
 }

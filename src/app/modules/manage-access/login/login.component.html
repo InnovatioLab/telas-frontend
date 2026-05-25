@@ -47,16 +47,17 @@
               width="20"
               height="20"
             ></app-icon-user>
-            Login
+            Email
           </label>
         </div>
         <input
-          type="text"
+          type="email"
           pInputText
           formControlName="login"
           id="test-input-login"
           class="w-full input-form"
-          placeholder="Email"
+          placeholder="your.email@company.com"
+          autocomplete="username"
           (keyup.enter)="login()"
         />
         <app-error

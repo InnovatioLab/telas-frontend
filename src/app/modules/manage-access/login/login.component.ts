@@ -22,7 +22,12 @@ import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
-import { catchError, finalize, of } from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
+import {
+  isLoginFlowError,
+  resolveLoginFlowError,
+} from "@app/core/error/login-error.util";
+import { catchError, finalize, throwError } from "rxjs";
 
 type LoginMode = "client" | "partner";
 
@@ -78,7 +83,7 @@ export class LoginComponent implements OnInit {
 
   iniciarFormulario(): void {
     this.form = this.formBuilder.group({
-      login: ["", [Validators.required]],
+      login: ["", [Validators.required, Validators.email]],
       senha: [
         "",
         [
@@ -125,46 +130,54 @@ export class LoginComponent implements OnInit {
     this.autenticacaoService
       .login(payload)
       .pipe(
-        finalize(() => (this.loading = false)),
-        catchError(() => {
-          this.mensagemLoginInvalidoDialog();
-          return of(null);
-        })
+        catchError((error: unknown) => {
+          const loginError = isLoginFlowError(error)
+            ? error
+            : error instanceof HttpErrorResponse
+              ? resolveLoginFlowError(error, "credentials")
+              : resolveLoginFlowError(error, "credentials");
+          this.mensagemLoginInvalidoDialog(loginError.message);
+          return throwError(() => loginError);
+        }),
+        finalize(() => (this.loading = false))
       )
-      .subscribe((response) => {
-        if (!response?.client) {
-          return;
-        }
+      .subscribe({
+        next: (response) => {
+          if (!response?.client) {
+            return;
+          }
 
-        const r = response as {
-          token?: string;
-          accessToken?: string;
-          refreshToken?: string;
-          client: AuthenticatedClientResponseDto;
-        };
+          const r = response as {
+            token?: string;
+            accessToken?: string;
+            refreshToken?: string;
+            client: AuthenticatedClientResponseDto;
+          };
 
-        if (!this.isRoleAllowedForLoginMode(r.client.role)) {
-          this.mensagemLoginInvalidoDialog(this.getLoginRoleMismatchMessage());
-          return;
-        }
+          if (!this.isRoleAllowedForLoginMode(r.client.role)) {
+            this.mensagemLoginInvalidoDialog(this.getLoginRoleMismatchMessage());
+            return;
+          }
 
-        const accessToken = r.accessToken ?? r.token;
-        if (accessToken) {
-          AuthenticationStorage.setToken(accessToken);
-        }
-        if (r.refreshToken) {
-          AuthenticationStorage.setRefreshToken(r.refreshToken);
-        }
+          const accessToken = r.accessToken ?? r.token;
+          if (accessToken) {
+            AuthenticationStorage.setToken(accessToken);
+          }
+          if (r.refreshToken) {
+            AuthenticationStorage.setRefreshToken(r.refreshToken);
+          }
 
-        const client = this.toClient(r.client);
-        this.clientService.setClientAtual(client);
-        this.authentication.updateClientData(client);
+          const client = this.toClient(r.client);
+          this.clientService.setClientAtual(client);
+          this.authentication.updateClientData(client);
 
-        if (r.client.termAccepted) {
-          this.redirecionarParaHome(r.client);
-        } else {
-          this.router.navigate(["/terms-of-service"]);
-        }
+          if (r.client.termAccepted) {
+            this.redirecionarParaHome(r.client);
+          } else {
+            this.router.navigate(["/terms-of-service"]);
+          }
+        },
+        error: () => {},
       });
   }
 

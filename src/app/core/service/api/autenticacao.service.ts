@@ -5,6 +5,11 @@ import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
 import { SenhaUpdate } from "@app/model/dto/request/senha-update.request";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { JwtHelperService } from "@auth0/angular-jwt";
+import { HttpErrorResponse } from "@angular/common/http";
+import {
+  LoginFlowError,
+  resolveLoginFlowError,
+} from "@app/core/error/login-error.util";
 import { catchError, map, Observable, switchMap, tap, throwError } from "rxjs";
 import { environment } from "src/environments/environment";
 import { AuthenticationStorage } from "../auth/authentication-storage";
@@ -117,13 +122,16 @@ export class AutenticacaoService {
           map((client) => ({ token, client }))
         );
       }),
-      catchError((error: any) => {
+      catchError((error: unknown) => {
         AuthenticationStorage.clearToken();
         this._loggedClientSignal.set(null);
-        const friendlyError = new Error(
-          "Invalid credentials. Please try again."
-        );
-        return throwError(() => friendlyError);
+        if (error instanceof LoginFlowError) {
+          return throwError(() => error);
+        }
+        if (error instanceof HttpErrorResponse) {
+          return throwError(() => resolveLoginFlowError(error, "credentials"));
+        }
+        return throwError(() => resolveLoginFlowError(error, "credentials"));
       })
     );
   }

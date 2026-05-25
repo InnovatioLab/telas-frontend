@@ -78,7 +78,9 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   private hoveredMarkerId: string | null = null;
   private containerResizeObserver: ResizeObserver | null = null;
   private mapInitPromise: Promise<void> | null = null;
+  private mapInitGeneration = 0;
   private resizeObserverFrameId: number | null = null;
+  private destroyed = false;
 
   constructor(
     private readonly mapsService: GoogleMapsService,
@@ -178,6 +180,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     if (this.resizeObserverFrameId != null) {
       cancelAnimationFrame(this.resizeObserverFrameId);
       this.resizeObserverFrameId = null;
@@ -191,12 +194,16 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   private destroyMapInstance(): void {
+    this.mapInitGeneration++;
     const container = this.mapContainer?.nativeElement as HTMLElement | undefined;
-    if (this._map) {
-      this._map.remove();
-      this._map = null;
-    }
-    this.leafletMapService.destroyExistingMap(container ?? null);
+    const mapInstance = this._map;
+    this._map = null;
+    this._mapReady = false;
+    this.mapInitPromise = null;
+    this.leafletMapService.destroyMapForContainer(
+      container ?? null,
+      mapInstance
+    );
   }
 
   private observeContainerAndInitialize(): void {
@@ -206,6 +213,10 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     }
 
     const tryInitialize = (): void => {
+      if (this.destroyed) {
+        return;
+      }
+
       if (this._map) {
         this.updateMapDimensions();
         return;
@@ -249,7 +260,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   }
 
   private async initializeMap(): Promise<void> {
-    if (this._map) {
+    if (this.destroyed || this._map) {
       return;
     }
 
@@ -265,7 +276,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       return;
     }
 
-    this.mapInitPromise = this.createMapInstance();
+    const generation = ++this.mapInitGeneration;
+    this.mapInitPromise = this.createMapInstance(generation);
 
     try {
       await this.mapInitPromise;
@@ -274,8 +286,12 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     }
   }
 
-  private async createMapInstance(): Promise<void> {
-    if (!this.mapContainer?.nativeElement || this._map) {
+  private async createMapInstance(generation: number): Promise<void> {
+    if (
+      this.destroyed ||
+      !this.mapContainer?.nativeElement ||
+      this._map
+    ) {
       return;
     }
 
@@ -285,11 +301,18 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
       const defaultCenter = { lat: 30.3322, lng: -81.6557 };
       const center = this.center || defaultCenter;
 
-      this._map = await this.leafletMapService.initializeMap(
+      const map = await this.leafletMapService.initializeMap(
         container,
         center,
         this.zoom
       );
+
+      if (this.destroyed || generation !== this.mapInitGeneration) {
+        this.leafletMapService.destroyMapForContainer(container, map);
+        return;
+      }
+
+      this._map = map;
 
       this.ngZone.run(() => {
         this.mapInitialized.emit(this._map!);
@@ -315,7 +338,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
         }
       }, 200);
     } catch {
-      this.leafletMapService.destroyExistingMap(container);
+      this.leafletMapService.destroyMapForContainer(container, this._map);
       this._map = null;
       this._mapReady = false;
       this.ngZone.run(() => {
