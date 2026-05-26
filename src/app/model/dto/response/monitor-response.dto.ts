@@ -48,4 +48,5 @@ export interface MonitorAdResponseDto {
   onAirSince?: string | null;
   deploymentStatus?: "APPROVED_PENDING" | "STAGED" | "ON_AIR" | string;
   canRequestRemoval?: boolean;
+  partnerRemovalRequested?: boolean;
 }

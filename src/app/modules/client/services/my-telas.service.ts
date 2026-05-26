@@ -22,6 +22,8 @@ import {
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
 import { AttachmentResponseDto } from '@app/model/dto/response/attachment-response.dto';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
+import { mergeAuthenticatedClientWithWorkspace } from '@app/core/service/client-workspace.util';
+import { firstValueFrom } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Injectable({
@@ -177,40 +179,31 @@ export class MyTelasService {
     try {
       this.hydrateFromAuthLoggedClientIfEmpty();
 
-      const client = await this.clientService
-        .getAuthenticatedClient()
-        .pipe(take(1))
-        .toPromise();
-
-      if (client) {
-        const dto = client as AuthenticatedClientResponseDto;
-        this._authenticatedClient.set(dto);
-        this._clientAttachments.set(
-          this.normalizeClientAttachments(dto.attachments as unknown)
-        );
-        this._hasActiveAdRequest.set(this.adRequestIsOpen(dto.adRequest));
-        this._ads.set(dto.ads || []);
-        this._isClientDataLoaded.set(true);
-
-        if (this.clientService.setClientAtual) {
-          this.clientService.setClientAtual(dto as unknown as Client);
-        }
-
-        try {
-          const authService = this.injector.get(AuthService, null);
-          if (authService && typeof authService.updateClientData === "function") {
-            authService.updateClientData(dto as unknown as Client);
-          }
-        } catch {
-        }
-
-        return {
-          phone: dto.contact?.phone || "",
-          email: dto.contact?.email || ""
-        };
+      const session = await firstValueFrom(
+        this.clientService.getAuthenticatedClient()
+      );
+      if (!session) {
+        return null;
       }
 
-      return null;
+      let dto: AuthenticatedClientResponseDto = session;
+      try {
+        const workspace = await firstValueFrom(
+          this.clientService.getClientWorkspace()
+        );
+        dto = mergeAuthenticatedClientWithWorkspace(session, workspace);
+      } catch {
+        this.toastService.aviso(
+          "Could not load ads workspace. Some screens may be incomplete."
+        );
+      }
+
+      this.applyAuthenticatedClient(dto);
+
+      return {
+        phone: dto.contact?.phone || "",
+        email: dto.contact?.email || "",
+      };
     } catch (error) {
       this.toastService.erro("Error loading client data");
       if (this._authenticatedClient() === null) {
@@ -224,6 +217,28 @@ export class MyTelasService {
 
   setActiveTab(index: number): void {
     this._activeTabIndex.set(index);
+  }
+
+  private applyAuthenticatedClient(dto: AuthenticatedClientResponseDto): void {
+    this._authenticatedClient.set(dto);
+    this._clientAttachments.set(
+      this.normalizeClientAttachments(dto.attachments as unknown)
+    );
+    this._hasActiveAdRequest.set(this.adRequestIsOpen(dto.adRequest));
+    this._ads.set(dto.ads || []);
+    this._isClientDataLoaded.set(true);
+
+    if (this.clientService.setClientAtual) {
+      this.clientService.setClientAtual(dto as unknown as Client);
+    }
+
+    try {
+      const authService = this.injector.get(AuthService, null);
+      if (authService && typeof authService.updateClientData === "function") {
+        authService.updateClientData(dto as unknown as Client);
+      }
+    } catch {
+    }
   }
 
   private adRequestIsOpen(

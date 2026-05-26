@@ -4,6 +4,7 @@ import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
 import { IRepository } from './repository.interface';
 import { IBaseFilterDto } from '@app/model/interfaces/dto-interfaces';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
+import { ClientWorkspaceResponseDto } from '@app/model/dto/response/client-workspace-response.dto';
 import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
 import { Page } from '@app/model/dto/page.dto';
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
@@ -25,6 +26,8 @@ export interface IClientRepository extends IRepository<Client, ClientRequestDTO,
   save(client: ClientRequestDTO): Observable<Client>;
 
   getAuthenticatedClient(): Observable<AuthenticatedClientResponseDto>;
+
+  getClientWorkspace(): Observable<ClientWorkspaceResponseDto>;
 
   getClientAds(): Observable<any[]>;
 

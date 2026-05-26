@@ -101,9 +101,13 @@ export class PartnerScreensComponent implements OnInit {
     return this.requestingRemovalAdId === ad.id;
   }
 
+  isRemovalRequested(ad: MonitorAdResponseDto): boolean {
+    return ad.partnerRemovalRequested === true;
+  }
+
   async requestRemoval(ad: MonitorAdResponseDto): Promise<void> {
     const adId = ad.id?.trim();
-    if (!adId || !ad.canRequestRemoval) {
+    if (!adId || !ad.canRequestRemoval || this.isRemovalRequested(ad)) {
       return;
     }
     const adName = ad.fileName?.trim() || "this ad";
@@ -118,13 +122,34 @@ export class PartnerScreensComponent implements OnInit {
     this.requestingRemovalAdId = adId;
     this.clientService.requestPartnerAdRemoval(adId).subscribe({
       next: () => {
-        this.toastService.sucesso("Delete request submitted.");
+        this.markRemovalRequested(adId);
+        this.toastService.sucesso(
+          "Removal request submitted. Our team will process it shortly."
+        );
         this.requestingRemovalAdId = null;
       },
-      error: () => {
-        this.toastService.erro("Failed to submit removal request");
+      error: (err: { error?: { mensagem?: string; message?: string } }) => {
+        const msg =
+          err?.error?.mensagem ??
+          err?.error?.message ??
+          "Failed to submit removal request";
+        if (msg.toLowerCase().includes("already submitted")) {
+          this.markRemovalRequested(adId);
+        }
+        this.toastService.erro(msg);
         this.requestingRemovalAdId = null;
       },
     });
+  }
+
+  private markRemovalRequested(adId: string): void {
+    for (const screen of this.screens) {
+      for (const link of screen.adLinks ?? []) {
+        if (link.id === adId) {
+          link.partnerRemovalRequested = true;
+          link.canRequestRemoval = false;
+        }
+      }
+    }
   }
 }

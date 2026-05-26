@@ -44,7 +44,14 @@
                     [value]="deploymentLabel(ad)"
                     [severity]="deploymentSeverity(ad)"
                   ></p-tag>
-                  @if (ad.canRequestRemoval) {
+                  @if (isRemovalRequested(ad)) {
+                    <p-tag
+                      value="Removal requested"
+                      severity="warn"
+                      pTooltip="Our team received your request and will remove this ad from the screen."
+                      tooltipPosition="top"
+                    ></p-tag>
+                  } @else if (ad.canRequestRemoval) {
                     <button
                       pButton
                       type="button"

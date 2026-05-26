@@ -7,6 +7,7 @@ import { ClientRequestDTO } from '@app/model/dto/request/client-request.dto';
 import { ResponseDTO } from '@app/model/dto/response.dto';
 import { ResponseDto } from '@app/model/dto/response/response.dto';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
+import { ClientWorkspaceResponseDto } from '@app/model/dto/response/client-workspace-response.dto';
 import { ClientResponseDTO } from '@app/model/dto/response/client-response.dto';
 import { Page } from '@app/model/dto/page.dto';
 import { AdResponseDto } from '@app/model/dto/response/ad-response.dto';
@@ -41,6 +42,15 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
     return this.http
       .get<ResponseDTO<AuthenticatedClientResponseDto>>(
         `${this.baseUrl}/authenticated`,
+        this.getHeaders()
+      )
+      .pipe(map((response) => response.data));
+  }
+
+  getClientWorkspace(): Observable<ClientWorkspaceResponseDto> {
+    return this.http
+      .get<ResponseDTO<ClientWorkspaceResponseDto>>(
+        `${this.baseUrl}/me/workspace`,
         this.getHeaders()
       )
       .pipe(map((response) => response.data));

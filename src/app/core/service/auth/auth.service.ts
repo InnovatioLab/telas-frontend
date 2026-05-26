@@ -140,6 +140,7 @@ export class AuthService implements IAuthService {
       }),
       switchMap((token) => {
         this.tokenStorage.setToken(token);
+        AuthenticationStorage.setToken(token);
 
         const handleProfileError = (profileError: unknown) =>
           throwError(() => resolveLoginFlowError(profileError, 'profile'));

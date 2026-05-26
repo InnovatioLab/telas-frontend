@@ -15,6 +15,7 @@ import {
 } from "@app/model/dto/response/ad-request-response.dto";
 import { AdResponseDto } from "@app/model/dto/response/ad-response.dto";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
+import { ClientWorkspaceResponseDto } from "@app/model/dto/response/client-workspace-response.dto";
 import { ClientResponseDTO } from "@app/model/dto/response/client-response.dto";
 import { Page } from "@app/model/dto/page.dto";
 import { PaginationResponseDto } from "@app/model/dto/response/pagination-response.dto";
@@ -165,6 +166,10 @@ export class ClientService {
 
   getAuthenticatedClient(): Observable<AuthenticatedClientResponseDto> {
     return this.clientRepository.getAuthenticatedClient();
+  }
+
+  getClientWorkspace(): Observable<ClientWorkspaceResponseDto> {
+    return this.clientRepository.getClientWorkspace();
   }
 
   addToWishlist(monitorId: string): Observable<boolean> {

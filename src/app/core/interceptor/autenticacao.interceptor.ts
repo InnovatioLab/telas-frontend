@@ -3,13 +3,14 @@ import { inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { Observable, of } from "rxjs";
 import { Authentication } from "../service/auth/autenthication";
+import { AuthenticationStorage } from "../service/auth/authentication-storage";
 
 export function authInterceptor(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> {
   const authentication: Authentication = inject(Authentication);
-  const authToken = authentication.token;
+  const authToken = authentication.token ?? AuthenticationStorage.getToken();
   const router = inject(Router);
   const urlLogin = req.url.includes("login");
   const urlZipCode = req.url.includes("addresses/zipcode");
