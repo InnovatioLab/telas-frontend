@@ -15,6 +15,17 @@ import { firstValueFrom } from "rxjs";
 
 type SubmissionChoice = "ADMIN_MATERIALS" | "PARTNER_FINISHED_CREATIVE";
 
+interface AttachmentRef {
+  attachmentId: string;
+  attachmentName: string;
+}
+
+interface FilePreview {
+  name: string;
+  url: string | null;
+  isPdf: boolean;
+}
+
 @Component({
   selector: "app-partner-map-upload",
   standalone: true,
@@ -34,7 +45,9 @@ export class PartnerMapUploadComponent implements OnInit {
   optionalLabel = "";
 
   selectedCreativeFile: File | null = null;
+  creativePreviewUrl: string | null = null;
   selectedMaterialFiles: File[] = [];
+  materialPreviews: FilePreview[] = [];
 
   readonly submissionModeOptions = [
     {
@@ -99,13 +112,19 @@ export class PartnerMapUploadComponent implements OnInit {
       .join(", ");
   }
 
+  isCreateAdMode(): boolean {
+    return this.submissionMode === "ADMIN_MATERIALS";
+  }
+
   goBack(): void {
     void this.router.navigate(["/client/map"]);
   }
 
   onSubmissionModeChange(): void {
     this.selectedCreativeFile = null;
+    this.creativePreviewUrl = null;
     this.selectedMaterialFiles = [];
+    this.materialPreviews = [];
   }
 
   chooseCreativeFile(): void {
@@ -142,25 +161,11 @@ export class PartnerMapUploadComponent implements OnInit {
       valid.push(file);
     }
     this.selectedMaterialFiles = valid;
+    void this.buildMaterialPreviews(valid);
   }
 
-  private async validateAndSetCreativeFile(file: File): Promise<void> {
-    if (file.size > this.maxFileSize) {
-      this.toastService.erro("File must be at most 10MB");
-      return;
-    }
-    try {
-      const result = isPdfFile(file.name)
-        ? { isValid: true, errors: [] as string[] }
-        : await this.fileUploadPipeline.validateFile(file);
-      if (!result.isValid) {
-        result.errors.forEach((msg) => this.toastService.erro(msg));
-        return;
-      }
-      this.selectedCreativeFile = file;
-    } catch {
-      this.toastService.erro("Could not validate file");
-    }
+  isPdfCreativePreview(): boolean {
+    return !!this.selectedCreativeFile && isPdfFile(this.selectedCreativeFile.name);
   }
 
   submit(): void {
@@ -184,14 +189,9 @@ export class PartnerMapUploadComponent implements OnInit {
       await firstValueFrom(
         this.clientService.uploadMultipleAttachments(this.selectedMaterialFiles)
       );
-      const client = await firstValueFrom(this.clientService.getAuthenticatedClient());
-      const attachments = this.normalizeAttachments(client?.attachments);
-      const ids = this.selectedMaterialFiles
-        .map((file) => {
-          const match = attachments.find((a) => a.attachmentName === file.name);
-          return match?.attachmentId ?? "";
-        })
-        .filter((id) => id.length > 0);
+      const workspace = await firstValueFrom(this.clientService.getClientWorkspace());
+      const attachments = this.normalizeAttachments(workspace?.attachments);
+      const ids = this.resolveAttachmentIds(this.selectedMaterialFiles, attachments);
       if (ids.length !== this.selectedMaterialFiles.length) {
         this.toastService.erro(
           "Could not match uploaded files. Refresh and try again."
@@ -240,6 +240,71 @@ export class PartnerMapUploadComponent implements OnInit {
     }
   }
 
+  private resolveAttachmentIds(files: File[], attachments: AttachmentRef[]): string[] {
+    const pool = [...attachments];
+    const ids: string[] = [];
+    for (const file of files) {
+      const index = this.findLastAttachmentIndex(pool, file.name);
+      if (index < 0) {
+        return [];
+      }
+      ids.push(pool[index].attachmentId);
+      pool.splice(index, 1);
+    }
+    return ids;
+  }
+
+  private findLastAttachmentIndex(pool: AttachmentRef[], fileName: string): number {
+    for (let i = pool.length - 1; i >= 0; i--) {
+      if (pool[i].attachmentName === fileName) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  private async buildMaterialPreviews(files: File[]): Promise<void> {
+    const previews: FilePreview[] = [];
+    for (const file of files) {
+      const isPdf = isPdfFile(file.name);
+      if (isPdf) {
+        previews.push({ name: file.name, url: null, isPdf: true });
+        continue;
+      }
+      const entry: FilePreview = { name: file.name, url: null, isPdf: false };
+      previews.push(entry);
+      try {
+        entry.url = await this.fileUploadPipeline.readAsDataUrl(file);
+      } catch {
+        entry.url = null;
+      }
+    }
+    this.materialPreviews = previews;
+  }
+
+  private async validateAndSetCreativeFile(file: File): Promise<void> {
+    if (file.size > this.maxFileSize) {
+      this.toastService.erro("File must be at most 10MB");
+      return;
+    }
+    try {
+      const result = isPdfFile(file.name)
+        ? { isValid: true, errors: [] as string[] }
+        : await this.fileUploadPipeline.validateFile(file);
+      if (!result.isValid) {
+        result.errors.forEach((msg) => this.toastService.erro(msg));
+        return;
+      }
+      this.selectedCreativeFile = file;
+      this.creativePreviewUrl = isPdfFile(file.name)
+        ? null
+        : await this.fileUploadPipeline.readAsDataUrl(file);
+    } catch {
+      this.creativePreviewUrl = null;
+      this.toastService.erro("Could not validate file");
+    }
+  }
+
   private async fileToAttachment(file: File): Promise<AttachmentRequestDto> {
     const bytes = await this.fileUploadPipeline.readAsBase64(file);
     return {
@@ -249,10 +314,7 @@ export class PartnerMapUploadComponent implements OnInit {
     };
   }
 
-  private normalizeAttachments(raw: unknown): Array<{
-    attachmentId: string;
-    attachmentName: string;
-  }> {
+  private normalizeAttachments(raw: unknown): AttachmentRef[] {
     if (!Array.isArray(raw)) {
       return [];
     }

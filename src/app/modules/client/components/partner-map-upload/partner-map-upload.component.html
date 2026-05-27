@@ -23,6 +23,13 @@
         optionValue="value"
         (onChange)="onSubmissionModeChange()"
       ></p-selectButton>
+      <p class="mode-hint">
+        @if (isCreateAdMode()) {
+          Send reference files and instructions — our team will create the ad for this screen.
+        } @else {
+          Upload your finished ad file — our team will review and publish it.
+        }
+      </p>
     </div>
 
     <div class="mode-field">
@@ -38,7 +45,7 @@
       ></textarea>
     </div>
 
-    @if (submissionMode === "ADMIN_MATERIALS") {
+    @if (isCreateAdMode()) {
       <input
         #materialsInput
         type="file"
@@ -69,11 +76,24 @@
         ></button>
       </div>
       @if (selectedMaterialFiles.length > 0) {
-        <ul class="file-list">
-          @for (file of selectedMaterialFiles; track file.name) {
-            <li>{{ file.name }}</li>
+        <div class="materials-preview-grid">
+          @for (preview of materialPreviews; track preview.name) {
+            <div class="material-preview-card">
+              @if (preview.url && !preview.isPdf) {
+                <img [src]="preview.url" [alt]="preview.name" class="preview-thumb" />
+              } @else {
+                <div class="preview-placeholder">
+                  @if (preview.isPdf) {
+                    <i class="pi pi-file-pdf"></i>
+                  } @else {
+                    <i class="pi pi-image"></i>
+                  }
+                </div>
+              }
+              <span class="preview-name">{{ preview.name }}</span>
+            </div>
           }
-        </ul>
+        </div>
       }
     } @else {
       <input
@@ -106,6 +126,12 @@
       </div>
       @if (selectedCreativeFile) {
         <p class="file-name">{{ selectedCreativeFile.name }}</p>
+        @if (creativePreviewUrl && !isPdfCreativePreview()) {
+          <img [src]="creativePreviewUrl" alt="Preview" class="preview-image" />
+        }
+        @if (isPdfCreativePreview()) {
+          <p class="pdf-note">PDF selected — preview not available.</p>
+        }
       }
     }
   </p-card>
