@@ -418,9 +418,9 @@ export class AdRequestManagementComponent implements OnInit {
   getModeLabel(mode?: PartnerSubmissionMode | null): string {
     switch (mode) {
       case "ADMIN_MATERIALS":
-        return "Admin materials";
+        return "Create Ad";
       case "PARTNER_FINISHED_CREATIVE":
-        return "Finished creative";
+        return "Finished Ad";
       case "READY_CREATIVE":
         return "Ready creative";
       default:

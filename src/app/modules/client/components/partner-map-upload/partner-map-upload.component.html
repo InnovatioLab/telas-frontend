@@ -11,19 +11,9 @@
   <p-card>
     <h2 class="m-0">Submit ad to screen</h2>
     <p class="screen-address">{{ screenAddress() }}</p>
-    <p class="hint">
-      Send reference materials for admin to create your ad, or upload a finished creative for admin approval.
-    </p>
 
     <div class="mode-field">
-      <label for="submission-mode" class="mode-label">
-        Submission type
-        <span
-          class="pi pi-info-circle info-icon"
-          pTooltip="Choose how you want to submit your ad for this screen."
-          tooltipPosition="top"
-        ></span>
-      </label>
+      <label for="submission-mode">Submission type</label>
       <p-selectButton
         inputId="submission-mode"
         [options]="submissionModeOptions"
@@ -33,26 +23,19 @@
         optionValue="value"
         (onChange)="onSubmissionModeChange()"
       ></p-selectButton>
-      <p class="mode-option-hint">
-        @if (submissionMode === "ADMIN_MATERIALS") {
-          Send logos/photos; our team creates the final ad for this screen.
-        } @else {
-          Upload your final ad file; admin reviews and publishes it.
-        }
-      </p>
     </div>
 
     <div class="mode-field">
-      <label for="optional-label">Label (optional)</label>
-      <input
-        id="optional-label"
-        type="text"
-        pInputText
+      <label for="instructions">Instructions</label>
+      <textarea
+        id="instructions"
+        pInputTextarea
         class="w-full"
+        rows="4"
         [(ngModel)]="optionalLabel"
         [ngModelOptions]="{ standalone: true }"
         maxlength="255"
-      />
+      ></textarea>
     </div>
 
     @if (submissionMode === "ADMIN_MATERIALS") {
@@ -68,7 +51,7 @@
         <button
           pButton
           type="button"
-          label="Select reference files"
+          label="Select File"
           icon="pi pi-folder-open"
           class="p-button-outlined"
           (click)="chooseMaterialFiles()"
@@ -86,27 +69,11 @@
         ></button>
       </div>
       @if (selectedMaterialFiles.length > 0) {
-        <div class="materials-preview-grid">
-          @for (preview of materialPreviews; track preview.name) {
-            <div class="material-preview-card">
-              @if (preview.url && !preview.isPdf) {
-                <img [src]="preview.url" [alt]="preview.name" class="preview-thumb" />
-              } @else {
-                <div class="preview-placeholder">
-                  @if (preview.isPdf) {
-                    <i class="pi pi-file-pdf"></i>
-                  } @else {
-                    <i class="pi pi-image"></i>
-                  }
-                </div>
-              }
-              <span class="preview-name">{{ preview.name }}</span>
-            </div>
+        <ul class="file-list">
+          @for (file of selectedMaterialFiles; track file.name) {
+            <li>{{ file.name }}</li>
           }
-        </div>
-        @if (hasPdfMaterials()) {
-          <p class="pdf-note">PDF files are listed without image preview.</p>
-        }
+        </ul>
       }
     } @else {
       <input
@@ -120,7 +87,7 @@
         <button
           pButton
           type="button"
-          label="Select creative"
+          label="Select File"
           icon="pi pi-folder-open"
           class="p-button-outlined"
           (click)="chooseCreativeFile()"
@@ -139,12 +106,6 @@
       </div>
       @if (selectedCreativeFile) {
         <p class="file-name">{{ selectedCreativeFile.name }}</p>
-        @if (creativePreviewUrl && !isPdfCreativePreview()) {
-          <img [src]="creativePreviewUrl" alt="Preview" class="preview-image" />
-        }
-        @if (isPdfCreativePreview()) {
-          <p class="pdf-note">PDF selected — preview not available.</p>
-        }
       }
     }
   </p-card>

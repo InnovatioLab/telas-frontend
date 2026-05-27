@@ -34,22 +34,16 @@ export class PartnerMapUploadComponent implements OnInit {
   optionalLabel = "";
 
   selectedCreativeFile: File | null = null;
-  creativePreviewUrl: string | null = null;
   selectedMaterialFiles: File[] = [];
-  materialPreviews: Array<{ name: string; url: string | null; isPdf: boolean }> = [];
 
   readonly submissionModeOptions = [
     {
-      label: "Materials for admin",
+      label: "Create Ad",
       value: "ADMIN_MATERIALS" as SubmissionChoice,
-      tooltip:
-        "Send logos/photos; our team creates the final ad for this screen.",
     },
     {
-      label: "Finished creative",
+      label: "Finished Ad",
       value: "PARTNER_FINISHED_CREATIVE" as SubmissionChoice,
-      tooltip:
-        "Upload your final ad file; admin reviews and publishes it.",
     },
   ];
 
@@ -111,9 +105,7 @@ export class PartnerMapUploadComponent implements OnInit {
 
   onSubmissionModeChange(): void {
     this.selectedCreativeFile = null;
-    this.creativePreviewUrl = null;
     this.selectedMaterialFiles = [];
-    this.materialPreviews = [];
   }
 
   chooseCreativeFile(): void {
@@ -150,27 +142,6 @@ export class PartnerMapUploadComponent implements OnInit {
       valid.push(file);
     }
     this.selectedMaterialFiles = valid;
-    this.buildMaterialPreviews(valid);
-  }
-
-  private buildMaterialPreviews(files: File[]): void {
-    this.materialPreviews = [];
-    for (const file of files) {
-      const isPdf = isPdfFile(file.name);
-      if (isPdf) {
-        this.materialPreviews.push({ name: file.name, url: null, isPdf: true });
-        continue;
-      }
-      const entry = { name: file.name, url: null as string | null, isPdf: false };
-      this.materialPreviews.push(entry);
-      void this.fileUploadPipeline.readAsDataUrl(file).then((dataUrl) => {
-        entry.url = dataUrl;
-      });
-    }
-  }
-
-  hasPdfMaterials(): boolean {
-    return this.materialPreviews.some((p) => p.isPdf);
   }
 
   private async validateAndSetCreativeFile(file: File): Promise<void> {
@@ -187,14 +158,9 @@ export class PartnerMapUploadComponent implements OnInit {
         return;
       }
       this.selectedCreativeFile = file;
-      this.creativePreviewUrl = await this.fileUploadPipeline.readAsDataUrl(file);
     } catch {
       this.toastService.erro("Could not validate file");
     }
-  }
-
-  isPdfCreativePreview(): boolean {
-    return !!this.selectedCreativeFile && isPdfFile(this.selectedCreativeFile.name);
   }
 
   submit(): void {
@@ -210,7 +176,7 @@ export class PartnerMapUploadComponent implements OnInit {
 
   private async submitAdminMaterials(): Promise<void> {
     if (this.selectedMaterialFiles.length === 0) {
-      this.toastService.aviso("Select at least one reference file");
+      this.toastService.aviso("Select at least one file");
       return;
     }
     this.submitting = true;
@@ -240,10 +206,10 @@ export class PartnerMapUploadComponent implements OnInit {
       await firstValueFrom(
         this.monitorService.submitPartnerAdSubmission(this.monitorId, payload)
       );
-      this.toastService.sucesso("Materials submitted for admin review");
+      this.toastService.sucesso("Create Ad request submitted for admin review");
       void this.router.navigate(["/client/screens"]);
     } catch {
-      this.toastService.erro("Failed to submit materials");
+      this.toastService.erro("Failed to submit");
     } finally {
       this.submitting = false;
     }
@@ -251,7 +217,7 @@ export class PartnerMapUploadComponent implements OnInit {
 
   private async submitFinishedCreative(): Promise<void> {
     if (!this.selectedCreativeFile) {
-      this.toastService.aviso("Select a creative file");
+      this.toastService.aviso("Select a file");
       return;
     }
     this.submitting = true;
@@ -265,10 +231,10 @@ export class PartnerMapUploadComponent implements OnInit {
       await firstValueFrom(
         this.monitorService.submitPartnerAdSubmission(this.monitorId, payload)
       );
-      this.toastService.sucesso("Creative submitted for admin review");
+      this.toastService.sucesso("Finished Ad submitted for admin review");
       void this.router.navigate(["/client/screens"]);
     } catch {
-      this.toastService.erro("Failed to submit creative");
+      this.toastService.erro("Failed to submit");
     } finally {
       this.submitting = false;
     }
