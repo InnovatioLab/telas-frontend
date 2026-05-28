@@ -40,6 +40,7 @@ export class SearchMonitorsService {
   private readonly nearestMonitorsSubject = new BehaviorSubject<MapPoint[]>([]);
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
   private readonly errorSubject = new BehaviorSubject<string | null>(null);
+  private lastEmptyResultMessage: string | null = null;
   private readonly storageName = "telas_token";
 
   constructor(
@@ -70,6 +71,8 @@ export class SearchMonitorsService {
       .pipe(
         map((response) => {
           const monitors = response.data || [];
+          this.lastEmptyResultMessage =
+            monitors.length === 0 ? response.message || null : null;
           const allPoints = this.mapper.convertToMapPoints(monitors, {
             includeHealthStatus: true,
           });
@@ -130,6 +133,8 @@ export class SearchMonitorsService {
       .pipe(
         map((response) => {
           const monitors = response.data || [];
+          this.lastEmptyResultMessage =
+            monitors.length === 0 ? response.message || null : null;
           const allPoints = this.mapper.convertToMapPoints(monitors);
 
           this.nearestMonitorsSubject.next(allPoints);
@@ -159,6 +164,7 @@ export class SearchMonitorsService {
   private loadByZipCode(zipCode: string, adminMap: boolean): Promise<MapPoint[]> {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
+    this.lastEmptyResultMessage = null;
     if (!zipCode || zipCode.trim().length < 5) {
       this.errorSubject.next("Invalid zip code");
       this.loadingSubject.next(false);
@@ -173,15 +179,7 @@ export class SearchMonitorsService {
 
     return request$
       .toPromise()
-      .then(() => {
-        const points = this.nearestMonitorsSubject.getValue();
-        if (points.length === 0) {
-          this.errorSubject.next(
-            `No monitors found for ZIP code ${cleanZipCode}`
-          );
-        }
-        return points;
-      })
+      .then(() => this.nearestMonitorsSubject.getValue())
       .catch((): MapPoint[] => {
         this.errorSubject.next("Error searching monitors by zip code");
         return [];
@@ -264,5 +262,9 @@ export class SearchMonitorsService {
 
   public clearError(): void {
     this.errorSubject.next(null);
+  }
+
+  public getLastEmptyResultMessage(): string | null {
+    return this.lastEmptyResultMessage;
   }
 }

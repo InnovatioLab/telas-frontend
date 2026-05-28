@@ -247,12 +247,12 @@ describe('SearchMonitorsService', () => {
       await promise;
     });
 
-    it('deve atualizar errorSubject quando nenhum monitor é encontrado', async () => {
+    it('deve expor mensagem da API quando nenhum monitor é encontrado', async () => {
       const zipCode = '12345';
       const mockResponse: ApiResponseDto<MonitorMapsResponseDto[]> = {
         data: [],
         status: 200,
-        message: 'Success',
+        message: 'No results found! Try changing the filters or the search term.',
         timestamp: new Date().toISOString()
       };
 
@@ -261,16 +261,12 @@ describe('SearchMonitorsService', () => {
       const req = httpMock.expectOne(req => req.url.includes('monitors/search'));
       req.flush(mockResponse);
 
-      await promise;
+      const points = await promise;
 
-      let callCount = 0;
-      service.error$.pipe(take(2)).subscribe((error) => {
-        callCount++;
-        if (callCount === 2) {
-          expect(error).toContain('No monitors found');
-          expect(error).toContain(zipCode);
-        }
-      });
+      expect(points).toEqual([]);
+      expect(service.getLastEmptyResultMessage()).toBe(
+        'No results found! Try changing the filters or the search term.'
+      );
     });
 
     it('deve tratar erro e retornar array vazio', async () => {

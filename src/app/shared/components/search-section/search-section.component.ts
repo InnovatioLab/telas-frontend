@@ -216,6 +216,11 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
           this.toastService.sucesso(
             `Found ${monitors.length} monitors near ZIP code ${this.searchText}`
           );
+        } else {
+          const emptyMessage =
+            this.searchMonitorsService.getLastEmptyResultMessage() ??
+            "No results found! Try changing the filters or the search term.";
+          this.toastService.aviso(emptyMessage);
         }
 
         this.searchText = "";
