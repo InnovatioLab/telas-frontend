@@ -1,5 +1,5 @@
 :host {
-  --client-header-offset: 70px;
+  --client-header-offset: var(--app-header-height, 70px);
   display: flex;
   flex-direction: column;
   flex: 1;

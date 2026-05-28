@@ -4,78 +4,154 @@
       <div>
         <h1 class="m-0">My screens</h1>
         <p class="subtitle m-0">
-          Your screens and approved ads — including ads awaiting publication on the box.
+          Your screens, approved ads, and submissions sent to our admin team.
         </p>
       </div>
     </div>
   </p-card>
 
-  <p-table
-    [value]="screens"
-    [loading]="loading"
-    styleClass="p-datatable-sm"
-    responsiveLayout="scroll"
+  <p-tabView
+    [activeIndex]="activeTab === 'requests' ? 1 : 0"
+    (activeIndexChange)="onTabChange($event)"
   >
-    <ng-template pTemplate="header">
-      <tr>
-        <th scope="col">Status</th>
-        <th scope="col">Address</th>
-        <th scope="col">Your ads</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-screen>
-      <tr>
-        <td>
-          <p-tag
-            [value]="screen.active ? 'Active' : 'Inactive'"
-            [severity]="screen.active ? 'success' : 'danger'"
-          ></p-tag>
-        </td>
-        <td>{{ screenAddress(screen) }}</td>
-        <td>
-          @if (screenAds(screen).length === 0) {
-            <span class="text-color-secondary">No approved ads yet</span>
-          } @else {
-            <ul class="ads-list">
-              @for (ad of screenAds(screen); track ad.id) {
-                <li class="ads-list-item">
-                  <span class="ad-name">{{ ad.fileName }}</span>
-                  <p-tag
-                    [value]="deploymentLabel(ad)"
-                    [severity]="deploymentSeverity(ad)"
-                  ></p-tag>
-                  @if (isRemovalRequested(ad)) {
-                    <p-tag
-                      value="Removal requested"
-                      severity="warn"
-                      pTooltip="Our team received your request and will remove this ad from the screen."
-                      tooltipPosition="top"
-                    ></p-tag>
-                  } @else if (ad.canRequestRemoval) {
-                    <button
-                      pButton
-                      type="button"
-                      label="Delete"
-                      icon="pi pi-trash"
-                      class="p-button-text p-button-sm p-button-danger"
-                      [loading]="isRequestingRemoval(ad)"
-                      [disabled]="isRequestingRemoval(ad)"
-                      (click)="requestRemoval(ad)"
-                    ></button>
+    <p-tabPanel header="Screens">
+      <p-table
+        [value]="screens"
+        [loading]="screensLoading"
+        styleClass="p-datatable-sm"
+        responsiveLayout="scroll"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th scope="col">Status</th>
+            <th scope="col">Address</th>
+            <th scope="col">Your ads</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-screen>
+          <tr>
+            <td>
+              <p-tag
+                [value]="screen.active ? 'Active' : 'Inactive'"
+                [severity]="screen.active ? 'success' : 'danger'"
+              ></p-tag>
+            </td>
+            <td>{{ screenAddress(screen) }}</td>
+            <td>
+              @if (screenAds(screen).length === 0) {
+                <span class="text-color-secondary">No approved ads yet</span>
+              } @else {
+                <ul class="ads-list">
+                  @for (ad of screenAds(screen); track ad.id) {
+                    <li class="ads-list-item">
+                      <span class="ad-name">{{ ad.fileName }}</span>
+                      <p-tag
+                        [value]="deploymentLabel(ad)"
+                        [severity]="deploymentSeverity(ad)"
+                      ></p-tag>
+                      @if (isRemovalRequested(ad)) {
+                        <p-tag
+                          value="Removal requested"
+                          severity="warn"
+                          pTooltip="Our team received your request and will remove this ad from the screen."
+                          tooltipPosition="top"
+                        ></p-tag>
+                      } @else if (ad.canRequestRemoval) {
+                        <button
+                          pButton
+                          type="button"
+                          label="Delete"
+                          icon="pi pi-trash"
+                          class="p-button-text p-button-sm p-button-danger"
+                          [loading]="isRequestingRemoval(ad)"
+                          [disabled]="isRequestingRemoval(ad)"
+                          (click)="requestRemoval(ad)"
+                        ></button>
+                      }
+                    </li>
                   }
-                </li>
+                </ul>
               }
-            </ul>
-          }
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="3" class="text-center">
-          No screens are linked to your partner account yet.
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3" class="text-center">
+              No screens are linked to your partner account yet.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+
+    <p-tabPanel header="Ad requests">
+      <div class="ad-requests-toolbar">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            type="text"
+            pInputText
+            placeholder="Search by screen or label"
+            [(ngModel)]="adRequestsSearch"
+            (keyup.enter)="onAdRequestsSearch()"
+          />
+        </span>
+        <button
+          pButton
+          type="button"
+          label="Search"
+          icon="pi pi-search"
+          class="p-button-outlined"
+          (click)="onAdRequestsSearch()"
+        ></button>
+      </div>
+
+      <p-table
+        [value]="adRequests"
+        [loading]="adRequestsLoading"
+        styleClass="p-datatable-sm"
+        responsiveLayout="scroll"
+        [paginator]="true"
+        [rows]="adRequestsPageSize"
+        [totalRecords]="adRequestsTotal"
+        [lazy]="true"
+        (onLazyLoad)="onAdRequestsPage($event)"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} submissions"
+        paginatorDropdownAppendTo="body"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th scope="col">Mode</th>
+            <th scope="col">Screen</th>
+            <th scope="col">Status</th>
+            <th scope="col">Submitted</th>
+            <th scope="col">Waiting</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-request>
+          <tr>
+            <td>{{ modeLabel(request.submissionMode) }}</td>
+            <td>{{ request.targetMonitorSummary || "—" }}</td>
+            <td>
+              <p-tag
+                [value]="workflowLabel(request)"
+                [severity]="workflowSeverity(request)"
+              ></p-tag>
+            </td>
+            <td>{{ formatSubmissionDate(request.submissionDate) }}</td>
+            <td>{{ request.waitingDays ?? 0 }} days</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center">
+              You have not submitted any ad requests yet. Use the map to send Create Ad or Finished Ad to a screen.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+  </p-tabView>
 </div>

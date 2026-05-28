@@ -7,7 +7,7 @@ export const redirectPartnerFromClientShoppingGuard: CanActivateFn = () => {
   const auth = inject(Authentication);
   const router = inject(Router);
   if (isPartnerRole(auth.client()?.role)) {
-    return router.createUrlTree(["/client/screens"]);
+    return router.createUrlTree(["/partner/screens"]);
   }
   return true;
 };

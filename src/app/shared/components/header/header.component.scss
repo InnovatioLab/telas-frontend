@@ -1,5 +1,11 @@
 @use "../../styles/utilities" as *;
 
+:host {
+  display: block;
+  height: var(--app-header-height, 70px);
+  flex-shrink: 0;
+}
+
   .badge {
   position: absolute;
   top: 3px;
@@ -75,8 +81,10 @@
 header {
   width: 100%;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 9999 !important;
   background-color: var(--cor-primaria);
   color: var(--cor-texto-clara);
@@ -139,10 +147,8 @@ header {
 .mobile-menu {
   width: 100%;
   background-color: var(--cor-primaria);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 999;
+  position: relative;
+  z-index: 1;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .mobile-header {
@@ -233,10 +239,10 @@ header {
 /* Header desktop */
 .desktop-header {
   .container-header-content {
-    position: fixed;
+    position: relative;
     display: flex;
     flex-direction: column;
-    z-index: 1000;
+    z-index: 1;
     width: 100%;
     background: var(--cor-primaria);
   }
@@ -719,10 +725,8 @@ textarea::placeholder,
     background: var(--cor-branca);
     padding: 12px 16px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
+    position: relative;
+    z-index: 1;
 
     .header-content {
       display: flex;

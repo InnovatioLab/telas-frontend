@@ -6,12 +6,11 @@
 }
 
 app-header {
+  display: block;
   width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  height: 70px;
+  height: var(--app-header-height, 70px);
   flex-shrink: 0;
+  z-index: 1000;
 }
 
 app-menu {
@@ -21,9 +20,9 @@ app-menu {
 
 app-alert-admin-sidebar {
   position: absolute;
-  top: 70px;
+  top: var(--app-header-height, 70px);
   right: 0;
-  height: calc(100vh - 70px);
+  height: calc(100vh - var(--app-header-height, 70px));
   z-index: 998;
 }
 
@@ -31,7 +30,7 @@ app-content-wrapper {
   flex: 1;
   margin-left: 0;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - var(--app-header-height, 70px));
   width: 100%;
   max-width: 100%;
   min-width: 0;

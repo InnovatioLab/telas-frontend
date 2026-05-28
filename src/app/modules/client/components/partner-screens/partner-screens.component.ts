@@ -1,49 +1,131 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import { PARTNER_PORTAL_ROUTES } from "@app/core/constants/partner-api.paths";
 import { ClientService } from "@app/core/service/api/client.service";
-import { MonitorService } from "@app/core/service/api/monitor.service";
+import { PartnerPortalService } from "@app/core/service/api/partner-portal.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
+import {
+  AdRequestResponseDto,
+  PartnerSubmissionMode,
+} from "@app/model/dto/response/ad-request-response.dto";
 import { MonitorAdResponseDto } from "@app/model/dto/response/monitor-response.dto";
 import { Monitor } from "@app/model/monitors";
+import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
+import {
+  adRequestWorkflowLabel,
+  adRequestWorkflowSeverity,
+  partnerSubmissionModeLabel,
+} from "@app/shared/utils/ad-request-display.util";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TagModule } from "primeng/tag";
+import { TableLazyLoadEvent } from "primeng/table";
+
+type PartnerScreensTab = "screens" | "requests";
 
 @Component({
   selector: "app-partner-screens",
   standalone: true,
-  imports: [CommonModule, PrimengModule, TagModule],
+  imports: [CommonModule, FormsModule, PrimengModule, TagModule],
   templateUrl: "./partner-screens.component.html",
   styleUrls: ["./partner-screens.component.scss"],
 })
 export class PartnerScreensComponent implements OnInit {
+  activeTab: PartnerScreensTab = "screens";
+
   screens: Monitor[] = [];
-  loading = false;
+  screensLoading = false;
   requestingRemovalAdId: string | null = null;
 
+  adRequests: AdRequestResponseDto[] = [];
+  adRequestsLoading = false;
+  adRequestsTotal = 0;
+  adRequestsPage = 1;
+  adRequestsPageSize = 10;
+  adRequestsSearch = "";
+
   constructor(
-    private readonly monitorService: MonitorService,
+    private readonly partnerPortalService: PartnerPortalService,
     private readonly clientService: ClientService,
     private readonly toastService: ToastService,
-    private readonly confirmationDialogService: ConfirmationDialogService
+    private readonly confirmationDialogService: ConfirmationDialogService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
+    const tab = this.route.snapshot.queryParamMap.get("tab");
+    if (tab === "requests") {
+      this.activeTab = "requests";
+    }
     this.loadScreens();
+    if (this.activeTab === "requests") {
+      this.loadAdRequests();
+    }
+  }
+
+  onTabChange(index: number): void {
+    this.activeTab = index === 1 ? "requests" : "screens";
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: this.activeTab === "requests" ? "requests" : null },
+      queryParamsHandling: "merge",
+      replaceUrl: true,
+    });
+    if (this.activeTab === "requests" && this.adRequests.length === 0 && !this.adRequestsLoading) {
+      this.loadAdRequests();
+    }
   }
 
   loadScreens(): void {
-    this.loading = true;
-    this.monitorService.getPartnerScreens().subscribe({
+    this.screensLoading = true;
+    this.partnerPortalService.getMyScreens().subscribe({
       next: (screens) => {
         this.screens = screens;
-        this.loading = false;
+        this.screensLoading = false;
       },
       error: () => {
         this.toastService.erro("Failed to load your screens");
-        this.loading = false;
+        this.screensLoading = false;
       },
     });
+  }
+
+  loadAdRequests(): void {
+    this.adRequestsLoading = true;
+    this.partnerPortalService
+      .getMyAdRequests({
+        page: this.adRequestsPage,
+        size: this.adRequestsPageSize,
+        sortBy: "createdAt",
+        sortDir: "desc",
+        genericFilter: this.adRequestsSearch.trim() || undefined,
+      })
+      .subscribe({
+        next: (response) => {
+          this.adRequests = response.list ?? [];
+          this.adRequestsTotal = response.totalElements ?? 0;
+          this.adRequestsLoading = false;
+        },
+        error: () => {
+          this.toastService.erro("Failed to load your ad requests");
+          this.adRequestsLoading = false;
+        },
+      });
+  }
+
+  onAdRequestsSearch(): void {
+    this.adRequestsPage = 1;
+    this.loadAdRequests();
+  }
+
+  onAdRequestsPage(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? this.adRequestsPageSize;
+    this.adRequestsPage = Math.floor(first / rows) + 1;
+    this.adRequestsPageSize = rows;
+    this.loadAdRequests();
   }
 
   screenAddress(screen: Monitor): string {
@@ -97,6 +179,29 @@ export class PartnerScreensComponent implements OnInit {
     }
   }
 
+  modeLabel(mode?: PartnerSubmissionMode | null): string {
+    return partnerSubmissionModeLabel(mode);
+  }
+
+  workflowLabel(adRequest: AdRequestResponseDto): string {
+    return adRequest.adminActionLabel?.trim() || adRequestWorkflowLabel(adRequest.workflowStatus);
+  }
+
+  workflowSeverity(adRequest: AdRequestResponseDto): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
+    return adRequestWorkflowSeverity(adRequest.workflowStatus);
+  }
+
+  formatSubmissionDate(value?: string | null): string {
+    if (!value) {
+      return "—";
+    }
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return value;
+    }
+    return parsed.toLocaleDateString();
+  }
+
   isRequestingRemoval(ad: MonitorAdResponseDto): boolean {
     return this.requestingRemovalAdId === ad.id;
   }
@@ -140,6 +245,13 @@ export class PartnerScreensComponent implements OnInit {
         this.requestingRemovalAdId = null;
       },
     });
+  }
+
+  openMapUpload(monitorId: string | null | undefined): void {
+    if (!monitorId?.trim()) {
+      return;
+    }
+    void this.router.navigate([PARTNER_PORTAL_ROUTES.mapUpload(monitorId)]);
   }
 
   private markRemovalRequested(adId: string): void {

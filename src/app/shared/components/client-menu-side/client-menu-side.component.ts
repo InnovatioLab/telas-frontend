@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
+import { PARTNER_PORTAL_ROUTES } from "@app/core/constants/partner-api.paths";
 import { Client, isPartnerRole, isPrivilegedPanelRole } from "@app/model/client";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
 import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
@@ -223,15 +224,15 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   navegarParaPartnerScreens(): void {
-    this.router.navigate(["/client/screens"]);
+    this.router.navigate([PARTNER_PORTAL_ROUTES.screens]);
   }
 
   navegarParaPartnerMap(): void {
-    this.router.navigate(["/client/map"]);
+    this.router.navigate([PARTNER_PORTAL_ROUTES.map]);
   }
 
   navegarParaPartnerAds(): void {
-    this.router.navigate(["/client/partner-ads"]);
+    this.router.navigate([PARTNER_PORTAL_ROUTES.adsReview]);
   }
 
   navegarParaPerfil(): void {

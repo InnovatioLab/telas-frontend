@@ -229,6 +229,18 @@
               [text]="true"
               pTooltip="View"
             ></p-button>
+            <p-button
+              icon="pi pi-download"
+              (onClick)="
+                downloadAttachment(
+                  attachment.attachmentDownloadLink || attachment.attachmentLink,
+                  attachment.attachmentName
+                )
+              "
+              severity="info"
+              [text]="true"
+              pTooltip="Download"
+            ></p-button>
           </div>
         </div>
       </div>
@@ -253,6 +265,19 @@
             severity="info"
             [text]="true"
             pTooltip="View"
+          ></p-button>
+          <p-button
+            icon="pi pi-download"
+            (onClick)="
+              downloadAttachment(
+                selectedAdRequest.ad!.attachmentDownloadLink ||
+                  selectedAdRequest.ad!.attachmentLink,
+                selectedAdRequest.ad!.attachmentName
+              )
+            "
+            severity="info"
+            [text]="true"
+            pTooltip="Download"
           ></p-button>
         </div>
       </div>

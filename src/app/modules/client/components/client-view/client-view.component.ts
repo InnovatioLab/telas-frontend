@@ -227,7 +227,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
       this.toastService.aviso("This screen has no available slots");
       return;
     }
-    void this.router.navigate(["/client/map-upload", monitorId]);
+    void this.router.navigate(["/partner/map-upload", monitorId]);
   }
 
   onMonitorsFound(monitors: MapPoint[], zipCode?: string): void {

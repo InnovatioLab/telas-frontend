@@ -29,7 +29,7 @@ import { LayoutService } from "@app/core/service/state/layout.service";
         transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background-color: var(--cor-cinza-fundo);
         box-sizing: border-box;
-        min-height: calc(100vh - 70px);
+        min-height: calc(100vh - var(--app-header-height, 70px));
         display: flex;
         flex-direction: column;
         flex: 1;
@@ -62,7 +62,7 @@ import { LayoutService } from "@app/core/service/state/layout.service";
         }
 
         .content-wrapper {
-          min-height: calc(100vh - 70px);
+          min-height: calc(100vh - var(--app-header-height, 70px));
         }
       }
 
@@ -72,7 +72,7 @@ import { LayoutService } from "@app/core/service/state/layout.service";
         }
 
         .content-wrapper {
-          min-height: calc(100vh - 70px);
+          min-height: calc(100vh - var(--app-header-height, 70px));
         }
       }
 

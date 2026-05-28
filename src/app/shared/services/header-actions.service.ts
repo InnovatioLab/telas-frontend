@@ -75,7 +75,7 @@ export class HeaderActionsService {
       if (this.isAdministrator()) {
         this.router.navigate(['/admin']);
       } else if (isPartnerRole(this.getCurrentUser()?.role)) {
-        this.router.navigate(['/client/screens']);
+        this.router.navigate(['/partner/screens']);
       } else {
         this.router.navigate(['/client']);
       }

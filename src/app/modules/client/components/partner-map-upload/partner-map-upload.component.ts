@@ -2,8 +2,9 @@ import { CommonModule } from "@angular/common";
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
+import { PARTNER_PORTAL_ROUTES } from "@app/core/constants/partner-api.paths";
 import { ClientService } from "@app/core/service/api/client.service";
-import { MonitorService } from "@app/core/service/api/monitor.service";
+import { PartnerPortalService } from "@app/core/service/api/partner-portal.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
 import { PartnerAdSubmissionRequestDto } from "@app/model/dto/request/partner-ad-submission.request.dto";
@@ -66,7 +67,7 @@ export class PartnerMapUploadComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly monitorService: MonitorService,
+    private readonly partnerPortalService: PartnerPortalService,
     private readonly clientService: ClientService,
     private readonly toastService: ToastService,
     private readonly fileUploadPipeline: FileUploadPipelineService
@@ -75,7 +76,7 @@ export class PartnerMapUploadComponent implements OnInit {
   ngOnInit(): void {
     this.monitorId = this.route.snapshot.paramMap.get("monitorId") ?? "";
     if (!this.monitorId) {
-      void this.router.navigate(["/client/screens"]);
+      void this.router.navigate([PARTNER_PORTAL_ROUTES.screens]);
       return;
     }
     this.loadScreen();
@@ -83,7 +84,7 @@ export class PartnerMapUploadComponent implements OnInit {
 
   loadScreen(): void {
     this.loadingScreen = true;
-    this.monitorService.getPartnerPlacementTarget(this.monitorId).subscribe({
+    this.partnerPortalService.getPlacementTarget(this.monitorId).subscribe({
       next: (screen) => {
         this.screen = screen;
         this.loadingScreen = false;
@@ -91,7 +92,7 @@ export class PartnerMapUploadComponent implements OnInit {
       error: () => {
         this.loadingScreen = false;
         this.toastService.erro("Failed to load target screen");
-        void this.router.navigate(["/client/screens"]);
+        void this.router.navigate([PARTNER_PORTAL_ROUTES.screens]);
       },
     });
   }
@@ -117,7 +118,7 @@ export class PartnerMapUploadComponent implements OnInit {
   }
 
   goBack(): void {
-    void this.router.navigate(["/client/map"]);
+    void this.router.navigate([PARTNER_PORTAL_ROUTES.map]);
   }
 
   onSubmissionModeChange(): void {
@@ -204,10 +205,12 @@ export class PartnerMapUploadComponent implements OnInit {
         optionalLabel: this.optionalLabel.trim() || undefined,
       };
       await firstValueFrom(
-        this.monitorService.submitPartnerAdSubmission(this.monitorId, payload)
+        this.partnerPortalService.submitAdSubmission(this.monitorId, payload)
       );
       this.toastService.sucesso("Create Ad request submitted for admin review");
-      void this.router.navigate(["/client/screens"]);
+      void this.router.navigate([PARTNER_PORTAL_ROUTES.screens], {
+        queryParams: { tab: "requests" },
+      });
     } catch {
       this.toastService.erro("Failed to submit");
     } finally {
@@ -229,10 +232,12 @@ export class PartnerMapUploadComponent implements OnInit {
         optionalLabel: this.optionalLabel.trim() || undefined,
       };
       await firstValueFrom(
-        this.monitorService.submitPartnerAdSubmission(this.monitorId, payload)
+        this.partnerPortalService.submitAdSubmission(this.monitorId, payload)
       );
       this.toastService.sucesso("Finished Ad submitted for admin review");
-      void this.router.navigate(["/client/screens"]);
+      void this.router.navigate([PARTNER_PORTAL_ROUTES.screens], {
+        queryParams: { tab: "requests" },
+      });
     } catch {
       this.toastService.erro("Failed to submit");
     } finally {

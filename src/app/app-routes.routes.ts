@@ -18,6 +18,10 @@ export const appRoutes: Routes = [
     loadChildren: () => import('./modules/client/modules.routes').then((mod) => mod.ROUTES),
   },
   {
+    path: 'partner',
+    loadChildren: () => import('./modules/partner/partner.routes').then((mod) => mod.PARTNER_ROUTES),
+  },
+  {
     path: 'admin',
     loadChildren: () => import('./modules/admin/modules.routes').then(m => m.ROUTES),
   },

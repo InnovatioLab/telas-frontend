@@ -2,7 +2,6 @@ import { Route } from "@angular/router";
 import {
   ClientAuthenticatedGuard,
   MyTelasGuard,
-  partnerScreensGuard,
   redirectPartnerFromClientShoppingGuard,
 } from "@app/core/service/guard";
 import { SubscriptionsGuard } from "@app/core/service/guard/subscriptions.guard";
@@ -16,9 +15,6 @@ import { MyTelasComponent } from "./components/my-telas/my-telas.component";
 import { NextStepsComponent } from "./components/next-steps/next-steps.component";
 import { WishListComponent } from "./components/wish-list/wish-list.component";
 import { ClientViewLayoutComponent } from "./page/client-view-layout/client-view-layout.component";
-import { PartnerScreensComponent } from "./components/partner-screens/partner-screens.component";
-import { PartnerMapUploadComponent } from "./components/partner-map-upload/partner-map-upload.component";
-import { PartnerPendingAdsComponent } from "./components/partner-pending-ads/partner-pending-ads.component";
 
 export const ROUTES: Route[] = [
   {
@@ -34,27 +30,23 @@ export const ROUTES: Route[] = [
       },
       {
         path: "screens",
-        component: PartnerScreensComponent,
-        canActivate: [partnerScreensGuard],
-        title: "My screens",
+        redirectTo: "/partner/screens",
+        pathMatch: "full",
       },
       {
         path: "map-upload/:monitorId",
-        component: PartnerMapUploadComponent,
-        canActivate: [partnerScreensGuard],
-        title: "Submit ad to screen",
+        redirectTo: "/partner/map-upload/:monitorId",
+        pathMatch: "full",
       },
       {
         path: "partner-ads",
-        component: PartnerPendingAdsComponent,
-        canActivate: [partnerScreensGuard],
-        title: "Review ads",
+        redirectTo: "/partner/ads-review",
+        pathMatch: "full",
       },
       {
         path: "map",
-        component: ClientViewComponent,
-        canActivate: [partnerScreensGuard],
-        title: "Map",
+        redirectTo: "/partner/map",
+        pathMatch: "full",
       },
       {
         path: "wishlist",

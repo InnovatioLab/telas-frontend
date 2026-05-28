@@ -124,6 +124,8 @@ $modal: (
 // CSS Custom Properties - Fonte única de verdade
 // Gerando variáveis em português (padrão do projeto) e inglês (compatibilidade)
 :root {
+  --app-header-height: 70px;
+  --guest-header-height: 76px;
   // Cores em português (padrão do projeto)
   --cor-primaria: #{map.get($colors, 'primary')};
   --cor-primaria-clara: #{map.get($colors, 'primary-clara')};

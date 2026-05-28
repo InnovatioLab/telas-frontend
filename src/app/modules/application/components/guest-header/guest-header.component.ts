@@ -56,7 +56,6 @@ export class GuestHeaderComponent {
   }
 
   navLinks = [
-    { section: "#map-search", label: "Screens" },
     { section: "#how-it-works", label: "How It Works" },
     { section: "#features", label: "Features" },
     { section: "#contact", label: "Contact" },
