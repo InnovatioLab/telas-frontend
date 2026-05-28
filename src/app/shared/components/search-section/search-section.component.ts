@@ -247,6 +247,12 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
 
   private isMapSearchArea(): boolean {
     const path = this.router.url.split("?")[0];
-    return path.startsWith("/client") || path.startsWith("/admin");
+    return (
+      path === "/client" ||
+      path === "/client/" ||
+      path === "/admin" ||
+      path === "/admin/" ||
+      path === "/partner/map"
+    );
   }
 }

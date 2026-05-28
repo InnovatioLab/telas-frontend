@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     cadastrar: "Sign Up",
   };
 
-  headerAllowedRoutes = ["/client", "/admin"];
+  headerAllowedRoutes = ["/client", "/admin", "/partner"];
 
   private resizeListener: () => void;
   private authSubscription: Subscription;
