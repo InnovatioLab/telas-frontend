@@ -1,7 +1,18 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 .partner-upload {
-  padding: 1rem;
-  max-width: 720px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: min(100%, 72rem);
   margin: 0 auto;
+  box-sizing: border-box;
+
+  ::ng-deep .p-card {
+    width: 100%;
+  }
 }
 
 .back-btn {
