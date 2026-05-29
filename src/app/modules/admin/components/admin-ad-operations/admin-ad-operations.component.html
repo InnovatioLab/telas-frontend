@@ -106,7 +106,7 @@
       <td>
         {{
           row.subscriptionEndsAt
-            ? (row.subscriptionEndsAt | date : "shortDate")
+            ? (row.subscriptionEndsAt | date : "MM/dd/yyyy HH:mm")
             : "—"
         }}
       </td>
@@ -198,7 +198,7 @@
     <ng-template pTemplate="body" let-n>
       <tr>
         <td>{{ n.label }}</td>
-        <td>{{ n.createdAt | date : "short" }}</td>
+        <td>{{ n.createdAt | date : "MM/dd/yyyy HH:mm" }}</td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">

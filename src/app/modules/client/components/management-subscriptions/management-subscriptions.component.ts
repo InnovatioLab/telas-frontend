@@ -15,6 +15,7 @@ import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ConfirmationDialogService } from "@app/shared/services/confirmation-dialog.service";
 import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
+import { DateFormatter } from "@app/shared/utils/date-formatter.utils";
 import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
 import { map } from "rxjs/operators";
 
@@ -357,7 +358,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
     if (subscription.cancelAtPeriodEnd) {
       const effectiveAt = subscription.cancelAtPeriodEndAt || subscription.endsAt;
       const effectiveLabel = effectiveAt
-        ? `Cancelamento agendado para ${new Date(effectiveAt).toLocaleDateString()}.`
+        ? `Cancelamento agendado para ${DateFormatter.formatDateTime(effectiveAt)}.`
         : "Cancelamento já está agendado para esta assinatura.";
       this.toastService.aviso(effectiveLabel);
       return;

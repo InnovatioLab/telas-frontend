@@ -6,13 +6,13 @@
       <div class="request-ad-section questionnaire-block mb-4">
         <h3 class="mt-0 mb-2">Tell Us About Your Business</h3>
         @if (adRequestWizardStep === 1) {
-        <p class="mb-3 text-sm text-color-secondary">
+        <p class="mb-3 text-sm questionnaire-intro-text">
           Step 1 of 2 — To create your ad, we’ll ask you a few simple questions about your business, your customer, and
           the message you want people to remember.
         </p>
-        <p class="mb-3 text-sm text-color-secondary">You’ll also be able to upload your logo, images, and any other
+        <p class="mb-3 text-sm questionnaire-intro-text">You’ll also be able to upload your logo, images, and any other
           files you want us to use.</p>
-        <p class="mb-3 text-sm text-color-secondary">
+        <p class="mb-3 text-sm questionnaire-intro-text">
           Each answer is limited to {{ questionnaireAnswerMaxLength }} characters.
         </p>
         <form [formGroup]="newRequestQuestionnaireForm" class="flex flex-column gap-3"

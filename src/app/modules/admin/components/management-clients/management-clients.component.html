@@ -70,7 +70,7 @@
       <th scope="col" pSortableColumn="email">
         Email <p-sortIcon field="email"></p-sortIcon>
       </th>
-      <th scope="col">Endereço do partner</th>
+      <th scope="col">Address</th>
       <th scope="col" pSortableColumn="status">
         Status <p-sortIcon field="status"></p-sortIcon>
       </th>
@@ -134,7 +134,7 @@
         </span>
         <span *ngIf="client.role !== 'PARTNER'">-</span>
       </td>
-      <td class="text-center">{{ client.createdAt | date: "MM/dd/yyyy" }}</td>
+      <td class="text-center">{{ client.createdAt | date: "MM/dd/yyyy HH:mm" }}</td>
       <td class="text-center">
         <div class="action-buttons">
           <button

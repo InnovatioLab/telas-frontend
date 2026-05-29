@@ -18,6 +18,7 @@ import {
   adRequestWorkflowSeverity,
   partnerSubmissionModeLabel,
 } from "@app/shared/utils/ad-request-display.util";
+import { DateFormatter } from "@app/shared/utils/date-formatter.utils";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TagModule } from "primeng/tag";
 import { TableLazyLoadEvent } from "primeng/table";
@@ -199,7 +200,7 @@ export class PartnerScreensComponent implements OnInit {
     if (Number.isNaN(parsed.getTime())) {
       return value;
     }
-    return parsed.toLocaleDateString();
+    return DateFormatter.formatDateTime(parsed);
   }
 
   isRequestingRemoval(ad: MonitorAdResponseDto): boolean {

@@ -64,6 +64,10 @@ small {
     margin-top: 0;
     border-top: none;
     padding-top: 0;
+
+    .questionnaire-intro-text {
+      color: #000;
+    }
   }
 
   ::ng-deep .questionnaire-accordion {

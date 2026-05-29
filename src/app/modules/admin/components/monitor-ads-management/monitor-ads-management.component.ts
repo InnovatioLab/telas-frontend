@@ -9,6 +9,7 @@ import { Monitor } from "@app/model/monitors";
 import { MAX_MONITOR_ADS } from "@app/shared/constants/monitor.constants";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
+import { DateFormatter } from "@app/shared/utils/date-formatter.utils";
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { finalize } from "rxjs/operators";
@@ -235,7 +236,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     const daysLeft =
       typeof ad.subscriptionDaysLeft === "number" ? ad.subscriptionDaysLeft : null;
     const hasPaidTimeInfo = endsAt != null || daysLeft != null;
-    const endsAtText = endsAt ? endsAt.toLocaleDateString("en-US") : "N/A";
+    const endsAtText = endsAt ? DateFormatter.formatDateTime(endsAt) : "N/A";
     const daysLeftText = daysLeft != null ? `${daysLeft} day(s)` : "N/A";
 
     const message = hasPaidTimeInfo
