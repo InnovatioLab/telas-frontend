@@ -6,13 +6,13 @@
         Submission date:
         {{
           ad?.submissionDate
-            ? (ad.submissionDate | date: "MM/dd/yyyy HH:mm")
+            ? (ad.submissionDate | date)
             : "Date not available"
         }}&nbsp;
       </p>
       <p class="ad-date" *ngIf="ad?.onAirSince">
         On screens since:
-        {{ ad.onAirSince | date: "MM/dd/yyyy HH:mm" }}
+        {{ ad.onAirSince | date }}
       </p>
       <p
         class="ad-date text-color-secondary"

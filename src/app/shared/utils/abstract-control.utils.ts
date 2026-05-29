@@ -5,6 +5,7 @@ import {
   ValidatorFn,
   Validators,
 } from "@angular/forms";
+import { DateFormatter } from "@app/shared/utils/date-formatter.utils";
 export class AbstractControlUtils {
   private static readonly PHONE_REGEX = /^(?:\+?1)?\d{10}$/;
   private static readonly URL_REGEX =
@@ -82,16 +83,8 @@ export class AbstractControlUtils {
       return "-";
     }
 
-    const data = new Date(dataHora);
-    return data
-      .toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-      .replace(",", " às");
+    const formatted = DateFormatter.formatDateTime(dataHora);
+    return formatted || "-";
   }
 
   static converterStringParaData(dataString: string): Date | null {

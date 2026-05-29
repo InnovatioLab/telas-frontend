@@ -15,6 +15,7 @@ import { ClientService } from "@app/core/service/api/client.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { SmartPlugAdminService } from "@app/core/service/api/smart-plug-admin.service";
 import { ToastService } from "@app/core/service/state/toast.service";
+import { DateFormatter } from "@app/shared/utils/date-formatter.utils";
 import { Advertisement, AdvertisementStatus } from "@app/model/advertisement";
 import {
   CreateMonitorRequestDto,
@@ -542,7 +543,7 @@ export class ManagementMonitorsComponent implements OnInit {
         this.advertisements = (response.content || []).map((adDto) => ({
           id: adDto.id,
           title: `Advertisement ${adDto.id}`,
-          description: `Ad submitted on ${adDto.submissionDate}`,
+          description: `Ad submitted on ${DateFormatter.formatDateTime(adDto.submissionDate)}`,
           status: this.convertValidationTypeToStatus(adDto.validation),
           clientId: "",
           clientName: "",

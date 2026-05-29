@@ -18,7 +18,6 @@ import {
   adRequestWorkflowSeverity,
   partnerSubmissionModeLabel,
 } from "@app/shared/utils/ad-request-display.util";
-import { DateFormatter } from "@app/shared/utils/date-formatter.utils";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TagModule } from "primeng/tag";
 import { TableLazyLoadEvent } from "primeng/table";
@@ -190,17 +189,6 @@ export class PartnerScreensComponent implements OnInit {
 
   workflowSeverity(adRequest: AdRequestResponseDto): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
     return adRequestWorkflowSeverity(adRequest.workflowStatus);
-  }
-
-  formatSubmissionDate(value?: string | null): string {
-    if (!value) {
-      return "—";
-    }
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) {
-      return value;
-    }
-    return DateFormatter.formatDateTime(parsed);
   }
 
   isRequestingRemoval(ad: MonitorAdResponseDto): boolean {

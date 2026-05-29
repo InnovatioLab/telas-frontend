@@ -135,7 +135,7 @@
       </ng-template>
       <ng-template pTemplate="body" let-row>
         <tr>
-          <td class="whitespace-nowrap">{{ row.createdAt | date : "MM/dd/yyyy HH:mm" }}</td>
+          <td class="whitespace-nowrap">{{ row.createdAt | date }}</td>
           <td class="level-cell">
             <span class="level-badge-wrap">
               <p-badge
@@ -235,7 +235,7 @@
               </td>
               <td>{{ row.zone || "—" }}</td>
               <td class="whitespace-nowrap">
-                {{ row.lastStartedAt ? (row.lastStartedAt | date : "MM/dd/yyyy HH:mm") : "—" }}
+                {{ row.lastStartedAt ? (row.lastStartedAt | date) : "—" }}
               </td>
               <td>{{ formatMs(row.lastDurationMillis) }}</td>
               <td>
@@ -269,7 +269,7 @@
               <td class="whitespace-nowrap">
                 {{
                   row.nextExecutionEstimated
-                    ? (row.nextExecutionEstimated | date : "MM/dd/yyyy HH:mm")
+                    ? (row.nextExecutionEstimated | date)
                     : "—"
                 }}
               </td>
@@ -327,7 +327,7 @@
               <td>{{ row.monitorAddressSummary || "—" }}</td>
               <td class="whitespace-nowrap">
                 {{
-                  row.lastProbeAt ? (row.lastProbeAt | date : "MM/dd/yyyy HH:mm") : "—"
+                  row.lastProbeAt ? (row.lastProbeAt | date) : "—"
                 }}
               </td>
               <td>

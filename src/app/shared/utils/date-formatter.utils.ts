@@ -1,32 +1,31 @@
+import { formatDate } from "@angular/common";
 import {
   APP_DATETIME_FORMAT,
   APP_DATETIME_SECONDS_FORMAT,
 } from "@app/shared/constants/date-formats";
+
+const LOCALE = "en-US";
 
 export class DateFormatter {
   static formatDateTime(
     date: string | Date | undefined,
     withSeconds = false
   ): string {
-    if (!date) return "";
+    if (!date) {
+      return "";
+    }
 
     try {
       const dataObj = date instanceof Date ? date : new Date(date);
-      if (isNaN(dataObj.getTime())) return "";
-
-      const format: Intl.DateTimeFormatOptions = {
-        month: "2-digit",
-        day: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      };
-      if (withSeconds) {
-        format.second = "2-digit";
+      if (isNaN(dataObj.getTime())) {
+        return "";
       }
 
-      return dataObj.toLocaleString("en-US", format);
+      const pattern = withSeconds
+        ? APP_DATETIME_SECONDS_FORMAT
+        : APP_DATETIME_FORMAT;
+
+      return formatDate(dataObj, pattern, LOCALE) ?? "";
     } catch {
       return "";
     }

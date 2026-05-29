@@ -14,13 +14,14 @@ import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.u
 import { isPrivilegedPanelRole } from "@app/model/client";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
+import { AppDateTimeSecondsPipe } from "@app/shared/pipes/app-datetime.pipe";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { TagModule } from "primeng/tag";
 
 @Component({
   selector: "app-management-smart-plugs",
   standalone: true,
-  imports: [CommonModule, PrimengModule, FormsModule, TagModule, IconsModule],
+  imports: [CommonModule, PrimengModule, FormsModule, TagModule, IconsModule, AppDateTimeSecondsPipe],
   templateUrl: "./management-smart-plugs.component.html",
   styleUrls: ["./management-smart-plugs.component.scss"],
 })

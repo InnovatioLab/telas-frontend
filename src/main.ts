@@ -1,4 +1,5 @@
-import { registerLocaleData } from "@angular/common";
+import { DATE_PIPE_DEFAULT_OPTIONS, registerLocaleData } from "@angular/common";
+import { APP_DATETIME_FORMAT } from "@app/shared/constants/date-formats";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import enUS from "@angular/common/locales/en";
 import { LOCALE_ID, importProvidersFrom, ErrorHandler } from "@angular/core";
@@ -57,6 +58,10 @@ bootstrapApplication(AppComponent, {
     DialogService,
     ConfirmationService,
     { provide: LOCALE_ID, useValue: "en-US" },
+    {
+      provide: DATE_PIPE_DEFAULT_OPTIONS,
+      useValue: { dateFormat: APP_DATETIME_FORMAT },
+    },
     provideRouter(
       appRoutes,
       withInMemoryScrolling({

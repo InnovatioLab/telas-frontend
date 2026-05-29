@@ -88,16 +88,16 @@
         {{ getRecurrenceLabel(subscription.recurrence) }}
       </td>
       <td>{{ subscription.amount | currency }}</td>
-      <td>{{ subscription.startedAt | date: "MM/dd/yyyy HH:mm" }}</td>
+      <td>{{ subscription.startedAt | date }}</td>
       <td>
         {{
-          subscription.endsAt ? (subscription.endsAt | date: "MM/dd/yyyy HH:mm") : "-"
+          subscription.endsAt ? (subscription.endsAt | date) : "-"
         }}
       </td>
       <td>
         {{
           subscription.cancelRequestedAt
-            ? (subscription.cancelRequestedAt | date: "MM/dd/yyyy HH:mm")
+            ? (subscription.cancelRequestedAt | date)
             : "-"
         }}
       </td>

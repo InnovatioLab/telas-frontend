@@ -4,6 +4,7 @@ import { PrimengModule } from '@app/shared/primeng/primeng.module';
 import { DialogService } from 'primeng/dynamicdialog';
 import { AcknowledgeDialogComponent } from '../acknowledge-dialog/acknowledge-dialog.component';
 import { IMonitorAlert } from '@app/core/service/api/interfaces/monitor';
+import { DateFormatter } from '@app/shared/utils/date-formatter.utils';
 
 @Component({
   selector: 'app-card-alert',
@@ -36,21 +37,7 @@ export class CardAlertComponent {
 
   formatTimestamp(timestamp: Date): string {
     if (!timestamp) return '';
-    
-    const now = new Date();
-    const alertTime = new Date(timestamp);
-    const diffMs = now.getTime() - alertTime.getTime();
-    const diffMins = Math.round(diffMs / 60000);
-    
-    if (diffMins < 60) {
-      return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
-    } else if (diffMins < 1440) {
-      const hours = Math.floor(diffMins / 60);
-      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-    } else {
-      const days = Math.floor(diffMins / 1440);
-      return `${days} day${days !== 1 ? 's' : ''} ago`;
-    }
+    return DateFormatter.formatDateTime(timestamp);
   }
 
   onResolve(event: Event): void {

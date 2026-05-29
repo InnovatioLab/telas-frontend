@@ -374,7 +374,7 @@
     <div class="w-full flex flex-column gap-2" *ngIf="adMessages.length > 0">
       <div *ngFor="let m of adMessages" class="p-2 surface-100 border-round">
         <div class="text-sm font-semibold">
-          {{ m.senderName || m.senderRole }} • {{ m.createdAt | date: "MM/dd/yyyy HH:mm" }}
+          {{ m.senderName || m.senderRole }} • {{ m.createdAt | date }}
         </div>
         <div class="white-space-pre-line">{{ m.message }}</div>
       </div>

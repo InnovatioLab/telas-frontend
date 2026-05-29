@@ -34,7 +34,7 @@
         <div class="flex flex-column gap-2">
           <div *ngFor="let m of g.rows" class="message-item">
             <div class="message-meta">
-              {{ m.senderName || m.senderRole }} • {{ m.createdAt | date: "MM/dd/yyyy HH:mm" }}
+              {{ m.senderName || m.senderRole }} • {{ m.createdAt | date }}
             </div>
             <div class="message-body">{{ m.message }}</div>
           </div>

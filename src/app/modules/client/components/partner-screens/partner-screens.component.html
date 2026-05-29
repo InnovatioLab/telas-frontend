@@ -140,7 +140,7 @@
                 [severity]="workflowSeverity(request)"
               ></p-tag>
             </td>
-            <td>{{ formatSubmissionDate(request.submissionDate) }}</td>
+            <td>{{ request.submissionDate ? (request.submissionDate | date) : "—" }}</td>
             <td>{{ request.waitingDays ?? 0 }} days</td>
           </tr>
         </ng-template>

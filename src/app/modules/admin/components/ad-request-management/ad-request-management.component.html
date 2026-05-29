@@ -94,7 +94,7 @@
           }
         </div>
       </td>
-      <td>{{ adRequest.submissionDate | date: "MM/dd/yyyy HH:mm" }}</td>
+      <td>{{ adRequest.submissionDate | date }}</td>
       <td>{{ adRequest.waitingDays }} days</td>
       <td class="actions">
         <div class="action-buttons">
@@ -201,7 +201,7 @@
       <strong>Business questionnaire:</strong> revision
       {{ selectedAdRequest.businessQuestionnaireVersion }}
       <span *ngIf="selectedAdRequest.businessQuestionnaireUpdatedAt">
-        — updated {{ selectedAdRequest.businessQuestionnaireUpdatedAt | date: "MM/dd/yyyy HH:mm" }}
+        — updated {{ selectedAdRequest.businessQuestionnaireUpdatedAt | date }}
       </span>
     </div>
 

@@ -96,7 +96,7 @@
         </td>
         <td>
           <div class="mono small">
-            {{ p.lastReadingAt ? (p.lastReadingAt | date: "MM/dd/yyyy HH:mm") : "—" }}
+            {{ p.lastReadingAt ? (p.lastReadingAt | date) : "—" }}
           </div>
           <div class="mono small muted">
             <ng-container *ngIf="p.errorCode; else okLine">
@@ -174,7 +174,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-r>
       <tr>
-        <td class="mono small">{{ r.at | date: "MM/dd/yyyy HH:mm:ss" }}</td>
+        <td class="mono small">{{ r.at | appDateTimeSeconds }}</td>
         <td>
           <p-tag
             [value]="r.reachable ? 'yes' : 'no'"
