@@ -416,6 +416,7 @@ export class AdsManagementComponent implements OnInit {
       },
       error: () => {
         this.deletingAdId = null;
+        this.toastService.erro("Failed to delete ad");
       },
     });
   }

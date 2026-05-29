@@ -93,6 +93,10 @@ export class MyTelasService {
   }
 
   async loadQuestionnaireDraftIntoForm(form: FormGroup): Promise<void> {
+    const client = this._authenticatedClient();
+    if (!client?.hasSubscription) {
+      return;
+    }
     try {
       const draft = await this.clientService
         .getBusinessQuestionnaireDraft()
@@ -483,7 +487,7 @@ export class MyTelasService {
     }
 
     const client = this._authenticatedClient();
-    if (!client || this.adRequestIsOpen(client.adRequest)) {
+    if (!client?.hasSubscription || this.adRequestIsOpen(client.adRequest)) {
       return false;
     }
 
