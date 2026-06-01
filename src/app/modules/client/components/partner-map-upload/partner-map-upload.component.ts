@@ -45,8 +45,8 @@ export class PartnerMapUploadComponent implements OnInit {
   submissionMode: SubmissionChoice = "ADMIN_MATERIALS";
   optionalLabel = "";
 
-  selectedCreativeFile: File | null = null;
-  creativePreviewUrl: string | null = null;
+  selectedCreativeFiles: File[] = [];
+  submitProgress = "";
   selectedMaterialFiles: File[] = [];
   materialPreviews: FilePreview[] = [];
 
@@ -122,8 +122,7 @@ export class PartnerMapUploadComponent implements OnInit {
   }
 
   onSubmissionModeChange(): void {
-    this.selectedCreativeFile = null;
-    this.creativePreviewUrl = null;
+    this.selectedCreativeFiles = [];
     this.selectedMaterialFiles = [];
     this.materialPreviews = [];
   }
@@ -138,12 +137,28 @@ export class PartnerMapUploadComponent implements OnInit {
 
   onCreativeFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const files = Array.from(input.files ?? []);
     input.value = "";
-    if (!file) {
-      return;
+    const valid: File[] = [];
+    for (const file of files) {
+      if (file.size > this.maxFileSize) {
+        this.toastService.erro(`${file.name}: max 10MB`);
+        continue;
+      }
+      valid.push(file);
     }
-    void this.validateAndSetCreativeFile(file);
+    this.selectedCreativeFiles = valid;
+  }
+
+  removeCreativeFile(index: number): void {
+    this.selectedCreativeFiles = this.selectedCreativeFiles.filter((_, i) => i !== index);
+  }
+
+  get submitLabel(): string {
+    if (this.submitting && this.submitProgress) {
+      return this.submitProgress;
+    }
+    return "Submit";
   }
 
   onMaterialFilesSelected(event: Event): void {
@@ -163,10 +178,6 @@ export class PartnerMapUploadComponent implements OnInit {
     }
     this.selectedMaterialFiles = valid;
     void this.buildMaterialPreviews(valid);
-  }
-
-  isPdfCreativePreview(): boolean {
-    return !!this.selectedCreativeFile && isPdfFile(this.selectedCreativeFile.name);
   }
 
   submit(): void {
@@ -219,30 +230,53 @@ export class PartnerMapUploadComponent implements OnInit {
   }
 
   private async submitFinishedCreative(): Promise<void> {
-    if (!this.selectedCreativeFile) {
-      this.toastService.aviso("Select a file");
+    if (this.selectedCreativeFiles.length === 0) {
+      this.toastService.aviso("Select at least one file");
       return;
     }
     this.submitting = true;
-    try {
-      const attachment = await this.fileToAttachment(this.selectedCreativeFile);
-      const payload: PartnerAdSubmissionRequestDto = {
-        submissionMode: "PARTNER_FINISHED_CREATIVE",
-        attachment,
-        optionalLabel: this.optionalLabel.trim() || undefined,
-      };
-      await firstValueFrom(
-        this.partnerPortalService.submitAdSubmission(this.monitorId, payload)
-      );
-      this.toastService.sucesso("Finished Ad submitted for admin review");
+    const total = this.selectedCreativeFiles.length;
+    let successCount = 0;
+    const errors: string[] = [];
+
+    for (let i = 0; i < total; i++) {
+      this.submitProgress = `Uploading ${i + 1}/${total}`;
+      const file = this.selectedCreativeFiles[i];
+      try {
+        const attachment = await this.fileToAttachment(file);
+        const payload: PartnerAdSubmissionRequestDto = {
+          submissionMode: "PARTNER_FINISHED_CREATIVE",
+          attachment,
+          optionalLabel: this.optionalLabel.trim() || undefined,
+        };
+        await firstValueFrom(
+          this.partnerPortalService.submitAdSubmission(this.monitorId, payload)
+        );
+        successCount++;
+      } catch (err: unknown) {
+        const e = err as { error?: { message?: string; errors?: string[] } };
+        const msg =
+          e?.error?.message ||
+          (Array.isArray(e?.error?.errors) ? e.error!.errors![0] : null) ||
+          `${file.name}: failed to submit`;
+        errors.push(msg as string);
+      }
+    }
+
+    this.submitting = false;
+    this.submitProgress = "";
+
+    if (successCount > 0) {
+      const msg =
+        successCount === 1
+          ? "Thank you for uploading your Ad. We'll notify you once it has been uploaded to the screen."
+          : `Thank you for uploading your ${successCount} Ad(s). We'll notify you once they have been uploaded to the screen.`;
+      this.toastService.sucesso(msg);
       void this.router.navigate([PARTNER_PORTAL_ROUTES.screens], {
         queryParams: { tab: "requests" },
       });
-    } catch {
-      this.toastService.erro("Failed to submit");
-    } finally {
-      this.submitting = false;
     }
+    errors.forEach((msg) => this.toastService.erro(msg));
   }
 
   private resolveAttachmentIds(files: File[], attachments: AttachmentRef[]): string[] {
@@ -285,29 +319,6 @@ export class PartnerMapUploadComponent implements OnInit {
       }
     }
     this.materialPreviews = previews;
-  }
-
-  private async validateAndSetCreativeFile(file: File): Promise<void> {
-    if (file.size > this.maxFileSize) {
-      this.toastService.erro("File must be at most 10MB");
-      return;
-    }
-    try {
-      const result = isPdfFile(file.name)
-        ? { isValid: true, errors: [] as string[] }
-        : await this.fileUploadPipeline.validateFile(file);
-      if (!result.isValid) {
-        result.errors.forEach((msg) => this.toastService.erro(msg));
-        return;
-      }
-      this.selectedCreativeFile = file;
-      this.creativePreviewUrl = isPdfFile(file.name)
-        ? null
-        : await this.fileUploadPipeline.readAsDataUrl(file);
-    } catch {
-      this.creativePreviewUrl = null;
-      this.toastService.erro("Could not validate file");
-    }
   }
 
   private async fileToAttachment(file: File): Promise<AttachmentRequestDto> {

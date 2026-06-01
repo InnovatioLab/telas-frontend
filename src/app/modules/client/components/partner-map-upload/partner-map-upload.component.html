@@ -100,6 +100,7 @@
         #fileInput
         type="file"
         hidden
+        multiple
         [accept]="acceptedFileTypes"
         (change)="onCreativeFileSelected($event)"
       />
@@ -107,7 +108,7 @@
         <button
           pButton
           type="button"
-          label="Select File"
+          label="Select Files"
           icon="pi pi-folder-open"
           class="p-button-outlined"
           (click)="chooseCreativeFile()"
@@ -116,22 +117,30 @@
         <button
           pButton
           type="button"
-          label="Submit"
+          [label]="submitLabel"
           icon="pi pi-send"
           severity="success"
           [loading]="submitting"
-          [disabled]="submitting"
+          [disabled]="submitting || selectedCreativeFiles.length === 0"
           (click)="submit()"
         ></button>
       </div>
-      @if (selectedCreativeFile) {
-        <p class="file-name">{{ selectedCreativeFile.name }}</p>
-        @if (creativePreviewUrl && !isPdfCreativePreview()) {
-          <img [src]="creativePreviewUrl" alt="Preview" class="preview-image" />
-        }
-        @if (isPdfCreativePreview()) {
-          <p class="pdf-note">PDF selected — preview not available.</p>
-        }
+      @if (selectedCreativeFiles.length > 0) {
+        <ul class="creative-files-list">
+          @for (file of selectedCreativeFiles; track file.name; let i = $index) {
+            <li>
+              <span>{{ file.name }}</span>
+              <button
+                type="button"
+                pButton
+                icon="pi pi-times"
+                class="p-button-text p-button-sm p-button-danger"
+                [disabled]="submitting"
+                (click)="removeCreativeFile(i)"
+              ></button>
+            </li>
+          }
+        </ul>
       }
     }
   </p-card>
