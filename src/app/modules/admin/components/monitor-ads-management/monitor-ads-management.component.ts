@@ -7,7 +7,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from "@angular/cdk/drag-
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Monitor } from "@app/model/monitors";
-import { MAX_MONITOR_ADS } from "@app/shared/constants/monitor.constants";
+import { MAX_MONITOR_ADS, PARTNER_RESERVED_SLOTS } from "@app/shared/constants/monitor.constants";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { isPdfFile } from "@app/shared/utils/file-type.utils";
 import { DateFormatter } from "@app/shared/utils/date-formatter.utils";
@@ -23,6 +23,7 @@ interface MonitorAdItem {
   isAttachedToMonitor: boolean;
   orderIndex: number;
   blockQuantity: number;
+  clientId?: string | null;
   clientName?: string | null;
   subscriptionEndsAt?: string | null;
   subscriptionDaysLeft?: number | null;
@@ -97,6 +98,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
           isAttachedToMonitor: true,
           orderIndex: ad.orderIndex || 0,
           blockQuantity: 1,
+          clientId: ad.clientId ?? null,
           clientName: ad.clientName ?? null,
           subscriptionEndsAt: ad.subscriptionEndsAt ?? null,
           subscriptionDaysLeft:
@@ -120,6 +122,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
                   isAttachedToMonitor: false,
                   orderIndex: ad.orderIndex || idx + 1,
                   blockQuantity: 1,
+                  clientId: ad.clientId ?? null,
                 };
 
                 validAdsItems.push(baseItem);
@@ -192,6 +195,16 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     const alreadyInMonitor = this.monitorAds.some((a) => a.id === ad.id);
     if (alreadyInMonitor) {
       return;
+    }
+
+    if (ad.clientId) {
+      const partnerCount = this.monitorAds.filter((a) => a.clientId === ad.clientId).length;
+      if (partnerCount >= PARTNER_RESERVED_SLOTS) {
+        this.toastService.erro(
+          `This partner already has ${PARTNER_RESERVED_SLOTS} ads on this screen (maximum allowed).`
+        );
+        return;
+      }
     }
 
     const newItem: MonitorAdItem = {
