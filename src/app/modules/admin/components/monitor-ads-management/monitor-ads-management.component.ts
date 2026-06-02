@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
+import { CdkDragDrop, DragDropModule, moveItemInArray } from "@angular/cdk/drag-drop";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Monitor } from "@app/model/monitors";
@@ -36,6 +37,7 @@ interface MonitorAdItem {
     PrimengModule,
     PdfViewerModule,
     ProgressSpinnerModule,
+    DragDropModule,
   ],
   templateUrl: "./monitor-ads-management.component.html",
   styleUrls: ["./monitor-ads-management.component.scss"],
@@ -274,32 +276,12 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
       });
   }
 
-  moveUp(index: number): void {
-    if (index <= 0 || index >= this.monitorAds.length) {
+  drop(event: CdkDragDrop<MonitorAdItem[]>): void {
+    if (event.previousIndex === event.currentIndex) {
       return;
     }
-
     const newList = [...this.monitorAds];
-    const temp = newList[index - 1];
-    newList[index - 1] = newList[index];
-    newList[index] = temp;
-
-    this.monitorAds = newList.map((item, idx) => ({
-      ...item,
-      orderIndex: idx + 1,
-    }));
-  }
-
-  moveDown(index: number): void {
-    if (index < 0 || index >= this.monitorAds.length - 1) {
-      return;
-    }
-
-    const newList = [...this.monitorAds];
-    const temp = newList[index + 1];
-    newList[index + 1] = newList[index];
-    newList[index] = temp;
-
+    moveItemInArray(newList, event.previousIndex, event.currentIndex);
     this.monitorAds = newList.map((item, idx) => ({
       ...item,
       orderIndex: idx + 1,
