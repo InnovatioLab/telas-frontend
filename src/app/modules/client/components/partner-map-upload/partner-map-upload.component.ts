@@ -46,6 +46,7 @@ export class PartnerMapUploadComponent implements OnInit {
   optionalLabel = "";
 
   selectedCreativeFiles: File[] = [];
+  creativeFilePreviews: FilePreview[] = [];
   submitProgress = "";
   selectedMaterialFiles: File[] = [];
   materialPreviews: FilePreview[] = [];
@@ -123,6 +124,7 @@ export class PartnerMapUploadComponent implements OnInit {
 
   onSubmissionModeChange(): void {
     this.selectedCreativeFiles = [];
+    this.creativeFilePreviews = [];
     this.selectedMaterialFiles = [];
     this.materialPreviews = [];
   }
@@ -148,10 +150,12 @@ export class PartnerMapUploadComponent implements OnInit {
       valid.push(file);
     }
     this.selectedCreativeFiles = valid;
+    void this.buildCreativeFilePreviews(valid);
   }
 
   removeCreativeFile(index: number): void {
     this.selectedCreativeFiles = this.selectedCreativeFiles.filter((_, i) => i !== index);
+    this.creativeFilePreviews = this.creativeFilePreviews.filter((_, i) => i !== index);
   }
 
   get submitLabel(): string {
@@ -302,7 +306,15 @@ export class PartnerMapUploadComponent implements OnInit {
     return -1;
   }
 
+  private async buildCreativeFilePreviews(files: File[]): Promise<void> {
+    this.creativeFilePreviews = await this.buildFilePreviews(files);
+  }
+
   private async buildMaterialPreviews(files: File[]): Promise<void> {
+    this.materialPreviews = await this.buildFilePreviews(files);
+  }
+
+  private async buildFilePreviews(files: File[]): Promise<FilePreview[]> {
     const previews: FilePreview[] = [];
     for (const file of files) {
       const isPdf = isPdfFile(file.name);
@@ -318,7 +330,7 @@ export class PartnerMapUploadComponent implements OnInit {
         entry.url = null;
       }
     }
-    this.materialPreviews = previews;
+    return previews;
   }
 
   private async fileToAttachment(file: File): Promise<AttachmentRequestDto> {

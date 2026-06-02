@@ -126,21 +126,32 @@
         ></button>
       </div>
       @if (selectedCreativeFiles.length > 0) {
-        <ul class="creative-files-list">
-          @for (file of selectedCreativeFiles; track file.name; let i = $index) {
-            <li>
-              <span>{{ file.name }}</span>
+        <div class="materials-preview-grid">
+          @for (preview of creativeFilePreviews; track preview.name; let i = $index) {
+            <div class="material-preview-card">
+              @if (preview.url && !preview.isPdf) {
+                <img [src]="preview.url" [alt]="preview.name" class="preview-thumb" />
+              } @else {
+                <div class="preview-placeholder">
+                  @if (preview.isPdf) {
+                    <i class="pi pi-file-pdf"></i>
+                  } @else {
+                    <i class="pi pi-image"></i>
+                  }
+                </div>
+              }
+              <span class="preview-name">{{ preview.name }}</span>
               <button
                 type="button"
                 pButton
                 icon="pi pi-times"
-                class="p-button-text p-button-sm p-button-danger"
+                class="p-button-text p-button-sm p-button-danger creative-remove-btn"
                 [disabled]="submitting"
                 (click)="removeCreativeFile(i)"
               ></button>
-            </li>
+            </div>
           }
-        </ul>
+        </div>
       }
     }
   </p-card>
