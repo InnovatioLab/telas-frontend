@@ -63,6 +63,7 @@ export class PartnerMapUploadComponent implements OnInit {
   ];
 
   readonly maxFileSize = 10 * 1024 * 1024;
+  readonly maxCreativeFiles = 5;
   readonly acceptedFileTypes = ".jpg,.jpeg,.png,.gif,.svg,.bmp,.tiff,.pdf";
 
   constructor(
@@ -148,6 +149,10 @@ export class PartnerMapUploadComponent implements OnInit {
         continue;
       }
       valid.push(file);
+    }
+    if (valid.length > this.maxCreativeFiles) {
+      this.toastService.aviso(`Maximum ${this.maxCreativeFiles} files per submission. Only the first ${this.maxCreativeFiles} were kept.`);
+      valid.splice(this.maxCreativeFiles);
     }
     this.selectedCreativeFiles = valid;
     void this.buildCreativeFilePreviews(valid);
@@ -240,47 +245,38 @@ export class PartnerMapUploadComponent implements OnInit {
     }
     this.submitting = true;
     const total = this.selectedCreativeFiles.length;
-    let successCount = 0;
-    const errors: string[] = [];
-
-    for (let i = 0; i < total; i++) {
-      this.submitProgress = `Uploading ${i + 1}/${total}`;
-      const file = this.selectedCreativeFiles[i];
-      try {
-        const attachment = await this.fileToAttachment(file);
-        const payload: PartnerAdSubmissionRequestDto = {
-          submissionMode: "PARTNER_FINISHED_CREATIVE",
-          attachment,
-          optionalLabel: this.optionalLabel.trim() || undefined,
-        };
-        await firstValueFrom(
-          this.partnerPortalService.submitAdSubmission(this.monitorId, payload)
-        );
-        successCount++;
-      } catch (err: unknown) {
-        const e = err as { error?: { message?: string; errors?: string[] } };
-        const msg =
-          e?.error?.message ||
-          (Array.isArray(e?.error?.errors) ? e.error!.errors![0] : null) ||
-          `${file.name}: failed to submit`;
-        errors.push(msg as string);
-      }
-    }
-
-    this.submitting = false;
-    this.submitProgress = "";
-
-    if (successCount > 0) {
+    try {
+      this.submitProgress = total > 1 ? `Preparing ${total} files…` : "Uploading…";
+      const attachments = await Promise.all(
+        this.selectedCreativeFiles.map((f) => this.fileToAttachment(f))
+      );
+      const payload: PartnerAdSubmissionRequestDto = {
+        submissionMode: "PARTNER_FINISHED_CREATIVE",
+        attachments,
+        optionalLabel: this.optionalLabel.trim() || undefined,
+      };
+      await firstValueFrom(
+        this.partnerPortalService.submitAdSubmission(this.monitorId, payload)
+      );
       const msg =
-        successCount === 1
+        total === 1
           ? "Thank you for uploading your Ad. We'll notify you once it has been uploaded to the screen."
-          : `Thank you for uploading your ${successCount} Ad(s). We'll notify you once they have been uploaded to the screen.`;
+          : `Thank you for uploading your ${total} Ad(s). We'll notify you once they have been uploaded to the screen.`;
       this.toastService.sucesso(msg);
       void this.router.navigate([PARTNER_PORTAL_ROUTES.screens], {
         queryParams: { tab: "requests" },
       });
+    } catch (err: unknown) {
+      const e = err as { error?: { message?: string; errors?: string[] } };
+      const msg =
+        e?.error?.message ||
+        (Array.isArray(e?.error?.errors) ? e.error!.errors![0] : null) ||
+        "Failed to submit";
+      this.toastService.erro(msg as string);
+    } finally {
+      this.submitting = false;
+      this.submitProgress = "";
     }
-    errors.forEach((msg) => this.toastService.erro(msg));
   }
 
   private resolveAttachmentIds(files: File[], attachments: AttachmentRef[]): string[] {

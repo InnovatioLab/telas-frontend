@@ -4,6 +4,7 @@ import { PartnerSubmissionMode } from "../response/ad-request-response.dto";
 export interface PartnerAdSubmissionRequestDto {
   submissionMode: PartnerSubmissionMode;
   attachment?: AttachmentRequestDto;
+  attachments?: AttachmentRequestDto[];
   attachmentIds?: string[];
   optionalLabel?: string;
 }
