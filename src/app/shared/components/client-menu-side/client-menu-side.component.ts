@@ -122,8 +122,8 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
       }
 
       if (
-        "shouldDisplayAttachments" in this.authenticatedClient &&
-        this.authenticatedClient.shouldDisplayAttachments === false
+        "hasSubscription" in this.authenticatedClient &&
+        this.authenticatedClient.hasSubscription === false
       ) {
         filteredItems = filteredItems.filter((item) => item.id !== "myTelas");
       }

@@ -11,6 +11,7 @@ import {
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Box } from "@app/model/box";
 import { BoxAddress } from "@app/model/box-address";
+import { BoxAddressRequestDto } from "@app/model/dto/request/box-address-request.dto";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { IconsModule } from "@app/shared/icons/icons.module";
@@ -61,6 +62,19 @@ export class ManagementBoxesComponent implements OnInit {
   loadingBoxAddresses = false;
 
   isDeveloper = false;
+  isAdmin = false;
+  canViewBoxAddress = false;
+  canCreateBoxAddress = false;
+  canManageBoxAddress = false;
+
+  boxAddressManagerVisible = false;
+  allBoxAddresses: BoxAddress[] = [];
+  loadingAllBoxAddresses = false;
+
+  boxAddressForm: BoxAddressRequestDto = { ip: "", mac: "", dns: "" };
+  editingBoxAddress: BoxAddress | null = null;
+  savingBoxAddress = false;
+
   boxPlugOptions: { label: string; value: string }[] = [];
   selectedBoxSmartPlugId = "";
   initialBoxSmartPlugId: string | null = null;
@@ -108,8 +122,76 @@ export class ManagementBoxesComponent implements OnInit {
   ngOnInit(): void {
     this.clientService.clientAtual$.pipe(take(1)).subscribe((client) => {
       this.isDeveloper = client?.role === Role.DEVELOPER;
+      this.isAdmin = client?.role === Role.ADMIN;
+      const privs = this.isDeveloper || this.isAdmin;
+      const perms: string[] = client?.permissions ?? [];
+      this.canViewBoxAddress   = privs || perms.includes('ADMIN_BOX_ADDRESS_VIEW');
+      this.canCreateBoxAddress = privs || perms.includes('ADMIN_BOX_ADDRESS_CREATE');
+      this.canManageBoxAddress = privs || perms.includes('ADMIN_BOX_ADDRESS_MANAGE');
     });
     this.loadInitialData();
+  }
+
+  openBoxAddressManager(): void {
+    this.editingBoxAddress = null;
+    this.boxAddressForm = { ip: '', mac: '', dns: '' };
+    this.loadAllBoxAddresses();
+    this.boxAddressManagerVisible = true;
+  }
+
+  loadAllBoxAddresses(): void {
+    this.loadingAllBoxAddresses = true;
+    this.boxService.getAllBoxAddresses().subscribe({
+      next: (list) => { this.allBoxAddresses = list; this.loadingAllBoxAddresses = false; },
+      error: () => { this.toastService.erro('Error loading box addresses'); this.loadingAllBoxAddresses = false; },
+    });
+  }
+
+  startEditBoxAddress(addr: BoxAddress): void {
+    this.editingBoxAddress = { ...addr };
+    this.boxAddressForm = { ip: addr.ip, mac: addr.mac, dns: addr.dns ?? '' };
+  }
+
+  cancelEditBoxAddress(): void {
+    this.editingBoxAddress = null;
+    this.boxAddressForm = { ip: '', mac: '', dns: '' };
+  }
+
+  saveBoxAddress(): void {
+    if (!this.boxAddressForm.ip?.trim() || !this.boxAddressForm.mac?.trim()) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'IP and MAC are required' });
+      return;
+    }
+    this.savingBoxAddress = true;
+    const dto: BoxAddressRequestDto = {
+      ip: this.boxAddressForm.ip.trim(),
+      mac: this.boxAddressForm.mac.trim(),
+      dns: this.boxAddressForm.dns?.trim() || undefined,
+    };
+    const req$ = this.editingBoxAddress
+      ? this.boxService.updateBoxAddress(this.editingBoxAddress.id, dto)
+      : this.boxService.createBoxAddress(dto);
+    req$.subscribe({
+      next: () => {
+        this.savingBoxAddress = false;
+        const msg = this.editingBoxAddress ? 'Address updated!' : 'Address created!';
+        this.cancelEditBoxAddress();
+        this.loadAllBoxAddresses();
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+      },
+      error: () => { this.savingBoxAddress = false; this.toastService.erro('Error saving address'); },
+    });
+  }
+
+  deleteBoxAddress(addr: BoxAddress): void {
+    if (addr.inUse) { return; }
+    this.boxService.deleteBoxAddress(addr.id).subscribe({
+      next: () => {
+        this.loadAllBoxAddresses();
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Address deleted!' });
+      },
+      error: () => { this.toastService.erro('Error deleting address. It may be in use.'); },
+    });
   }
 
   loadInitialData(): void {

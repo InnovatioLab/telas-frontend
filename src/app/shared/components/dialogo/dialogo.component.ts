@@ -9,6 +9,7 @@ import {
   Output,
 } from "@angular/core";
 import { LoadingService } from "@app/core/service/state/loading.service";
+import { DomSanitizer, SafeHtml, SecurityContext } from "@angular/platform-browser";
 import { IConfigDialogo } from "@app/shared/interfaces/dialog-config.interface";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
@@ -32,6 +33,7 @@ export class DialogoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   exibir = false;
   value: any;
+  safeDescricao: SafeHtml = "";
 
   get iconComponent() {
     return typeof this.data.icon === "function" ? this.data.icon : null;
@@ -41,18 +43,25 @@ export class DialogoComponent implements OnInit, AfterViewInit, OnDestroy {
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
     private readonly cdr: ChangeDetectorRef,
-    private readonly loadingService: LoadingService
+    private readonly loadingService: LoadingService,
+    private readonly sanitizer: DomSanitizer
   ) {
     this.config.showHeader = false;
     this.data = this.config.data;
   }
 
   ngOnInit() {
-    if (this.data.descricao) {
-      this.data.descricao = this.data.descricao
+    let descricao = this.data.descricao ?? "";
+    if (descricao) {
+      descricao = descricao
         .replace(/<s>/g, '<span class="font-semibold">')
         .replace(/<\/s>/g, "</span>");
     }
+    // descricao pode conter dados informados por usuários interpolados em HTML —
+    // sanitizamos antes de usar [innerHTML] para remover scripts/handlers de
+    // evento mantendo a formatação esperada (<span>, <strong>, etc).
+    const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, descricao);
+    this.safeDescricao = this.sanitizer.bypassSecurityTrustHtml(sanitized ?? "");
     this.exibir = true;
     this.cdr.markForCheck();
   }

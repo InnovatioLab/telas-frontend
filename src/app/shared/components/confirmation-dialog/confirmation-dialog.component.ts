@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, HostListener, OnInit } from "@angular/core";
+import { DomSanitizer, SafeHtml, SecurityContext } from "@angular/platform-browser";
 import { LayoutUtils } from "@app/shared/utils/layout.utils";
 import { ButtonModule } from "primeng/button";
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
@@ -41,7 +42,7 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
         <div
           id="test-descricao-dialog"
           class="message-text message-text-container"
-          [innerHTML]="data?.message"
+          [innerHTML]="safeMessage"
         ></div>
       </div>
 
@@ -138,12 +139,19 @@ import { ConfirmationDialogData } from "../../services/confirmation-dialog.servi
 })
 export class ConfirmationDialogComponent implements OnInit {
   data: ConfirmationDialogData;
+  safeMessage: SafeHtml = "";
 
   constructor(
     public ref: DynamicDialogRef,
-    public config: DynamicDialogConfig
+    public config: DynamicDialogConfig,
+    private readonly sanitizer: DomSanitizer
   ) {
     this.data = config.data;
+    // data?.message pode conter dados informados por usuários (nome de anúncio,
+    // razão social, etc.) interpolados em HTML — sanitizamos antes de usar
+    // [innerHTML] para remover scripts/handlers de evento mantendo a formatação.
+    const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, this.data?.message ?? "");
+    this.safeMessage = this.sanitizer.bypassSecurityTrustHtml(sanitized ?? "");
   }
 
   @HostListener("window:resize", ["$event"])

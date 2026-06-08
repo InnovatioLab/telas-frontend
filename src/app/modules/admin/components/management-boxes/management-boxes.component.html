@@ -1,12 +1,21 @@
 <p-card styleClass="card-header">
   <div class="card-header-content">
-    <div class="p-card-content">
+    <div class="p-card-content flex gap-2">
       <button
         pButton
         label="Create Box"
         icon="pi pi-plus"
         (click)="openCreateBoxModal()"
         onKeyDown="openCreateBoxModal()"
+      ></button>
+      <button
+        *ngIf="canViewBoxAddress"
+        pButton
+        pRipple
+        label="Manage Box Addresses"
+        icon="pi pi-server"
+        class="p-button-secondary"
+        (click)="openBoxAddressManager()"
       ></button>
     </div>
   </div>
@@ -295,6 +304,137 @@
         label="Update"
         icon="pi pi-check"
         (click)="onEditBox()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Modal gerenciamento de BoxAddress -->
+<p-dialog
+  header="Box Address Manager"
+  [(visible)]="boxAddressManagerVisible"
+  [modal]="true"
+  [baseZIndex]="10000"
+  [style]="{ width: '70vw', maxWidth: '700px' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  [closeOnEscape]="true"
+  [dismissableMask]="true"
+>
+  <p-table
+    [value]="allBoxAddresses"
+    [loading]="loadingAllBoxAddresses"
+    styleClass="p-datatable-sm"
+    responsiveLayout="scroll"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th scope="col">IP</th>
+        <th scope="col">MAC</th>
+        <th scope="col">DNS</th>
+        <th scope="col">Status</th>
+        <th scope="col" *ngIf="canManageBoxAddress">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-addr>
+      <tr>
+        <td>{{ addr.ip }}</td>
+        <td>{{ addr.mac }}</td>
+        <td>{{ addr.dns || '—' }}</td>
+        <td>
+          <p-badge
+            [value]="addr.inUse ? 'In use' : 'Available'"
+            [severity]="addr.inUse ? 'warning' : 'success'"
+          ></p-badge>
+        </td>
+        <td *ngIf="canManageBoxAddress">
+          <div class="action-buttons">
+            <button
+              pButton
+              pRipple
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-text p-button-sm edit-btn icon-button"
+              (click)="startEditBoxAddress(addr)"
+              [disabled]="savingBoxAddress"
+              pTooltip="Edit"
+            ></button>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-text p-button-danger p-button-sm icon-button"
+              (click)="deleteBoxAddress(addr)"
+              [disabled]="addr.inUse || savingBoxAddress"
+              [pTooltip]="addr.inUse ? 'Cannot remove — in use by a box' : 'Delete'"
+            ></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center">No addresses found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div
+    *ngIf="canCreateBoxAddress || (canManageBoxAddress && editingBoxAddress)"
+    class="box-form mt-3"
+  >
+    <h4 class="mt-0">{{ editingBoxAddress ? 'Edit Address' : 'New Address' }}</h4>
+    <div class="form-group">
+      <label class="required">IP Address</label>
+      <input
+        pInputText
+        [(ngModel)]="boxAddressForm.ip"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="e.g. 192.168.1.10"
+        class="w-full"
+      />
+    </div>
+    <div class="form-group">
+      <label class="required">MAC Address</label>
+      <input
+        pInputText
+        [(ngModel)]="boxAddressForm.mac"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="e.g. AA:BB:CC:DD:EE:FF"
+        class="w-full"
+      />
+    </div>
+    <div class="form-group">
+      <label>DNS (optional)</label>
+      <input
+        pInputText
+        [(ngModel)]="boxAddressForm.dns"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="e.g. box-001.internal"
+        class="w-full"
+      />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="w-full flex gap-3 justify-content-between align-items-center">
+      <button
+        pButton
+        pRipple
+        id="btnSecundario"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="editingBoxAddress ? cancelEditBoxAddress() : (boxAddressManagerVisible = false)"
+      ></button>
+      <button
+        *ngIf="canCreateBoxAddress || (canManageBoxAddress && editingBoxAddress)"
+        pButton
+        pRipple
+        [label]="editingBoxAddress ? 'Update' : 'Create'"
+        icon="pi pi-check"
+        [loading]="savingBoxAddress"
+        (click)="saveBoxAddress()"
       ></button>
     </div>
   </ng-template>

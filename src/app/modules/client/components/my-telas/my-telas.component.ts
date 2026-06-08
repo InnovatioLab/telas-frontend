@@ -57,6 +57,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   attachmentToReplaceId: string | null = null;
   selectedClientAttachments: string[] = [];
   attachmentCheckboxStates: { [key: string]: boolean } = {};
+  brokenAttachmentImages = new Set<string>();
   selectedFiles: File[] = [];
   uploadPreviews: string[] = [];
   pendingUpload = false;
@@ -138,6 +139,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   async loadClientData(): Promise<void> {
     try {
+      this.brokenAttachmentImages.clear();
       await this.myTelasService.loadClientData();
       if (this.canCreateAdRequest()) {
         await this.myTelasService.loadQuestionnaireDraftIntoForm(this.newRequestQuestionnaireForm);
@@ -165,11 +167,12 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     }
   }
 
-  onTabChange(event: { index: number }): void {
-    this.myTelasService.setActiveTab(event.index);
+  onTabChange(value: string | number): void {
+    const index = typeof value === "string" ? +value : value;
+    this.myTelasService.setActiveTab(index);
     void this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: event.index === 1 ? "ads" : "attachments" },
+      queryParams: { tab: index === 1 ? "ads" : "attachments" },
       queryParamsHandling: "merge",
       replaceUrl: true,
     });
@@ -648,9 +651,13 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     triggerBrowserFileDownload(url, fileName);
   }
 
-  onImageError(event: any): void {
+  onImageError(event: Event, attachmentId?: string): void {
     if (event.target) {
       (event.target as HTMLElement).style.display = "none";
+    }
+    if (attachmentId) {
+      this.brokenAttachmentImages.add(attachmentId);
+      this.cdr.markForCheck();
     }
   }
 
@@ -792,15 +799,27 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     return isPdfFile(url, fileName);
   }
 
+  private isHttpUrl(url: string): boolean {
+    try {
+      const parsed = new URL(url, window.location.origin);
+      return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch {
+      return false;
+    }
+  }
+
   getSafeImageUrl(url: string | null | undefined): SafeUrl | null {
-    if (!url || !String(url).trim()) {
+    const trimmed = url ? String(url).trim() : "";
+    if (!trimmed || !this.isHttpUrl(trimmed)) {
       return null;
     }
-    return this.sanitizer.bypassSecurityTrustUrl(String(url).trim());
+    return this.sanitizer.bypassSecurityTrustUrl(trimmed);
   }
 
   getSafePdfUrl(url: string): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url + "#view=FitH");
+    const trimmed = url ? String(url).trim() : "";
+    const safeUrl = this.isHttpUrl(trimmed) ? trimmed + "#view=FitH" : "";
+    return this.sanitizer.bypassSecurityTrustResourceUrl(safeUrl);
   }
 
   ngOnDestroy(): void {

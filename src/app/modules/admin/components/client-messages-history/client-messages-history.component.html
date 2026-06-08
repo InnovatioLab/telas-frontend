@@ -30,16 +30,19 @@
       [multiple]="true"
       styleClass="messages-accordion"
     >
-      <p-accordionTab *ngFor="let g of grouped" [header]="g.adName">
-        <div class="flex flex-column gap-2">
-          <div *ngFor="let m of g.rows" class="message-item">
-            <div class="message-meta">
-              {{ m.senderName || m.senderRole }} • {{ m.createdAt | date }}
+      <p-accordionPanel *ngFor="let g of grouped; let i = index" [value]="i">
+        <p-accordionHeader>{{ g.adName }}</p-accordionHeader>
+        <p-accordionContent>
+          <div class="flex flex-column gap-2">
+            <div *ngFor="let m of g.rows" class="message-item">
+              <div class="message-meta">
+                {{ m.senderName || m.senderRole }} • {{ m.createdAt | date }}
+              </div>
+              <div class="message-body">{{ m.message }}</div>
             </div>
-            <div class="message-body">{{ m.message }}</div>
           </div>
-        </div>
-      </p-accordionTab>
+        </p-accordionContent>
+      </p-accordionPanel>
     </p-accordion>
   </div>
 </div>

@@ -3,6 +3,7 @@ import { IBoxRepository } from "@app/core/interfaces/services/repository/box-rep
 import { BOX_REPOSITORY_TOKEN } from "@app/core/tokens/injection-tokens";
 import { Box } from "@app/model/box";
 import { BoxAddress } from "@app/model/box-address";
+import { BoxAddressRequestDto } from "@app/model/dto/request/box-address-request.dto";
 import { BoxRequestDto } from "@app/model/dto/request/box-request.dto";
 import { FilterBoxRequestDto } from "@app/model/dto/request/filter-box-request.dto";
 import { MonitorsBoxMinResponseDto } from "@app/model/dto/response/monitor-box-min-response.dto";
@@ -22,6 +23,22 @@ export class BoxService {
 
   getAvailableBoxAddresses(): Observable<BoxAddress[]> {
     return this.repository.findAvailableAddresses();
+  }
+
+  getAllBoxAddresses(): Observable<BoxAddress[]> {
+    return this.repository.findAllAddresses();
+  }
+
+  createBoxAddress(dto: BoxAddressRequestDto): Observable<BoxAddress> {
+    return this.repository.createAddress(dto);
+  }
+
+  updateBoxAddress(id: string, dto: BoxAddressRequestDto): Observable<BoxAddress> {
+    return this.repository.updateAddress(id, dto);
+  }
+
+  deleteBoxAddress(id: string): Observable<void> {
+    return this.repository.deleteAddress(id);
   }
 
   getAvailableMonitors(): Observable<MonitorsBoxMinResponseDto[]> {

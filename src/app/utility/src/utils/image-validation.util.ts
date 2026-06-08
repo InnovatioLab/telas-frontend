@@ -14,7 +14,7 @@ export class ImageValidationUtil {
     /.*\.(jpg|jpeg|png|gif|svg|bmp|tiff|pdf)$/i;
 
   static readonly REQUIRED_ASPECT_RATIO = 16 / 9;
-  static readonly ASPECT_RATIO_TOLERANCE = 0.01;
+  static readonly ASPECT_RATIO_TOLERANCE = 0.02;
 
   static readonly VALID_RESOLUTIONS = [
     { width: 1920, height: 1080 },

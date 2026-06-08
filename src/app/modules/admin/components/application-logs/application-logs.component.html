@@ -1,19 +1,27 @@
 <div class="content application-logs">
   <ng-container *ngIf="showLogsSection(); else noLogsSection">
-    <p-tabView styleClass="logs-tabs">
-      <p-tabPanel *ngIf="canViewLogs()" header="Application logs">
-        <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
-      </p-tabPanel>
-      <p-tabPanel *ngIf="canViewSmartPlugLogs()" header="Smart plug logs">
-        <app-smart-plug-logs />
-      </p-tabPanel>
-      <p-tabPanel *ngIf="canViewScheduler()" header="Scheduled jobs">
-        <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
-      </p-tabPanel>
-      <p-tabPanel *ngIf="canViewBoxPingLogs()" header="Box ping logs">
-        <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
-      </p-tabPanel>
-    </p-tabView>
+    <p-tabs styleClass="logs-tabs">
+      <p-tabList>
+        <p-tab *ngIf="canViewLogs()" [value]="0">Application logs</p-tab>
+        <p-tab *ngIf="canViewSmartPlugLogs()" [value]="1">Smart plug logs</p-tab>
+        <p-tab *ngIf="canViewScheduler()" [value]="2">Scheduled jobs</p-tab>
+        <p-tab *ngIf="canViewBoxPingLogs()" [value]="3">Box ping logs</p-tab>
+      </p-tabList>
+      <p-tabPanels>
+        <p-tabPanel *ngIf="canViewLogs()" [value]="0">
+          <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
+        </p-tabPanel>
+        <p-tabPanel *ngIf="canViewSmartPlugLogs()" [value]="1">
+          <app-smart-plug-logs />
+        </p-tabPanel>
+        <p-tabPanel *ngIf="canViewScheduler()" [value]="2">
+          <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
+        </p-tabPanel>
+        <p-tabPanel *ngIf="canViewBoxPingLogs()" [value]="3">
+          <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
+        </p-tabPanel>
+      </p-tabPanels>
+    </p-tabs>
   </ng-container>
 
   <ng-template #noLogsSection>

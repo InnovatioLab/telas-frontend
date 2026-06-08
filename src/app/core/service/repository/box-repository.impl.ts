@@ -4,6 +4,7 @@ import { Observable, catchError, map, of } from 'rxjs';
 import { IBoxRepository } from '@app/core/interfaces/services/repository/box-repository.interface';
 import { Box } from '@app/model/box';
 import { BoxAddress } from '@app/model/box-address';
+import { BoxAddressRequestDto } from '@app/model/dto/request/box-address-request.dto';
 import { BoxRequestDto } from '@app/model/dto/request/box-request.dto';
 import { FilterBoxRequestDto } from '@app/model/dto/request/filter-box-request.dto';
 import { PaginationResponseDto } from '@app/model/dto/response/pagination-response.dto';
@@ -165,6 +166,61 @@ export class BoxRepositoryImpl extends BaseRepository<Box, BoxRequestDto, BoxReq
       );
   }
 
+  findAllAddresses(): Observable<BoxAddress[]> {
+    return this.http
+      .get<ResponseDTO<BoxAddressResponseDto[]> | ResponseDto<BoxAddressResponseDto[]>>(
+        `${this.baseUrl}/addresses/all`,
+        this.getHeaders()
+      )
+      .pipe(
+        map((response) => {
+          const data = this.extractData(response);
+          return data ? this.mapBoxAddressResponseToBoxAddress(data as BoxAddressResponseDto[]) : [];
+        }),
+        catchError((error) => { throw error; })
+      );
+  }
+
+  createAddress(dto: BoxAddressRequestDto): Observable<BoxAddress> {
+    return this.http
+      .post<ResponseDTO<BoxAddressResponseDto> | ResponseDto<BoxAddressResponseDto>>(
+        `${this.baseUrl}/addresses`,
+        dto,
+        this.getHeaders()
+      )
+      .pipe(
+        map((response) => {
+          const data = this.extractData(response);
+          return this.mapBoxAddressResponseToBoxAddress([data as BoxAddressResponseDto])[0];
+        }),
+        catchError((error) => { throw error; })
+      );
+  }
+
+  updateAddress(id: string, dto: BoxAddressRequestDto): Observable<BoxAddress> {
+    return this.http
+      .put<ResponseDTO<BoxAddressResponseDto> | ResponseDto<BoxAddressResponseDto>>(
+        `${this.baseUrl}/addresses/${id}`,
+        dto,
+        this.getHeaders()
+      )
+      .pipe(
+        map((response) => {
+          const data = this.extractData(response);
+          return this.mapBoxAddressResponseToBoxAddress([data as BoxAddressResponseDto])[0];
+        }),
+        catchError((error) => { throw error; })
+      );
+  }
+
+  deleteAddress(id: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.baseUrl}/addresses/${id}`, this.getHeaders())
+      .pipe(
+        catchError((error) => { throw error; })
+      );
+  }
+
   findAvailableMonitors(): Observable<MonitorsBoxMinResponseDto[]> {
     const apiUrl = this.env?.apiUrl || environment.apiUrl;
     return this.http
@@ -213,6 +269,8 @@ export class BoxRepositoryImpl extends BaseRepository<Box, BoxRequestDto, BoxReq
       id: item.id,
       mac: item.mac,
       ip: item.ip ?? '',
+      dns: item.dns,
+      inUse: item.inUse,
     }));
   }
 }

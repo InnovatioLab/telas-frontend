@@ -93,9 +93,9 @@ body.dark-theme,
   }
 
   .terms-accept-button.p-button {
-    background-color: var(--cor-primaria-escura) !important;
-    border-color: var(--cor-primaria-escura) !important;
-    color: var(--cor-branca) !important;
+    background-color: var(--cor-primaria-clara-dark) !important;
+    border-color: var(--cor-primaria-clara-dark) !important;
+    color: var(--cor-texto-clara) !important;
   }
 
   ::ng-deep .terms-of-service-content a,
