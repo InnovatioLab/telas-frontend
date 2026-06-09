@@ -191,8 +191,12 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     this.selectedPreviewAd = ad;
   }
 
+  trackAdById(_: number, ad: MonitorAdItem): string {
+    return ad.id;
+  }
+
   moveToMonitor(ad: MonitorAdItem): void {
-    const alreadyInMonitor = this.monitorAds.some((a) => a.id === ad.id);
+    const alreadyInMonitor = this.monitorAds.some((a) => a === ad);
     if (alreadyInMonitor) {
       return;
     }
@@ -215,7 +219,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     };
 
     this.monitorAds = [...this.monitorAds, newItem];
-    this.validAds = this.validAds.filter((a) => a.id !== ad.id);
+    this.validAds = this.validAds.filter((a) => a !== ad);
   }
 
   async removeAvailableAd(ad: MonitorAdItem): Promise<void> {
@@ -269,7 +273,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
       .then((confirmed) => {
         if (!confirmed) return;
         this.monitorAds = this.monitorAds
-          .filter((a) => a.id !== ad.id)
+          .filter((a) => a !== ad)
           .map((item, index) => ({
             ...item,
             orderIndex: index + 1,

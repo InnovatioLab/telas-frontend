@@ -42,6 +42,7 @@
   <div class="ad-content w-full">
     &nbsp;
     <img
+      *ngIf="!imageLoadFailed"
       [src]="ad.link"
       alt="{{ ad?.name }}"
       class="ad-image w-full"
@@ -49,7 +50,14 @@
       height="500"
       loading="lazy"
       (click)="onView()"
+      (load)="onImageLoad()"
+      (error)="onImageError()"
     />
+    <div *ngIf="imageLoadFailed" class="ad-image-fallback flex flex-column align-items-center justify-content-center gap-2"
+      style="height: 200px; background: var(--surface-100); border-radius: 8px; cursor: pointer;" (click)="onView()">
+      <span class="pi pi-image" style="font-size: 48px; color: var(--text-color-secondary)"></span>
+      <p class="m-0 text-color-secondary text-sm">Preview unavailable — click to open</p>
+    </div>
   </div>
 
   <div class="ad-actions">

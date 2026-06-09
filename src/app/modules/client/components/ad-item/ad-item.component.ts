@@ -109,7 +109,10 @@ export class AdItemComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  imageLoadFailed = false;
+
   onImageError(): void {
+    this.imageLoadFailed = true;
     const host = this.hostRef.nativeElement;
     const image = host.querySelector(".ad-content img") as HTMLElement | null;
     if (image) {

@@ -56,7 +56,7 @@
         <div class="list available-list">
           <div
             class="list-item"
-            *ngFor="let ad of filteredValidAds"
+            *ngFor="let ad of filteredValidAds; trackBy: trackAdById"
             [class.selected]="selectedPreviewAd?.id === ad.id"
           >
             <div class="info" (click)="selectPreview(ad)">
@@ -111,7 +111,7 @@
         >
           <div
             class="list-item"
-            *ngFor="let ad of monitorAds; let i = index"
+            *ngFor="let ad of monitorAds; let i = index; trackBy: trackAdById"
             cdkDrag
             [cdkDragDisabled]="saving"
             [class.selected]="selectedPreviewAd?.id === ad.id"
