@@ -7,9 +7,10 @@ import {
   OnInit,
   OnDestroy,
   Output,
+  SecurityContext,
 } from "@angular/core";
 import { LoadingService } from "@app/core/service/state/loading.service";
-import { DomSanitizer, SafeHtml, SecurityContext } from "@angular/platform-browser";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { IConfigDialogo } from "@app/shared/interfaces/dialog-config.interface";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";

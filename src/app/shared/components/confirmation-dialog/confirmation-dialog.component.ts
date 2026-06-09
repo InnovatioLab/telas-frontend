@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { Component, HostListener, OnInit } from "@angular/core";
-import { DomSanitizer, SafeHtml, SecurityContext } from "@angular/platform-browser";
+import { Component, HostListener, OnInit, SecurityContext } from "@angular/core";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { LayoutUtils } from "@app/shared/utils/layout.utils";
 import { ButtonModule } from "primeng/button";
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
