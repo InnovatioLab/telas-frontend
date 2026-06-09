@@ -25,6 +25,7 @@ interface MonitorAdItem {
   blockQuantity: number;
   clientId?: string | null;
   clientName?: string | null;
+  clientRole?: string | null;
   subscriptionEndsAt?: string | null;
   subscriptionDaysLeft?: number | null;
 }
@@ -100,6 +101,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
           blockQuantity: 1,
           clientId: ad.clientId ?? null,
           clientName: ad.clientName ?? null,
+          clientRole: ad.clientRole ?? null,
           subscriptionEndsAt: ad.subscriptionEndsAt ?? null,
           subscriptionDaysLeft:
             typeof ad.subscriptionDaysLeft === "number" ? ad.subscriptionDaysLeft : null,
@@ -123,6 +125,8 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
                   orderIndex: ad.orderIndex || idx + 1,
                   blockQuantity: 1,
                   clientId: ad.clientId ?? null,
+                  clientName: ad.clientName ?? null,
+                  clientRole: ad.clientRole ?? null,
                 };
 
                 validAdsItems.push(baseItem);
@@ -193,6 +197,14 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
 
   trackAdById(_: number, ad: MonitorAdItem): string {
     return ad.id;
+  }
+
+  getAdSourceLabel(ad: MonitorAdItem): string {
+    if (!ad.clientName) return "";
+    const role = (ad.clientRole ?? "").toUpperCase();
+    if (role === "PARTNER") return `(Partner: ${ad.clientName})`;
+    if (role === "ADMIN" || role === "DEVELOPER") return `(Admin: ${ad.clientName})`;
+    return `(${ad.clientName})`;
   }
 
   moveToMonitor(ad: MonitorAdItem): void {

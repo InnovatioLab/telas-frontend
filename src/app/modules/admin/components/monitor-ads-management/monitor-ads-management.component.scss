@@ -134,6 +134,16 @@
   text-overflow: ellipsis;
 }
 
+.ad-source-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-color-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0.1rem;
+}
+
 .info .order {
   font-weight: var(--fonte-peso-medio);
   margin-right: 0.5rem;

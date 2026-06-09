@@ -61,6 +61,7 @@
           >
             <div class="info" (click)="selectPreview(ad)">
               <span class="name">{{ ad.fileName }}</span>
+              <span *ngIf="ad.clientName" class="ad-source-label">{{ getAdSourceLabel(ad) }}</span>
             </div>
             <div class="actions">
               <button
@@ -123,6 +124,7 @@
             <div class="info" (click)="selectPreview(ad)">
               <span class="order">#{{ ad.orderIndex }}</span>
               <span class="name">{{ ad.fileName }}</span>
+              <span *ngIf="ad.clientName" class="ad-source-label">{{ getAdSourceLabel(ad) }}</span>
             </div>
 
             <div class="actions">
