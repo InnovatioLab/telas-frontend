@@ -64,11 +64,6 @@ export const ROUTES: Route[] = [
         title: "Ads Management",
       },
       {
-        path: "ad-requests",
-        component: ManagementAdvertisementsComponent,
-        title: "Ad Requests",
-      },
-      {
         path: "clients",
         component: ManagementClientsComponent,
         title: "Clients Management",
