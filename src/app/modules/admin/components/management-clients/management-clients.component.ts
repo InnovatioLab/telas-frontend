@@ -376,6 +376,7 @@ export class ManagementClientsComponent implements OnInit {
 
       this.clientManagementService.makePartner(client.id!).subscribe({
         next: () => {
+          this.operationLoading = false;
           this.toastService.sucesso("Client successfully made partner");
           this.loadClients();
         },
@@ -547,6 +548,7 @@ export class ManagementClientsComponent implements OnInit {
     this.operationLoading = true;
     this.clientManagementService.restoreDeletedClient(client.id).subscribe({
       next: () => {
+        this.operationLoading = false;
         this.toastService.sucesso("Account restored to active");
         this.loadClients();
       },
@@ -580,6 +582,7 @@ export class ManagementClientsComponent implements OnInit {
     this.operationLoading = true;
     this.clientManagementService.reactivateClient(client.id).subscribe({
       next: () => {
+        this.operationLoading = false;
         this.toastService.sucesso("User reactivated successfully");
         this.loadClients();
       },
@@ -613,6 +616,7 @@ export class ManagementClientsComponent implements OnInit {
     this.operationLoading = true;
     this.clientManagementService.deactivateClient(client.id).subscribe({
       next: () => {
+        this.operationLoading = false;
         this.toastService.sucesso("User inactivated successfully");
         this.loadClients();
       },
@@ -643,6 +647,7 @@ export class ManagementClientsComponent implements OnInit {
     this.operationLoading = true;
     this.clientManagementService.softDeleteClient(client.id).subscribe({
       next: () => {
+        this.operationLoading = false;
         this.toastService.sucesso("Account marked as deleted");
         this.loadClients();
       },
@@ -816,6 +821,7 @@ export class ManagementClientsComponent implements OnInit {
     }
     this.clientManagementService.permanentDeleteClient(victimId, payload).subscribe({
       next: () => {
+        this.operationLoading = false;
         this.toastService.sucesso("Account removed");
         this.armDeletionPasswordField();
         this.closePermanentDeleteSuccessorDialog();
