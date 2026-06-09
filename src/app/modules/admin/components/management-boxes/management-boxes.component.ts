@@ -75,6 +75,8 @@ export class ManagementBoxesComponent implements OnInit {
   editingBoxAddress: BoxAddress | null = null;
   savingBoxAddress = false;
 
+  syncingBoxId: string | null = null;
+
   boxPlugOptions: { label: string; value: string }[] = [];
   selectedBoxSmartPlugId = "";
   initialBoxSmartPlugId: string | null = null;
@@ -255,10 +257,12 @@ export class ManagementBoxesComponent implements OnInit {
 
   loadAvailableMonitors(): void {
     if (this.loadingMonitors) {
-      return; // Evitar múltiplas chamadas simultâneas
+      return;
     }
 
     this.loadingMonitors = true;
+    const editMonitorId = this.selectedBoxForEdit?.monitorIds?.[0] ?? null;
+
     this.boxService.getAvailableMonitors().subscribe({
       next: (monitors) => {
         this.availableMonitors = [];
@@ -266,15 +270,16 @@ export class ManagementBoxesComponent implements OnInit {
         if (monitors && Array.isArray(monitors)) {
           monitors.forEach((monitor) => {
             if (monitor && monitor.id && monitor.fullAddress) {
-              this.availableMonitors.push({
-                id: monitor.id,
-                fullAddress: monitor.fullAddress,
-              });
+              if (!monitor.hasBox || monitor.id === editMonitorId) {
+                this.availableMonitors.push({
+                  id: monitor.id,
+                  fullAddress: monitor.fullAddress,
+                });
+              }
             }
           });
         }
 
-        // Quando estiver editando, selecionar o primeiro monitorId da box atual
         if (
           this.selectedBoxForEdit &&
           this.selectedBoxForEdit.monitorIds?.length > 0
@@ -292,10 +297,28 @@ export class ManagementBoxesComponent implements OnInit {
         this.loadingMonitors = false;
       },
       complete: () => {
-        // Garantir que o loading seja desativado mesmo se o Observable completar sem emitir valores
         if (this.loadingMonitors) {
           this.loadingMonitors = false;
         }
+      },
+    });
+  }
+
+  syncPlaylist(box: Box): void {
+    if (this.syncingBoxId) return;
+    this.syncingBoxId = box.id;
+    this.boxService.syncPlaylist(box.id).subscribe({
+      next: () => {
+        this.syncingBoxId = null;
+        this.messageService.add({
+          severity: "success",
+          summary: "Success",
+          detail: "Playlist sync triggered successfully.",
+        });
+      },
+      error: () => {
+        this.syncingBoxId = null;
+        this.toastService.erro("Error syncing playlist. The box may be offline.");
       },
     });
   }

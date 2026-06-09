@@ -72,4 +72,8 @@ export class BoxService {
   getMonitorsAdsByIp(ip: string): Observable<Monitor[]> {
     return this.repository.findMonitorsByIp(ip);
   }
+
+  syncPlaylist(id: string): Observable<void> {
+    return this.repository.syncPlaylist(id);
+  }
 }

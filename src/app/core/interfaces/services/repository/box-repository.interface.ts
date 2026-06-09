@@ -26,4 +26,6 @@ export interface IBoxRepository extends IRepository<Box, BoxRequestDto, BoxReque
   findAvailableMonitors(): Observable<MonitorsBoxMinResponseDto[]>;
 
   findMonitorsByIp(ip: string): Observable<Monitor[]>;
+
+  syncPlaylist(id: string): Observable<void>;
 }

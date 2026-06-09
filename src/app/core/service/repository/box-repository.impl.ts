@@ -250,6 +250,12 @@ export class BoxRepositoryImpl extends BaseRepository<Box, BoxRequestDto, BoxReq
       );
   }
 
+  syncPlaylist(id: string): Observable<void> {
+    return this.http
+      .post<void>(`${this.baseUrl}/${id}/sync-playlist`, null, this.getHeaders())
+      .pipe(catchError((error) => { throw error; }));
+  }
+
   private mapBoxResponseToBox(boxResponse: BoxResponseDto): Box {
     const box: Box = {
       id: boxResponse.id,

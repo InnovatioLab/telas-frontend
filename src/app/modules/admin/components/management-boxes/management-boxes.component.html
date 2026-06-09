@@ -76,6 +76,16 @@
           <button
             pButton
             pRipple
+            icon="pi pi-sync"
+            class="p-button-rounded p-button-text icon-button"
+            (click)="syncPlaylist(box)"
+            [loading]="syncingBoxId === box.id"
+            [disabled]="!!syncingBoxId"
+            pTooltip="Re-sync ads playlist"
+          ></button>
+          <button
+            pButton
+            pRipple
             icon="pi pi-pencil"
             class="p-button-rounded p-button-success p-button-text edit-btn icon-button"
             (click)="onSelectBox(box)"
