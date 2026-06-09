@@ -21,7 +21,7 @@ import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.util
 import { MessageService, OverlayOptions } from "primeng/api";
 import { Role } from "@app/model/client";
 import { Observable, of } from "rxjs";
-import { map, switchMap, take } from "rxjs/operators";
+import { filter, map, switchMap, take } from "rxjs/operators";
 
 @Component({
   selector: "app-management-boxes",
@@ -120,7 +120,7 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.clientService.clientAtual$.pipe(take(1)).subscribe((client) => {
+    this.clientService.clientAtual$.pipe(filter(c => !!c), take(1)).subscribe((client) => {
       this.isDeveloper = client?.role === Role.DEVELOPER;
       this.isAdmin = client?.role === Role.ADMIN;
       const privs = this.isDeveloper || this.isAdmin;
