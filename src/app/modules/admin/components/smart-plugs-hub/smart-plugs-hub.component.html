@@ -11,13 +11,13 @@
 
 <p-card styleClass="mt-3">
   <p-tabs>
-    <p-tabList>
+    <p-tablist>
       <p-tab [value]="0">Inventory</p-tab>
       <p-tab *ngIf="canAccountsManage" [value]="1">Accounts</p-tab>
       <p-tab [value]="2">Operational</p-tab>
-    </p-tabList>
-    <p-tabPanels>
-      <p-tabPanel [value]="0">
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel [value]="0">
         <div class="tab-pane">
           <div class="toolbar-row">
             <button
@@ -90,20 +90,20 @@
             />
           </p-dialog>
         </div>
-      </p-tabPanel>
+      </p-tabpanel>
 
-      <p-tabPanel *ngIf="canAccountsManage" [value]="1">
+      <p-tabpanel *ngIf="canAccountsManage" [value]="1">
         <div class="tab-pane">
           <app-management-smart-plug-accounts />
         </div>
-      </p-tabPanel>
+      </p-tabpanel>
 
-      <p-tabPanel [value]="2">
+      <p-tabpanel [value]="2">
         <div class="tab-pane">
           <app-management-smart-plugs />
         </div>
-      </p-tabPanel>
-    </p-tabPanels>
+      </p-tabpanel>
+    </p-tabpanels>
   </p-tabs>
 </p-card>
 

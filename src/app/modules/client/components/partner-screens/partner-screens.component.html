@@ -14,12 +14,12 @@
     [value]="activeTab === 'requests' ? 1 : 0"
     (valueChange)="onTabChange(+$event)"
   >
-    <p-tabList>
+    <p-tablist>
       <p-tab [value]="0">Screens</p-tab>
       <p-tab [value]="1">Ad requests</p-tab>
-    </p-tabList>
-    <p-tabPanels>
-    <p-tabPanel [value]="0">
+    </p-tablist>
+    <p-tabpanels>
+    <p-tabpanel [value]="0">
       <p-table
         [value]="screens"
         [loading]="screensLoading"
@@ -88,9 +88,9 @@
           </tr>
         </ng-template>
       </p-table>
-    </p-tabPanel>
+    </p-tabpanel>
 
-    <p-tabPanel [value]="1">
+    <p-tabpanel [value]="1">
       <div class="ad-requests-toolbar">
         <span class="p-input-icon-left">
           <i class="pi pi-search"></i>
@@ -157,7 +157,7 @@
           </tr>
         </ng-template>
       </p-table>
-    </p-tabPanel>
-    </p-tabPanels>
+    </p-tabpanel>
+    </p-tabpanels>
   </p-tabs>
 </div>

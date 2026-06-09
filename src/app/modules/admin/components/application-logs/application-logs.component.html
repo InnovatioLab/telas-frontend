@@ -1,26 +1,26 @@
 <div class="content application-logs">
   <ng-container *ngIf="showLogsSection(); else noLogsSection">
     <p-tabs styleClass="logs-tabs">
-      <p-tabList>
+      <p-tablist>
         <p-tab *ngIf="canViewLogs()" [value]="0">Application logs</p-tab>
         <p-tab *ngIf="canViewSmartPlugLogs()" [value]="1">Smart plug logs</p-tab>
         <p-tab *ngIf="canViewScheduler()" [value]="2">Scheduled jobs</p-tab>
         <p-tab *ngIf="canViewBoxPingLogs()" [value]="3">Box ping logs</p-tab>
-      </p-tabList>
-      <p-tabPanels>
-        <p-tabPanel *ngIf="canViewLogs()" [value]="0">
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel *ngIf="canViewLogs()" [value]="0">
           <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
-        </p-tabPanel>
-        <p-tabPanel *ngIf="canViewSmartPlugLogs()" [value]="1">
+        </p-tabpanel>
+        <p-tabpanel *ngIf="canViewSmartPlugLogs()" [value]="1">
           <app-smart-plug-logs />
-        </p-tabPanel>
-        <p-tabPanel *ngIf="canViewScheduler()" [value]="2">
+        </p-tabpanel>
+        <p-tabpanel *ngIf="canViewScheduler()" [value]="2">
           <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
-        </p-tabPanel>
-        <p-tabPanel *ngIf="canViewBoxPingLogs()" [value]="3">
+        </p-tabpanel>
+        <p-tabpanel *ngIf="canViewBoxPingLogs()" [value]="3">
           <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
-        </p-tabPanel>
-      </p-tabPanels>
+        </p-tabpanel>
+      </p-tabpanels>
     </p-tabs>
   </ng-container>
 

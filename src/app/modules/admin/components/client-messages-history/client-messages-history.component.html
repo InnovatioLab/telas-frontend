@@ -30,9 +30,9 @@
       [multiple]="true"
       styleClass="messages-accordion"
     >
-      <p-accordionPanel *ngFor="let g of grouped; let i = index" [value]="i">
-        <p-accordionHeader>{{ g.adName }}</p-accordionHeader>
-        <p-accordionContent>
+      <p-accordionpanel *ngFor="let g of grouped; let i = index" [value]="i">
+        <p-accordionheader>{{ g.adName }}</p-accordionheader>
+        <p-accordioncontent>
           <div class="flex flex-column gap-2">
             <div *ngFor="let m of g.rows" class="message-item">
               <div class="message-meta">
@@ -41,8 +41,8 @@
               <div class="message-body">{{ m.message }}</div>
             </div>
           </div>
-        </p-accordionContent>
-      </p-accordionPanel>
+        </p-accordioncontent>
+      </p-accordionpanel>
     </p-accordion>
   </div>
 </div>

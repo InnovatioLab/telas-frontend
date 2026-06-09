@@ -1,11 +1,11 @@
 <p-tabs [value]="myTelasService.activeTabIndex()" (valueChange)="onTabChange($event)">
-  <p-tabList>
+  <p-tablist>
     <p-tab [value]="0">Attachments</p-tab>
     <p-tab [value]="1">Ads</p-tab>
-  </p-tabList>
-  <p-tabPanels>
+  </p-tablist>
+  <p-tabpanels>
   <!-- Tab 1: Attachments -->
-  <p-tabPanel [value]="0">
+  <p-tabpanel [value]="0">
     <div class="attachments-content">
       @if (myTelasService.isClientDataLoaded() && canCreateAdRequest()) {
       <div class="request-ad-section questionnaire-block mb-4">
@@ -24,9 +24,9 @@
           [class.pointer-events-none]="myTelasService.isLoading()" [class.opacity-60]="myTelasService.isLoading()">
           <p-accordion [multiple]="false" styleClass="questionnaire-accordion">
             @for (f of questionnaireFields; track f.key; let qi = $index) {
-            <p-accordionPanel [value]="qi">
-              <p-accordionHeader>{{ (qi + 1) + '. ' + f.label }}</p-accordionHeader>
-              <p-accordionContent>
+            <p-accordionpanel [value]="qi">
+              <p-accordionheader>{{ (qi + 1) + '. ' + f.label }}</p-accordionheader>
+              <p-accordioncontent>
                 <div class="flex flex-column gap-2 pt-1">
                   <textarea [id]="'nq-' + f.key" pInputTextarea rows="4" class="w-full"
                     [formControlName]="f.key" [attr.maxlength]="questionnaireAnswerMaxLength"></textarea>
@@ -34,8 +34,8 @@
                   <app-error [control]="newRequestQuestionnaireForm.get(f.key)"></app-error>
                   }
                 </div>
-              </p-accordionContent>
-            </p-accordionPanel>
+              </p-accordioncontent>
+            </p-accordionpanel>
             }
           </p-accordion>
           <div class="form-actions flex flex-wrap gap-2">
@@ -279,10 +279,10 @@
       </div>
       }
     </div>
-  </p-tabPanel>
+  </p-tabpanel>
 
   <!-- Tab 2: Ads -->
-  <p-tabPanel [value]="1">
+  <p-tabpanel [value]="1">
     @if (shouldDisplayMaxValidationsTry()) {
     <div class="ads-info">
       <p class="validation-info">
@@ -320,8 +320,8 @@
       </div>
       }
     </div>
-  </p-tabPanel>
-  </p-tabPanels>
+  </p-tabpanel>
+  </p-tabpanels>
 </p-tabs>
 
 <!-- Dialog para Rejeitar Ad -->
