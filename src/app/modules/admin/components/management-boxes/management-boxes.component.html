@@ -80,8 +80,8 @@
             class="p-button-rounded p-button-text icon-button"
             (click)="syncPlaylist(box)"
             [loading]="syncingBoxId === box.id"
-            [disabled]="!!syncingBoxId"
-            pTooltip="Re-sync ads playlist"
+            [disabled]="!!syncingBoxId || !box.active"
+            [pTooltip]="box.active ? 'Re-sync ads playlist' : 'Box is inactive — cannot re-sync'"
           ></button>
           <button
             pButton

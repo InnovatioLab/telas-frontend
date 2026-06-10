@@ -21,7 +21,7 @@ import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.util
 import { MessageService, OverlayOptions } from "primeng/api";
 import { Role } from "@app/model/client";
 import { Observable, of } from "rxjs";
-import { filter, map, switchMap, take } from "rxjs/operators";
+import { filter, map, switchMap, take, timeout } from "rxjs/operators";
 
 @Component({
   selector: "app-management-boxes",
@@ -305,9 +305,9 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   syncPlaylist(box: Box): void {
-    if (this.syncingBoxId) return;
+    if (!box.active || this.syncingBoxId) return;
     this.syncingBoxId = box.id;
-    this.boxService.syncPlaylist(box.id).subscribe({
+    this.boxService.syncPlaylist(box.id).pipe(timeout(15000)).subscribe({
       next: () => {
         this.syncingBoxId = null;
         this.messageService.add({

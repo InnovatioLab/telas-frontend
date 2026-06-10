@@ -1,32 +1,46 @@
 <div class="content application-logs">
-  <ng-container *ngIf="showLogsSection(); else noLogsSection">
+  @if (showLogsSection()) {
     <p-tabs styleClass="logs-tabs">
       <p-tablist>
-        <p-tab *ngIf="canViewLogs()" [value]="0">Application logs</p-tab>
-        <p-tab *ngIf="canViewSmartPlugLogs()" [value]="1">Smart plug logs</p-tab>
-        <p-tab *ngIf="canViewScheduler()" [value]="2">Scheduled jobs</p-tab>
-        <p-tab *ngIf="canViewBoxPingLogs()" [value]="3">Box ping logs</p-tab>
+        @if (canViewLogs()) {
+          <p-tab [value]="0">Application logs</p-tab>
+        }
+        @if (canViewSmartPlugLogs()) {
+          <p-tab [value]="1">Smart plug logs</p-tab>
+        }
+        @if (canViewScheduler()) {
+          <p-tab [value]="2">Scheduled jobs</p-tab>
+        }
+        @if (canViewBoxPingLogs()) {
+          <p-tab [value]="3">Box ping logs</p-tab>
+        }
       </p-tablist>
       <p-tabpanels>
-        <p-tabpanel *ngIf="canViewLogs()" [value]="0">
-          <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
-        </p-tabpanel>
-        <p-tabpanel *ngIf="canViewSmartPlugLogs()" [value]="1">
-          <app-smart-plug-logs />
-        </p-tabpanel>
-        <p-tabpanel *ngIf="canViewScheduler()" [value]="2">
-          <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
-        </p-tabpanel>
-        <p-tabpanel *ngIf="canViewBoxPingLogs()" [value]="3">
-          <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
-        </p-tabpanel>
+        @if (canViewLogs()) {
+          <p-tabpanel [value]="0">
+            <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
+          </p-tabpanel>
+        }
+        @if (canViewSmartPlugLogs()) {
+          <p-tabpanel [value]="1">
+            <app-smart-plug-logs />
+          </p-tabpanel>
+        }
+        @if (canViewScheduler()) {
+          <p-tabpanel [value]="2">
+            <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
+          </p-tabpanel>
+        }
+        @if (canViewBoxPingLogs()) {
+          <p-tabpanel [value]="3">
+            <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
+          </p-tabpanel>
+        }
       </p-tabpanels>
     </p-tabs>
-  </ng-container>
-
-  <ng-template #noLogsSection>
+  } @else {
     <p class="text-center p-4 text-muted">Sem permissão para ver logs de monitorização.</p>
-  </ng-template>
+  }
 
   <ng-template #logsFiltersAndTable>
     <p-card styleClass="card-header">
