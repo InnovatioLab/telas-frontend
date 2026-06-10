@@ -51,7 +51,6 @@ import { SplitButtonModule } from "primeng/splitbutton";
 import { StepperModule } from "primeng/stepper";
 import { StepsModule } from "primeng/steps";
 import { TableModule } from "primeng/table";
-import { TabViewModule } from "primeng/tabview";
 import { TabsModule } from "primeng/tabs";
 import { ToastModule } from "primeng/toast";
 import { TooltipModule } from "primeng/tooltip";
@@ -96,7 +95,6 @@ interface PrimeDomHandlerType {
     AccordionModule,
     ListboxModule,
     FieldsetModule,
-    TabViewModule,
     TabsModule,
     MenuModule,
     SidebarModule,
@@ -156,7 +154,6 @@ interface PrimeDomHandlerType {
     AccordionModule,
     ListboxModule,
     FieldsetModule,
-    TabViewModule,
     TabsModule,
     MenuModule,
     SidebarModule,

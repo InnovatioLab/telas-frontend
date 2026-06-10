@@ -66,6 +66,8 @@ export class ApplicationLogsComponent implements OnInit {
   private readonly authentication = inject(Authentication);
   private readonly route = inject(ActivatedRoute);
 
+  activeTab: number = 0;
+
   rows = 20;
   first = 0;
   messageDialogVisible = false;
@@ -160,6 +162,11 @@ export class ApplicationLogsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!this.canViewLogs()) {
+      if (this.canViewSmartPlugLogs()) this.activeTab = 1;
+      else if (this.canViewScheduler()) this.activeTab = 2;
+      else if (this.canViewBoxPingLogs()) this.activeTab = 3;
+    }
     this.route.queryParamMap.subscribe((qp) => {
       const src = (qp.get("source") ?? "").trim();
       if (src) {

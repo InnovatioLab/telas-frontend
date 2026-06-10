@@ -260,14 +260,14 @@
           class="form-row social-media-row"
         >
           <div class="form-group">
-            <p-dropdown
+            <p-select
               [options]="socialMediaOptions"
               formControlName="platform"
               placeholder="Select Social Media"
               [disabled]="!isEditMode"
               class="w-full social-dropdown"
             >
-            </p-dropdown>
+            </p-select>
             <app-error
               *ngIf="
                 social.get('platform')?.touched &&

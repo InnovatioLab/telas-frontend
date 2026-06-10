@@ -127,9 +127,9 @@ export class ManagementBoxesComponent implements OnInit {
       this.isAdmin = client?.role === Role.ADMIN;
       const privs = this.isDeveloper || this.isAdmin;
       const perms: string[] = client?.permissions ?? [];
-      this.canViewBoxAddress   = privs || perms.includes('ADMIN_BOX_ADDRESS_VIEW');
-      this.canCreateBoxAddress = privs || perms.includes('ADMIN_BOX_ADDRESS_CREATE');
-      this.canManageBoxAddress = privs || perms.includes('ADMIN_BOX_ADDRESS_MANAGE');
+      this.canViewBoxAddress   = this.isDeveloper || perms.includes('ADMIN_BOX_ADDRESS_VIEW');
+      this.canCreateBoxAddress = this.isDeveloper || perms.includes('ADMIN_BOX_ADDRESS_CREATE');
+      this.canManageBoxAddress = this.isDeveloper || perms.includes('ADMIN_BOX_ADDRESS_MANAGE');
     });
     this.loadInitialData();
   }

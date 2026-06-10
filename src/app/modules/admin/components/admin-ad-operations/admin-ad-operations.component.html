@@ -18,7 +18,7 @@
             (keyup.enter)="onSearch()"
           />
         </span>
-        <p-dropdown
+        <p-select
           [options]="validationOptions"
           [(ngModel)]="validationFilter"
           optionLabel="label"
@@ -28,7 +28,7 @@
           styleClass="validation-dropdown"
           [style]="{ width: 'auto', minWidth: '15rem', maxWidth: '18rem' }"
           (onChange)="onSearch()"
-        ></p-dropdown>
+        ></p-select>
         <button
           pButton
           pRipple

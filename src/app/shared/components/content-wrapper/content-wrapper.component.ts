@@ -38,7 +38,7 @@ import { LayoutService } from "@app/core/service/state/layout.service";
       .content-container {
         max-width: min(100%, 150rem);
         margin: 0 auto;
-        width: 100%;
+        width: 95%;
         box-sizing: border-box;
         min-height: inherit;
         flex: 1;

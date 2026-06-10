@@ -18,7 +18,7 @@
         <div class="form-row">
           <div class="form-field">
             <label for="addressId" class="required">Address</label>
-            <p-dropdown
+            <p-select
               inputId="addressId"
               formControlName="addressId"
               [options]="addressOptions"
@@ -30,7 +30,7 @@
               [showClear]="true"
               [disabled]="loadingPartnerAddresses || addressOptions.length === 0"
               [style]="{ width: '100%' }"
-            ></p-dropdown>
+            ></p-select>
             <small class="help-text" *ngIf="loadingPartnerAddresses"
               >Loading available addresses...</small
             >
@@ -64,7 +64,7 @@
 
         <div class="form-field w-full" *ngIf="isDeveloper">
           <label for="smartPlug">Smart plug</label>
-          <p-dropdown
+          <p-select
             inputId="smartPlug"
             formControlName="smartPlugId"
             [options]="plugOptions"
@@ -72,7 +72,7 @@
             optionValue="value"
             placeholder="Nenhuma"
             [style]="{ width: '100%' }"
-          ></p-dropdown>
+          ></p-select>
         </div>
       </div>
     </div>

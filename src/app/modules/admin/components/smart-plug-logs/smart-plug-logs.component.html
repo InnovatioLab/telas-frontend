@@ -6,7 +6,7 @@
           <div class="filters-grid">
             <div class="field">
               <label for="lvl" class="filter-label">Level</label>
-              <p-dropdown
+              <p-select
                 inputId="lvl"
                 [options]="levelOptions"
                 [(ngModel)]="filterLevel"
@@ -16,7 +16,7 @@
                 styleClass="w-full"
                 appendTo="body"
                 [overlayOptions]="{ appendTo: 'body' }"
-              ></p-dropdown>
+              ></p-select>
             </div>
 
             <div class="field field-search">

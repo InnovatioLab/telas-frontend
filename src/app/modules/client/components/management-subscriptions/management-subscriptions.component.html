@@ -193,7 +193,7 @@
 
       <div class="upgrade-options" *ngIf="availableUpgradeOptions.length > 0">
         <h4>Select New Recurrence</h4>
-        <p-dropdown
+        <p-select
           [options]="availableUpgradeOptions"
           [(ngModel)]="selectedUpgradeRecurrence"
           placeholder="Select upgrade option"
@@ -202,7 +202,7 @@
           [style]="{ width: '100%' }"
           appendTo="body"
           [overlayOptions]="{ appendTo: 'body' }"
-        ></p-dropdown>
+        ></p-select>
       </div>
 
       <div class="upgrade-info" *ngIf="selectedUpgradeRecurrence">

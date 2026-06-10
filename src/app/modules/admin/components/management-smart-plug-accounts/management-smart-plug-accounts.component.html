@@ -10,7 +10,7 @@
     <div class="toolbar-actions toolbar-row">
       <div class="field-inline">
         <label for="boxSel" class="mr-2">Box</label>
-        <p-dropdown
+        <p-select
           id="boxSel"
           [options]="boxes"
           [(ngModel)]="selectedBoxId"
@@ -21,7 +21,7 @@
           filterBy="ip"
           (onChange)="onBoxChange()"
           [style]="{ minWidth: '220px' }"
-        ></p-dropdown>
+        ></p-select>
       </div>
       <button
         pButton
@@ -125,14 +125,14 @@
   <div class="dialog-form" *ngIf="dialogVisible">
     <div class="field" *ngIf="dialogCreate">
       <label for="vend">Vendor</label>
-      <p-dropdown
+      <p-select
         id="vend"
         [options]="vendors"
         [(ngModel)]="formVendor"
         optionLabel="label"
         optionValue="value"
         [style]="{ width: '100%' }"
-      ></p-dropdown>
+      ></p-select>
     </div>
     <div class="field" *ngIf="!dialogCreate">
       <label>Vendor</label>

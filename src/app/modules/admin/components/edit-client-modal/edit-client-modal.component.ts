@@ -25,7 +25,7 @@ import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ClientProfileFormFactory } from "@app/shared/forms/client-profile-form.factory";
 import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
-import { DropdownModule } from "primeng/dropdown";
+import { SelectModule } from "primeng/select";
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 import { InputTextModule } from "primeng/inputtext";
 
@@ -40,7 +40,7 @@ import { InputTextModule } from "primeng/inputtext";
     FormsModule,
     ButtonModule,
     InputTextModule,
-    DropdownModule,
+    SelectModule,
     CardModule,
     IconCloseComponent,
     IconCheckComponent,

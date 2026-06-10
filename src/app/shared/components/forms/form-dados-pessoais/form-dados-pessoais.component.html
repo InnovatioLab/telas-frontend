@@ -102,12 +102,12 @@
       >
         <div [formGroupName]="i" class="grid">
           <div class="col-4 md:col-4 lg:col-3">
-            <p-dropdown
+            <p-select
               [options]="socialMediaOptions"
               formControlName="platform"
               placeholder="Choose"
               class="w-full"
-            ></p-dropdown>
+            ></p-select>
             <app-error
               *ngIf="
                 socialMedia.get('platform')?.touched &&

@@ -336,7 +336,7 @@
     </p>
     <div class="flex flex-column gap-2">
       <label for="successorClient">Client who inherits the screens</label>
-      <p-dropdown
+      <p-select
         inputId="successorClient"
         [(ngModel)]="selectedSuccessorId"
         [options]="successorCandidates"
@@ -348,7 +348,7 @@
         appendTo="body"
         [style]="{ width: '100%' }"
         [ngModelOptions]="{ standalone: true }"
-      ></p-dropdown>
+      ></p-select>
     </div>
     <div class="flex flex-column gap-2">
       <label for="adminPwdSuccessor">Your password (login)</label>

@@ -1,41 +1,25 @@
 <div class="content application-logs">
   @if (showLogsSection()) {
-    <p-tabs styleClass="logs-tabs">
+    <p-tabs [(value)]="activeTab" styleClass="logs-tabs">
       <p-tablist>
-        @if (canViewLogs()) {
-          <p-tab [value]="0">Application logs</p-tab>
-        }
-        @if (canViewSmartPlugLogs()) {
-          <p-tab [value]="1">Smart plug logs</p-tab>
-        }
-        @if (canViewScheduler()) {
-          <p-tab [value]="2">Scheduled jobs</p-tab>
-        }
-        @if (canViewBoxPingLogs()) {
-          <p-tab [value]="3">Box ping logs</p-tab>
-        }
+        <p-tab *ngIf="canViewLogs()" [value]="0">Application logs</p-tab>
+        <p-tab *ngIf="canViewSmartPlugLogs()" [value]="1">Smart plug logs</p-tab>
+        <p-tab *ngIf="canViewScheduler()" [value]="2">Scheduled jobs</p-tab>
+        <p-tab *ngIf="canViewBoxPingLogs()" [value]="3">Box ping logs</p-tab>
       </p-tablist>
       <p-tabpanels>
-        @if (canViewLogs()) {
-          <p-tabpanel [value]="0">
-            <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
-          </p-tabpanel>
-        }
-        @if (canViewSmartPlugLogs()) {
-          <p-tabpanel [value]="1">
-            <app-smart-plug-logs />
-          </p-tabpanel>
-        }
-        @if (canViewScheduler()) {
-          <p-tabpanel [value]="2">
-            <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
-          </p-tabpanel>
-        }
-        @if (canViewBoxPingLogs()) {
-          <p-tabpanel [value]="3">
-            <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
-          </p-tabpanel>
-        }
+        <p-tabpanel *ngIf="canViewLogs()" [value]="0">
+          <ng-container *ngTemplateOutlet="logsFiltersAndTable"></ng-container>
+        </p-tabpanel>
+        <p-tabpanel *ngIf="canViewSmartPlugLogs()" [value]="1">
+          <app-smart-plug-logs />
+        </p-tabpanel>
+        <p-tabpanel *ngIf="canViewScheduler()" [value]="2">
+          <ng-container *ngTemplateOutlet="schedulerTable"></ng-container>
+        </p-tabpanel>
+        <p-tabpanel *ngIf="canViewBoxPingLogs()" [value]="3">
+          <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
+        </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
   } @else {
@@ -49,7 +33,7 @@
           <div class="filters-grid">
             <div class="field">
               <label for="src" class="filter-label">Source</label>
-              <p-dropdown
+              <p-select
                 inputId="src"
                 [options]="sourceOptions"
                 [(ngModel)]="filterSource"
@@ -58,12 +42,11 @@
                 placeholder="All sources"
                 styleClass="w-full"
                 appendTo="body"
-                [overlayOptions]="{ appendTo: 'body' }"
-              ></p-dropdown>
+              ></p-select>
             </div>
             <div class="field">
               <label for="lvl" class="filter-label">Level</label>
-              <p-dropdown
+              <p-select
                 inputId="lvl"
                 [options]="levelOptions"
                 [(ngModel)]="filterLevel"
@@ -72,8 +55,7 @@
                 placeholder="All levels"
                 styleClass="w-full"
                 appendTo="body"
-                [overlayOptions]="{ appendTo: 'body' }"
-              ></p-dropdown>
+              ></p-select>
             </div>
             <div class="field field-search">
               <label for="q" class="filter-label">Message</label>
