@@ -3,19 +3,56 @@
   (onHide)="closeSidebar()"
   [blockScroll]="false"
   [showCloseIcon]="false"
+  [dismissible]="false"
   position="right"
   styleClass="notification-sidebar"
   [style]="{ width: '90%', maxWidth: '550px' }"
 >
   <ng-template pTemplate="header">
-    <h3 class="sidebar-title">Notifications</h3>
+    <div class="notification-header">
+      <div class="notification-header-title">
+        <span class="material-symbols-outlined notification-bell-icon">notifications</span>
+        <span>Notifications</span>
+      </div>
+      <div class="notification-header-actions">
+        <button
+          pButton
+          pRipple
+          type="button"
+          class="p-button-text p-button-rounded mark-all-btn"
+          (click)="markAllAsRead()"
+          pTooltip="Mark all as read"
+          tooltipPosition="left"
+          [disabled]="notificationsService.unreadCount() === 0"
+          aria-label="Mark all as read"
+        >
+          <span class="material-symbols-outlined">done_all</span>
+        </button>
+        <button
+          pButton
+          pRipple
+          type="button"
+          class="p-button-text p-button-rounded mark-all-btn"
+          (click)="closeSidebar()"
+          aria-label="Close notifications"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </div>
   </ng-template>
 
   <ng-template pTemplate="content">
-    @if (notificationsService.visibleNotifications().length > 0) {
+    <div class="filter-bar-sticky">
+      <app-notification-filter-bar
+        (filtersChange)="onFiltersChange($event)"
+      ></app-notification-filter-bar>
+    </div>
+
+    @if (notificationsService.notifications().length > 0) {
       <div class="notification-list w-full p-2">
         @for (
-          notification of notificationsService.visibleNotifications();
+          notification of notificationsService.notifications();
           track notification.id
         ) {
           <div
@@ -31,7 +68,7 @@
           </div>
         }
       </div>
-    } @else {
+    } @else if (!notificationsService.loading()) {
       <div
         class="empty-state flex flex-column align-items-center justify-content-center gap-3 p-5"
       >
@@ -44,33 +81,11 @@
         </div>
       </div>
     }
-  </ng-template>
 
-  <ng-template pTemplate="footer">
-    <div
-      class="flex w-full align-items-center gap-3"
-      [ngClass]="
-        notificationsService.hasMoreToLoad()
-          ? 'justify-content-between'
-          : 'justify-content-end'
-      "
-    >
-      @if (notificationsService.hasMoreToLoad()) {
-        <button
-          pButton
-          label="Load More"
-          (click)="loadMore(); $event.stopPropagation()"
-          styleClass="p-button-secondary p-button-sm"
-        ></button>
-      }
-
-      <button
-        pButton
-        label="Mark All as Read"
-        (click)="markAllAsRead()"
-        styleClass="p-button-text p-button-sm"
-        class="justify-self-end"
-      ></button>
-    </div>
+    @if (notificationsService.loading()) {
+      <div class="loading-indicator">
+        <i class="pi pi-spin pi-spinner"></i>
+      </div>
+    }
   </ng-template>
 </p-sidebar>

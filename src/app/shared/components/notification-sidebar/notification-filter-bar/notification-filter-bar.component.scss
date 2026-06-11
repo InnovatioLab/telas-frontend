@@ -1,0 +1,30 @@
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--cor-cinza-medio, #dee2e6);
+  background: var(--cor-branca, #ffffff);
+
+  .search-wrapper {
+    width: 100%;
+
+    input {
+      width: 100%;
+      font-size: 0.875rem;
+      background: var(--cor-branca, #ffffff);
+      color: var(--cor-preto, #212529);
+      border-color: var(--cor-cinza-medio, #dee2e6);
+    }
+  }
+
+  ::ng-deep .p-multiselect {
+    font-size: 0.875rem;
+    background: var(--cor-branca, #ffffff);
+    border-color: var(--cor-cinza-medio, #dee2e6);
+
+    .p-multiselect-label {
+      color: var(--cor-preto, #212529);
+    }
+  }
+}

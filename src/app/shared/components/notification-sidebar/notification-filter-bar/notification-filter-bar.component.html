@@ -1,0 +1,25 @@
+<div class="filter-bar">
+  <p-iconfield class="search-wrapper">
+    <p-inputicon styleClass="pi pi-search" />
+    <input
+      pInputText
+      type="text"
+      [(ngModel)]="searchText"
+      placeholder="Search notifications..."
+      class="w-full"
+      (input)="onSearchInput()"
+    />
+  </p-iconfield>
+
+  <p-multiselect
+    [options]="CATEGORY_OPTIONS"
+    [(ngModel)]="selectedCategories"
+    (onChange)="onCategoryChange()"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="All categories"
+    styleClass="w-full"
+    [showClear]="true"
+    [showHeader]="false"
+  />
+</div>

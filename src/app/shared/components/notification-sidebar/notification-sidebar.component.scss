@@ -30,10 +30,63 @@
       margin-bottom: 0px !important;
     }
 
-    .sidebar-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0;
+    .notification-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+
+      &-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+      }
+
+      .notification-bell-icon {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-variation-settings: 'FILL' 0, 'wght' 200;
+      }
+
+      .notification-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .mark-all-btn {
+        color: rgba(255, 255, 255, 0.8) !important;
+        padding: 0.35rem !important;
+        width: 2rem !important;
+        height: 2rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        .material-symbols-outlined {
+          font-size: 1.2rem;
+          font-variation-settings: 'FILL' 0, 'wght' 200;
+        }
+
+        &:hover:not(:disabled) {
+          color: #fff !important;
+          background: rgba(255, 255, 255, 0.12) !important;
+        }
+
+        &:disabled {
+          opacity: 0.35 !important;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .filter-bar-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .notification-list {
@@ -260,5 +313,17 @@
   .empty-subtitle {
     font-size: 0.875rem;
     opacity: 0.8;
+  }
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: var(--text-color-secondary, #6b7280);
+
+  i {
+    font-size: 1.25rem;
   }
 }

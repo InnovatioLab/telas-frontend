@@ -5,26 +5,32 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  inject,
   Input,
+  OnChanges,
+  OnDestroy,
   Output,
+  SimpleChanges,
+  inject,
 } from "@angular/core";
 import { Router } from "@angular/router";
-import { NotificationsService } from "@app/core/service/api/notifications.service";
+import {
+  NotificationFilters,
+  NotificationsService,
+} from "@app/core/service/api/notifications.service";
+import { Notification } from "@app/modules/notification/models/notification";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-
-import { Notification } from "@app/modules/notification/models/notification";
+import { NotificationFilterBarComponent } from "./notification-filter-bar/notification-filter-bar.component";
 
 @Component({
   selector: "app-notification-sidebar",
   standalone: true,
-  imports: [CommonModule, PrimengModule, IconsModule],
+  imports: [CommonModule, PrimengModule, IconsModule, NotificationFilterBarComponent],
   templateUrl: "./notification-sidebar.component.html",
   styleUrls: ["./notification-sidebar.component.scss"],
 })
 export class NotificationSidebarComponent
-  implements AfterViewInit, AfterViewChecked
+  implements AfterViewInit, AfterViewChecked, OnChanges, OnDestroy
 {
   @Input() visible: boolean = false;
   @Output() visibleChange = new EventEmitter<boolean>();
@@ -33,8 +39,20 @@ export class NotificationSidebarComponent
   private readonly router = inject(Router);
 
   private linkListenerAdded = false;
+  private currentFilters: NotificationFilters = {};
+  private scrollContainer?: HTMLElement;
+  private boundScrollHandler?: () => void;
 
   constructor(private elRef: ElementRef) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["visible"]?.currentValue === true) {
+      this.notificationsService.resetAndFetch(this.currentFilters);
+      setTimeout(() => this.attachScrollListener(), 80);
+    } else if (changes["visible"]?.currentValue === false) {
+      this.detachScrollListener();
+    }
+  }
 
   ngAfterViewInit() {
     this.addLinkStopPropagationListener();
@@ -42,6 +60,36 @@ export class NotificationSidebarComponent
 
   ngAfterViewChecked() {
     this.addLinkStopPropagationListener();
+  }
+
+  ngOnDestroy(): void {
+    this.detachScrollListener();
+  }
+
+  private attachScrollListener(): void {
+    this.detachScrollListener();
+    this.scrollContainer = document.querySelector(
+      ".notification-sidebar .p-drawer-content"
+    ) as HTMLElement;
+    if (!this.scrollContainer) return;
+
+    this.boundScrollHandler = () => {
+      const { scrollTop, scrollHeight, clientHeight } = this.scrollContainer!;
+      if (scrollHeight - scrollTop - clientHeight < 120) {
+        this.notificationsService.loadNextPage(this.currentFilters);
+      }
+    };
+    this.scrollContainer.addEventListener("scroll", this.boundScrollHandler, {
+      passive: true,
+    });
+  }
+
+  private detachScrollListener(): void {
+    if (this.scrollContainer && this.boundScrollHandler) {
+      this.scrollContainer.removeEventListener("scroll", this.boundScrollHandler);
+    }
+    this.scrollContainer = undefined;
+    this.boundScrollHandler = undefined;
   }
 
   private addLinkStopPropagationListener() {
@@ -62,7 +110,6 @@ export class NotificationSidebarComponent
         return;
       }
 
-      // Evita marcar como lida e evita navegação "hard refresh"
       event.preventDefault();
       event.stopPropagation();
 
@@ -76,7 +123,6 @@ export class NotificationSidebarComponent
         return;
       }
 
-      // Links do backend costumam vir como "/client/..." (path absoluto na SPA)
       const path = href.startsWith("/") ? href : `/${href}`;
       this.router.navigateByUrl(path);
     };
@@ -85,13 +131,13 @@ export class NotificationSidebarComponent
     this.linkListenerAdded = true;
   }
 
-  closeSidebar(): void {
-    this.visibleChange.emit(false);
-    this.notificationsService.resetCount();
+  onFiltersChange(filters: NotificationFilters): void {
+    this.currentFilters = filters;
+    this.notificationsService.resetAndFetch(filters);
   }
 
-  loadMore(): void {
-    this.notificationsService.loadMore();
+  closeSidebar(): void {
+    this.visibleChange.emit(false);
   }
 
   markAsRead(notification: Notification): void {
@@ -103,12 +149,10 @@ export class NotificationSidebarComponent
   }
 
   refresh(): void {
-    this.notificationsService.fetchAllNotifications().subscribe();
+    this.notificationsService.resetAndFetch(this.currentFilters);
   }
 
-  monitoringAccentClasses(
-    notification: Notification
-  ): Record<string, boolean> {
+  monitoringAccentClasses(notification: Notification): Record<string, boolean> {
     const accent = this.monitoringAccent(notification);
     return {
       "notification-item--accent-down": accent === "down",
