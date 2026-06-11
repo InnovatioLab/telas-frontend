@@ -12,9 +12,9 @@
 }
 
 .terms-accept-button.p-button {
-  background-color: var(--cor-primaria-escura) !important;
-  border-color: var(--cor-primaria-escura) !important;
-  color: var(--cor-branca) !important;
+  background-color: var(--cor-primaria-clara) !important;
+  border-color: var(--cor-primaria-clara) !important;
+  color: var(--cor-texto-clara) !important;
 }
 
 .terms-accept-button.p-button:hover:not(:disabled) {
@@ -39,7 +39,7 @@
 
   .terms-of-service-content {
     a {
-      color: var(--cor-primaria-escura) !important;
+      color: var(--cor-primaria-clara) !important;
       text-decoration: underline;
       text-underline-offset: 2px;
     }
@@ -73,7 +73,7 @@
   }
 
   .terms-mailing-footer a {
-    color: var(--cor-primaria-escura) !important;
+    color: var(--cor-primaria-clara) !important;
     text-decoration: underline;
     text-underline-offset: 2px;
   }
@@ -86,25 +86,5 @@ body.dark-theme,
   .terms-accept-notice {
     border-color: var(--surface-border);
     background: color-mix(in srgb, var(--cor-primaria-clara-dark) 14%, var(--surface-card));
-  }
-
-  .terms-accept-notice__text {
-    color: var(--text-color);
-  }
-
-  .terms-accept-button.p-button {
-    background-color: var(--cor-primaria-clara-dark) !important;
-    border-color: var(--cor-primaria-clara-dark) !important;
-    color: var(--cor-texto-clara) !important;
-  }
-
-  ::ng-deep .terms-of-service-content a,
-  ::ng-deep .terms-mailing-footer a {
-    color: var(--cor-primaria-clara-dark) !important;
-  }
-
-  ::ng-deep .terms-of-service-content a:hover,
-  ::ng-deep .terms-mailing-footer a:hover {
-    color: var(--cor-preto-claro-dark) !important;
   }
 }
