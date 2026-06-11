@@ -28,12 +28,12 @@ export interface IBaseResponseDto<T = any> {
   success: boolean;
 
   /**
-   * Dados da resposta
+   * Dados da response
    */
   data?: T;
 
   /**
-   * Mensagem da resposta
+   * Mensagem da response
    */
   message?: string;
 
@@ -43,7 +43,7 @@ export interface IBaseResponseDto<T = any> {
   errorCode?: string;
 
   /**
-   * Timestamp da resposta
+   * Timestamp da response
    */
   timestamp: string;
 

@@ -5,7 +5,7 @@ import { AdService } from '@app/core/service/api/ad.service';
 import { ClientService } from '@app/core/service/api/client.service';
 import { ToastService } from '@app/core/service/state/toast.service';
 import { AuthService } from '@app/core/service/auth/auth.service';
-import { AutenticacaoService } from '@app/core/service/api/autenticacao.service';
+import { AuthenticationService } from '@app/core/service/api/authentication.service';
 import { AdValidationType } from '@app/model/client';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
 import {
@@ -110,12 +110,12 @@ export class MyTelasService {
   async saveQuestionnaireDraft(form: FormGroup): Promise<void> {
     if (form.invalid) {
       form.markAllAsTouched();
-      this.toastService.erro('Please complete all questions.');
+      this.toastService.error('Please complete all questions.');
       return;
     }
     const body = this.buildAnswersFromForm(form);
     await this.clientService.saveBusinessQuestionnaireDraft(body).pipe(take(1)).toPromise();
-    this.toastService.sucesso('Draft saved.');
+    this.toastService.success('Draft saved.');
   }
 
   buildAnswersFromForm(form: FormGroup): BusinessQuestionnaireAnswersDto {
@@ -155,7 +155,7 @@ export class MyTelasService {
   }
 
   private hydrateFromAuthLoggedClientIfEmpty(): void {
-    const autenticacao = this.injector.get(AutenticacaoService, null);
+    const autenticacao = this.injector.get(AuthenticationService, null);
     const logged = autenticacao?.loggedClient ?? null;
     if (!logged?.id) {
       return;
@@ -165,8 +165,8 @@ export class MyTelasService {
     this._hasActiveAdRequest.set(this.adRequestIsOpen(logged.adRequest));
     this._ads.set(Array.isArray(logged.ads) ? logged.ads : []);
     this._isClientDataLoaded.set(true);
-    if (this.clientService.setClientAtual) {
-      this.clientService.setClientAtual(logged as unknown as Client);
+    if (this.clientService.setCurrentClient) {
+      this.clientService.setCurrentClient(logged as unknown as Client);
     }
     try {
       const authService = this.injector.get(AuthService, null);
@@ -197,7 +197,7 @@ export class MyTelasService {
         );
         dto = mergeAuthenticatedClientWithWorkspace(session, workspace);
       } catch {
-        this.toastService.aviso(
+        this.toastService.warn(
           "Could not load ads workspace. Some screens may be incomplete."
         );
       }
@@ -209,7 +209,7 @@ export class MyTelasService {
         email: dto.contact?.email || "",
       };
     } catch (error) {
-      this.toastService.erro("Error loading client data");
+      this.toastService.error("Error loading client data");
       if (this._authenticatedClient() === null) {
         this._isClientDataLoaded.set(false);
       }
@@ -232,8 +232,8 @@ export class MyTelasService {
     this._ads.set(dto.ads || []);
     this._isClientDataLoaded.set(true);
 
-    if (this.clientService.setClientAtual) {
-      this.clientService.setClientAtual(dto as unknown as Client);
+    if (this.clientService.setCurrentClient) {
+      this.clientService.setCurrentClient(dto as unknown as Client);
     }
 
     try {
@@ -329,14 +329,14 @@ export class MyTelasService {
           (a) => a.attachmentName === uploaded.name
         );
         if (!match?.attachmentId) {
-          this.toastService.erro(
+          this.toastService.error(
             "Could not match the uploaded file. Refresh the page and try again."
           );
           throw new Error("ATTACHMENT_MATCH_FAILED");
         }
         ids = [match.attachmentId];
       } else {
-        this.toastService.erro(
+        this.toastService.error(
           "Select exactly one attachment or upload a single file for this request."
         );
         throw new Error("NO_ATTACHMENT_CHOSEN");
@@ -348,7 +348,7 @@ export class MyTelasService {
       };
 
       await this.clientService.createAdRequest(request).toPromise();
-      this.toastService.sucesso("Ad request successfully submitted");
+      this.toastService.success("Ad request successfully submitted");
       this._hasActiveAdRequest.set(true);
       await this.loadClientData();
     } catch (error) {
@@ -365,10 +365,10 @@ export class MyTelasService {
     this._isLoading.set(true);
     try {
       await this.clientService.uploadMultipleAttachments(files).toPromise();
-      this.toastService.sucesso("Files added to your library.");
+      this.toastService.success("Files added to your library.");
       await this.loadClientData();
     } catch (error) {
-      this.toastService.erro("Could not upload files");
+      this.toastService.error("Could not upload files");
       throw error;
     } finally {
       this._isLoading.set(false);
@@ -379,10 +379,10 @@ export class MyTelasService {
     this._isLoading.set(true);
     try {
       await this.clientService.deleteClientAttachment(attachmentId).pipe(take(1)).toPromise();
-      this.toastService.sucesso("Attachment removed");
+      this.toastService.success("Attachment removed");
       await this.loadClientData();
     } catch (error) {
-      this.toastService.erro("Could not remove attachment");
+      this.toastService.error("Could not remove attachment");
       throw error;
     } finally {
       this._isLoading.set(false);
@@ -394,10 +394,10 @@ export class MyTelasService {
 
     try {
       await this.clientService.uploadAttachment(file, attachmentId).toPromise();
-      this.toastService.sucesso("Attachment replaced successfully");
+      this.toastService.success("Attachment replaced successfully");
       await this.loadClientData();
     } catch (error) {
-      this.toastService.erro("Error replacing attachment");
+      this.toastService.error("Error replacing attachment");
       throw error;
     } finally {
       this._isLoading.set(false);
@@ -409,7 +409,7 @@ export class MyTelasService {
 
     try {
       await this.clientService.createAdRequest(request).toPromise();
-      this.toastService.sucesso("Ad request successfully submitted");
+      this.toastService.success("Ad request successfully submitted");
       this._hasActiveAdRequest.set(true);
       await this.loadClientData();
     } catch (error) {
@@ -425,15 +425,15 @@ export class MyTelasService {
     try {
       await this.clientService.validateAd(adId, validation, refusedData).toPromise();
       if (validation === "APPROVED") {
-        this.toastService.sucesso(AD_APPROVED_SUCCESS_TOAST);
+        this.toastService.success(AD_APPROVED_SUCCESS_TOAST);
       } else if (validation === "REJECTED") {
-        this.toastService.aviso(AD_REJECTED_SENT_BACK_TO_ADMIN_TOAST);
+        this.toastService.warn(AD_REJECTED_SENT_BACK_TO_ADMIN_TOAST);
       } else {
-        this.toastService.sucesso("Ad updated.");
+        this.toastService.success("Ad updated.");
       }
       await this.loadClientData();
     } catch (error) {
-      this.toastService.erro("Error validating ad");
+      this.toastService.error("Error validating ad");
       throw error;
     } finally {
       this._isLoading.set(false);
@@ -445,10 +445,10 @@ export class MyTelasService {
 
     try {
       await this.adService.createClientAd(clientId, adDto).toPromise();
-      this.toastService.sucesso("Ad sent for admin review");
+      this.toastService.success("Ad sent for admin review");
       await this.loadClientData();
     } catch (error) {
-      this.toastService.erro("Error uploading ad");
+      this.toastService.error("Error uploading ad");
       throw error;
     } finally {
       this._isLoading.set(false);

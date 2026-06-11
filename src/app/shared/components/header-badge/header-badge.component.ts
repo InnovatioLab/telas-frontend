@@ -9,7 +9,7 @@ import { Component, Input } from "@angular/core";
     <span
       *ngIf="count > 0"
       class="badge flex justify-content-center align-items-center absolute"
-      [attr.aria-label]="count + ' não lidas'"
+      [attr.aria-label]="count + ' unread'"
     >
       {{ displayText }}
     </span>

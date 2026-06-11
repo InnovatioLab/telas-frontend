@@ -40,12 +40,12 @@
                 type="button"
                 class="botao-acao text-center align-items-center"
                 aria-label="View"
-                [id]="'btn-visualizar-' + i"
+                [id]="'btn-view-' + i"
                 (click)="onVisualizar(item)"
                 tooltipStyleClass="pequeno"
                 tooltipPosition="bottom"
               >
-                <span class="material-symbols-outlined search-icon visualizar-icon" [id]="'icon-visualizar-' + i">visibility</span>
+                <span class="material-symbols-outlined search-icon view-icon" [id]="'icon-view-' + i">visibility</span>
               </button>
               <button
                 type="button"
@@ -61,16 +61,16 @@
             </div>
           </ng-container>
 
-          <ng-container *ngSwitchCase="'visualizar'">
+          <ng-container *ngSwitchCase="'view'">
             <div [id]="'acoes-' + i" class="flex text-center justify-content-center align-items-center gap-3">
               <button
                 type="button"
                 class="botao-acao text-center align-items-center"
                 aria-label="View"
-                [id]="'btn-visualizar-' + i"
+                [id]="'btn-view-' + i"
                 (click)="onVisualizar(item)"
               >
-                <span class="material-symbols-outlined search-icon visualizar-icon" [id]="'icon-visualizar-' + i">visibility</span>
+                <span class="material-symbols-outlined search-icon view-icon" [id]="'icon-view-' + i">visibility</span>
               </button>
             </div>
           </ng-container>
@@ -86,7 +86,7 @@
                 type="button"
                 class="botao-acao text-center align-items-center"
                 aria-label="View"
-                [id]="'btn-visualizar-' + i"
+                [id]="'btn-view-' + i"
                 (click)="onVisualizar(item)"
                 pTooltip="View Document"
                 tooltipStyleClass="pequeno"

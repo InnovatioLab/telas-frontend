@@ -14,7 +14,7 @@ import { NotificationsService } from "@app/core/service/api/notifications.servic
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 
-import { Notification } from "@app/modules/notificacao/models/notification";
+import { Notification } from "@app/modules/notification/models/notification";
 
 @Component({
   selector: "app-notification-sidebar",

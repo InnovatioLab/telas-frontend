@@ -30,7 +30,7 @@
 
       <ng-template #noPreview>
         <div class="preview-empty">
-          Selecione um ad em qualquer lista para visualizar.
+          Selecione um ad em qualquer lista para view.
         </div>
       </ng-template>
     </div>
@@ -156,7 +156,7 @@
       type="button"
       label="Back"
       class="p-button-text"
-      (click)="cancelar()"
+      (click)="cancel()"
       [disabled]="saving"
     ></button>
 
@@ -177,7 +177,7 @@
         type="button"
         label="Save"
         icon="pi pi-check"
-        (click)="salvar()"
+        (click)="save()"
         [disabled]="saving || hasBlockError"
       ></button>
     </div>

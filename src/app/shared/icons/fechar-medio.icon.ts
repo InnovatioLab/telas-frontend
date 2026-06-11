@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-icon-fechar-medio',
+  selector: 'app-icon-close-medio',
   standalone: true,
   template: `
 <svg style="display:flex;" xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 14 15" fill="none">

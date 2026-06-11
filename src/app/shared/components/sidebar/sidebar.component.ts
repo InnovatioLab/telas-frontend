@@ -1,18 +1,18 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { Router, RouterModule } from "@angular/router";
-import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { AuthenticationService } from "@app/core/service/api/authentication.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { User } from "@app/model/dto/user";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
-import { DIALOGOS } from "@app/shared/utils/dialogos";
-import { TEXTO_ACAO } from "@app/utility/src";
+import { DialogUtils } from "@app/shared/utils/dialog-config.utils";
+import { DIALOGS } from "@app/shared/utils/dialogs";
+import { ACTION_LABELS } from "@app/utility/src";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { IconDashboardComponent } from "../../icons/dashboard.icon";
 import { IconDocumentoComponent } from "../../icons/documento.icon";
 import { IconSairComponent } from "../../icons/sair.icon";
-import { DialogoComponent } from "../dialogo/dialogo.component";
+import { DialogComponent } from "../dialog/dialog.component";
 
 @Component({
   selector: "app-sidebar",
@@ -44,7 +44,7 @@ export class SidebarComponent implements OnInit {
   ref: DynamicDialogRef | undefined;
 
   constructor(
-    private readonly autenticacao: AutenticacaoService,
+    private readonly autenticacao: AuthenticationService,
     private readonly authentication: Authentication,
     public dialogService: DialogService,
     private readonly router: Router
@@ -85,22 +85,22 @@ export class SidebarComponent implements OnInit {
   }
 
   verificarLogout() {
-    const descricao = DIALOGOS.sairSistema;
+    const descricao = DIALOGS.sairSistema;
 
-    const config = DialogoUtils.criarConfig({
-      titulo: "Confirm Logout",
-      descricao: descricao,
+    const config = DialogUtils.createConfig({
+      title: "Confirm Logout",
+      description: descricao,
       icon: "report",
-      acaoPrimaria: TEXTO_ACAO.simSair,
-      acaoPrimariaCallback: () => {
+      primaryAction: ACTION_LABELS.confirmLogout,
+      primaryActionCallback: () => {
         this.ref.close();
         this.logout();
       },
-      acaoSecundaria: TEXTO_ACAO.naoVoltar,
-      acaoSecundariaCallback: () => {
+      secondaryAction: ACTION_LABELS.cancelGoBack,
+      secondaryActionCallback: () => {
         this.ref.close();
       },
     });
-    this.ref = this.dialogService.open(DialogoComponent, config);
+    this.ref = this.dialogService.open(DialogComponent, config);
   }
 }

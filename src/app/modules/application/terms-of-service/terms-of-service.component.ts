@@ -1,14 +1,14 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { Router, RouterModule } from "@angular/router";
-import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { AuthenticationService } from "@app/core/service/api/authentication.service";
 import { ClientService } from "@app/core/service/api/client.service";
-import { TermoCondicaoService } from "@app/core/service/api/termo-condicao.service";
+import { TermsConditionsService } from "@app/core/service/api/terms-conditions.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { ToastService } from "@app/core/service/state/toast.service";
 import { Role } from "@app/model/client";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
-import { TermoCondicao } from "@app/model/termo-condicao";
+import { TermsConditions } from "@app/model/terms-conditions";
 import { COMPANY_MAILING_ADDRESS } from "@app/shared/constants/company.constants";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
@@ -30,7 +30,7 @@ import { GuestHeaderComponent } from "../components/guest-header/guest-header.co
 export class TermsOfServiceComponent implements OnInit {
   readonly today = new Date();
   readonly companyMailingAddress = COMPANY_MAILING_ADDRESS;
-  termoCondicao: TermoCondicao | null = null;
+  termoCondicao: TermsConditions | null = null;
   client: AuthenticatedClientResponseDto | null = null;
   loading = true;
   error = false;
@@ -38,22 +38,22 @@ export class TermsOfServiceComponent implements OnInit {
   precisaAceitarTermos = false;
 
   constructor(
-    private readonly termoCondicaoService: TermoCondicaoService,
+    private readonly termoCondicaoService: TermsConditionsService,
     private readonly clientService: ClientService,
-    private readonly autenticacaoService: AutenticacaoService,
+    private readonly autenticacaoService: AuthenticationService,
     private readonly authentication: Authentication,
     private readonly toastService: ToastService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.carregarTermoCondicao();
+    this.carregarTermsConditions();
     this.client = this.autenticacaoService.loggedClient;
     this.precisaAceitarTermos = this.client ? !this.client.termAccepted : false;
   }
 
-  carregarTermoCondicao(): void {
-    this.termoCondicaoService.pegarTermoCondicao().subscribe({
+  carregarTermsConditions(): void {
+    this.termoCondicaoService.pegarTermsConditions().subscribe({
       next: (termo) => {
         this.termoCondicao = termo;
       },
@@ -68,7 +68,7 @@ export class TermsOfServiceComponent implements OnInit {
 
   aceitarTermos(): void {
     if (!this.client?.id) {
-      this.toastService.erro("Error: Client not identified");
+      this.toastService.error("Error: Client not identified");
       return;
     }
 
@@ -77,11 +77,11 @@ export class TermsOfServiceComponent implements OnInit {
       next: () => {
         this.clientService.getAuthenticatedClient().subscribe({
           next: (updatedClient) => {
-            this.clientService.setClientAtual(updatedClient as any);
+            this.clientService.setCurrentClient(updatedClient as any);
             this.authentication.updateClientData(updatedClient as any);
             this.client = updatedClient;
             this.aceitandoTermos = false;
-            this.toastService.sucesso("Terms accepted!");
+            this.toastService.success("Terms accepted!");
             this.navigateAfterAccept();
           },
           error: (error) => {
@@ -111,7 +111,7 @@ export class TermsOfServiceComponent implements OnInit {
 
   private handleError(message: string, error: any): void {
     this.error = true;
-    this.toastService.erro(message);
+    this.toastService.error(message);
   }
 
   private navigateAfterAccept(): void {

@@ -3,7 +3,7 @@ import {
   ClientAuthenticatedGuard,
   partnerScreensGuard,
 } from "@app/core/service/guard";
-import { AlterarSenhaComponent } from "@app/shared/components/alterar-senha/alterar-senha.component";
+import { ChangePasswordComponent } from "@app/shared/components/change-password/change-password.component";
 import { ViewEditProfileComponent } from "@app/shared/components/view-edit-profile/view-edit-profile.component";
 import { ClientViewComponent } from "../client/components/client-view/client-view.component";
 import { PartnerMapUploadComponent } from "../client/components/partner-map-upload/partner-map-upload.component";
@@ -49,7 +49,7 @@ export const PARTNER_ROUTES: Route[] = [
       },
       {
         path: "change-password",
-        component: AlterarSenhaComponent,
+        component: ChangePasswordComponent,
         title: "Change Password",
       },
     ],

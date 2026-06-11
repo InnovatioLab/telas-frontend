@@ -3,53 +3,53 @@ import { MessageService } from 'primeng/api';
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  constructor(private notificacaoService: MessageService) {}
+  constructor(private messageService: MessageService) {}
 
-  sucesso(mensagem: string, tempo = 3000) {
-    this.notificacaoService.add({
+  success(message: string, duration = 3000) {
+    this.messageService.add({
       severity: 'success',
       summary: 'Success',
-      detail: mensagem,
-      life: tempo,
+      detail: message,
+      life: duration,
       closable: true
     });
   }
 
-  erro(mensagem: string, tempo = 3000) {
-    this.notificacaoService.add({
+  error(message: string, duration = 3000) {
+    this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: mensagem,
-      life: tempo,
+      detail: message,
+      life: duration,
       closable: true
     });
   }
 
-  info(mensagem: string, tempo = 3000) {
-    this.notificacaoService.add({
+  info(message: string, duration = 3000) {
+    this.messageService.add({
       severity: 'info',
       summary: 'Info',
-      detail: mensagem,
-      life: tempo,
+      detail: message,
+      life: duration,
       closable: true
     });
   }
 
-  aviso(mensagem: string, tempo = 3000) {
-    this.notificacaoService.add({
+  warn(message: string, duration = 3000) {
+    this.messageService.add({
       severity: 'warn',
       summary: 'Warning',
-      detail: mensagem,
-      life: tempo,
+      detail: message,
+      life: duration,
       closable: true
     });
   }
 
-  customizada(severity: string, summary: string, detail: string, life = 3000) {
-    this.notificacaoService.add({ severity, summary, detail, life });
+  custom(severity: string, summary: string, detail: string, life = 3000) {
+    this.messageService.add({ severity, summary, detail, life });
   }
 
-  limpar() {
-    this.notificacaoService.clear();
+  clear() {
+    this.messageService.clear();
   }
 }

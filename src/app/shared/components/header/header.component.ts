@@ -64,7 +64,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   checkoutSidebar: CheckoutListSideBarComponent;
   @Output() monitorsFound = new EventEmitter<MapPoint[]>();
 
-  readonly TEXTO_ACAO = {
+  readonly ACTION_LABELS = {
     entrar: "Sign In",
     cadastrar: "Sign Up",
   };
@@ -128,9 +128,9 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     // Menu subscription
-    this.menuSubscription = this.sidebarService.atualizarLista.subscribe(() => {
-      const isVisible = this.sidebarService.visibilidade();
-      const menuTipo = this.sidebarService.tipo();
+    this.menuSubscription = this.sidebarService.onListUpdate.subscribe(() => {
+      const isVisible = this.sidebarService.visibility();
+      const menuTipo = this.sidebarService.type();
 
       const menuAberto =
         isVisible && (menuTipo === "client-menu" || menuTipo === "admin-menu");
@@ -187,7 +187,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       this.searchSubscriptions.add(
         this.googleMapsService.searchError$.subscribe((error) => {
           if (error) {
-            this.toastService.erro(error);
+            this.toastService.error(error);
           }
         })
       );
@@ -232,19 +232,19 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   onMenuToggle(): void {
     if (!this.headerActions.isLoggedIn()) return;
 
-    const isVisible = this.sidebarService.visibilidade();
-    const menuTipo = this.sidebarService.tipo();
+    const isVisible = this.sidebarService.visibility();
+    const menuTipo = this.sidebarService.type();
 
     if (
       isVisible &&
       (menuTipo === "client-menu" || menuTipo === "admin-menu")
     ) {
-      this.sidebarService.fechar();
+      this.sidebarService.close();
     } else {
       const menuType = this.headerActions.isAdministrator()
         ? "admin-menu"
         : "client-menu";
-      this.sidebarService.abrirMenu(menuType);
+      this.sidebarService.openMenu(menuType);
     }
   }
 

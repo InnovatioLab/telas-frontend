@@ -1,30 +1,30 @@
 import { Route } from '@angular/router';
-import { RecuperarSenhaComponent } from '../manage-access/recuperar-senha/recuperar-senha.component';
-import { ValidacaoRecuperaSenhaComponent } from '../manage-access/validacao-recuperar-senha/validacao-recuperar-senha.component';
-import { CadastroComponent } from './cadastro/cadastro.component';
-import { RetomarCadastroComponent } from './retomar-cadastro/retomar-cadastro.component';
-import { ValidacaoCadastroComponent } from './validacao-cadastro/validacao-cadastro.component';
+import { RecoverPasswordComponent } from '../manage-access/recover-password/recover-password.component';
+import { ValidateRecoverPasswordComponent } from '../manage-access/validate-recover-password/validate-recover-password.component';
+import { RegistrationComponent } from './registration/registration.component';
+import { ResumeRegistrationComponent } from './resume-registration/resume-registration.component';
+import { ValidateRegistrationComponent } from './validate-registration/validate-registration.component';
 
 export const ROUTES: Route[] = [
   {
     path: '',
-    component: CadastroComponent
+    component: RegistrationComponent
   },
   {
     path: 'resume',
-    component: RetomarCadastroComponent
+    component: ResumeRegistrationComponent
   },
   {
     path: 'validate/:login',
-    component: ValidacaoCadastroComponent,
+    component: ValidateRegistrationComponent,
     title: 'Register Validate'
   },
   {
     path: 'recover-password',
-    component: RecuperarSenhaComponent
+    component: RecoverPasswordComponent
   },
   {
     path: 'validate-code-recover-password/:login',
-    component: ValidacaoRecuperaSenhaComponent,
+    component: ValidateRecoverPasswordComponent,
   }
 ];

@@ -5,56 +5,56 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class SidebarService {
-  _visibilidadeSignal = signal<boolean | null>(false);
-  _tipoSignal = signal<string | null>(null);
-  _modoSignal = signal<string | null>(null);
-  _identificarSignal = signal<string | null>(null);
+  _visibilitySignal = signal<boolean | null>(false);
+  _typeSignal = signal<string | null>(null);
+  _modeSignal = signal<string | null>(null);
+  _identifierSignal = signal<string | null>(null);
 
-  visibilidade = this._visibilidadeSignal.asReadonly();
-  tipo = this._tipoSignal.asReadonly();
-  modo = this._modoSignal.asReadonly();
-  identificador = this._identificarSignal.asReadonly();
+  visibility = this._visibilitySignal.asReadonly();
+  type = this._typeSignal.asReadonly();
+  mode = this._modeSignal.asReadonly();
+  identifier = this._identifierSignal.asReadonly();
 
-  sidebarAberta = computed(() => !!this.visibilidade());
+  isSidebarOpen = computed(() => !!this.visibility());
 
-  atualizarLista: Subject<void> = new Subject();
+  onListUpdate: Subject<void> = new Subject();
 
-  visualizar(tipo: string, identificador: string) {
-    this._visibilidadeSignal.update(() => true);
-    this._tipoSignal.update(() => tipo);
-    this._modoSignal.update(() => 'visualizar');
-    this._identificarSignal.update(() => identificador);
-    this.emitirMudanca();
+  view(tipo: string, identificador: string) {
+    this._visibilitySignal.update(() => true);
+    this._typeSignal.update(() => tipo);
+    this._modeSignal.update(() => 'view');
+    this._identifierSignal.update(() => identificador);
+    this.notifyChange();
   }
 
   criar(tipo: string) {
-    this._visibilidadeSignal.update(() => true);
-    this._tipoSignal.update(() => tipo);
-    this._modoSignal.update(() => 'criar');
-    this.emitirMudanca();
+    this._visibilitySignal.update(() => true);
+    this._typeSignal.update(() => tipo);
+    this._modeSignal.update(() => 'create');
+    this.notifyChange();
   }
 
-  editar(tipo: string, identificador: string) {
-    this._visibilidadeSignal.update(() => true);
-    this._tipoSignal.update(() => tipo);
-    this._modoSignal.update(() => 'editar');
-    this._identificarSignal.update(() => identificador);
-    this.emitirMudanca();
+  update(tipo: string, identificador: string) {
+    this._visibilitySignal.update(() => true);
+    this._typeSignal.update(() => tipo);
+    this._modeSignal.update(() => 'update');
+    this._identifierSignal.update(() => identificador);
+    this.notifyChange();
   }
 
-  abrirMenu(tipo: string) {
-    this._visibilidadeSignal.update(() => true);
-    this._tipoSignal.update(() => tipo);
-    this._modoSignal.update(() => 'menu');
-    this.emitirMudanca();
+  openMenu(tipo: string) {
+    this._visibilitySignal.update(() => true);
+    this._typeSignal.update(() => tipo);
+    this._modeSignal.update(() => 'menu');
+    this.notifyChange();
   }
 
-  emitirMudanca() {
-    this.atualizarLista.next();
+  notifyChange() {
+    this.onListUpdate.next();
   }
 
-  fechar() {
-    this._visibilidadeSignal.update(() => false);
-    this.emitirMudanca();
+  close() {
+    this._visibilitySignal.update(() => false);
+    this.notifyChange();
   }
 }

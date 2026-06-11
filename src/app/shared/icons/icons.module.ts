@@ -14,7 +14,6 @@ import { IconDashboardComponent } from "./dashboard.icon";
 import { IconEtiquetaComponent } from "./etiqueta.icon";
 import { IconFavoriteComponent } from "./favorite.icon";
 import { IconGrupoComponent } from "./grupo.icon";
-import { IconFecharComponent } from "./fechar.icon";
 import { IconFilterComponent } from "./filter.icon";
 import { IconHelpComponent } from "./help.icon";
 import { IconHomeComponent } from "./home.icon";
@@ -89,15 +88,14 @@ import { IconRecarregarComponent } from "./recarregar.icon";
     IconFilterComponent,
     IconClockComponent,
     IconPlayComponent,
-    IconFecharComponent,
     IconWifiComponent,
     IconBoxComponent,
     IconUploadComponent,
     IconEtiquetaComponent,
     IconPlusComponent,
     SubscriptionsIconComponent,
-  IconTrashComponent,
-  IconMailComponent,
+    IconTrashComponent,
+    IconMailComponent,
     IconPhoneComponent,
     IconTestingComponent,
     IconPermissionsComponent,
@@ -140,19 +138,18 @@ import { IconRecarregarComponent } from "./recarregar.icon";
     IconFilterComponent,
     IconClockComponent,
     IconPlayComponent,
-    IconFecharComponent,
     IconWifiComponent,
     IconBoxComponent,
     IconUploadComponent,
     IconEtiquetaComponent,
     IconPlusComponent,
     SubscriptionsIconComponent,
-  IconTrashComponent,
-  IconMailComponent,
-  IconPhoneComponent,
+    IconTrashComponent,
+    IconMailComponent,
+    IconPhoneComponent,
     IconTestingComponent,
     IconPermissionsComponent,
-    IconRecarregarComponent
+    IconRecarregarComponent,
   ],
   declarations: [],
 })

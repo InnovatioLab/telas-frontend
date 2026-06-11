@@ -12,7 +12,7 @@ import { ReservedBusinessNameDirective } from "@app/core/directives/reserved-bus
 import { ClientManagementService } from "@app/core/service/api/client-management.service";
 import { ZipCodeService } from "@app/core/service/api/zipcode.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { SenhaDirective } from "@app/core/directives/senha.directive";
+import { PasswordDirective } from "@app/core/directives/password.directive";
 import { AddressRequestDTO } from "@app/model/dto/request/client-request.dto";
 import { CreatePartnerRequestDTO } from "@app/model/dto/request/create-partner-request.dto";
 import { ErrorComponent } from "@app/shared";
@@ -38,7 +38,7 @@ import { InputTextModule } from "primeng/inputtext";
     IconsModule,
     TextOnlyDirective,
     ReservedBusinessNameDirective,
-    SenhaDirective,
+    PasswordDirective,
   ],
   templateUrl: "./create-partner-modal.component.html",
   styleUrls: ["./create-partner-modal.component.scss"],
@@ -132,7 +132,7 @@ export class CreatePartnerModalComponent implements OnInit {
         passwordMismatch: true,
       });
       confirmControl?.markAsTouched();
-      this.toastService.erro("Passwords do not match");
+      this.toastService.error("Passwords do not match");
       return;
     }
 
@@ -146,7 +146,7 @@ export class CreatePartnerModalComponent implements OnInit {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.toastService.aviso(
+      this.toastService.warn(
         "Please fix the highlighted fields before creating the partner."
       );
       return;
@@ -183,7 +183,7 @@ export class CreatePartnerModalComponent implements OnInit {
 
     this.clientManagementService.createPartner(payload).subscribe({
       next: () => {
-        this.toastService.sucesso(
+        this.toastService.success(
           "Partner created successfully. They can sign in with the email and password you set."
         );
         this.ref.close({ success: true });
@@ -191,7 +191,7 @@ export class CreatePartnerModalComponent implements OnInit {
       },
       error: (err: unknown) => {
         if (!(err instanceof Error && (err as Error & { handled?: boolean }).handled)) {
-          this.toastService.erro("Failed to create partner");
+          this.toastService.error("Failed to create partner");
         }
         this.loading = false;
       },

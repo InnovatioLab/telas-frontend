@@ -57,8 +57,8 @@ export class PopUpStepAddListComponent {
       return;
     }
     if (this.selectedPoint.hasAvailableSlots !== true) {
-      this.toastService.aviso(
-        "Esta tela não tem vagas disponíveis no momento."
+      this.toastService.warn(
+        "This screen has no available slots at the moment."
       );
       this.close();
       return;
@@ -74,7 +74,7 @@ export class PopUpStepAddListComponent {
       return;
     }
     if (this.selectedPoint.hasAvailableSlots !== true) {
-      this.toastService.aviso("This screen has no available slots");
+      this.toastService.warn("This screen has no available slots");
       this.close();
       return;
     }
@@ -112,10 +112,10 @@ export class PopUpStepAddListComponent {
 
     this.cartService.addToCart(cartRequest).subscribe({
       next: () => {
-        this.toastService.sucesso('Monitor added to cart');
+        this.toastService.success('Monitor added to cart');
       },
       error: (error) => {
-        this.toastService.erro('Error adding monitor to cart');
+        this.toastService.error('Error adding monitor to cart');
       }
     });
   }
@@ -144,14 +144,14 @@ export class PopUpStepAddListComponent {
 
       this.cartService.update(cartRequest, activeCart.id).subscribe({
         next: () => {
-          this.toastService.sucesso('Monitor added to cart');
+          this.toastService.success('Monitor added to cart');
         },
         error: (error) => {
-          this.toastService.erro('Error updating cart');
+          this.toastService.error('Error updating cart');
         }
       });
     } else {
-      this.toastService.aviso('Monitor already in cart');
+      this.toastService.warn('Monitor already in cart');
     }
   }
 }

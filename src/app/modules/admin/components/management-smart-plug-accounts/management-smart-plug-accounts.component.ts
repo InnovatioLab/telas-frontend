@@ -6,9 +6,9 @@ import {
   SmartPlugAccountAdminService,
   SmartPlugAccountDto,
 } from "@app/core/service/api/smart-plug-account-admin.service";
-import { Authentication } from "@app/core/service/auth/autenthication";
+import { PermissionFacadeService } from "@app/core/service/auth/permission-facade.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+
 import { Box } from "@app/model/box";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
@@ -26,7 +26,7 @@ export class ManagementSmartPlugAccountsComponent implements OnInit {
   private readonly boxService = inject(BoxService);
   private readonly accountApi = inject(SmartPlugAccountAdminService);
   private readonly toast = inject(ToastService);
-  private readonly authentication = inject(Authentication);
+  private readonly permissions = inject(PermissionFacadeService);
 
   loading = false;
   boxes: Box[] = [];
@@ -56,16 +56,12 @@ export class ManagementSmartPlugAccountsComponent implements OnInit {
           this.loadAccounts();
         }
       },
-      error: () => this.toast.erro("Could not load boxes."),
+      error: () => this.toast.error("Could not load boxes."),
     });
   }
 
   get canAdmin(): boolean {
-    const c = this.authentication.client();
-    return hasMonitoringPermission(
-      c,
-      MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE
-    );
+    return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE);
   }
 
   onBoxChange(): void {
@@ -87,7 +83,7 @@ export class ManagementSmartPlugAccountsComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.toast.erro("Could not load smart plug accounts.");
+        this.toast.error("Could not load smart plug accounts.");
       },
     });
   }
@@ -124,7 +120,7 @@ export class ManagementSmartPlugAccountsComponent implements OnInit {
     }
     if (this.dialogCreate) {
       if (!this.selectedBoxId) {
-        this.toast.erro("Select a box.");
+        this.toast.error("Select a box.");
         return;
       }
       this.accountApi
@@ -137,14 +133,14 @@ export class ManagementSmartPlugAccountsComponent implements OnInit {
         })
         .subscribe({
           next: () => {
-            this.toast.sucesso("Account created.");
+            this.toast.success("Account created.");
             this.closeDialog();
             this.loadAccounts();
           },
           error: (err) => {
             const msg =
               err?.error?.message ?? err?.message ?? "Could not create account.";
-            this.toast.erro(msg);
+            this.toast.error(msg);
           },
         });
       return;
@@ -164,14 +160,14 @@ export class ManagementSmartPlugAccountsComponent implements OnInit {
       }
       this.accountApi.update(id, body).subscribe({
         next: () => {
-          this.toast.sucesso("Account updated.");
+          this.toast.success("Account updated.");
           this.closeDialog();
           this.loadAccounts();
         },
         error: (err) => {
           const msg =
             err?.error?.message ?? err?.message ?? "Could not update account.";
-          this.toast.erro(msg);
+          this.toast.error(msg);
         },
       });
     }
@@ -186,10 +182,10 @@ export class ManagementSmartPlugAccountsComponent implements OnInit {
     }
     this.accountApi.delete(row.id).subscribe({
       next: () => {
-        this.toast.sucesso("Account removed.");
+        this.toast.success("Account removed.");
         this.loadAccounts();
       },
-      error: () => this.toast.erro("Could not delete account."),
+      error: () => this.toast.error("Could not delete account."),
     });
   }
 }

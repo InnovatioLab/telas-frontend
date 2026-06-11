@@ -8,9 +8,9 @@ import {
   SmartPlugHistoryPointDto,
   SmartPlugOverviewDto,
 } from "@app/core/service/api/smart-plug-admin.service";
-import { Authentication } from "@app/core/service/auth/autenthication";
+import { PermissionFacadeService } from "@app/core/service/auth/permission-facade.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+
 import { isPrivilegedPanelRole } from "@app/model/client";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
@@ -39,18 +39,11 @@ export class ManagementSmartPlugsComponent implements OnInit {
   constructor(
     private readonly smartPlugAdmin: SmartPlugAdminService,
     private readonly toast: ToastService,
-    private readonly authentication: Authentication
+    private readonly permissions: PermissionFacadeService
   ) {}
 
   get canRunDiscovery(): boolean {
-    const c = this.authentication.client();
-    if (isPrivilegedPanelRole(c?.role)) {
-      return true;
-    }
-    return hasMonitoringPermission(
-      c,
-      MonitoringPermission.MONITORING_SMART_PLUG_DISCOVERY_RUN
-    );
+    return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_SMART_PLUG_DISCOVERY_RUN);
   }
 
   ngOnInit(): void {
@@ -63,7 +56,7 @@ export class ManagementSmartPlugsComponent implements OnInit {
       next: (s: SmartPlugDiscoverySummary) => {
         this.discoveryRunning = false;
         if (s.discoverySkipped === "disabled") {
-          this.toast.erro(
+          this.toast.error(
             "Descoberta de IP desativada no servidor (monitoring.kasa.discovery.enabled)."
           );
           return;
@@ -76,7 +69,7 @@ export class ManagementSmartPlugsComponent implements OnInit {
           `elegíveis: ${s.discoveryEligible ?? "—"}`,
           `IPs gravados: ${s.discoveryResolved ?? "—"}`,
         ];
-        this.toast.sucesso(`Descoberta concluída. ${parts.join(" · ")}`);
+        this.toast.success(`Descoberta concluída. ${parts.join(" · ")}`);
         this.load();
       },
       error: (err: unknown) => {
@@ -86,18 +79,18 @@ export class ManagementSmartPlugsComponent implements OnInit {
             return;
           }
           if (err.status === 403) {
-            this.toast.aviso(
-              "Sem permissão para executar a descoberta de IP."
+            this.toast.warn(
+              "No permission to run IP discovery."
             );
             return;
           }
-          this.toast.erro("Não foi possível executar a descoberta de IP.");
+          this.toast.error("Failed to run IP discovery.");
           return;
         }
         if (err instanceof Error) {
           return;
         }
-        this.toast.erro("Não foi possível executar a descoberta de IP.");
+        this.toast.error("Failed to run IP discovery.");
       },
     });
   }
@@ -111,7 +104,7 @@ export class ManagementSmartPlugsComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.toast.erro("Could not load smart plugs overview.");
+        this.toast.error("Could not load smart plugs overview.");
       },
     });
   }
@@ -149,7 +142,7 @@ export class ManagementSmartPlugsComponent implements OnInit {
       },
       error: () => {
         this.historyLoading = false;
-        this.toast.erro("Could not load smart plug history.");
+        this.toast.error("Could not load smart plug history.");
       },
     });
   }
@@ -164,7 +157,7 @@ export class ManagementSmartPlugsComponent implements OnInit {
     this.smartPlugAdmin.testRead(p.id).subscribe({
       next: (r) => {
         if (!r.reachable || (r.errorCode ?? "").trim().length > 0) {
-          this.toast.erro(`Plug: ${r.errorCode ?? "unreachable"}`);
+          this.toast.error(`Plug: ${r.errorCode ?? "unreachable"}`);
           return;
         }
         const bits: string[] = [];
@@ -180,11 +173,11 @@ export class ManagementSmartPlugsComponent implements OnInit {
         if (r.currentAmperes != null) {
           bits.push(`${r.currentAmperes} A`);
         }
-        this.toast.sucesso(bits.length > 0 ? bits.join(" · ") : "OK");
+        this.toast.success(bits.length > 0 ? bits.join(" · ") : "OK");
         this.load();
       },
       error: () => {
-        this.toast.erro("Failed to read smart plug.");
+        this.toast.error("Failed to read smart plug.");
       },
     });
   }
@@ -195,13 +188,13 @@ export class ManagementSmartPlugsComponent implements OnInit {
       return "";
     }
     if (c === "missing_host" || c === "invalid_host") {
-      return "Aguardando descoberta por MAC (agente da box) ou IP não informado.";
+      return "Awaiting MAC discovery (box agent) or IP not provided.";
     }
     if (c === "timeout") {
       return "Timeout ao comunicar com a tomada.";
     }
     if (c === "unreachable") {
-      return "Tomada inacessível.";
+      return "Outlet unreachable.";
     }
     if (c.startsWith("http_")) {
       return `Sidecar HTTP ${c.replace("http_", "")}`;

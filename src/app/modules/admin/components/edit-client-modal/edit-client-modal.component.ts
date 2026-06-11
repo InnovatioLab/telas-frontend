@@ -195,9 +195,9 @@ export class EditClientModalComponent implements OnInit {
         },
         addresses: addressesDTO,
       };
-      this.clientService.editar(this.client.id!, clientRequest).subscribe({
+      this.clientService.update(this.client.id!, clientRequest).subscribe({
         next: (response) => {
-          this.toastService.sucesso("Client updated successfully");
+          this.toastService.success("Client updated successfully");
           this.ref.close({
             success: true,
             client: { ...this.client, ...formValue },
@@ -205,12 +205,12 @@ export class EditClientModalComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          this.toastService.erro("Failed to update client");
+          this.toastService.error("Failed to update client");
           this.loading = false;
         },
       });
     } else {
-      this.toastService.erro(
+      this.toastService.error(
         "Please fill all required fields and add at least one address"
       );
     }

@@ -5,9 +5,9 @@ import {
   SmartPlugAdminDto,
   SmartPlugAdminService,
 } from "@app/core/service/api/smart-plug-admin.service";
-import { Authentication } from "@app/core/service/auth/autenthication";
+import { PermissionFacadeService } from "@app/core/service/auth/permission-facade.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { RegisterSmartPlugModalComponent } from "../register-smart-plug-modal/register-smart-plug-modal.component";
@@ -36,20 +36,16 @@ export class SmartPlugsHubComponent implements OnInit {
   constructor(
     private readonly smartPlugAdmin: SmartPlugAdminService,
     private readonly toast: ToastService,
-    private readonly authentication: Authentication
+    private readonly permissions: PermissionFacadeService
   ) {}
 
   get canInventoryCreate(): boolean {
-    return hasMonitoringPermission(
-      this.authentication.client(),
-      MonitoringPermission.MONITORING_SMART_PLUG_INVENTORY_CREATE
+    return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_SMART_PLUG_INVENTORY_CREATE
     );
   }
 
   get canAccountsManage(): boolean {
-    return hasMonitoringPermission(
-      this.authentication.client(),
-      MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE
+    return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_SMART_PLUG_ACCOUNTS_MANAGE
     );
   }
 
@@ -59,7 +55,7 @@ export class SmartPlugsHubComponent implements OnInit {
 
   openRegister(): void {
     if (!this.canInventoryCreate) {
-      this.toast.aviso("Sem permissão para registrar tomadas no inventário.");
+      this.toast.warn("No permission to register outlets in inventory.");
       return;
     }
     this.registerVisible.set(true);
@@ -72,7 +68,7 @@ export class SmartPlugsHubComponent implements OnInit {
   onRegistered(dto: SmartPlugAdminDto): void {
     const existing = this.inventory();
     this.inventory.set([dto, ...existing]);
-    this.toast.sucesso("Saved to inventory.");
+    this.toast.success("Saved to inventory.");
   }
 
   loadInventory(): void {
@@ -84,7 +80,7 @@ export class SmartPlugsHubComponent implements OnInit {
       },
       error: () => {
         this.inventoryLoading.set(false);
-        this.toast.erro("Could not load smart plug inventory.");
+        this.toast.error("Could not load smart plug inventory.");
       },
     });
   }

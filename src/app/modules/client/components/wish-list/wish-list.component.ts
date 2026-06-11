@@ -41,7 +41,7 @@ export class WishListComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    const authSub = this.clientService.clientAtual$
+    const authSub = this.clientService.currentClient$
       .pipe(
         take(1),
         switchMap((client) =>

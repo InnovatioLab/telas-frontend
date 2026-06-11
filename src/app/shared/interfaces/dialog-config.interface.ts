@@ -1,12 +1,12 @@
 import { Type } from '@angular/core';
 
-export interface IConfigDialogo {
-  titulo?: string;
-  descricao?: string;
+export interface IDialogConfig {
+  title?: string;
+  description?: string;
   icon?: string | Type<any>;
   iconClass?: string;
-  acaoPrimaria?: string;
-  acaoSecundaria?: string;
-  acaoPrimariaCallback?: () => void;
-  acaoSecundariaCallback?: () => void;
+  primaryAction?: string;
+  secondaryAction?: string;
+  primaryActionCallback?: () => void;
+  secondaryActionCallback?: () => void;
 }

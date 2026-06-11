@@ -3,7 +3,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { IconFecharComponent } from '../../icons/fechar.icon';
+import { IconCloseComponent } from '../../icons/close.icon';
 import { LayoutUtils } from '../../utils/layout.utils';
 import { PdfViewerData } from '../../services/pdf-viewer.service';
 
@@ -13,7 +13,7 @@ import { PdfViewerData } from '../../services/pdf-viewer.service';
   imports: [
     CommonModule,
     PdfViewerModule,
-    IconFecharComponent
+    IconCloseComponent
   ],
   templateUrl: './pdf-viewer-modal.component.html',
   styleUrls: ['./pdf-viewer-modal.component.scss']

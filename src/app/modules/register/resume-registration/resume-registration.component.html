@@ -1,0 +1,58 @@
+<app-card-centered type="formulario-pequeno">
+  <ng-template pTemplate="content">
+    <ng-container>
+      <h5 id="titulo" class="text-center text-xlarge-bold mt-0 title">
+        Resume Registration
+      </h5>
+    </ng-container>
+
+    <form
+      [formGroup]="form"
+      class="my-4 flex flex-column justify-content-center sm:justify-content-between"
+    >
+      <div class="col-12">
+        <span id="descricao" class="font-normal recover-text"
+          >To resume your registration, fill in the field below.</span
+        >
+      </div>
+      <div class="col-12 mt-2">
+        <label for="email" id="lb-email" class="required">Email</label>
+        <input
+          pInputText
+          type="email"
+          formControlName="email"
+          id="email"
+          class="w-full input-form"
+          placeholder="emailexample@mail.com"
+          maxLength="255"
+        />
+        <app-error
+          id="error-msg-email"
+          [control]="form.get('email')"
+        ></app-error>
+      </div>
+
+      <div
+        class="flex flex-column-reverse md:flex-row md:justify-content-between mt-5 px-2"
+      >
+        <button
+          pButton
+          id="btnSecundario"
+          class="w-full md:w-4 btn-outline my-2 justify-content-center"
+          (click)="goBack()"
+        >
+          {{ ACTION_LABELS.back }}
+        </button>
+        <button
+          id="botao-proximo"
+          pButton
+          class="w-full md:w-4 btn-fill my-2 justify-content-center"
+          (click)="save()"
+          [disabled]="invalidarBotao || form.invalid"
+        >
+          {{ ACTION_LABELS.next }}
+        </button>
+      </div>
+    </form>
+  </ng-template>
+</app-card-centered>

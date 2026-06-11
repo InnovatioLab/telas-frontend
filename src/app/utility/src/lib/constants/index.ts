@@ -1,3 +1,3 @@
-export * from './mensagens.constants'
-export * from './texto-acao.constants'
+export * from './messages.constants'
+export * from './action-labels.constants'
 export * from './campos-regex'

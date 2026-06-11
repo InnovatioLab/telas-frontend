@@ -44,7 +44,7 @@ export class SearchBarComponent {
           if (monitors && monitors.length > 0) {
             const mapPoints = this.monitorMapPointMapper.convertToMapPoints(monitors);
             this.monitorsFound.emit(mapPoints);
-            this.toastService.sucesso(
+            this.toastService.success(
               `Found ${monitors.length} monitors near ZIP code ${searchTextCopy}`
             );
             this.searchText = "";
@@ -52,14 +52,14 @@ export class SearchBarComponent {
         },
         error: (error) => {
           this.loadingService.setLoading(false, "address-search");
-          this.toastService.erro(
+          this.toastService.error(
             `Error searching monitors with ZIP code ${searchTextCopy}`
           );
         },
       });
     } else {
       this.loadingService.setLoading(false, "address-search");
-      this.toastService.erro("Please enter a valid 5-digit ZIP code");
+      this.toastService.error("Please enter a valid 5-digit ZIP code");
     }
   }
 

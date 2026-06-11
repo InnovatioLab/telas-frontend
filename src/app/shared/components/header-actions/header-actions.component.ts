@@ -32,7 +32,7 @@ import { HeaderBadgeComponent } from "@app/shared/components/header-badge/header
             ? 'Notificações, ' + notificationCount + ' não lidas'
             : 'Notificações'
         "
-        title="Notificações"
+        title="Notifications"
       >
         <app-icon-notifications
           class="icon cursor-pointer on-primary-header"

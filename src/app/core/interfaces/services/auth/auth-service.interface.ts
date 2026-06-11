@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
 import { Client } from '@app/model/client';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
-import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
-import { SenhaUpdate } from '@app/model/dto/request/senha-update.request';
+import { PasswordRequestDto } from '@app/model/dto/request/password-request.dto';
+import { PasswordUpdateRequest } from '@app/model/dto/request/password-update.request';
 
 export interface IAuthService {
   // Authentication state
@@ -23,8 +23,8 @@ export interface IAuthService {
 
   // Password management
   forgotPassword(email: string): Observable<void>;
-  resetPassword(email: string, request: SenhaRequestDto): Observable<void>;
-  changePassword(request: SenhaUpdate): Observable<void>;
+  resetPassword(email: string, request: PasswordRequestDto): Observable<void>;
+  changePassword(request: PasswordUpdateRequest): Observable<void>;
 
   // Role and permissions
   isAdmin(): boolean;

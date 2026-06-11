@@ -60,7 +60,7 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     this.errorSubscription = this.searchMonitorsService.error$.subscribe(
       (error) => {
         if (error) {
-          this.toastService.erro(error);
+          this.toastService.error(error);
         }
       }
     );
@@ -189,14 +189,14 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
     this.lastSearchTime = now;
 
     if (!this.isInAllowedRoutes()) {
-      this.toastService.aviso(
+      this.toastService.warn(
         "Search is only available in the application area"
       );
       return;
     }
 
     if (!this.isValidZipCode(this.searchText)) {
-      this.toastService.erro("Please enter a valid 5-digit ZIP code");
+      this.toastService.error("Please enter a valid 5-digit ZIP code");
       return;
     }
 
@@ -213,14 +213,14 @@ export class SearchSectionComponent implements OnInit, OnDestroy {
         this.monitorsFound.emit({monitors, zipCode: this.searchText});
 
         if (monitors && monitors.length > 0) {
-          this.toastService.sucesso(
+          this.toastService.success(
             `Found ${monitors.length} monitors near ZIP code ${this.searchText}`
           );
         } else {
           const emptyMessage =
             this.searchMonitorsService.getLastEmptyResultMessage() ??
             "No results found! Try changing the filters or the search term.";
-          this.toastService.aviso(emptyMessage);
+          this.toastService.warn(emptyMessage);
         }
 
         this.searchText = "";

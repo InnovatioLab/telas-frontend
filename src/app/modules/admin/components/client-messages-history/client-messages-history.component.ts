@@ -42,7 +42,7 @@ export class ClientMessagesHistoryComponent implements OnInit {
   ngOnInit(): void {
     this.clientId = this.route.snapshot.paramMap.get("clientId") || "";
     if (!this.clientId) {
-      this.toastService.erro("Client not found.");
+      this.toastService.error("Client not found.");
       return;
     }
     this.notificationsService.markClientMessagesAsRead(this.clientId).subscribe();
@@ -72,7 +72,7 @@ export class ClientMessagesHistoryComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.toastService.erro("Failed to load message history.");
+        this.toastService.error("Failed to load message history.");
         this.loading = false;
       },
     });

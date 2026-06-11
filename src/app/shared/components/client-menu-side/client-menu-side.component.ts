@@ -1,19 +1,19 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit, OnDestroy, inject } from "@angular/core";
 import { Router } from "@angular/router";
-import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { AuthenticationService } from "@app/core/service/api/authentication.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { PARTNER_PORTAL_ROUTES } from "@app/core/constants/partner-api.paths";
 import { Client, isPartnerRole, isPrivilegedPanelRole } from "@app/model/client";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
-import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { DialogUtils } from "@app/shared/utils/dialog-config.utils";
 import { DialogModule } from "primeng/dialog";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { Subscription, of } from "rxjs";
 import { switchMap, take } from "rxjs/operators";
 import { BaseSidebarComponent, MenuItem } from "../base-sidebar/base-sidebar.component";
-import { DialogoComponent } from "../dialogo/dialogo.component";
+import { DialogComponent } from "../dialog/dialog.component";
 
 @Component({
   selector: "app-client-menu-side",
@@ -23,19 +23,19 @@ import { DialogoComponent } from "../dialogo/dialogo.component";
     DialogModule,
     BaseSidebarComponent,
   ],
-  providers: [DialogService, DialogoUtils],
+  providers: [DialogService, DialogUtils],
   templateUrl: "./client-menu-side.component.html",
   styleUrls: ["./client-menu-side.component.scss"],
 })
 export class ClientMenuSideComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly authentication = inject(Authentication);
-  private readonly authenticationService = inject(AutenticacaoService);
+  private readonly authenticationService = inject(AuthenticationService);
   private readonly dialogService = inject(DialogService);
   private readonly clientService = inject(ClientService);
 
   showPaymentModal = false;
-  refDialogo: DynamicDialogRef | undefined;
+  dialogRef: DynamicDialogRef | undefined;
 
   private static readonly PARTNER_ONLY_MENU_IDS = new Set([
     "partnerScreens",
@@ -83,7 +83,7 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
 
   loadAuthenticatedClient(): void {
     this.loading = true;
-    this.clientService.clientAtual$
+    this.clientService.currentClient$
       .pipe(
         take(1),
         switchMap((client) =>
@@ -191,22 +191,22 @@ export class ClientMenuSideComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    const config = DialogoUtils.exibirAlerta(
+    const config = DialogUtils.showAlert(
       "Are you sure you want to logout?",
       {
-        acaoPrimaria: "Logout",
-        acaoPrimariaCallback: () => {
-          this.refDialogo?.close();
+        primaryAction: "Logout",
+        primaryActionCallback: () => {
+          this.dialogRef?.close();
           this.desconectar();
         },
-        acaoSecundaria: "Stay",
-        acaoSecundariaCallback: () => {
-          this.refDialogo?.close();
+        secondaryAction: "Stay",
+        secondaryActionCallback: () => {
+          this.dialogRef?.close();
         },
       }
     );
 
-    this.refDialogo = this.dialogService.open(DialogoComponent, config);
+    this.dialogRef = this.dialogService.open(DialogComponent, config);
   }
 
   desconectar() {

@@ -1,9 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { RouterModule } from "@angular/router";
-import { PoliticaPrivacidadeService } from "@app/core/service/api/politica-privacidade.service";
+import { PrivacyPolicyService } from "@app/core/service/api/privacy-policy.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
-import { PoliticaPrivacidade } from "@app/model/politica-privacidade";
+import { PrivacyPolicy } from "@app/model/privacy-policy";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { GuestHeaderComponent } from "../components/guest-header/guest-header.component";
@@ -23,24 +23,24 @@ import { GuestHeaderComponent } from "../components/guest-header/guest-header.co
 })
 export class PrivacyPolicyComponent implements OnInit {
   readonly today = new Date();
-  politicaPrivacidade: PoliticaPrivacidade | null = null;
+  politicaPrivacidade: PrivacyPolicy | null = null;
   loading = true;
   error = false;
 
   constructor(
-    private readonly politicaPrivacidadeService: PoliticaPrivacidadeService,
+    private readonly politicaPrivacidadeService: PrivacyPolicyService,
     private readonly authentication: Authentication
   ) {}
 
   ngOnInit() {
-    this.carregarPoliticaPrivacidade();
+    this.carregarPrivacyPolicy();
   }
 
-  carregarPoliticaPrivacidade() {
+  carregarPrivacyPolicy() {
     this.loading = true;
     this.error = false;
 
-    this.politicaPrivacidadeService.pegarPoliticaPrivacidade().subscribe({
+    this.politicaPrivacidadeService.pegarPrivacyPolicy().subscribe({
       next: (politica) => {
         this.politicaPrivacidade = politica;
         this.loading = false;

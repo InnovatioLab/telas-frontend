@@ -8,7 +8,7 @@ import { BusinessQuestionnaireAnswersDto } from "@app/model/dto/request/business
 import { ClientRequestDTO } from "@app/model/dto/request/client-request.dto";
 import { RefusedAdRequestDto } from "@app/model/dto/request/refused-ad-request.dto";
 import { AttachmentRequestDto } from "@app/model/dto/request/attachment-request.dto";
-import { SenhaRequestDto } from "@app/model/dto/request/senha-request.dto";
+import { PasswordRequestDto } from "@app/model/dto/request/password-request.dto";
 import {
   AdRequestResponseDto,
   PendingAdAdminValidationResponseDto,
@@ -32,7 +32,7 @@ import { FilterClientRequestDto } from "./client-management.service";
 export class ClientService {
   cancelarEdicao$: Subject<boolean> = new Subject<boolean>();
 
-  public clientAtual$ = new BehaviorSubject<Client | null>(null);
+  public currentClient$ = new BehaviorSubject<Client | null>(null);
 
   constructor(
     @Inject(CLIENT_REPOSITORY_TOKEN) private readonly clientRepository: IClientRepository,
@@ -43,12 +43,12 @@ export class ClientService {
     return this.clientRepository.saveWithLoadingOption(perfil, ignorarLoading);
   }
 
-  editar(id: string, perfil: ClientRequestDTO) {
-    return this.clientRepository.editar(id, perfil);
+  update(id: string, perfil: ClientRequestDTO) {
+    return this.clientRepository.update(id, perfil);
   }
 
-  criarSenha(login: string, request: SenhaRequestDto) {
-    return this.clientRepository.criarSenha(login, request);
+  createPassword(login: string, request: PasswordRequestDto) {
+    return this.clientRepository.createPassword(login, request);
   }
 
   atualizardadosPerfil(id: string, client: ClientRequestDTO) {
@@ -79,15 +79,15 @@ export class ClientService {
     return this.clientRepository.buscaClientPorIdentificador(email);
   }
 
-  setClientAtual(client: Client | null) {
-    this.clientAtual$.next(client);
+  setCurrentClient(client: Client | null) {
+    this.currentClient$.next(client);
     if (client) {
       localStorage.setItem("telas_token_user", JSON.stringify(client));
     }
   }
 
   getClientAtual(): Client | null {
-    return this.clientAtual$.getValue();
+    return this.currentClient$.getValue();
   }
 
   getAllAds(

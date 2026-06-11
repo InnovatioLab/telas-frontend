@@ -1,0 +1,41 @@
+<div *ngIf="show" id="dialogo-container" class="dialogo-style">
+  <div class="w-full text-center flex flex-column justify-content-center">
+
+    <div class="icone-custon">
+      <ng-container *ngIf="iconComponent; else iconeString">
+        <ng-container *ngComponentOutlet="iconComponent"></ng-container>
+      </ng-container>
+      <ng-template #iconeString>
+        <span *ngIf="data.icon && typeof data.icon === 'string' && data.icon !== 'report'" [ngClass]="data.iconClass ?? ''" [class]="'icon-fill material-symbols-outlined dialogo-icone ' + data.icon" aria-hidden="true">
+          {{ data.icon }}
+        </span>
+        <app-icon-atencao *ngIf="data.icon === 'report'" aria-hidden="true"/>
+      </ng-template>
+    </div>
+    <span class="dialogo-titulo">
+      {{ data.title }}
+    </span>
+  </div>
+  <div
+    id="test-descricao-dialog"
+    class="w-full sm:text-justify md:text-center lg:text-center dialogo-descricao"
+    [innerHTML]="safeDescription"
+  ></div>
+  <div
+    id="container-acoes"
+    [style]="data?.secondaryAction && data?.primaryAction ? 'justify-content: space-between' : 'justify-content: center'"
+  >
+    <button
+      pButton
+      id="btnSecundario"
+      class="btn-outline"
+      *ngIf="data?.secondaryAction"
+      (click)="data?.secondaryActionCallback()"
+    >
+      {{ data.secondaryAction }}
+    </button>
+    <button pButton id="btnPrimario" class="btn-fill" *ngIf="data?.primaryAction" (click)="data?.primaryActionCallback()">
+      {{ data.primaryAction }}
+    </button>
+  </div>
+</div>

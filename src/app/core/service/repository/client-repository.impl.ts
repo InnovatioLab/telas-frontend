@@ -15,7 +15,7 @@ import { PaginationResponseDto } from '@app/model/dto/response/pagination-respon
 import { AdRequestResponseDto, PendingAdAdminValidationResponseDto } from '@app/model/dto/response/ad-request-response.dto';
 import { AdRequestMediaResponseDto } from '@app/model/dto/response/ad-request-media-response.dto';
 import { WishlistResponseDto } from '@app/model/dto/response/wishlist-response.dto';
-import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
+import { PasswordRequestDto } from '@app/model/dto/request/password-request.dto';
 import { AttachmentRequestDto } from '@app/model/dto/request/attachment-request.dto';
 import { ClientAdRequestDto } from '@app/model/dto/request/client-ad-request.dto';
 import { BusinessQuestionnaireAnswersDto } from '@app/model/dto/request/business-questionnaire-answers.dto';
@@ -75,11 +75,11 @@ export class ClientRepositoryImpl extends BaseRepository<Client, ClientRequestDT
     return this.http.post(`${this.baseUrl}`, client, headers);
   }
 
-  editar(id: string, client: ClientRequestDTO): Observable<any> {
+  override update(id: string, client: Partial<ClientRequestDTO>): Observable<any> {
     return this.http.put(`${this.baseUrl}/${id}`, client, this.getHeaders());
   }
 
-  criarSenha(login: string, request: SenhaRequestDto): Observable<any> {
+  createPassword(login: string, request: PasswordRequestDto): Observable<any> {
     return this.http.patch(
       `${this.baseUrl}/create-password/${login}`,
       request,

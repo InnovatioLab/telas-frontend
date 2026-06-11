@@ -17,7 +17,7 @@ import { LoadingService } from "../../../../core/service/state/loading.service";
 import { MapPoint } from "../../../../core/service/state/map-point.interface";
 import { MapsComponent } from "../../../../shared/components/maps/maps.component";
 import { SearchSectionComponent } from "../../../../shared/components/search-section/search-section.component";
-import { SidebarMapaComponent } from "../../../../shared/components/sidebar-mapa/sidebar-mapa.component";
+import { MapSidebarComponent } from "../../../../shared/components/map-sidebar/map-sidebar.component";
 import { MapViewportFacadeService } from "../../../client/services/map-viewport-facade.service";
 
 @Component({
@@ -29,7 +29,7 @@ import { MapViewportFacadeService } from "../../../client/services/map-viewport-
     FormsModule,
     SearchSectionComponent,
     MapsComponent,
-    SidebarMapaComponent,
+    MapSidebarComponent,
   ],
   templateUrl: "./admin-view.component.html",
   styleUrls: ["./admin-view.component.scss"],

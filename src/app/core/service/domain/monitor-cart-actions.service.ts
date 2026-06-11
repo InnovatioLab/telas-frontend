@@ -22,8 +22,8 @@ export class MonitorCartActionsService {
 
   addMonitorToCart(monitor: MapPoint): void {
     if (monitor.hasAvailableSlots !== true) {
-      this.toastService.aviso(
-        "Esta tela não tem vagas disponíveis no momento. Use a lista de desejos para ser avisado quando houver disponibilidade."
+      this.toastService.warn(
+        "This screen has no available slots. Add it to your wishlist to be notified when slots become available."
       );
       return;
     }
@@ -54,10 +54,10 @@ export class MonitorCartActionsService {
 
     this.cartService.addToCart(cartRequest).subscribe({
       next: () => {
-        this.toastService.sucesso("Screen added to cart");
+        this.toastService.success("Screen added to cart");
       },
       error: () => {
-        this.toastService.erro("Error adding to cart");
+        this.toastService.error("Error adding to cart");
       },
     });
   }
@@ -89,10 +89,10 @@ export class MonitorCartActionsService {
 
       this.cartService.update(cartRequest, activeCart.id).subscribe({
         next: () => {
-          this.toastService.sucesso("Cart updated successfully");
+          this.toastService.success("Cart updated successfully");
         },
         error: () => {
-          this.toastService.erro("Error updating cart");
+          this.toastService.error("Error updating cart");
         },
       });
     }

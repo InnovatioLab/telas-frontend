@@ -20,7 +20,7 @@ export function getMonitorAddressLines(
   if (desc) {
     return { line1: desc };
   }
-  return { line1: "Endereço indisponível" };
+  return { line1: "Address unavailable" };
 }
 
 export function buildMonitorAddressLabel(fields: MonitorAddressFields): string {

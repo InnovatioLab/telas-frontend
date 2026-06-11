@@ -65,7 +65,7 @@ export class PartnerPendingAdsComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.toastService.erro("Failed to load ads for review");
+        this.toastService.error("Failed to load ads for review");
         this.loading = false;
       },
     });
@@ -91,7 +91,7 @@ export class PartnerPendingAdsComponent implements OnInit {
     this.clientService.validateAd(ad.id, "APPROVED").subscribe({
       next: () => {
         this.submitting = false;
-        this.toastService.sucesso(AD_APPROVED_SUCCESS_TOAST);
+        this.toastService.success(AD_APPROVED_SUCCESS_TOAST);
         this.notificationsService
           .refreshAndMarkReferencesAsRead([
             "AD_RECEIVED",
@@ -102,7 +102,7 @@ export class PartnerPendingAdsComponent implements OnInit {
       },
       error: () => {
         this.submitting = false;
-        this.toastService.erro("Failed to approve ad");
+        this.toastService.error("Failed to approve ad");
       },
     });
   }
@@ -137,13 +137,13 @@ export class PartnerPendingAdsComponent implements OnInit {
       .subscribe({
         next: () => {
           this.submitting = false;
-          this.toastService.aviso(AD_REJECTED_SENT_BACK_TO_ADMIN_TOAST);
+          this.toastService.warn(AD_REJECTED_SENT_BACK_TO_ADMIN_TOAST);
           this.closeRejectDialog();
           this.loadAds();
         },
         error: () => {
           this.submitting = false;
-          this.toastService.erro("Failed to reject ad");
+          this.toastService.error("Failed to reject ad");
         },
       });
   }

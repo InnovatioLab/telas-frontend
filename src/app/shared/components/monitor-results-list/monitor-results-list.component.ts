@@ -101,10 +101,10 @@ export class MonitorResultsListComponent implements OnChanges {
     event.stopPropagation();
     this.clientService.addToWishlist(item.id).subscribe({
       next: () => {
-        this.toastService.sucesso("Screen added to wishlist");
+        this.toastService.success("Screen added to wishlist");
       },
       error: () => {
-        this.toastService.erro("Error adding to wishlist");
+        this.toastService.error("Error adding to wishlist");
       },
     });
   }
@@ -125,7 +125,7 @@ export class MonitorResultsListComponent implements OnChanges {
       return name;
     }
     const label = buildMonitorAddressLabel(item);
-    if (label !== "Endereço indisponível") {
+    if (label !== "Address unavailable") {
       return label;
     }
     return item.id ? `Location ${item.id.slice(0, 8)}…` : "Location";

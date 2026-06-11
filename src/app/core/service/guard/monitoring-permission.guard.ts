@@ -59,7 +59,7 @@ export class MonitoringPermissionGuard implements CanActivate {
     Client | AuthenticatedClientResponseDto | null
   > {
     return firstValueFrom(
-      this.clientService.clientAtual$.pipe(
+      this.clientService.currentClient$.pipe(
         take(1),
         switchMap((c) =>
           c ? of(c) : this.clientService.getAuthenticatedClient()

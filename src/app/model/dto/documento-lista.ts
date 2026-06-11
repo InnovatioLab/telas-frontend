@@ -1,5 +1,5 @@
 export interface IDocumentoLista {
-  titulo: string;
+  title: string;
   grupo: string;
   subgrupo: string;
   status: string;

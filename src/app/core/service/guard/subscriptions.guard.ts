@@ -8,7 +8,7 @@ export const SubscriptionsGuard: CanActivateFn = () => {
   const router = inject(Router);
   const clientService = inject(ClientService);
 
-  return clientService.clientAtual$.pipe(
+  return clientService.currentClient$.pipe(
     take(1),
     switchMap((client) =>
       client ? of(client) : clientService.getAuthenticatedClient()

@@ -19,8 +19,8 @@ import {
 import { IAuthService } from '@app/core/interfaces/services/auth/auth-service.interface';
 import { Client, isPrivilegedPanelRole } from '@app/model/client';
 import { AuthenticatedClientResponseDto } from '@app/model/dto/response/authenticated-client-response.dto';
-import { SenhaRequestDto } from '@app/model/dto/request/senha-request.dto';
-import { SenhaUpdate } from '@app/model/dto/request/senha-update.request';
+import { PasswordRequestDto } from '@app/model/dto/request/password-request.dto';
+import { PasswordUpdateRequest } from '@app/model/dto/request/password-update.request';
 import { TokenStorageService } from './token-storage.service';
 import { AuthStateService } from './auth-state.service';
 import { ClientService } from '../api/client.service';
@@ -210,29 +210,17 @@ export class AuthService implements IAuthService {
     if (!refreshToken) {
       return throwError(() => new Error('No refresh token available'));
     }
-
-    return this.http.post<{ data: { id_token: string } }>(`${this.baseUrl}refresh-token`, {
+    return this.httpBackend.post<{ data: { id_token: string } }>(`${this.baseUrl}/refresh-token`, {
       refresh_token: refreshToken
     }).pipe(
       map(response => {
         const newToken = response.data.id_token;
-        this.tokenStorage.setToken(newToken);
+        AuthenticationStorage.setToken(newToken);
         return newToken;
       }),
       catchError(error => {
         this.logout();
         return throwError(() => error);
-      })
-    );
-  }
-
-  atualizarToken(): Observable<{ data: { id_token: string } }> {
-    return this.httpBackend.post<{ data: { id_token: string } }>(`${this.baseUrl}/refresh-token`, {
-      refresh_token: AuthenticationStorage.getRefreshToken()
-    }).pipe(
-      map(response => {
-        AuthenticationStorage.setToken(response.data.id_token);
-        return response;
       })
     );
   }
@@ -300,8 +288,8 @@ export class AuthService implements IAuthService {
     AuthenticationStorage.setDataUser(JSON.stringify(client));
     
     try {
-      if (this.clientService && typeof this.clientService.setClientAtual === 'function') {
-        this.clientService.setClientAtual(client);
+      if (this.clientService && typeof this.clientService.setCurrentClient === 'function') {
+        this.clientService.setCurrentClient(client);
       }
     } catch (e) {
     }
@@ -341,30 +329,18 @@ export class AuthService implements IAuthService {
     return this.http.post<void>(`${this.baseUrl}recovery-password/${email}`, {});
   }
 
-  recuperarSenha(login: string): Observable<void> {
+  recoverPassword(login: string): Observable<void> {
     return this.forgotPassword(login);
   }
 
-  resetPassword(email: string, request: SenhaRequestDto): Observable<void> {
+  resetPassword(email: string, request: PasswordRequestDto): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}reset-password/${email}`, request);
   }
 
-  redefinirSenha(login: string, request: SenhaRequestDto): Observable<void> {
-    return this.resetPassword(login, request);
-  }
-
-  changePassword(request: SenhaUpdate): Observable<void> {
+  changePassword(request: PasswordUpdateRequest): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}update-password`, request, {
       headers: {
         Authorization: `Bearer ${this.getToken()}`
-      }
-    });
-  }
-
-  alterarSenha(request: SenhaUpdate): Observable<SenhaUpdate> {
-    return this.http.patch<SenhaUpdate>(`${this.baseUrl}update-password`, request, {
-      headers: {
-        Authorization: `Bearer ${this.tokenStorage.getToken()}`
       }
     });
   }

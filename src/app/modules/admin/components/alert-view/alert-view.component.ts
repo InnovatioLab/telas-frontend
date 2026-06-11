@@ -15,7 +15,7 @@ import { ToastService } from "@app/core/service/state/toast.service";
 import { BaseModule } from "@app/shared/base/base.module";
 import { MapsComponent } from "@app/shared/components/maps/maps.component";
 import { PopUpStepAddListComponent } from "@app/shared/components/pop-up-add-list/pop-up-add-list.component";
-import { SidebarMapaComponent } from "@app/shared/components/sidebar-mapa/sidebar-mapa.component";
+import { MapSidebarComponent } from "@app/shared/components/map-sidebar/map-sidebar.component";
 
 @Component({
   selector: "app-alert-view",
@@ -26,7 +26,7 @@ import { SidebarMapaComponent } from "@app/shared/components/sidebar-mapa/sideba
     CommonModule,
     BaseModule,
     MapsComponent,
-    SidebarMapaComponent,
+    MapSidebarComponent,
     PopUpStepAddListComponent,
   ],
 })
@@ -183,7 +183,7 @@ export class AlertViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // Removido o método addPointToList pois agora o fluxo é gerenciado pelo cartService
-  // através dos componentes sidebar-mapa e pop-up-add-list
+  // via map-sidebar and pop-up-add-list components
 
   private checkMapInitialization(): void {
     if (!this.mapsComponent?.isMapReady()) {

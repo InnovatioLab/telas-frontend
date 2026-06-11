@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: "app-icon-fechar",
+  selector: "app-icon-close",
   standalone: true,
   template: `
     <svg

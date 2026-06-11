@@ -86,7 +86,7 @@ export class PartnerScreensComponent implements OnInit {
         this.screensLoading = false;
       },
       error: () => {
-        this.toastService.erro("Failed to load your screens");
+        this.toastService.error("Failed to load your screens");
         this.screensLoading = false;
       },
     });
@@ -109,7 +109,7 @@ export class PartnerScreensComponent implements OnInit {
           this.adRequestsLoading = false;
         },
         error: () => {
-          this.toastService.erro("Failed to load your ad requests");
+          this.toastService.error("Failed to load your ad requests");
           this.adRequestsLoading = false;
         },
       });
@@ -217,20 +217,20 @@ export class PartnerScreensComponent implements OnInit {
     this.clientService.requestPartnerAdRemoval(adId).subscribe({
       next: () => {
         this.markRemovalRequested(adId);
-        this.toastService.sucesso(
+        this.toastService.success(
           "Removal request submitted. Our team will process it shortly."
         );
         this.requestingRemovalAdId = null;
       },
-      error: (err: { error?: { mensagem?: string; message?: string } }) => {
+      error: (err: { error?: { message?: string } }) => {
         const msg =
-          err?.error?.mensagem ??
+          err?.error?.message ??
           err?.error?.message ??
           "Failed to submit removal request";
         if (msg.toLowerCase().includes("already submitted")) {
           this.markRemovalRequested(adId);
         }
-        this.toastService.erro(msg);
+        this.toastService.error(msg);
         this.requestingRemovalAdId = null;
       },
     });

@@ -62,7 +62,7 @@ export class CreateMonitorModalComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.syncAddressOptions();
-    this.clientService.clientAtual$
+    this.clientService.currentClient$
       .pipe(take(1))
       .subscribe((client) => {
         this.isDeveloper = client?.role === Role.DEVELOPER;

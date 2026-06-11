@@ -2,7 +2,7 @@
   <div class="sidebar-content-compacto">
     <div
       (click)="aberta = true"
-      class="box-fechar flex justify-content-center align-items-center cursor-pointer"
+      class="box-close flex justify-content-center align-items-center cursor-pointer"
     >
       <span class="material-symbols-outlined">menu</span>
     </div>
@@ -42,7 +42,7 @@
 
   <p-drawer [(visible)]="aberta" styleClass="custom-sidebar-drawer">
     <div class="sidebar-content">
-      <div (click)="aberta = false" class="box-fechar cursor-pointer flex justify-content-start align-items-center">
+      <div (click)="aberta = false" class="box-close cursor-pointer flex justify-content-start align-items-center">
         <span class="material-symbols-outlined">close</span>
       </div>
       <div class="box-usuario flex align-items-center">

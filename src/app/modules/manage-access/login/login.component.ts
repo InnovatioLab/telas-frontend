@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { AuthenticationService } from "@app/core/service/api/authentication.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { AuthenticationStorage } from "@app/core/service/auth/authentication-storage";
@@ -15,12 +15,12 @@ import {
 } from "@app/model/client";
 import { ILoginRequest } from "@app/model/dto/request/login.request";
 import { AuthenticatedClientResponseDto } from "@app/model/dto/response/authenticated-client-response.dto";
-import { CardCentralizadoComponent, ErrorComponent } from "@app/shared";
+import { CardCenteredComponent, ErrorComponent } from "@app/shared";
 import { BaseModule } from "@app/shared/base/base.module";
-import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
+import { DialogComponent } from "@app/shared/components/dialog/dialog.component";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
-import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { DialogUtils } from "@app/shared/utils/dialog-config.utils";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { HttpErrorResponse } from "@angular/common/http";
 import {
@@ -37,7 +37,7 @@ type LoginMode = "client" | "partner";
     CommonModule,
     BaseModule,
     PrimengModule,
-    CardCentralizadoComponent,
+    CardCenteredComponent,
     ErrorComponent,
     IconsModule,
   ],
@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     public dialogService: DialogService,
-    private readonly autenticacaoService: AutenticacaoService,
+    private readonly autenticacaoService: AuthenticationService,
     private readonly clientService: ClientService,
     private readonly authentication: Authentication
   ) {
@@ -84,7 +84,7 @@ export class LoginComponent implements OnInit {
   iniciarFormulario(): void {
     this.form = this.formBuilder.group({
       login: ["", [Validators.required, Validators.email]],
-      senha: [
+      password: [
         "",
         [
           Validators.required,
@@ -120,11 +120,11 @@ export class LoginComponent implements OnInit {
     }
 
     this.loading = true;
-    const { login, senha } = this.form.value;
+    const { login, password } = this.form.value;
 
     const payload: ILoginRequest = {
       username: login,
-      password: senha,
+      password: password,
     };
 
     this.autenticacaoService
@@ -168,7 +168,7 @@ export class LoginComponent implements OnInit {
           }
 
           const client = this.toClient(r.client);
-          this.clientService.setClientAtual(client);
+          this.clientService.setCurrentClient(client);
           this.authentication.updateClientData(client);
 
           if (r.client.termAccepted) {
@@ -278,17 +278,17 @@ export class LoginComponent implements OnInit {
   }
 
   mensagemLoginInvalidoDialog(
-    mensagem = "Invalid identification number or password"
+    message = "Invalid identification number or password"
   ): void {
-    const config = DialogoUtils.criarConfig({
-      titulo: "Invalid!",
-      descricao: mensagem,
+    const config = DialogUtils.createConfig({
+      title: "Invalid!",
+      description: message,
       icon: "report",
-      acaoPrimaria: "Back",
-      acaoPrimariaCallback: () => {
+      primaryAction: "Back",
+      primaryActionCallback: () => {
         this.ref?.close();
       },
     });
-    this.ref = this.dialogService.open(DialogoComponent, config);
+    this.ref = this.dialogService.open(DialogComponent, config);
   }
 }

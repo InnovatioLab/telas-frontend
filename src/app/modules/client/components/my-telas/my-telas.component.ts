@@ -189,7 +189,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       const capacityLeft = this.maxAttachments - libraryCount;
 
       if (capacityLeft <= 0) {
-        this.toastService.aviso(
+        this.toastService.warn(
           `You already have the maximum of ${this.maxAttachments} attachments.`
         );
         this.attachmentFileUploadComponent?.clear();
@@ -201,7 +201,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
       for (const file of rawFiles) {
         if (accepted.length >= capacityLeft) {
-          this.toastService.aviso(
+          this.toastService.warn(
             `Only ${capacityLeft} more file(s) fit in your library (max ${this.maxAttachments}).`
           );
           break;
@@ -211,7 +211,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           (a) => a.attachmentName === file.name
         );
         if (inLibrary) {
-          this.toastService.erro(
+          this.toastService.error(
             `File "${file.name}" is already in your library.`
           );
           continue;
@@ -228,7 +228,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           mode: "attachment",
         });
         if (!validation.isValid) {
-          validation.errors.forEach((err) => this.toastService.erro(err));
+          validation.errors.forEach((err) => this.toastService.error(err));
           continue;
         }
 
@@ -253,7 +253,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     };
 
     validateFiles().catch(() => {
-      this.toastService.erro("Error validating files");
+      this.toastService.error("Error validating files");
       this.attachmentFileUploadComponent?.clear();
     });
   }
@@ -288,7 +288,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         mode: "attachment",
       });
       if (!validation.isValid) {
-        validation.errors.forEach((error) => this.toastService.erro(error));
+        validation.errors.forEach((error) => this.toastService.error(error));
         if (input) {
           input.value = "";
         }
@@ -296,7 +296,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       }
 
       if (!this.attachmentToReplaceId) {
-        this.toastService.erro("No attachment selected to replace");
+        this.toastService.error("No attachment selected to replace");
         if (input) {
           input.value = "";
         }
@@ -315,7 +315,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       await this.loadClientData();
     } catch (err) {
       console.error('Error replacing attachment:', err);
-      this.toastService.erro("Could not replace the attachment.");
+      this.toastService.error("Could not replace the attachment.");
       if (input) {
         input.value = "";
       }
@@ -373,7 +373,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
     if (checked) {
       const others = this.selectedClientAttachments.filter((id) => id !== attachmentId);
       if (others.length > 0) {
-        this.toastService.aviso(
+        this.toastService.warn(
           "Only one attachment can be selected per ad request."
         );
         this.attachmentCheckboxStates[attachmentId] = false;
@@ -404,7 +404,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
   goToAttachmentsStep(): void {
     if (this.newRequestQuestionnaireForm.invalid) {
       this.newRequestQuestionnaireForm.markAllAsTouched();
-      this.toastService.aviso("Answer all business questions before continuing.");
+      this.toastService.warn("Answer all business questions before continuing.");
       return;
     }
     this.adRequestWizardStep = 2;
@@ -420,13 +420,13 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
   async submitAdRequest(): Promise<void> {
     if (!this.canCreateAdRequest()) {
-      this.toastService.aviso(
+      this.toastService.warn(
         "You already have an ad request in progress. Wait for the admin or check your Ads tab."
       );
       return;
     }
     if (this.adRequestWizardStep !== 2) {
-      this.toastService.aviso("Use Next to choose your attachment before sending.");
+      this.toastService.warn("Use Next to choose your attachment before sending.");
       return;
     }
     if (this.newRequestQuestionnaireForm.valid) {
@@ -436,21 +436,21 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       const oneSelected = this.selectedClientAttachments.length === 1;
 
       if (files && files.length > 1) {
-        this.toastService.aviso(
+        this.toastService.warn(
           "Only one file per ad request. Remove extra files or send separate requests."
         );
         return;
       }
 
       if (this.selectedClientAttachments.length > 1) {
-        this.toastService.aviso(
+        this.toastService.warn(
           "Select only one attachment per request."
         );
         return;
       }
 
       if (hasUpload && oneSelected) {
-        this.toastService.aviso(
+        this.toastService.warn(
           "Clear either the checkbox selection or the pending upload — one attachment per request."
         );
         return;
@@ -458,7 +458,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
 
       if (!oneSelected && !(hasUpload && files!.length === 1)) {
         const libCount = this.myTelasService.clientAttachments().length;
-        this.toastService.aviso(
+        this.toastService.warn(
           libCount >= 1
             ? "Select exactly one attachment using the checkbox above."
             : "Upload one file for your first ad request."
@@ -598,7 +598,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.messagesLoading = false;
       },
       error: () => {
-        this.toastService.erro("Erro ao carregar mensagens.");
+        this.toastService.error("Error loading messages.");
         this.messagesLoading = false;
       },
     });
@@ -615,18 +615,18 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         this.loadAdMessages(this.selectedAdForValidation!.id);
       },
       error: () => {
-        this.toastService.erro("Erro ao enviar mensagem.");
+        this.toastService.error("Erro ao enviar message.");
         this.messagesLoading = false;
       },
     });
   }
 
 
-  mostrarErro(form: FormGroup, campo: string): boolean {
+  showError(form: FormGroup, campo: string): boolean {
     return form.get(campo)?.invalid && form.get(campo)?.touched;
   }
 
-  mostrarErroForm(form: FormGroup, campo: string): boolean {
+  showFormError(form: FormGroup, campo: string): boolean {
     return form.get(campo)?.invalid && form.get(campo)?.touched;
   }
 
@@ -677,7 +677,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
       const file = formValue.adFile || this.selectedAdFile;
 
       if (!file) {
-        this.toastService.erro("No file selected");
+        this.toastService.error("No file selected");
         return;
       }
 
@@ -685,7 +685,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         const validationResult = await this.fileUploadPipeline.validateFile(file);
         if (!validationResult.isValid) {
           validationResult.errors.forEach((error) => {
-            this.toastService.erro(error);
+            this.toastService.error(error);
           });
           return;
         }
@@ -708,7 +708,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           await this.loadClientData();
         }
       } catch (error) {
-        this.toastService.erro("Error validating image file");
+        this.toastService.error("Error validating image file");
       }
     }
   }
@@ -721,7 +721,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
         .then((validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
-              this.toastService.erro(error);
+              this.toastService.error(error);
             });
             if (this.fileUploadComponent) {
               this.fileUploadComponent.clear();
@@ -743,7 +743,7 @@ export class MyTelasComponent implements OnInit, OnDestroy {
           this.selectedAdFile = file;
         })
         .catch(() => {
-          this.toastService.erro("Error validating image file");
+          this.toastService.error("Error validating image file");
           if (this.fileUploadComponent) {
             this.fileUploadComponent.clear();
           }

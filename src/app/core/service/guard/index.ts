@@ -3,5 +3,5 @@ export * from "./developer.guard";
 export * from "./monitoring-permission.guard";
 export * from "./client-authenticated.guard";
 export * from "./my-telas.guard";
-export * from "./termos.guard";
+export * from "./terms.guard";
 export * from "./partner-client.guard";

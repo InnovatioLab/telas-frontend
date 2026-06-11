@@ -35,7 +35,7 @@ export class DateFormatter {
     return DateFormatter.formatDateTime(date);
   }
 
-  static formatarDataHoraBR(date: string | Date | undefined): string {
+  static formatDateTimeBR(date: string | Date | undefined): string {
     return DateFormatter.formatDateTime(date);
   }
 

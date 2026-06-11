@@ -103,15 +103,15 @@ export class BaseSidebarComponent implements OnInit, OnDestroy {
     }
     if (this.menuAlwaysOpen) {
       this.layoutService.closeMenu();
-      this.sidebarService.fechar();
+      this.sidebarService.close();
     }
   }
 
   private setupSubscriptions(): void {
-    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(
+    this.sidebarSubscription = this.sidebarService.onListUpdate.subscribe(
       () => {
-        const isVisible = this.sidebarService.visibilidade();
-        const tipo = this.sidebarService.tipo();
+        const isVisible = this.sidebarService.visibility();
+        const tipo = this.sidebarService.type();
 
         if (isVisible && tipo === this.sidebarType) {
           if (!this.layoutService.isMenuOpen()) {
@@ -165,7 +165,7 @@ export class BaseSidebarComponent implements OnInit, OnDestroy {
     this.layoutService.openMenu(
       this.sidebarType === "client-menu" ? "client" : "admin"
     );
-    this.sidebarService.abrirMenu(this.sidebarType);
+    this.sidebarService.openMenu(this.sidebarType);
   }
 
   toggleMenu(): void {
@@ -177,7 +177,7 @@ export class BaseSidebarComponent implements OnInit, OnDestroy {
 
     if (isCurrentlyOpen) {
       this.layoutService.closeMenu();
-      this.sidebarService.fechar();
+      this.sidebarService.close();
     } else {
       this.ensureMenuOpen();
     }

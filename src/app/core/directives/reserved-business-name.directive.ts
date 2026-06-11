@@ -36,7 +36,7 @@ export class ReservedBusinessNameDirective {
     }
 
     this.lastToastedValue = currentValue;
-    this.toastService.aviso("Esse nome é inválido para cadastro.");
+    this.toastService.warn("This business name is invalid.");
   }
 
   private applyError(): boolean {

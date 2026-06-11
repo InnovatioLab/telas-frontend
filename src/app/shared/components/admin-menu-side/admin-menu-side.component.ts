@@ -8,7 +8,7 @@ import {
   inject,
 } from "@angular/core";
 import { Router } from "@angular/router";
-import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { AuthenticationService } from "@app/core/service/api/authentication.service";
 import { Authentication } from "@app/core/service/auth/autenthication";
 import { Role } from "@app/model/client";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
@@ -19,12 +19,12 @@ import { IconDocumentoComponent } from "@app/shared/icons/documento.icon";
 import { IconEtiquetaComponent } from "@app/shared/icons/etiqueta.icon";
 import { IconTestingComponent } from "@app/shared/icons/testing.icon";
 import { IconsModule } from "@app/shared/icons/icons.module";
-import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { DialogUtils } from "@app/shared/utils/dialog-config.utils";
 import { DialogModule } from "primeng/dialog";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { Subscription } from "rxjs";
 import { PrimengModule } from "../../primeng/primeng.module";
-import { DialogoComponent } from "../dialogo/dialogo.component";
+import { DialogComponent } from "../dialog/dialog.component";
 import { ToggleComponent } from "../toogle/toogle.component";
 
 interface MenuItem {
@@ -47,7 +47,7 @@ interface MenuItem {
     IconEtiquetaComponent,
     IconTestingComponent,
   ],
-  providers: [DialogService, DialogoUtils],
+  providers: [DialogService, DialogUtils],
   templateUrl: "./admin-menu-side.component.html",
   styleUrls: ["./admin-menu-side.component.scss"],
 })
@@ -58,13 +58,13 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   private readonly renderer = inject(Renderer2);
   private readonly router = inject(Router);
   private readonly authentication = inject(Authentication);
-  private readonly authenticationService = inject(AutenticacaoService);
+  private readonly authenticationService = inject(AuthenticationService);
   private readonly dialogService = inject(DialogService);
   private readonly toggleModeService = inject(ToggleModeService);
 
   private sidebarSubscription: Subscription;
   private layoutSubscription: Subscription;
-  refDialogo: DynamicDialogRef | undefined;
+  dialogRef: DynamicDialogRef | undefined;
   isDarkMode = false;
 
   isMenuOpen = this.layoutService.isMenuOpen;
@@ -174,15 +174,15 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
     }
     if (this.menuAlwaysOpen) {
       this.layoutService.closeMenu();
-      this.sidebarService.fechar();
+      this.sidebarService.close();
     }
   }
 
   private setupSubscriptions(): void {
-    this.sidebarSubscription = this.sidebarService.atualizarLista.subscribe(
+    this.sidebarSubscription = this.sidebarService.onListUpdate.subscribe(
       () => {
-        const isVisible = this.sidebarService.visibilidade();
-        const tipo = this.sidebarService.tipo();
+        const isVisible = this.sidebarService.visibility();
+        const tipo = this.sidebarService.type();
 
         if (isVisible && tipo === "admin-menu") {
           if (!this.layoutService.isMenuOpen()) {
@@ -227,7 +227,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
   private ensureMenuOpen(): void {
     this.layoutService.openMenu("admin");
-    this.sidebarService.abrirMenu("admin-menu");
+    this.sidebarService.openMenu("admin-menu");
   }
 
   toggleMenu(): void {
@@ -239,7 +239,7 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
 
     if (isCurrentlyOpen) {
       this.layoutService.closeMenu();
-      this.sidebarService.fechar();
+      this.sidebarService.close();
     } else {
       this.ensureMenuOpen();
     }
@@ -389,22 +389,22 @@ export class AdminMenuSideComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    const config = DialogoUtils.exibirAlerta(
+    const config = DialogUtils.showAlert(
       "Are you sure you want to logout?",
       {
-        acaoPrimaria: "Stay",
-        acaoPrimariaCallback: () => {
-          this.refDialogo.close();
+        primaryAction: "Stay",
+        primaryActionCallback: () => {
+          this.dialogRef.close();
         },
-        acaoSecundaria: "Logout",
-        acaoSecundariaCallback: () => {
-          this.refDialogo.close();
+        secondaryAction: "Logout",
+        secondaryActionCallback: () => {
+          this.dialogRef.close();
           this.desconectar();
         },
       }
     );
 
-    this.refDialogo = this.dialogService.open(DialogoComponent, config);
+    this.dialogRef = this.dialogService.open(DialogComponent, config);
   }
 
   desconectar() {

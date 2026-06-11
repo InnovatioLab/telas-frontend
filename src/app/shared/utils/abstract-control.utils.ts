@@ -11,96 +11,96 @@ export class AbstractControlUtils {
   private static readonly URL_REGEX =
     /^(?:https?:\/\/|www\.)((?!-)[A-Za-z0-9-]{1,63}(?<!-)(?:\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*)\.([A-Za-z]{2,63})(?::\d{1,5})?(?:\/[^\s]*)?(?:\?[^\s#]*)?(?:#[^\s]*)?$/i;
 
-  static desativarCampo(form: FormGroup, campo: string): void {
-    form.get(campo).disable();
+  static disableField(form: FormGroup, field: string): void {
+    form.get(field).disable();
   }
 
-  static desativarLimparCampo(form: FormGroup, campo: string): void {
-    form.get(campo).disable();
-    form.get(campo).reset();
-    form.get(campo).clearValidators();
-    form.get(campo).updateValueAndValidity();
+  static disableAndClearField(form: FormGroup, field: string): void {
+    form.get(field).disable();
+    form.get(field).reset();
+    form.get(field).clearValidators();
+    form.get(field).updateValueAndValidity();
   }
 
-  static ativarCampo(form: FormGroup, campo: string): void {
-    form.get(campo).enable();
+  static enableField(form: FormGroup, field: string): void {
+    form.get(field).enable();
   }
 
-  static ativarCampos(form: FormGroup, campos: string[]): void {
-    campos.forEach((campo) => form.get(campo).enable());
+  static enableFields(form: FormGroup, fields: string[]): void {
+    fields.forEach((field) => form.get(field).enable());
   }
 
-  static tornarControlsObrigatorios(form: FormGroup, campos: string[]): void {
-    campos.forEach((campo) => {
-      form.get(campo).setValidators(Validators.required);
-      form.get(campo).updateValueAndValidity();
+  static makeFieldsRequired(form: FormGroup, fields: string[]): void {
+    fields.forEach((field) => {
+      form.get(field).setValidators(Validators.required);
+      form.get(field).updateValueAndValidity();
     });
   }
 
-  static tornarControlObrigatorio(form: FormGroup, campo: string): void {
-    form.get(campo).setValidators(Validators.required);
-    form.get(campo).updateValueAndValidity();
+  static makeFieldRequired(form: FormGroup, field: string): void {
+    form.get(field).setValidators(Validators.required);
+    form.get(field).updateValueAndValidity();
   }
 
-  static removerControlsObrigatorios(form: FormGroup, campos: string[]): void {
-    campos.forEach((campo) => {
-      form.get(campo).removeValidators(Validators.required);
-      form.get(campo).updateValueAndValidity();
+  static removeFieldsRequired(form: FormGroup, fields: string[]): void {
+    fields.forEach((field) => {
+      form.get(field).removeValidators(Validators.required);
+      form.get(field).updateValueAndValidity();
     });
   }
 
-  static removerControlObrigatorio(form: FormGroup, campo: string): void {
-    form.get(campo).removeValidators(Validators.required);
-    form.get(campo).updateValueAndValidity();
+  static removeFieldRequired(form: FormGroup, field: string): void {
+    form.get(field).removeValidators(Validators.required);
+    form.get(field).updateValueAndValidity();
   }
 
-  static atualizatualizarValidators(
+  static updateValidators(
     form: FormGroup,
-    campo: string,
+    field: string,
     validators: ValidatorFn | ValidatorFn[]
   ): void {
-    form.get(campo).setValidators(validators);
-    form.get(campo).updateValueAndValidity();
+    form.get(field).setValidators(validators);
+    form.get(field).updateValueAndValidity();
   }
 
-  static atualizarValorCampo(
+  static updateFieldValue(
     form: FormGroup,
-    campo: string,
-    valor: string | string[] | number | Date | null
+    field: string,
+    value: string | string[] | number | Date | null
   ): void {
-    form.get(campo).patchValue(valor);
+    form.get(field).patchValue(value);
   }
 
-  static removerMascaraCPF(form: FormGroup): string {
-    const campoCpf = form.get("cpf");
-    const cpfFormatado: string = campoCpf.value.replaceAll(/[.-]/g, "");
-    campoCpf.setValue(cpfFormatado);
-    return cpfFormatado;
+  static removeCPFMask(form: FormGroup): string {
+    const cpfField = form.get("cpf");
+    const formattedCpf: string = cpfField.value.replaceAll(/[.-]/g, "");
+    cpfField.setValue(formattedCpf);
+    return formattedCpf;
   }
 
-  static formatarDataHoraBR(dataHora: string): string {
-    if (!dataHora) {
+  static formatDateTimeBR(dateTime: string): string {
+    if (!dateTime) {
       return "-";
     }
 
-    const formatted = DateFormatter.formatDateTime(dataHora);
+    const formatted = DateFormatter.formatDateTime(dateTime);
     return formatted || "-";
   }
 
-  static converterStringParaData(dataString: string): Date | null {
-    if (!dataString) {
+  static parseStringToDate(dateString: string): Date | null {
+    if (!dateString) {
       return null;
     }
 
-    const partes = dataString.split("-");
-    const ano = parseInt(partes[0], 10);
-    const mes = parseInt(partes[1], 10) - 1;
-    const dia = parseInt(partes[2], 10);
+    const parts = dateString.split("-");
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
 
-    return new Date(ano, mes, dia);
+    return new Date(year, month, day);
   }
 
-  static ativarCamposETornarObrigatorio(
+  static enableFieldsAndMakeRequired(
     form: FormGroup,
     controls: string[]
   ): void {
@@ -111,13 +111,13 @@ export class AbstractControlUtils {
     });
   }
 
-  static ativarCampoETornarObrigatorio(form: FormGroup, control: string): void {
+  static enableFieldAndMakeRequired(form: FormGroup, control: string): void {
     form.get(control).enable();
     form.get(control).setValidators(Validators.required);
     form.get(control).updateValueAndValidity();
   }
 
-  static desativarLimparCampos(form: FormGroup, controls: string[]): void {
+  static disableAndClearFields(form: FormGroup, controls: string[]): void {
     controls.forEach((control) => {
       form.get(control).disable();
       form.get(control).reset();
@@ -129,47 +129,47 @@ export class AbstractControlUtils {
   static setValidators(
     form: FormGroup,
     control: string,
-    validador: ValidatorFn | ValidatorFn[] | null
+    validator: ValidatorFn | ValidatorFn[] | null
   ): void {
-    form.get(control).setValidators(validador);
+    form.get(control).setValidators(validator);
     form.get(control).updateValueAndValidity();
   }
 
-  static limparCampo(form: FormGroup, campo: string): void {
-    form.get(campo).reset();
+  static clearField(form: FormGroup, field: string): void {
+    form.get(field).reset();
   }
 
-  static limparCampos(form: FormGroup, campo: string[]): void {
-    campo.forEach((campo) => {
-      const control = form.get(campo);
+  static clearFields(form: FormGroup, fields: string[]): void {
+    fields.forEach((field) => {
+      const control = form.get(field);
       if (control) {
         control.reset();
       }
     });
   }
 
-  static formularioModificado(
-    formularioAtual: FormGroup,
-    formularioInicial: FormGroup
+  static isFormUnchanged(
+    currentForm: FormGroup,
+    initialForm: FormGroup
   ): boolean {
-    const cadastroFormJson = JSON.stringify(formularioAtual.value);
-    const formularioInicialJson = JSON.stringify(formularioInicial.value);
-    return cadastroFormJson == formularioInicialJson;
+    const currentJson = JSON.stringify(currentForm.value);
+    const initialJson = JSON.stringify(initialForm.value);
+    return currentJson == initialJson;
   }
 
   static resetFormExcludingField(
-    formularioAtual: FormGroup,
-    excetoName: string
+    currentForm: FormGroup,
+    exceptName: string
   ) {
-    Object.keys(formularioAtual.controls).forEach((key) => {
-      if (key !== excetoName) {
-        formularioAtual.get(key)?.reset();
+    Object.keys(currentForm.controls).forEach((key) => {
+      if (key !== exceptName) {
+        currentForm.get(key)?.reset();
       }
     });
   }
 
-  static verificarCampoRequired(form: FormGroup, campo: string) {
-    const control = form.get(campo);
+  static isFieldRequired(form: FormGroup, field: string) {
+    const control = form.get(field);
     if (control?.validator) {
       const validatorFn = control.validator({} as AbstractControl);
       if (validatorFn && "required" in validatorFn) {
@@ -179,49 +179,49 @@ export class AbstractControlUtils {
     return false;
   }
 
-  static verificarCampoInvalidoTocado(form: FormGroup, campo: string) {
-    if (form.get(campo)) {
-      return form.get(campo)?.invalid && form.get(campo)?.touched;
+  static isFieldInvalidAndTouched(form: FormGroup, field: string) {
+    if (form.get(field)) {
+      return form.get(field)?.invalid && form.get(field)?.touched;
     }
     return false;
   }
 
-  static aceitarApenasTexto(form: FormGroup, campo: string): void {
-    form.get(campo)?.valueChanges.subscribe((nome) => {
+  static acceptOnlyText(form: FormGroup, field: string): void {
+    form.get(field)?.valueChanges.subscribe((name) => {
       const lettersRegex = /^[\p{L}\s.,-]*$/u;
-      if (!lettersRegex.test(nome)) {
-        form.get(campo).setValue(nome.slice(0, -1));
+      if (!lettersRegex.test(name)) {
+        form.get(field).setValue(name.slice(0, -1));
       }
     });
   }
 
-  static adicionaArquivoEmLista(
+  static addFileToList(
     form: FormGroup,
-    campo: string,
+    field: string,
     file: File
   ): void {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      const arrArquivos = form.get(campo)?.value ?? [];
-      arrArquivos.push({
-        nome: file.name,
+      const filesList = form.get(field)?.value ?? [];
+      filesList.push({
+        name: file.name,
         bytes: reader.result,
-        tipo: file.type,
+        type: file.type,
       });
-      form.get(campo).setValue(arrArquivos);
+      form.get(field).setValue(filesList);
       form.updateValueAndValidity();
     };
   }
 
-  static removerArquivoDaLista(
+  static removeFileFromList(
     form: FormGroup,
-    campo: string,
+    field: string,
     index: number
   ): void {
-    const arrArquivos = form.get(campo)?.value ?? [];
-    arrArquivos.splice(index, 1);
-    form.get(campo).setValue(arrArquivos);
+    const filesList = form.get(field)?.value ?? [];
+    filesList.splice(index, 1);
+    form.get(field).setValue(filesList);
     form.updateValueAndValidity();
   }
 

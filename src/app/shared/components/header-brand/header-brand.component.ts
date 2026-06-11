@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
         (keydown.enter)="onLogoClick()"
         tabindex="0"
         role="button"
-        aria-label="Ir para página inicial"
+        aria-label="Go to home page"
       />
     </div>
   `,

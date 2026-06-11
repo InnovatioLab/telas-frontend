@@ -108,7 +108,7 @@ export class ViewEditProfileComponent implements OnInit {
   ngOnInit(): void {
     this.loadUserProfile();
 
-    this.clientService.clientAtual$.subscribe((client) => {
+    this.clientService.currentClient$.subscribe((client) => {
       if (client && !this.loading) {
         this.clientData = { ...client };
         this.populateForm(this.clientData);
@@ -134,7 +134,7 @@ export class ViewEditProfileComponent implements OnInit {
     const userDataStr = localStorage.getItem("telas_token_user");
 
     if (!userDataStr) {
-      this.toastService.erro("User data not found");
+      this.toastService.error("User data not found");
       return null;
     }
 
@@ -143,13 +143,13 @@ export class ViewEditProfileComponent implements OnInit {
       const userId = userData.id;
 
       if (!userId) {
-        this.toastService.erro("User ID not found");
+        this.toastService.error("User ID not found");
         return null;
       }
 
       return userId;
     } catch (error) {
-      this.toastService.erro("Error loading profile data");
+      this.toastService.error("Error loading profile data");
       return null;
     }
   }
@@ -163,7 +163,7 @@ export class ViewEditProfileComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.toastService.erro("Could not load profile data");
+        this.toastService.error("Could not load profile data");
       },
     });
   }
@@ -358,13 +358,13 @@ export class ViewEditProfileComponent implements OnInit {
       return;
     }
 
-    this.clientService.editar(this.clientData.id, clientRequest).subscribe({
+    this.clientService.update(this.clientData.id, clientRequest).subscribe({
       next: () => {
-        this.toastService.sucesso("Profile updated successfully");
+        this.toastService.success("Profile updated successfully");
         this.reloadUpdatedProfile();
       },
       error: () => {
-        this.toastService.erro("Error updating profile");
+        this.toastService.error("Error updating profile");
         this.loading = false;
       },
     });
@@ -376,14 +376,14 @@ export class ViewEditProfileComponent implements OnInit {
         this.handleUpdatedClient(updatedClient);
       },
       error: () => {
-        this.toastService.erro("Error loading updated profile data");
+        this.toastService.error("Error loading updated profile data");
         this.loading = false;
       },
     });
   }
 
   private handleUpdatedClient(updatedClient: Client): void {
-    this.clientService.setClientAtual(updatedClient);
+    this.clientService.setCurrentClient(updatedClient);
     localStorage.setItem("telas_token_user", JSON.stringify(updatedClient));
 
     this.clientData = updatedClient;
@@ -400,13 +400,13 @@ export class ViewEditProfileComponent implements OnInit {
   }
 
   mostrarErro(campo: string): boolean {
-    return AbstractControlUtils.verificarCampoInvalidoTocado(
+    return AbstractControlUtils.isFieldInvalidAndTouched(
       this.profileForm,
       campo
     );
   }
 
   campoObrigatorio(campo: string): boolean {
-    return AbstractControlUtils.verificarCampoRequired(this.profileForm, campo);
+    return AbstractControlUtils.isFieldRequired(this.profileForm, campo);
   }
 }

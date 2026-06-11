@@ -92,8 +92,8 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
     private readonly loadingService: LoadingService
   ) {
     effect(() => {
-      const isVisible = this.sidebarService.visibilidade();
-      const tipo = this.sidebarService.tipo();
+      const isVisible = this.sidebarService.visibility();
+      const tipo = this.sidebarService.type();
 
       if (tipo === "admin-menu") {
         const isMenuFixed = document.body.classList.contains("menu-fixed");
@@ -879,7 +879,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
             this.clearMarkers();
             const marker = L.marker([newCenter.lat, newCenter.lng], {
               icon: this.markerIconService.getRedMarkerIcon(),
-              title: location.title ?? "Localização do CEP",
+              title: location.title ?? "ZIP Code Location",
             });
             marker.addTo(this._map);
             this.markers.push(marker);
@@ -903,7 +903,7 @@ export class MapsComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
             this.clearMarkers();
             const marker = L.marker([newCenter.lat, newCenter.lng], {
               icon: this.markerIconService.getRedMarkerIcon(),
-              title: "Localização atual",
+              title: "Current Location",
             });
             marker.addTo(this._map);
             this.markers.push(marker);

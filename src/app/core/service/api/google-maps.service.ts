@@ -111,7 +111,7 @@ export class GoogleMapsService {
         this.apiInitializationAttempts >= this.MAX_INITIALIZATION_ATTEMPTS
       ) {
         this.apiErrorSubject.next(
-          "Não foi possível carregar o Google Maps. Tente novamente mais tarde."
+          "Failed to load Google Maps. Please try again later."
         );
         this.apiLoadingInProgress = false;
       }
@@ -129,7 +129,7 @@ export class GoogleMapsService {
     const apiKey = this.env.googleMapsApiKey;
 
     if (!apiKey) {
-      this.apiErrorSubject.next("API Key do Google Maps não configurada.");
+      this.apiErrorSubject.next("Google Maps API Key not configured.");
       this.apiLoadingInProgress = false;
       return;
     }
@@ -590,9 +590,9 @@ export class GoogleMapsService {
       const apiKey = this.env.googleMapsApiKey;
 
       if (!apiKey) {
-        this.apiErrorSubject.next("API Key do Google Maps não configurada.");
+        this.apiErrorSubject.next("Google Maps API Key not configured.");
         this.apiLoadingInProgress = false;
-        reject(new Error("API Key do Google Maps não configurada."));
+        reject(new Error("Google Maps API Key not configured."));
         return;
       }
 

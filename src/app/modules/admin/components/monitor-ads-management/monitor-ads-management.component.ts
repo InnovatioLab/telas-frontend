@@ -75,7 +75,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     this.monitorId = this.route.snapshot.paramMap.get("monitorId") || "";
 
     if (!this.monitorId) {
-      this.toastService.erro("Monitor not found");
+      this.toastService.error("Monitor not found");
       this.router.navigate(["/admin/screens"]);
       return;
     }
@@ -85,7 +85,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     this.monitorService.getMonitorById(this.monitorId).subscribe({
       next: (monitor) => {
         if (!monitor) {
-          this.toastService.erro("Monitor not found");
+          this.toastService.error("Monitor not found");
           this.router.navigate(["/admin/screens"]);
           return;
         }
@@ -156,13 +156,13 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
               }));
 
             this.selectedPreviewAd = this.monitorAds[0] || null;
-            this.toastService.erro("Error loading valid ads");
+            this.toastService.error("Error loading valid ads");
             this.loading = false;
           },
         });
       },
       error: () => {
-        this.toastService.erro("Error loading monitor");
+        this.toastService.error("Error loading monitor");
         this.router.navigate(["/admin/screens"]);
       },
     });
@@ -216,7 +216,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     if (ad.clientId) {
       const partnerCount = this.monitorAds.filter((a) => a.clientId === ad.clientId).length;
       if (partnerCount >= PARTNER_RESERVED_SLOTS) {
-        this.toastService.erro(
+        this.toastService.error(
           `This partner already has ${PARTNER_RESERVED_SLOTS} ads on this screen (maximum allowed).`
         );
         return;
@@ -247,7 +247,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.monitorService.deleteAvailableAd(this.monitorId, ad.id).subscribe({
       next: () => {
-        this.toastService.sucesso("Ad removido.");
+        this.toastService.success("Ad removido.");
         this.validAds = this.validAds.filter((a) => a.id !== ad.id);
         if (this.selectedPreviewAd?.id === ad.id) {
           this.selectedPreviewAd = this.monitorAds[0] || this.validAds[0] || null;
@@ -255,7 +255,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
         this.loading = false;
       },
       error: (error) => {
-        this.toastService.erro(error?.error?.message || "Falha ao remover ad.");
+        this.toastService.error(error?.error?.message || "Falha ao remover ad.");
         this.loading = false;
       },
     });
@@ -335,20 +335,24 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
   }
 
   getPdfUrl(ad: MonitorAdItem): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(ad.link);
+    const url = ad.link?.trim() ?? "";
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl("");
+    }
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
-  cancelar(): void {
+  cancel(): void {
     this.router.navigate(["/admin/screens"]);
   }
 
-  salvar(): void {
+  save(): void {
     if (!this.monitor || this.saving) {
       return;
     }
 
     if (this.hasBlockError) {
-      this.toastService.erro(
+      this.toastService.error(
         `Total block slots must be less or equal to ${this.maxMonitorAds}`
       );
       return;
@@ -374,17 +378,17 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (success) => {
           if (success) {
-            this.toastService.sucesso("Ads saved successfully");
+            this.toastService.success("Ads saved successfully");
             this.router.navigate(["/admin/screens"]);
           } else {
-            this.toastService.erro("Failed to save ads");
+            this.toastService.error("Failed to save ads");
           }
         },
         error: (error) => {
           const message =
             this.apiErrorFirstMessage(error) ||
             "Failed to save ads. The ad may not be eligible for this screen.";
-          this.toastService.erro(message);
+          this.toastService.error(message);
         },
       });
   }
@@ -404,7 +408,7 @@ export class MonitorAdsManagementComponent implements OnInit, OnDestroy {
 
   openPreview(): void {
     if (this.monitorAds.length === 0) {
-      this.toastService.erro("No ad selected for preview.");
+      this.toastService.error("No ad selected for preview.");
       return;
     }
 

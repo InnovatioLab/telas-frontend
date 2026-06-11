@@ -22,11 +22,11 @@ import { ClientMenuSideComponent } from "../client-menu-side/client-menu-side.co
 export class MenuComponent {
   private readonly clientService = inject(ClientService);
 
-  // Usa o clientAtual$ (BehaviorSubject) do ClientService para evitar
+  // Uses currentClient$ (BehaviorSubject) from ClientService to avoid
   // requisições redundantes. Esse subject é atualizado a partir do
   // Authentication.updateClientData / pegarDadosAutenticado.
   readonly isAdministrador$: Observable<boolean> =
-    this.clientService.clientAtual$.pipe(
+    this.clientService.currentClient$.pipe(
       map((client) => isPrivilegedPanelRole(client?.role))
     );
 }

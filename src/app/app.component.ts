@@ -59,7 +59,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.clientService.clientAtual$
+    this.clientService.currentClient$
       .pipe(
         take(1),
         switchMap((client) =>

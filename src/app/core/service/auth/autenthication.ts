@@ -194,10 +194,10 @@ export class Authentication extends AuthenticationStorage {
     const clientService = this['clientService'] as ClientService | undefined;
     if (
       clientService &&
-      typeof (clientService as any).setClientAtual === "function"
+      typeof (clientService as any).setCurrentClient === "function"
     ) {
       try {
-        (clientService as any).setClientAtual(client);
+        (clientService as any).setCurrentClient(client);
       } catch (e) {
       }
     }

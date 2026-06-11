@@ -19,14 +19,14 @@ import {
 import { Recurrence } from "@app/model/enums/recurrence.enum";
 import { Monitor } from "@app/model/monitors";
 import { IconsModule } from "@app/shared/icons/icons.module";
-import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { DialogUtils } from "@app/shared/utils/dialog-config.utils";
 import { ImagemCarrinhoVazioComponent } from "@app/utility/src/lib/svg/carrinho-vazio";
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { Subscription } from "rxjs";
 import { ENVIRONMENT } from "src/environments/environment-token";
 import { Environment } from "src/environments/environment.interface";
 import { PrimengModule } from "../../primeng/primeng.module";
-import { DialogoComponent } from "../dialogo/dialogo.component";
+import { DialogComponent } from "../dialog/dialog.component";
 import { resolvePartnerCartBlockQuantity } from "@app/core/utils/partner-permission.util";
 
 @Component({
@@ -166,7 +166,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
     this.selectedMonitor = null;
   }
 
-  voltar(): void {
+  goBack(): void {
     this.fecharSidebar();
   }
 
@@ -177,12 +177,12 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
   removerItem(item: CartItemResponseDto): void {
     if (!this.cart) return;
 
-    const config = DialogoUtils.exibirAlerta(
+    const config = DialogUtils.showAlert(
       "Do you want to remove this item from your cart?",
       {
-        acaoPrimaria: "Remove",
-        acaoSecundaria: "Cancel",
-        acaoPrimariaCallback: () => {
+        primaryAction: "Remove",
+        secondaryAction: "Cancel",
+        primaryActionCallback: () => {
           const updatedItems = this.cart!.items.filter(
             (cartItem) => cartItem.id !== item.id
           ).map((cartItem) => ({
@@ -218,13 +218,13 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
           });
           this.dialogoRef?.close();
         },
-        acaoSecundariaCallback: () => {
+        secondaryActionCallback: () => {
           this.dialogoRef?.close();
         },
       }
     );
 
-    this.dialogoRef = this.dialogService.open(DialogoComponent, config);
+    this.dialogoRef = this.dialogService.open(DialogComponent, config);
   }
 
   verDetalhes(item: CartItemResponseDto): void {
@@ -244,7 +244,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
-        this.toastService.erro("Error while loading monitor details");
+        this.toastService.error("Error while loading monitor details");
         this.loadingSelectedMonitorLocationInfo = false;
       },
     });
@@ -261,22 +261,22 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
 
   iniciarCheckout(): void {
     if (!this.authentication.isLoggedIn$.getValue()) {
-      const config = DialogoUtils.exibirAlerta(
+      const config = DialogUtils.showAlert(
         "To continue with checkout, you need to log in.",
         {
-          acaoPrimaria: "Log in",
-          acaoSecundaria: "Cancel",
-          acaoPrimariaCallback: () => {
+          primaryAction: "Log in",
+          secondaryAction: "Cancel",
+          primaryActionCallback: () => {
             window.location.href = "/authentication/login";
             this.dialogoRef?.close();
           },
-          acaoSecundariaCallback: () => {
+          secondaryActionCallback: () => {
             this.dialogoRef?.close();
           },
         }
       );
 
-      this.dialogoRef = this.dialogService.open(DialogoComponent, config);
+      this.dialogoRef = this.dialogService.open(DialogComponent, config);
       return;
     }
 
@@ -335,7 +335,7 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
             this.iniciarCheckout();
           });
         } else {
-          this.toastService.erro("Error updating cart before checkout");
+          this.toastService.error("Error updating cart before checkout");
           this.checkoutEmProgresso = false;
         }
       },
@@ -373,18 +373,18 @@ export class CheckoutListSideBarComponent implements OnInit, OnDestroy {
                 }
               },
               error: (error) => {
-                this.toastService.erro("Error creating new cart");
+                this.toastService.error("Error creating new cart");
                 this.checkoutEmProgresso = false;
               },
             });
           } else {
-            this.toastService.erro("Cart not found and no items to recreate");
+            this.toastService.error("Cart not found and no items to recreate");
             this.checkoutEmProgresso = false;
           }
         }
       },
       error: (error) => {
-        this.toastService.erro("Error refreshing cart");
+        this.toastService.error("Error refreshing cart");
         this.checkoutEmProgresso = false;
       },
     });

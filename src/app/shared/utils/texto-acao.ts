@@ -1,11 +1,11 @@
-export const TEXTO_ACAO = {
-  entrar: 'Sign In',
-  voltar: 'Back',
-  novoDocumento: 'New Document',
-  cancelar: 'Cancel',
-  enviarDocumento: 'Send Document',
-  simCancelar: 'Yes, Cancel',
-  naoVoltar: 'No, Back',
-  salvar: 'Save',
-  simSair: 'Yes, Logout',
-}
+export const ACTION_LABELS = {
+  signIn: 'Sign In',
+  back: 'Back',
+  newDocument: 'New Document',
+  cancel: 'Cancel',
+  sendDocument: 'Send Document',
+  confirmCancel: 'Yes, Cancel',
+  cancelGoBack: 'No, Back',
+  save: 'Save',
+  confirmLogout: 'Yes, Logout',
+};

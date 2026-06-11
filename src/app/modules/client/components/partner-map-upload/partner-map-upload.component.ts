@@ -93,7 +93,7 @@ export class PartnerMapUploadComponent implements OnInit {
       },
       error: () => {
         this.loadingScreen = false;
-        this.toastService.erro("Failed to load target screen");
+        this.toastService.error("Failed to load target screen");
         void this.router.navigate([PARTNER_PORTAL_ROUTES.screens]);
       },
     });
@@ -145,13 +145,13 @@ export class PartnerMapUploadComponent implements OnInit {
     const valid: File[] = [];
     for (const file of files) {
       if (file.size > this.maxFileSize) {
-        this.toastService.erro(`${file.name}: max 10MB`);
+        this.toastService.error(`${file.name}: max 10MB`);
         continue;
       }
       valid.push(file);
     }
     if (valid.length > this.maxCreativeFiles) {
-      this.toastService.aviso(`Maximum ${this.maxCreativeFiles} files per submission. Only the first ${this.maxCreativeFiles} were kept.`);
+      this.toastService.warn(`Maximum ${this.maxCreativeFiles} files per submission. Only the first ${this.maxCreativeFiles} were kept.`);
       valid.splice(this.maxCreativeFiles);
     }
     this.selectedCreativeFiles = valid;
@@ -180,7 +180,7 @@ export class PartnerMapUploadComponent implements OnInit {
     const valid: File[] = [];
     for (const file of files) {
       if (file.size > this.maxFileSize) {
-        this.toastService.erro(`${file.name}: max 10MB`);
+        this.toastService.error(`${file.name}: max 10MB`);
         continue;
       }
       valid.push(file);
@@ -202,7 +202,7 @@ export class PartnerMapUploadComponent implements OnInit {
 
   private async submitAdminMaterials(): Promise<void> {
     if (this.selectedMaterialFiles.length === 0) {
-      this.toastService.aviso("Select at least one file");
+      this.toastService.warn("Select at least one file");
       return;
     }
     this.submitting = true;
@@ -214,7 +214,7 @@ export class PartnerMapUploadComponent implements OnInit {
       const attachments = this.normalizeAttachments(workspace?.attachments);
       const ids = this.resolveAttachmentIds(this.selectedMaterialFiles, attachments);
       if (ids.length !== this.selectedMaterialFiles.length) {
-        this.toastService.erro(
+        this.toastService.error(
           "Could not match uploaded files. Refresh and try again."
         );
         return;
@@ -227,12 +227,12 @@ export class PartnerMapUploadComponent implements OnInit {
       await firstValueFrom(
         this.partnerPortalService.submitAdSubmission(this.monitorId, payload)
       );
-      this.toastService.sucesso("Create Ad request submitted for admin review");
+      this.toastService.success("Create Ad request submitted for admin review");
       void this.router.navigate([PARTNER_PORTAL_ROUTES.screens], {
         queryParams: { tab: "requests" },
       });
     } catch {
-      this.toastService.erro("Failed to submit");
+      this.toastService.error("Failed to submit");
     } finally {
       this.submitting = false;
     }
@@ -240,7 +240,7 @@ export class PartnerMapUploadComponent implements OnInit {
 
   private async submitFinishedCreative(): Promise<void> {
     if (this.selectedCreativeFiles.length === 0) {
-      this.toastService.aviso("Select at least one file");
+      this.toastService.warn("Select at least one file");
       return;
     }
     this.submitting = true;
@@ -262,7 +262,7 @@ export class PartnerMapUploadComponent implements OnInit {
         total === 1
           ? "Thank you for uploading your Ad. We'll notify you once it has been uploaded to the screen."
           : `Thank you for uploading your ${total} Ad(s). We'll notify you once they have been uploaded to the screen.`;
-      this.toastService.sucesso(msg);
+      this.toastService.success(msg);
       void this.router.navigate([PARTNER_PORTAL_ROUTES.screens], {
         queryParams: { tab: "requests" },
       });
@@ -272,7 +272,7 @@ export class PartnerMapUploadComponent implements OnInit {
         e?.error?.message ||
         (Array.isArray(e?.error?.errors) ? e.error!.errors![0] : null) ||
         "Failed to submit";
-      this.toastService.erro(msg as string);
+      this.toastService.error(msg as string);
     } finally {
       this.submitting = false;
       this.submitProgress = "";

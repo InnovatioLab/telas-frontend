@@ -12,7 +12,7 @@ export class ApiErrorHandler {
     const o = body as Record<string, unknown>;
     const direct =
       (typeof o.message === 'string' && o.message.trim()) ||
-      (typeof o.mensagem === 'string' && o.mensagem.trim()) ||
+      (typeof o.message === 'string' && o.message.trim()) ||
       null;
     if (direct) {
       return direct;

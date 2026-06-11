@@ -179,7 +179,7 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onMapError(errorMessage: string): void {
-    this.toastService.erro(errorMessage);
+    this.toastService.error(errorMessage);
     this.cdr.detectChanges();
   }
 
@@ -220,11 +220,11 @@ export class ClientViewComponent implements OnInit, AfterViewInit, OnDestroy {
   submitPartnerAd(point: MapPoint): void {
     const monitorId = point?.id?.trim();
     if (!monitorId) {
-      this.toastService.aviso("Screen not available for submission");
+      this.toastService.warn("Screen not available for submission");
       return;
     }
     if (point.hasAvailableSlots === false) {
-      this.toastService.aviso("This screen has no available slots");
+      this.toastService.warn("This screen has no available slots");
       return;
     }
     void this.router.navigate(["/partner/map-upload", monitorId]);

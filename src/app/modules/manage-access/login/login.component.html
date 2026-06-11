@@ -1,5 +1,5 @@
 @if (loginMode) {
-<app-card-centralizado
+<app-card-centered
   type="formulario-login"
   class="formulario-login"
   [class.formulario-login--partner]="isPartnerMode"
@@ -83,7 +83,7 @@
         <p-password
           [toggleMask]="true"
           [feedback]="false"
-          formControlName="senha"
+          formControlName="password"
           placeholder="Enter your password"
           class="w-full password"
           id="test-input-senha"
@@ -94,7 +94,7 @@
         </p-password>
         <app-error
           id="error-msg-senha"
-          [control]="form.get('senha')"
+          [control]="form.get('password')"
           class="error-msg"
         ></app-error>
       </div>
@@ -143,5 +143,5 @@
       </p>
     }
   </ng-template>
-</app-card-centralizado>
+</app-card-centered>
 }

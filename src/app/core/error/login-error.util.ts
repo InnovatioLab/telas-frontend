@@ -97,7 +97,7 @@ function extractApiMessage(error: HttpErrorResponse): string | null {
   const record = body as Record<string, unknown>;
   const direct =
     (typeof record.message === 'string' && record.message.trim()) ||
-    (typeof record.mensagem === 'string' && record.mensagem.trim()) ||
+    (typeof record.message === 'string' && record.message.trim()) ||
     null;
   if (direct) {
     return direct;

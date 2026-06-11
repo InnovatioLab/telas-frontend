@@ -5,7 +5,7 @@ import {
   redirectPartnerFromClientShoppingGuard,
 } from "@app/core/service/guard";
 import { SubscriptionsGuard } from "@app/core/service/guard/subscriptions.guard";
-import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
+import { ChangePasswordComponent } from "../../shared/components/change-password/change-password.component";
 import { ViewEditProfileComponent } from "../../shared/components/view-edit-profile/view-edit-profile.component";
 import { PrivacyPolicyComponent } from "../application/privacy-policy/privacy-policy.component";
 import { TermsOfServiceComponent } from "../application/terms-of-service/terms-of-service.component";
@@ -95,7 +95,7 @@ export const ROUTES: Route[] = [
       },
       {
         path: "change-password",
-        component: AlterarSenhaComponent,
+        component: ChangePasswordComponent,
         title: "Change Password",
       },
     ],

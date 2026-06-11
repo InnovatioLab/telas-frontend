@@ -8,7 +8,7 @@ export const MyTelasGuard: CanActivateFn = () => {
   const router = inject(Router);
   const clientService = inject(ClientService);
 
-  return clientService.clientAtual$.pipe(
+  return clientService.currentClient$.pipe(
     take(1),
     map((client) => {
       if (client && (client as any).hasSubscription === false) {

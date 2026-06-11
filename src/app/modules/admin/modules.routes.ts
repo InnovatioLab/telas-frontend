@@ -2,7 +2,7 @@ import { Route } from "@angular/router";
 import { AdminAuthenticatedGuard } from "@app/core/service/guard/admin-authenticated.guard";
 import { DeveloperGuard } from "@app/core/service/guard/developer.guard";
 import { MonitoringPermissionGuard } from "@app/core/service/guard/monitoring-permission.guard";
-import { AlterarSenhaComponent } from "../../shared/components/alterar-senha/alterar-senha.component";
+import { ChangePasswordComponent } from "../../shared/components/change-password/change-password.component";
 import { ViewEditProfileComponent } from "../../shared/components/view-edit-profile/view-edit-profile.component";
 import { PrivacyPolicyComponent } from "../application/privacy-policy/privacy-policy.component";
 import { TermsOfServiceComponent } from "../application/terms-of-service/terms-of-service.component";
@@ -50,7 +50,7 @@ export const ROUTES: Route[] = [
       },
       {
         path: "change-password",
-        component: AlterarSenhaComponent,
+        component: ChangePasswordComponent,
         title: "Change Password",
       },
       {

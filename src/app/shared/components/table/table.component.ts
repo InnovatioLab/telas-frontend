@@ -73,8 +73,8 @@ export class TableComponent {
     sortOrder?: string;
   }>();
 
-  @Output() editar = new EventEmitter<string>();
-  @Output() visualizar = new EventEmitter<string>();
+  @Output() update = new EventEmitter<string>();
+  @Output() view = new EventEmitter<string>();
   @Output() excluir = new EventEmitter<string>();
 
   @ViewChild('inputElement') inputElement!: ElementRef;
@@ -216,11 +216,11 @@ export class TableComponent {
   }
 
   onEditar(item: Client | Monitor): void {
-    this.editar.emit(item.id);
+    this.update.emit(item.id);
   }
 
   onVisualizar(item: Client | Monitor): void {
-    this.visualizar.emit(item.id);
+    this.view.emit(item.id);
   }
 
   onExcluir(item: Client | Monitor): void {

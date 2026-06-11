@@ -6,7 +6,7 @@ import { Authentication } from "@app/core/service/auth/autenthication";
 import { ContentWrapperComponent } from "@app/shared/components/content-wrapper/content-wrapper.component";
 import { HeaderComponent } from "@app/shared/components/header/header.component";
 import { MenuComponent } from "@app/shared/components/menu/menu.component";
-import { RodapeComponent } from "@app/shared/components/rodape/rodape.component";
+import { FooterComponent } from "@app/shared/components/footer/footer.component";
 
 interface ToggleAdminSidebarEvent {
   visible: boolean;
@@ -24,7 +24,7 @@ interface ToggleAdminSidebarEvent {
     HeaderComponent,
     MenuComponent,
     ContentWrapperComponent,
-    RodapeComponent,
+    FooterComponent,
   ],
   templateUrl: "./admin-view-layout.component.html",
   styleUrls: ["./admin-view-layout.component.scss"],

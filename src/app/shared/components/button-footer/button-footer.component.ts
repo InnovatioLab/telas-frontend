@@ -10,7 +10,7 @@ import { PrimengModule } from '../../primeng/primeng.module';
   styleUrl: './button-footer.component.scss'
 })
 export class ButtonFooterComponent {
-  @Output() proximo = new EventEmitter();
+  @Output() next = new EventEmitter();
   @Output() anterior = new EventEmitter();
 
   @Input() txtBtnAnterior: string;
@@ -18,8 +18,8 @@ export class ButtonFooterComponent {
   @Input() habilitarConcluir: boolean;
 
   chamarAcaoProximo() {
-    if (this.proximo) {
-      this.proximo.emit();
+    if (this.next) {
+      this.next.emit();
     }
   }
 

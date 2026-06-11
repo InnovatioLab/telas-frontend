@@ -175,7 +175,7 @@ export interface ILoadingStateService {
   setLoading(loading: boolean, message?: string): void;
 
   /**
-   * Mostra loading com mensagem
+   * Mostra loading com message
    * @param message - Mensagem de loading
    */
   showLoading(message?: string): void;

@@ -65,7 +65,7 @@ export const STRICT_ZIP_CODE_VALIDATORS: ValidatorFn[] = [
   Validators.pattern(/^\d{5}$/),
 ];
 
-export type ContactFieldNaming = "profile" | "modal" | "cadastro";
+export type ContactFieldNaming = "profile" | "modal" | "registration";
 
 export interface AddressGroupOptions {
   includeId?: boolean;
@@ -185,7 +185,7 @@ export class ClientProfileFormFactory {
     fb: FormBuilder,
     naming: ContactFieldNaming = "profile"
   ): FormGroup {
-    if (naming === "cadastro") {
+    if (naming === "registration") {
       return fb.group({
         numeroContato: ["", PHONE_VALIDATORS],
         email: ["", EMAIL_VALIDATORS],
@@ -275,15 +275,15 @@ export class ClientProfileFormFactory {
     return form;
   }
 
-  static createCadastroForm(fb: FormBuilder): FormGroup {
+  static createRegistrationForm(fb: FormBuilder): FormGroup {
     return fb.group({
-      dadosCliente: ClientProfileFormFactory.createBusinessFieldsGroup(fb, {
+      clientData: ClientProfileFormFactory.createBusinessFieldsGroup(fb, {
         includeSocialMedia: true,
       }),
-      enderecoCliente: ClientProfileFormFactory.createSingleAddressGroup(fb, {
+      clientAddress: ClientProfileFormFactory.createSingleAddressGroup(fb, {
         strictZipCode: true,
       }),
-      contato: ClientProfileFormFactory.createContactGroup(fb, "cadastro"),
+      contact: ClientProfileFormFactory.createContactGroup(fb, "registration"),
     });
   }
 }

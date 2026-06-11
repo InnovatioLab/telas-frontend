@@ -1,0 +1,56 @@
+<div class="cadastro-container">
+  <p-card id="one-state">
+    <ng-template pTemplate="header">
+      <div class="stap-header-container">
+        <h1 class="text-header">{{ headerText }}</h1>
+        <button
+          class="botao-cancelar ml-auto"
+          aria-label="Cancelar"
+          id="btn-cancelar"
+          (click)="cancelDialogMessage()"
+        >
+          <app-icon-close
+            class="botao-icon"
+            id="icon-cancelar"
+          ></app-icon-close>
+        </button>
+      </div>
+    </ng-template>
+
+    <div>
+      <ui-personal-data-form
+        [personalDataForm]="personalDataForm"
+        [habilitarFormDados]="habilitarFormDados"
+        (selectedUserType)="updateSelectedUserType($event)"
+        [fieldList]="fieldList"
+        id="lib-form-dados-pessoais"
+      ></ui-personal-data-form>
+
+      <ui-address-form
+        [addressForm]="addressForm"
+        (latitudeChange)="latitude = $event"
+        (longitudeChange)="longitude = $event"
+      ></ui-address-form>
+
+      <ui-contact-form [contactForm]="contactForm"></ui-contact-form>
+    </div>
+
+    <p class="descricao-campos-obrigatorios mb-0" *ngIf="mostrarAviso()">
+      Fields with<span class="required"> ( </span> ) are mandatory.
+    </p>
+
+    <ng-template
+      pTemplate="footer"
+      class="container-sm flex flex-column justify-content-between"
+    >
+      <app-button-footer
+        (next)="proximoStap()"
+        (anterior)="anteriorStap()"
+        [txtBtnProximo]="txtBtnProximo"
+        [txtBtnAnterior]="''"
+        [habilitarConcluir]="habilitarBotaoSalvar"
+        id="lib-button-footer"
+      ></app-button-footer>
+    </ng-template>
+  </p-card>
+</div>

@@ -1,0 +1,67 @@
+<div class="validacao-cadastro h-full w-full">
+  <app-card-centered type="formulario-pequeno" *ngIf="!codigoValido">
+    <ng-template pTemplate="content">
+      <ng-container>
+        <h5 class="text-center text-xlarge-bold mt-0 mb-4">
+          Registration Validation
+        </h5>
+        <p class="text-center font-normal mt-3 recover-text">
+          To validate your registration, we sent a code to your primary contact.
+          The code is valid for 15 minutes.
+        </p>
+      </ng-container>
+      <form [formGroup]="validacaoForm" class="mt-4">
+        <div class="col-12 flex flex-column gap-1">
+          <label htmlFor="codigo" id="lb-codigo" class="required"
+            >Enter your code</label
+          >
+          <input
+            type="text"
+            pInputText
+            formControlName="codigo"
+            placeholder="Information"
+            class="w-full input-form"
+            maxlength="6"
+            minlength="6"
+            id="codigo"
+            (input)="onInput($event)"
+          />
+          <app-error
+            id="error-msg-login"
+            [control]="validacaoForm.get('codigo')"
+          ></app-error>
+        </div>
+        <div class="text-center flex justify-content-center align-items-center">
+          <button
+            pButton
+            class="my-3"
+            [disabled]="!validacaoForm.valid"
+            (click)="validarCodigo()"
+          >
+            {{ ACTION_LABELS.validate }}
+          </button>
+        </div>
+      </form>
+
+      <div
+        class="flex flex-column justify-content-center align-items-center gap-3 text-center"
+      >
+        <p class="mb-0">Didn't receive it?</p>
+        <button
+          pButton
+          (click)="enviarCodigo()"
+          class="bg-transparent border-0 cursor-pointer resend-button"
+          [disabled]="inativarBotaoReenviarCodigo"
+        >
+          Resend Code
+        </button>
+      </div>
+    </ng-template>
+  </app-card-centered>
+
+  <feat-set-password
+    *ngIf="codigoValido"
+    class="fadein animation-duration-500"
+    (registrationCompleted)="cadastroSenhaFinalizado($event)"
+  />
+</div>

@@ -30,7 +30,7 @@ export class MonitorMapPointMapper {
     return {
       id: monitor.id,
       title:
-        addressLabel === "Endereço indisponível" ? undefined : addressLabel,
+        addressLabel === "Address unavailable" ? undefined : addressLabel,
       latitude: monitor.latitude,
       longitude: monitor.longitude,
       category: "MONITOR",

@@ -57,7 +57,8 @@ export class LazyTableController<T, F extends LazyTableFilterState> {
     return next;
   }
 
-  load(): void {
+  load(searchTerm?: string): void {
+    if (searchTerm !== undefined) this.searchTerm = searchTerm;
     this.loading = true;
     const requestFilters = this.applyGenericFilterTo(this.filters);
 
@@ -76,12 +77,14 @@ export class LazyTableController<T, F extends LazyTableFilterState> {
     });
   }
 
-  onSearch(): void {
+  onSearch(searchTerm?: string): void {
+    if (searchTerm !== undefined) this.searchTerm = searchTerm;
     this.filters.page = 1;
     this.load();
   }
 
-  onPageChange(event: TableLazyPageEvent): void {
+  onPageChange(event: TableLazyPageEvent, searchTerm?: string): void {
+    if (searchTerm !== undefined) this.searchTerm = searchTerm;
     const { page, rows } = resolveLazyTableRequestPage(
       event,
       this.filters.size ?? 10
@@ -91,7 +94,8 @@ export class LazyTableController<T, F extends LazyTableFilterState> {
     this.load();
   }
 
-  onSort(event: { field?: string; order?: number }): void {
+  onSort(event: { field?: string; order?: number }, searchTerm?: string): void {
+    if (searchTerm !== undefined) this.searchTerm = searchTerm;
     if (this.isSorting || this.loading || !event.field) {
       return;
     }

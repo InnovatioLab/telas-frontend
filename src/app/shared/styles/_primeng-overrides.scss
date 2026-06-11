@@ -47,6 +47,12 @@
   }
 }
 
+.p-tooltip .p-tooltip-text {
+  white-space: normal;
+  word-break: break-word;
+  max-width: 220px;
+}
+
 html[data-theme="dark"],
 html.dark-theme,
 body.dark-theme {

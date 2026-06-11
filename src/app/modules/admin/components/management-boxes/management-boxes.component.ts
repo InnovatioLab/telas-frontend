@@ -9,6 +9,7 @@ import {
   SmartPlugAdminService,
 } from "@app/core/service/api/smart-plug-admin.service";
 import { ToastService } from "@app/core/service/state/toast.service";
+import { PermissionFacadeService } from "@app/core/service/auth/permission-facade.service";
 import { Box } from "@app/model/box";
 import { BoxAddress } from "@app/model/box-address";
 import { BoxAddressRequestDto } from "@app/model/dto/request/box-address-request.dto";
@@ -18,8 +19,8 @@ import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
 import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/lazy-table.controller";
 import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
-import { MessageService, OverlayOptions } from "primeng/api";
-import { Role } from "@app/model/client";
+import { OverlayOptions } from "primeng/api";
+
 import { Observable, of } from "rxjs";
 import { filter, map, switchMap, take, timeout } from "rxjs/operators";
 
@@ -87,7 +88,7 @@ export class ManagementBoxesComponent implements OnInit {
     private readonly clientService: ClientService,
     private readonly smartPlugAdmin: SmartPlugAdminService,
     private readonly toastService: ToastService,
-    private readonly messageService: MessageService
+    private readonly permissionFacade: PermissionFacadeService
   ) {
     this.tableController = new LazyTableController<
       Box,
@@ -101,7 +102,7 @@ export class ManagementBoxesComponent implements OnInit {
             totalElements: result.totalElements,
           }))
         ),
-      () => this.toastService.erro("Error loading boxes")
+      () => this.toastService.error("Error loading boxes")
     );
   }
 
@@ -122,15 +123,11 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.clientService.clientAtual$.pipe(filter(c => !!c), take(1)).subscribe((client) => {
-      this.isDeveloper = client?.role === Role.DEVELOPER;
-      this.isAdmin = client?.role === Role.ADMIN;
-      const privs = this.isDeveloper || this.isAdmin;
-      const perms: string[] = client?.permissions ?? [];
-      this.canViewBoxAddress   = this.isDeveloper || perms.includes('ADMIN_BOX_ADDRESS_VIEW');
-      this.canCreateBoxAddress = this.isDeveloper || perms.includes('ADMIN_BOX_ADDRESS_CREATE');
-      this.canManageBoxAddress = this.isDeveloper || perms.includes('ADMIN_BOX_ADDRESS_MANAGE');
-    });
+    this.isDeveloper = this.permissionFacade.isDeveloper();
+    this.isAdmin = this.permissionFacade.isAdmin();
+    this.canViewBoxAddress = this.permissionFacade.can('ADMIN_BOX_ADDRESS_VIEW');
+    this.canCreateBoxAddress = this.permissionFacade.can('ADMIN_BOX_ADDRESS_CREATE');
+    this.canManageBoxAddress = this.permissionFacade.can('ADMIN_BOX_ADDRESS_MANAGE');
     this.loadInitialData();
   }
 
@@ -145,7 +142,7 @@ export class ManagementBoxesComponent implements OnInit {
     this.loadingAllBoxAddresses = true;
     this.boxService.getAllBoxAddresses().subscribe({
       next: (list) => { this.allBoxAddresses = list; this.loadingAllBoxAddresses = false; },
-      error: () => { this.toastService.erro('Error loading box addresses'); this.loadingAllBoxAddresses = false; },
+      error: () => { this.toastService.error('Error loading box addresses'); this.loadingAllBoxAddresses = false; },
     });
   }
 
@@ -161,7 +158,7 @@ export class ManagementBoxesComponent implements OnInit {
 
   saveBoxAddress(): void {
     if (!this.boxAddressForm.ip?.trim() || !this.boxAddressForm.mac?.trim()) {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'IP and MAC are required' });
+      this.toastService.error('IP and MAC are required');
       return;
     }
     this.savingBoxAddress = true;
@@ -179,9 +176,9 @@ export class ManagementBoxesComponent implements OnInit {
         const msg = this.editingBoxAddress ? 'Address updated!' : 'Address created!';
         this.cancelEditBoxAddress();
         this.loadAllBoxAddresses();
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+        this.toastService.success(msg);
       },
-      error: () => { this.savingBoxAddress = false; this.toastService.erro('Error saving address'); },
+      error: () => { this.savingBoxAddress = false; this.toastService.error('Error saving address'); },
     });
   }
 
@@ -190,15 +187,14 @@ export class ManagementBoxesComponent implements OnInit {
     this.boxService.deleteBoxAddress(addr.id).subscribe({
       next: () => {
         this.loadAllBoxAddresses();
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Address deleted!' });
+        this.toastService.success('Address deleted!');
       },
-      error: () => { this.toastService.erro('Error deleting address. It may be in use.'); },
+      error: () => { this.toastService.error('Error deleting address. It may be in use.'); },
     });
   }
 
   loadInitialData(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   loadAvailableBoxAddresses(): void {
@@ -209,7 +205,7 @@ export class ManagementBoxesComponent implements OnInit {
         this.loadingBoxAddresses = false;
       },
       error: (error) => {
-        this.toastService.erro("Error loading box addresses");
+        this.toastService.error("Error loading box addresses");
         this.loadingBoxAddresses = false;
       },
     });
@@ -249,7 +245,7 @@ export class ManagementBoxesComponent implements OnInit {
         this.loadingBoxAddresses = false;
       },
       error: (error) => {
-        this.toastService.erro("Error loading box addresses");
+        this.toastService.error("Error loading box addresses");
         this.loadingBoxAddresses = false;
       },
     });
@@ -293,7 +289,7 @@ export class ManagementBoxesComponent implements OnInit {
       },
       error: (error) => {
         console.error("Error loading monitors:", error);
-        this.toastService.erro("Error loading monitors");
+        this.toastService.error("Error loading monitors");
         this.loadingMonitors = false;
       },
       complete: () => {
@@ -310,15 +306,11 @@ export class ManagementBoxesComponent implements OnInit {
     this.boxService.syncPlaylist(box.id).pipe(timeout(15000)).subscribe({
       next: () => {
         this.syncingBoxId = null;
-        this.messageService.add({
-          severity: "success",
-          summary: "Success",
-          detail: "Playlist sync triggered successfully.",
-        });
+        this.toastService.success("Playlist sync triggered successfully.");
       },
       error: () => {
         this.syncingBoxId = null;
-        this.toastService.erro("Error syncing playlist. The box may be offline.");
+        this.toastService.error("Error syncing playlist. The box may be offline.");
       },
     });
   }
@@ -336,23 +328,19 @@ export class ManagementBoxesComponent implements OnInit {
   }
 
   loadBoxes(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   onSearch(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onPageChange(event);
+        this.tableController.onPageChange(event, this.searchTerm);
   }
 
   onSort(event: { field?: string; order?: number }): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSort(event);
+        this.tableController.onSort(event, this.searchTerm);
   }
 
   openCreateBoxModal(): void {
@@ -370,20 +358,12 @@ export class ManagementBoxesComponent implements OnInit {
 
   onCreateBox(): void {
     if (!this.newBox.boxAddressId) {
-      this.messageService.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Box Address is required",
-      });
+      this.toastService.error("Box Address is required");
       return;
     }
 
     if (!this.selectedMonitorIdCreate) {
-      this.messageService.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Monitor is required",
-      });
+      this.toastService.error("Monitor is required");
       return;
     }
 
@@ -398,19 +378,11 @@ export class ManagementBoxesComponent implements OnInit {
     this.boxService.createBox(boxRequest).subscribe({
       next: (newBox) => {
         this.closeModal();
-        this.messageService.add({
-          severity: "success",
-          summary: "Success",
-          detail: "Box created successfully!",
-        });
+        this.toastService.success("Box created successfully!");
         this.loadBoxes();
       },
       error: (error) => {
-        this.messageService.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Error creating box. Please check the data and try again.",
-        });
+        this.toastService.error("Error creating box. Please check the data and try again.");
       },
     });
   }
@@ -431,20 +403,12 @@ export class ManagementBoxesComponent implements OnInit {
     if (!this.selectedBoxForEdit) return;
 
     if (!this.selectedBoxForEdit.boxAddressId) {
-      this.messageService.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Box Address is required",
-      });
+      this.toastService.error("Box Address is required");
       return;
     }
 
     if (!this.selectedMonitorIdEdit) {
-      this.messageService.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Monitor is required",
-      });
+      this.toastService.error("Monitor is required");
       return;
     }
 
@@ -468,12 +432,10 @@ export class ManagementBoxesComponent implements OnInit {
     // Carrega os endereços disponíveis incluindo o atual e define a seleção automaticamente
     this.loadAvailableBoxAddressesForEdit(box);
     this.loadAvailableMonitors();
-    this.clientService.clientAtual$.pipe(take(1)).subscribe((client) => {
-      this.isDeveloper = client?.role === Role.DEVELOPER;
-      if (this.isDeveloper && box.id) {
-        this.loadBoxPlugOptions(box.id);
-      }
-    });
+    this.isDeveloper = this.permissionFacade.isDeveloper();
+    if (this.isDeveloper && box.id) {
+      this.loadBoxPlugOptions(box.id);
+    }
 
     this.editBoxModalVisible = true;
   }
@@ -533,19 +495,11 @@ export class ManagementBoxesComponent implements OnInit {
         next: () => {
           this.editBoxModalVisible = false;
           this.selectedBoxForEdit = null;
-          this.messageService.add({
-            severity: "success",
-            summary: "Success",
-            detail: "Box updated successfully!",
-          });
+          this.toastService.success("Box updated successfully!");
           this.loadBoxes();
         },
         error: () => {
-          this.messageService.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Error updating box. Please check the data and try again.",
-          });
+          this.toastService.error("Error updating box. Please check the data and try again.");
         },
       });
   }
@@ -564,26 +518,14 @@ export class ManagementBoxesComponent implements OnInit {
     this.boxService.deleteBox(id).subscribe({
       next: (success) => {
         if (success) {
-          this.messageService.add({
-            severity: "success",
-            summary: "Success",
-            detail: "Box deleted successfully!",
-          });
+          this.toastService.success("Box deleted successfully!");
           this.loadBoxes();
         } else {
-          this.messageService.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Error deleting box.",
-          });
+          this.toastService.error("Error deleting box.");
         }
       },
-      error: (error) => {
-        this.messageService.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Error deleting box.",
-        });
+      error: () => {
+        this.toastService.error("Error deleting box.");
       },
     });
   }

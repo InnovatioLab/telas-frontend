@@ -102,8 +102,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
   }
 
   loadInitialData(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   ensureValidNumber(value: unknown): number {
@@ -112,23 +111,19 @@ export class ManagementSubscriptionsComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onPageChange(event);
+        this.tableController.onPageChange(event, this.searchTerm);
   }
 
   onSort(event: { field?: string; order?: number }): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSort(event);
+        this.tableController.onSort(event, this.searchTerm);
   }
 
   loadSubscriptions(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   getSubscriptionLocations(subscription: SubscriptionMinResponseDto): string {
@@ -193,12 +188,12 @@ export class ManagementSubscriptionsComponent implements OnInit {
     this.selectedSubscriptionForUpgrade = subscription;
 
     if (subscription.status !== SubscriptionStatus.ACTIVE) {
-      this.toastService.aviso("You can only upgrade active subscriptions.");
+      this.toastService.warn("You can only upgrade active subscriptions.");
       return;
     }
 
     if (!subscription.ableToUpgrade) {
-      this.toastService.aviso("This subscription cannot be upgraded.");
+      this.toastService.warn("This subscription cannot be upgraded.");
       return;
     }
 
@@ -207,7 +202,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
     );
 
     if (this.availableUpgradeOptions.length === 0) {
-      this.toastService.aviso(
+      this.toastService.warn(
         "No upgrade options available for this subscription."
       );
       return;
@@ -249,7 +244,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
       !this.selectedSubscriptionForUpgrade ||
       !this.selectedUpgradeRecurrence
     ) {
-      this.toastService.aviso("Please select an upgrade option.");
+      this.toastService.warn("Please select an upgrade option.");
       return;
     }
 
@@ -264,7 +259,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
         next: (checkoutUrl) => {
           this.operationLoading = false;
           if (!checkoutUrl) {
-            this.toastService.aviso("No checkout URL returned for upgrade.");
+            this.toastService.warn("No checkout URL returned for upgrade.");
             return;
           }
 
@@ -284,7 +279,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
     this.subscriptionService.renew(subscription.id).subscribe({
       next: (checkoutUrl) => {
         if (!checkoutUrl) {
-          this.toastService.aviso("No checkout URL returned for renewal.");
+          this.toastService.warn("No checkout URL returned for renewal.");
           return;
         }
 
@@ -300,7 +295,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
     this.subscriptionService.getCustomerPortalUrl().subscribe({
       next: (portalUrl) => {
         if (!portalUrl) {
-          this.toastService.aviso("No URL returned for customer portal.");
+          this.toastService.warn("No URL returned for customer portal.");
           this.operationLoading = false;
           return;
         }
@@ -359,8 +354,8 @@ export class ManagementSubscriptionsComponent implements OnInit {
       const effectiveAt = subscription.cancelAtPeriodEndAt || subscription.endsAt;
       const effectiveLabel = effectiveAt
         ? `Cancelamento agendado para ${DateFormatter.formatDateTime(effectiveAt)}.`
-        : "Cancelamento já está agendado para esta assinatura.";
-      this.toastService.aviso(effectiveLabel);
+        : "Cancellation is already scheduled for this subscription.";
+      this.toastService.warn(effectiveLabel);
       return;
     }
     const locations = this.getSubscriptionLocations(subscription);
@@ -376,7 +371,7 @@ export class ManagementSubscriptionsComponent implements OnInit {
       this.subscriptionService.delete(subscription.id).subscribe({
         next: (ok) => {
           if (!ok) {
-            this.toastService.erro("Não foi possível cancelar a assinatura.");
+            this.toastService.error("Failed to cancel subscription.");
             return;
           }
           subscription.ableToCancel = false;
@@ -386,9 +381,9 @@ export class ManagementSubscriptionsComponent implements OnInit {
           }
           const msg =
             subscription.recurrence === Recurrence.MONTHLY
-              ? "Cancelamento agendado para o fim do período de cobrança. Veja a data na tabela."
+              ? "Cancellation scheduled for end of billing period. See date in the table."
               : "Subscription cancelled successfully.";
-          this.toastService.sucesso(msg);
+          this.toastService.success(msg);
           this.loadSubscriptions();
         },
         error: () => {},

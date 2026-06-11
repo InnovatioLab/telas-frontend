@@ -9,7 +9,8 @@ import {
   PermanentDeleteClientPayload,
 } from "@app/core/service/api/client-management.service";
 import { ClientService } from "@app/core/service/api/client.service";
-import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+import { PermissionFacadeService } from "@app/core/service/auth/permission-facade.service";
+import { extractErrorMessage } from "@app/core/utils/error.utils";
 import { ToastService } from "@app/core/service/state/toast.service";
 import {
   Address,
@@ -33,11 +34,10 @@ import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { firstValueFrom, of } from "rxjs";
 import { catchError, take } from "rxjs/operators";
 import { MonitoringPermission } from "@app/model/monitoring-permission";
-import { canAdminCreatePartner } from "@app/core/utils/admin-partner.util";
 import { EditClientModalComponent } from "../edit-client-modal/edit-client-modal.component";
 import { CreatePartnerModalComponent } from "../create-partner-modal/create-partner-modal.component";
 import { NotificationsService } from "@app/core/service/api/notifications.service";
-import { Notification } from "@app/modules/notificacao/models/notification";
+import { Notification } from "@app/modules/notification/models/notification";
 
 @Component({
   selector: "app-management-clients",
@@ -94,7 +94,8 @@ export class ManagementClientsComponent implements OnInit {
     private readonly dialogService: DialogService,
     private readonly router: Router,
     private readonly notificationsService: NotificationsService,
-    public readonly fileUploadPipeline: FileUploadPipelineService
+    public readonly fileUploadPipeline: FileUploadPipelineService,
+    private readonly permissionFacade: PermissionFacadeService
   ) {
     this.tableController = new LazyTableController<
       Client,
@@ -111,7 +112,7 @@ export class ManagementClientsComponent implements OnInit {
           })),
           tap(() => this.sortClientsByUnreadMessages())
         ),
-      () => this.toastService.erro("Failed to load clients")
+      () => this.toastService.error("Failed to load clients")
     );
   }
 
@@ -138,7 +139,7 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   canCreatePartner(): boolean {
-    return canAdminCreatePartner(this.panelClient);
+    return this.permissionFacade.canCreatePartner();
   }
 
   private refreshPanelClient(): void {
@@ -154,20 +155,14 @@ export class ManagementClientsComponent implements OnInit {
         }
         this.panelClient = client as Client;
         this.currentUserId = client.id ?? null;
-        this.clientService.setClientAtual(this.panelClient);
+        this.clientService.setCurrentClient(this.panelClient);
       });
   }
 
   private hasPermanentDeleteAccess(): boolean {
     return (
-      hasMonitoringPermission(
-        this.panelClient,
-        MonitoringPermission.ADMIN_CLIENTS_PERMANENT_DELETE
-      ) ||
-      hasMonitoringPermission(
-        this.panelClient,
-        MonitoringPermission.ADMIN_CLIENTS_SOFT_DELETE
-      )
+      this.permissionFacade.hasMonitoring(MonitoringPermission.ADMIN_CLIENTS_PERMANENT_DELETE) ||
+      this.permissionFacade.hasMonitoring(MonitoringPermission.ADMIN_CLIENTS_SOFT_DELETE)
     );
   }
 
@@ -205,9 +200,7 @@ export class ManagementClientsComponent implements OnInit {
   canDeactivateClient(client: Client): boolean {
     if (
       !client.id ||
-      !hasMonitoringPermission(
-        this.panelClient,
-        MonitoringPermission.ADMIN_CLIENTS_DEACTIVATE
+      !this.permissionFacade.hasMonitoring(MonitoringPermission.ADMIN_CLIENTS_DEACTIVATE
       )
     ) {
       return false;
@@ -230,9 +223,7 @@ export class ManagementClientsComponent implements OnInit {
   canSoftDeleteClient(client: Client): boolean {
     if (
       !client.id ||
-      !hasMonitoringPermission(
-        this.panelClient,
-        MonitoringPermission.ADMIN_CLIENTS_SOFT_DELETE
+      !this.permissionFacade.hasMonitoring(MonitoringPermission.ADMIN_CLIENTS_SOFT_DELETE
       )
     ) {
       return false;
@@ -263,8 +254,7 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   loadClients(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   async ensureClientAddressesLoaded(client: Client): Promise<void> {
@@ -341,23 +331,20 @@ export class ManagementClientsComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onPageChange(event);
+        this.tableController.onPageChange(event, this.searchTerm);
   }
 
   onSort(event: { field?: string; order?: number }): void {
-    this.tableController.setSearchTerm(this.searchTerm);
     if (event.field) {
       this.tableController.currentFilters.sortBy = event.field;
       this.tableController.currentFilters.sortDir =
         event.order === 1 ? "asc" : "desc";
     }
-    this.tableController.load();
+    this.tableController.load(this.searchTerm);
   }
 
   async makePartner(client: Client): Promise<void> {
@@ -377,12 +364,12 @@ export class ManagementClientsComponent implements OnInit {
       this.clientManagementService.makePartner(client.id!).subscribe({
         next: () => {
           this.operationLoading = false;
-          this.toastService.sucesso("Client successfully made partner");
+          this.toastService.success("Client successfully made partner");
           this.loadClients();
         },
         error: (error) => {
           
-          this.toastService.erro("Failed to make client partner");
+          this.toastService.error("Failed to make client partner");
           this.operationLoading = false;
         },
       });
@@ -478,7 +465,7 @@ export class ManagementClientsComponent implements OnInit {
 
   editClient(client: Client): void {
     if (!client.id) {
-      this.toastService.erro("Client ID not found");
+      this.toastService.error("Client ID not found");
       return;
     }
 
@@ -524,7 +511,7 @@ export class ManagementClientsComponent implements OnInit {
       },
       error: (error) => {
         
-        this.toastService.erro("Failed to load client details");
+        this.toastService.error("Failed to load client details");
         this.operationLoading = false;
       },
     });
@@ -549,16 +536,12 @@ export class ManagementClientsComponent implements OnInit {
     this.clientManagementService.restoreDeletedClient(client.id).subscribe({
       next: () => {
         this.operationLoading = false;
-        this.toastService.sucesso("Account restored to active");
+        this.toastService.success("Account restored to active");
         this.loadClients();
       },
       error: (error) => {
-        const msg =
-          error?.error?.message ||
-          error?.error?.data?.message ||
-          error?.message ||
-          "Failed to restore account";
-        this.toastService.erro(msg);
+        const msg = extractErrorMessage(error, "Failed to restore account");
+        this.toastService.error(msg);
         this.operationLoading = false;
       },
     });
@@ -583,16 +566,12 @@ export class ManagementClientsComponent implements OnInit {
     this.clientManagementService.reactivateClient(client.id).subscribe({
       next: () => {
         this.operationLoading = false;
-        this.toastService.sucesso("User reactivated successfully");
+        this.toastService.success("User reactivated successfully");
         this.loadClients();
       },
       error: (error) => {
-        const msg =
-          error?.error?.message ||
-          error?.error?.data?.message ||
-          error?.message ||
-          "Failed to reactivate user";
-        this.toastService.erro(msg);
+        const msg = extractErrorMessage(error, "Failed to reactivate user");
+        this.toastService.error(msg);
         this.operationLoading = false;
       },
     });
@@ -617,16 +596,12 @@ export class ManagementClientsComponent implements OnInit {
     this.clientManagementService.deactivateClient(client.id).subscribe({
       next: () => {
         this.operationLoading = false;
-        this.toastService.sucesso("User inactivated successfully");
+        this.toastService.success("User inactivated successfully");
         this.loadClients();
       },
       error: (error) => {
-        const msg =
-          error?.error?.message ||
-          error?.error?.data?.message ||
-          error?.message ||
-          "Failed to inactivate user";
-        this.toastService.erro(msg);
+        const msg = extractErrorMessage(error, "Failed to inactivate user");
+        this.toastService.error(msg);
         this.operationLoading = false;
       },
     });
@@ -648,16 +623,12 @@ export class ManagementClientsComponent implements OnInit {
     this.clientManagementService.softDeleteClient(client.id).subscribe({
       next: () => {
         this.operationLoading = false;
-        this.toastService.sucesso("Account marked as deleted");
+        this.toastService.success("Account marked as deleted");
         this.loadClients();
       },
       error: (error) => {
-        const msg =
-          error?.error?.message ||
-          error?.error?.data?.message ||
-          error?.message ||
-          "Failed to update account";
-        this.toastService.erro(msg);
+        const msg = extractErrorMessage(error, "Failed to update account");
+        this.toastService.error(msg);
         this.operationLoading = false;
       },
     });
@@ -671,13 +642,13 @@ export class ManagementClientsComponent implements OnInit {
       const fresh = await firstValueFrom(this.clientService.getAuthenticatedClient());
       this.panelClient = fresh as Client;
       this.currentUserId = fresh.id ?? null;
-      this.clientService.setClientAtual(this.panelClient);
+      this.clientService.setCurrentClient(this.panelClient);
     } catch {
-      this.toastService.erro("Could not verify your permissions. Try again.");
+      this.toastService.error("Could not verify your permissions. Try again.");
       return;
     }
     if (!this.hasPermanentDeleteAccess()) {
-      this.toastService.erro("You do not have permission to perform this operation.");
+      this.toastService.error("You do not have permission to perform this operation.");
       return;
     }
     this.operationLoading = true;
@@ -692,12 +663,8 @@ export class ManagementClientsComponent implements OnInit {
       },
       error: (error) => {
         this.operationLoading = false;
-        const msg =
-          error?.error?.message ||
-          error?.error?.data?.message ||
-          error?.message ||
-          "Failed to check deletion requirements";
-        this.toastService.erro(msg);
+        const msg = extractErrorMessage(error, "Failed to check deletion requirements");
+        this.toastService.error(msg);
       },
     });
   }
@@ -726,7 +693,7 @@ export class ManagementClientsComponent implements OnInit {
         },
         error: () => {
           this.operationLoading = false;
-          this.toastService.erro("Failed to load clients for successor selection");
+          this.toastService.error("Failed to load clients for successor selection");
         },
       });
   }
@@ -775,7 +742,7 @@ export class ManagementClientsComponent implements OnInit {
   confirmPermanentDeleteSimplePassword(): void {
     const pwd = this.adminDeletionPassword.trim();
     if (!pwd) {
-      this.toastService.erro("Enter your password to confirm");
+      this.toastService.error("Enter your password to confirm");
       return;
     }
     const victim = this.pendingSimplePermanentDeleteClient;
@@ -796,12 +763,12 @@ export class ManagementClientsComponent implements OnInit {
 
   confirmPermanentDeleteWithSuccessor(): void {
     if (!this.permanentDeleteDialogClient?.id || !this.selectedSuccessorId) {
-      this.toastService.erro("Select the client who will inherit the screens");
+      this.toastService.error("Select the client who will inherit the screens");
       return;
     }
     const pwd = this.adminDeletionPassword.trim();
     if (!pwd) {
-      this.toastService.erro("Enter your password to confirm");
+      this.toastService.error("Enter your password to confirm");
       return;
     }
     const victimId = this.permanentDeleteDialogClient.id;
@@ -822,7 +789,7 @@ export class ManagementClientsComponent implements OnInit {
     this.clientManagementService.permanentDeleteClient(victimId, payload).subscribe({
       next: () => {
         this.operationLoading = false;
-        this.toastService.sucesso("Account removed");
+        this.toastService.success("Account removed");
         this.armDeletionPasswordField();
         this.closePermanentDeleteSuccessorDialog();
         this.closePermanentDeleteSimpleDialog();
@@ -830,19 +797,15 @@ export class ManagementClientsComponent implements OnInit {
       },
       error: (error) => {
         this.operationLoading = false;
-        const msg =
-          error?.error?.message ||
-          error?.error?.data?.message ||
-          error?.message ||
-          "Failed to permanently delete account";
-        this.toastService.erro(msg);
+        const msg = extractErrorMessage(error, "Failed to permanently delete account");
+        this.toastService.error(msg);
       },
     });
   }
 
   uploadAdForPartner(client: Client): void {
     if (!client.id) {
-      this.toastService.erro("Client ID not found");
+      this.toastService.error("Client ID not found");
       return;
     }
 
@@ -853,7 +816,7 @@ export class ManagementClientsComponent implements OnInit {
         const adsCount = fullClient.ads?.length || 0;
 
         if (adsCount >= this.PARTNER_MAX_ADS) {
-          this.toastService.erro(
+          this.toastService.error(
             `This partner already has ${this.PARTNER_MAX_ADS} ads. Maximum limit reached.`
           );
           return;
@@ -864,7 +827,7 @@ export class ManagementClientsComponent implements OnInit {
       },
       error: (error) => {
         this.operationLoading = false;
-        this.toastService.erro("Failed to load client details");
+        this.toastService.error("Failed to load client details");
       },
     });
   }
@@ -873,7 +836,7 @@ export class ManagementClientsComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       if (file.size > this.maxFileSize) {
-        this.toastService.erro(
+        this.toastService.error(
           `File size exceeds maximum allowed size of ${this.fileUploadPipeline.formatFileSize(this.maxFileSize)}`
         );
         event.target.value = "";
@@ -885,7 +848,7 @@ export class ManagementClientsComponent implements OnInit {
         .then(async (validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
-              this.toastService.erro(error);
+              this.toastService.error(error);
             });
             event.target.value = "";
             return;
@@ -896,7 +859,7 @@ export class ManagementClientsComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch(() => {
-          this.toastService.erro("Error validating file");
+          this.toastService.error("Error validating file");
           event.target.value = "";
         });
     }
@@ -915,7 +878,7 @@ export class ManagementClientsComponent implements OnInit {
 
   uploadAd(): void {
     if (!this.selectedFile || !this.selectedClient?.id) {
-      this.toastService.erro("No file selected");
+      this.toastService.error("No file selected");
       return;
     }
 
@@ -932,28 +895,28 @@ export class ManagementClientsComponent implements OnInit {
 
         this.adService.createClientAd(this.selectedClient!.id!, payload).subscribe({
           next: () => {
-            this.toastService.sucesso("Ad uploaded successfully");
+            this.toastService.success("Ad uploaded successfully");
             this.closeUploadAdDialog();
             this.loadClients();
             this.loadingUpload = false;
           },
           error: (error) => {
-            this.toastService.erro(
-              error?.error?.message || error?.message || "Failed to upload ad"
+            this.toastService.error(
+              extractErrorMessage(error, "Failed to upload ad")
             );
             this.loadingUpload = false;
           },
         });
       })
       .catch(() => {
-        this.toastService.erro("Failed to read file");
+        this.toastService.error("Failed to read file");
         this.loadingUpload = false;
       });
   }
 
   openMessagesHistory(client: Client): void {
     if (!client.id) {
-      this.toastService.erro("Client ID not found");
+      this.toastService.error("Client ID not found");
       return;
     }
     this.router.navigate(["/admin/clients", client.id, "messages"]);

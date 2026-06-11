@@ -16,7 +16,7 @@ export class DeveloperGuard implements CanActivate {
 
   async canActivate(): Promise<boolean | UrlTree> {
     const client = await firstValueFrom(
-      this.clientService.clientAtual$.pipe(
+      this.clientService.currentClient$.pipe(
         take(1),
         switchMap((c) =>
           c

@@ -8,9 +8,9 @@ import {
   MonitoringTestingService,
   SmartPlugReadingResponse,
 } from "@app/core/service/api/monitoring-testing.service";
-import { Authentication } from "@app/core/service/auth/autenthication";
+import { PermissionFacadeService } from "@app/core/service/auth/permission-facade.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -34,13 +34,11 @@ export class MonitoringTestingComponent implements OnInit {
   constructor(
     private readonly monitoringTestingService: MonitoringTestingService,
     private readonly toastService: ToastService,
-    private readonly authentication: Authentication
+    private readonly permissions: PermissionFacadeService
   ) {}
 
   canExecuteActions(): boolean {
-    return hasMonitoringPermission(
-      this.authentication.client(),
-      MonitoringPermission.MONITORING_TESTING_EXECUTE
+    return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_TESTING_EXECUTE
     );
   }
 
@@ -58,9 +56,9 @@ export class MonitoringTestingComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         if (err?.status === 403) {
-          this.toastService.erro("You do not have permission to view the monitoring overview.");
+          this.toastService.error("You do not have permission to view the monitoring overview.");
         } else {
-          this.toastService.erro("Could not load the monitoring overview.");
+          this.toastService.error("Could not load the monitoring overview.");
         }
       },
     });
@@ -155,12 +153,12 @@ export class MonitoringTestingComponent implements OnInit {
     this.monitoringTestingService.enqueueBoxScriptUpdate(row.boxId).subscribe({
       next: () => {
         this.enqueueingBoxId = null;
-        this.toastService.sucesso("Box script update queued.");
+        this.toastService.success("Box script update queued.");
         this.load();
       },
       error: (err: unknown) => {
         this.enqueueingBoxId = null;
-        this.toastService.erro(
+        this.toastService.error(
           this.httpErrorMessage(err, "Failed to queue box script update.")
         );
       },
@@ -181,7 +179,7 @@ export class MonitoringTestingComponent implements OnInit {
       },
       error: (err: unknown) => {
         this.checkingBoxId = null;
-        this.toastService.erro(this.httpErrorMessage(err, "Failed to verify box heartbeat."));
+        this.toastService.error(this.httpErrorMessage(err, "Failed to verify box heartbeat."));
       },
     });
   }
@@ -199,7 +197,7 @@ export class MonitoringTestingComponent implements OnInit {
       },
       error: (err: unknown) => {
         this.checkingPlugKey = null;
-        this.toastService.erro(this.httpErrorMessage(err, "Failed to read smart plug on box."));
+        this.toastService.error(this.httpErrorMessage(err, "Failed to read smart plug on box."));
       },
     });
   }
@@ -217,7 +215,7 @@ export class MonitoringTestingComponent implements OnInit {
       },
       error: (err: unknown) => {
         this.checkingPlugKey = null;
-        this.toastService.erro(this.httpErrorMessage(err, "Failed to read smart plug on screen."));
+        this.toastService.error(this.httpErrorMessage(err, "Failed to read smart plug on screen."));
       },
     });
   }
@@ -259,18 +257,18 @@ export class MonitoringTestingComponent implements OnInit {
     const msg = `Box ${row.boxIp ?? row.boxId}: ${st}${age}${versionHint}.`;
     const status = this.normalizeHeartbeatStatus(r);
     if (r.heartbeatOnline === true && status === "ONLINE") {
-      this.toastService.sucesso(msg);
+      this.toastService.success(msg);
       return;
     }
     if (status === "STALE") {
-      this.toastService.aviso(msg);
+      this.toastService.warn(msg);
       return;
     }
     if (status === "MISSING") {
-      this.toastService.aviso(msg);
+      this.toastService.warn(msg);
       return;
     }
-    this.toastService.erro(msg);
+    this.toastService.error(msg);
   }
 
   private httpErrorMessage(err: unknown, fallback: string): string {
@@ -318,7 +316,7 @@ export class MonitoringTestingComponent implements OnInit {
         : null;
     if (!r.reachable || errCode != null) {
       const err = errCode ?? "no response";
-      this.toastService.erro(`${prefix}: ${err}`);
+      this.toastService.error(`${prefix}: ${err}`);
       return;
     }
     const parts: string[] = [];
@@ -332,6 +330,6 @@ export class MonitoringTestingComponent implements OnInit {
       parts.push(`${r.voltageVolts} V`);
     }
     const detail = parts.length > 0 ? parts.join(" · ") : "on";
-    this.toastService.sucesso(`${prefix}: ${detail}`);
+    this.toastService.success(`${prefix}: ${detail}`);
   }
 }

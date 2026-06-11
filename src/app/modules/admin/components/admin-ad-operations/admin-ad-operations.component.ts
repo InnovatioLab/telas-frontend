@@ -91,7 +91,7 @@ export class AdminAdOperationsComponent implements OnInit {
                 result.totalRecords ?? result.totalElements ?? result.list?.length ?? 0,
             }))
           ),
-      () => this.toastService.erro("Could not load data.")
+      () => this.toastService.error("Could not load data.")
     );
   }
 
@@ -116,18 +116,15 @@ export class AdminAdOperationsComponent implements OnInit {
   }
 
   loadRows(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   onSearch(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onPageChange(event);
+        this.tableController.onPageChange(event, this.searchTerm);
   }
 
   getUrgencySeverity(
@@ -173,7 +170,7 @@ export class AdminAdOperationsComponent implements OnInit {
         this.notificationsLoading = false;
       },
       error: () => {
-        this.toastService.erro("Could not load expiry reminders.");
+        this.toastService.error("Could not load expiry reminders.");
         this.notificationsLoading = false;
       },
     });
@@ -205,10 +202,10 @@ export class AdminAdOperationsComponent implements OnInit {
         a.download = "subscriptions-export.csv";
         a.click();
         URL.revokeObjectURL(url);
-        this.toastService.sucesso("Export started.");
+        this.toastService.success("Export started.");
       },
       error: () => {
-        this.toastService.erro("Failed to export CSV.");
+        this.toastService.error("Failed to export CSV.");
       },
     });
   }

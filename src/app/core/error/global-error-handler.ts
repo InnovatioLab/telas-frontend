@@ -16,9 +16,9 @@ export class GlobalErrorHandler implements ErrorHandler {
     const errorMessage = this.extractErrorMessage(error);
     
     if (errorMessage === ApiErrorHandler.GENERIC_FORBIDDEN_MESSAGE) {
-      this.toastService.aviso(errorMessage);
+      this.toastService.warn(errorMessage);
     } else {
-      this.toastService.erro(errorMessage);
+      this.toastService.error(errorMessage);
     }
     
     this.logError(error);

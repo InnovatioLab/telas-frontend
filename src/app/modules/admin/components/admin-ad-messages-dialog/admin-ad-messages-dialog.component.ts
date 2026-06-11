@@ -62,7 +62,7 @@ export class AdminAdMessagesDialogComponent implements OnChanges {
         this.loading = false;
       },
       error: () => {
-        this.toastService.erro("Failed to load messages");
+        this.toastService.error("Failed to load messages");
         this.loading = false;
       },
     });
@@ -81,7 +81,7 @@ export class AdminAdMessagesDialogComponent implements OnChanges {
         this.loadMessages();
       },
       error: () => {
-        this.toastService.erro("Failed to send message");
+        this.toastService.error("Failed to send message");
         this.loading = false;
       },
     });

@@ -99,7 +99,7 @@ export class AdRequestManagementComponent implements OnInit {
               totalElements: response.totalElements || 0,
             })),
           ),
-      () => this.toastService.erro("Failed to load ad requests")
+      () => this.toastService.error("Failed to load ad requests")
     );
   }
 
@@ -131,8 +131,7 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   loadAdRequests(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   openMessagesHistory(adRequest: AdRequestResponseDto): void {
@@ -165,18 +164,15 @@ export class AdRequestManagementComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onPageChange(event);
+        this.tableController.onPageChange(event, this.searchTerm);
   }
 
   onSort(event: { field?: string; order?: number }): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSort(event);
+        this.tableController.onSort(event, this.searchTerm);
   }
 
   openViewDetailsDialog(adRequest: AdRequestResponseDto): void {
@@ -196,7 +192,7 @@ export class AdRequestManagementComponent implements OnInit {
       },
       error: () => {
         this.loadingRequestMedia = false;
-        this.toastService.erro("Failed to load ad request media");
+        this.toastService.error("Failed to load ad request media");
         this.closeViewDetailsDialog();
       },
     });
@@ -267,7 +263,7 @@ export class AdRequestManagementComponent implements OnInit {
         .then(async (validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
-              this.toastService.erro(error);
+              this.toastService.error(error);
             });
             return;
           }
@@ -277,7 +273,7 @@ export class AdRequestManagementComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch(() => {
-          this.toastService.erro("Error validating image file");
+          this.toastService.error("Error validating image file");
         });
     }
   }
@@ -290,7 +286,7 @@ export class AdRequestManagementComponent implements OnInit {
         .then(async (validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
-              this.toastService.erro(error);
+              this.toastService.error(error);
             });
             return;
           }
@@ -300,13 +296,13 @@ export class AdRequestManagementComponent implements OnInit {
           this.showUploadAdDialog = true;
         })
         .catch(() => {
-          this.toastService.erro("Error validating image file");
+          this.toastService.error("Error validating image file");
         });
     }
   }
 
   private onUploadSuccess(): void {
-    this.toastService.sucesso("Ad uploaded successfully");
+    this.toastService.success("Ad uploaded successfully");
     this.closeUploadAdDialog();
     this.loadAdRequests();
     this.loadingUpload = false;
@@ -321,7 +317,7 @@ export class AdRequestManagementComponent implements OnInit {
     this.clientService.uploadAdForAdRequest(adRequestId, payload).subscribe({
       next: () => this.onUploadSuccess(),
       error: () => {
-        this.toastService.erro("Failed to upload ad");
+        this.toastService.error("Failed to upload ad");
         this.loadingUpload = false;
       },
     });
@@ -341,10 +337,10 @@ export class AdRequestManagementComponent implements OnInit {
     if (!confirmed) return;
     this.clientService.approveAdRequestToAds(adRequest.id).subscribe({
       next: () => {
-        this.toastService.sucesso("Ad approved and moved to Ads");
+        this.toastService.success("Ad approved and moved to Ads");
         this.loadAdRequests();
       },
-      error: () => this.toastService.erro("Failed to approve ad"),
+      error: () => this.toastService.error("Failed to approve ad"),
     });
   }
 
@@ -362,10 +358,10 @@ export class AdRequestManagementComponent implements OnInit {
     if (!confirmed) return;
     this.clientService.cancelAdRequest(adRequest.id).subscribe({
       next: () => {
-        this.toastService.sucesso("Ad request cancelled");
+        this.toastService.success("Ad request cancelled");
         this.loadAdRequests();
       },
-      error: () => this.toastService.erro("Failed to cancel ad request"),
+      error: () => this.toastService.error("Failed to cancel ad request"),
     });
   }
 
@@ -450,7 +446,7 @@ export class AdRequestManagementComponent implements OnInit {
 
   uploadAd(): void {
     if (!this.selectedFile || !this.selectedAdRequest) {
-      this.toastService.erro("No file selected");
+      this.toastService.error("No file selected");
       return;
     }
 
@@ -475,13 +471,13 @@ export class AdRequestManagementComponent implements OnInit {
           .subscribe({
             next: () => this.onUploadSuccess(),
             error: () => {
-              this.toastService.erro("Failed to upload ad");
+              this.toastService.error("Failed to upload ad");
               this.loadingUpload = false;
             },
           });
       })
       .catch(() => {
-        this.toastService.erro("Failed to read file");
+        this.toastService.error("Failed to read file");
         this.loadingUpload = false;
       });
   }
@@ -559,7 +555,7 @@ export class AdRequestManagementComponent implements OnInit {
         URL.revokeObjectURL(url);
       },
       error: () => {
-        this.toastService.erro("Could not download questionnaire");
+        this.toastService.error("Could not download questionnaire");
       },
     });
   }

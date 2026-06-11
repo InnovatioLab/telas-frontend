@@ -7,8 +7,8 @@ import {
 } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Router } from "@angular/router";
-import { DialogoComponent } from "@app/shared/components/dialogo/dialogo.component";
-import { DialogoUtils } from "@app/shared/utils/dialogo-config.utils";
+import { DialogComponent } from "@app/shared/components/dialog/dialog.component";
+import { DialogUtils } from "@app/shared/utils/dialog-config.utils";
 import {
   DialogService,
   DynamicDialogConfig,
@@ -16,7 +16,7 @@ import {
 } from "primeng/dynamicdialog";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { AutenticacaoService } from "../service/api/autenticacao.service";
+import { AuthenticationService } from "../service/api/authentication.service";
 import { ToastService } from "../service/state/toast.service";
 import { ApiErrorHandler } from "../error/api-error-handler";
 
@@ -26,7 +26,7 @@ export function errorInterceptor(
 ): Observable<HttpEvent<unknown>> {
   const dialogService = inject(DialogService);
   const router = inject(Router);
-  const autenticacaoService = inject(AutenticacaoService);
+  const autenticacaoService = inject(AuthenticationService);
   const toastService = inject(ToastService);
 
   let configDialogo: DynamicDialogConfig;
@@ -46,27 +46,27 @@ export function errorInterceptor(
 
       if (status === HttpStatusCode.Unauthorized && !url?.includes(rotaLogin)) {
         const errorMessage = error?.detail ?? "Unauthorized access. Please log in again.";
-        configDialogo = DialogoUtils.exibirAlerta(errorMessage, {
-          acaoPrimariaCallback: () => {
+        configDialogo = DialogUtils.showAlert(errorMessage, {
+          primaryActionCallback: () => {
             refDialog?.destroy();
             autenticacaoService.logout();
             router.navigate(["/login"]);
           },
         });
-        refDialog = dialogService.open(DialogoComponent, configDialogo);
+        refDialog = dialogService.open(DialogComponent, configDialogo);
         return throwError(() => new Error(errorMessage));
       }
 
       if (status === HttpStatusCode.Unauthorized && url?.includes(rotaLogin)) {
         const errorMessage = "Invalid data! Please review and try again.";
-        configDialogo = DialogoUtils.exibirAlerta(errorMessage, {
-          acaoPrimariaCallback: () => {
+        configDialogo = DialogUtils.showAlert(errorMessage, {
+          primaryActionCallback: () => {
             refDialog?.destroy();
             autenticacaoService.logout();
             router.navigate(["/login"]);
           },
         });
-        refDialog = dialogService.open(DialogoComponent, configDialogo);
+        refDialog = dialogService.open(DialogComponent, configDialogo);
         return throwError(() => new Error(errorMessage));
       }
 
@@ -75,9 +75,9 @@ export function errorInterceptor(
       if (!ignorarToastErro) {
         if (status === HttpStatusCode.Forbidden) {
           if (errorMessage === ApiErrorHandler.GENERIC_FORBIDDEN_MESSAGE) {
-            toastService.aviso(errorMessage);
+            toastService.warn(errorMessage);
           } else {
-            toastService.erro(errorMessage);
+            toastService.error(errorMessage);
           }
           return throwError(() => {
             const customError = new Error(errorMessage);
@@ -87,11 +87,11 @@ export function errorInterceptor(
         }
 
         if (status === 0) {
-          toastService.erro(errorMessage);
+          toastService.error(errorMessage);
         } else if (status >= 500) {
-          toastService.erro(errorMessage);
+          toastService.error(errorMessage);
         } else if (status >= 400 && status !== HttpStatusCode.Unauthorized) {
-          toastService.aviso(errorMessage);
+          toastService.warn(errorMessage);
         }
 
         return throwError(() => new Error(errorMessage));

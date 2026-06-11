@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable, computed, inject, signal } from "@angular/core";
-import { Notification } from "@app/modules/notificacao/models/notification";
+import { Notification } from "@app/modules/notification/models/notification";
 import { Observable, of } from "rxjs";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
@@ -69,7 +69,7 @@ export class NotificationsService {
       })
       .pipe(
         tap((response) => {
-          // Backend wraps in ResponseDto: { data, mensagem, status, ... }
+          // Backend wraps in ResponseDto: { data, message, status, ... }
           const payload = (response && (response.data ?? response)) as any;
           const list = Array.isArray(payload) ? payload : [];
           this._allNotifications.set(list as Notification[]);

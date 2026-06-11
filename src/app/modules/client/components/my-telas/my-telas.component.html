@@ -30,7 +30,7 @@
                 <div class="flex flex-column gap-2 pt-1">
                   <textarea [id]="'nq-' + f.key" pInputTextarea rows="4" class="w-full"
                     [formControlName]="f.key" [attr.maxlength]="questionnaireAnswerMaxLength"></textarea>
-                  @if (mostrarErro(newRequestQuestionnaireForm, f.key)) {
+                  @if (showError(newRequestQuestionnaireForm, f.key)) {
                   <app-error [control]="newRequestQuestionnaireForm.get(f.key)"></app-error>
                   }
                 </div>
@@ -344,7 +344,7 @@
         <label for="justification" class="required">Justification</label>
         <input id="justification" type="text" pInputText formControlName="justification"
           placeholder="Type your justification" />
-        @if (mostrarErro(validateAdForm, "justification")) {
+        @if (showError(validateAdForm, "justification")) {
         <app-error id="error-msg-justification" [control]="validateAdForm.get('justification')"></app-error>
         }
       </div>
@@ -354,7 +354,7 @@
         <textarea id="description" pInputTextarea formControlName="description"
           placeholder="Type an optional description" rows="3">
           </textarea>
-        @if (mostrarErro(validateAdForm, "description")) {
+        @if (showError(validateAdForm, "description")) {
         <app-error id="error-msg-description" [control]="validateAdForm.get('description')"></app-error>
         }
       </div>

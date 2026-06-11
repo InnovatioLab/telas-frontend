@@ -5,9 +5,9 @@ import {
   ApplicationLogEntry,
   MonitoringLogService,
 } from "@app/core/service/api/monitoring-log.service";
-import { Authentication } from "@app/core/service/auth/autenthication";
+import { PermissionFacadeService } from "@app/core/service/auth/permission-facade.service";
 import { ToastService } from "@app/core/service/state/toast.service";
-import { hasMonitoringPermission } from "@app/core/utils/monitoring-permission.util";
+
 import { MonitoringPermission } from "@app/model/monitoring-permission";
 import { IconsModule } from "@app/shared/icons/icons.module";
 import { PrimengModule } from "@app/shared/primeng/primeng.module";
@@ -28,7 +28,7 @@ interface SelectOption {
 export class SmartPlugLogsComponent implements OnInit {
   private readonly monitoringLogService = inject(MonitoringLogService);
   private readonly toastService = inject(ToastService);
-  private readonly authentication = inject(Authentication);
+  private readonly permissions = inject(PermissionFacadeService);
 
   logs: ApplicationLogEntry[] = [];
   loading = false;
@@ -60,9 +60,7 @@ export class SmartPlugLogsComponent implements OnInit {
   }
 
   canView(): boolean {
-    return hasMonitoringPermission(
-      this.authentication.client(),
-      MonitoringPermission.MONITORING_SMART_PLUG_LOGS_VIEW
+    return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_SMART_PLUG_LOGS_VIEW
     );
   }
 
@@ -142,9 +140,9 @@ export class SmartPlugLogsComponent implements OnInit {
           this.totalRecords = 0;
           this.loading = false;
           if (err?.status === 403) {
-            this.toastService.erro("Sem permissão para ver smart plug logs.");
+            this.toastService.error("No permission to view smart plug logs.");
           } else {
-            this.toastService.erro("Não foi possível carregar smart plug logs.");
+            this.toastService.error("Failed to load smart plug logs.");
           }
         },
       });

@@ -26,7 +26,7 @@ export class ClientAuthenticatedGuard implements CanActivate {
     }
 
     const authenticatedClient = await firstValueFrom(
-      this.clientService.clientAtual$.pipe(
+      this.clientService.currentClient$.pipe(
         take(1),
         switchMap((client) =>
           client ? of(client) : this.clientService.getAuthenticatedClient()

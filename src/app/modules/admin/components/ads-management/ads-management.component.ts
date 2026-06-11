@@ -72,7 +72,7 @@ export class AdsManagementComponent implements OnInit {
             totalElements: response.totalRecords ?? response.totalElements ?? 0,
           }))
         ),
-      () => this.toastService.erro("Failed to load client-approved ads")
+      () => this.toastService.error("Failed to load client-approved ads")
     );
   }
 
@@ -107,8 +107,8 @@ export class AdsManagementComponent implements OnInit {
     if (this.colSubmissionFrom.getTime() <= this.colSubmissionTo.getTime()) {
       return;
     }
-    this.toastService.aviso(
-      "A data inicial não pode ser maior que a data final. Ajustei automaticamente."
+    this.toastService.warn(
+      "Start date cannot be later than end date. Adjusted automatically."
     );
     this.colSubmissionTo = new Date(this.colSubmissionFrom);
   }
@@ -172,18 +172,15 @@ export class AdsManagementComponent implements OnInit {
   }
 
   loadApprovedClientAds(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   onSearch(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onApplyColumnFilters(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onClearColumnFilters(): void {
@@ -193,13 +190,11 @@ export class AdsManagementComponent implements OnInit {
     this.colScreenContains = "";
     this.colSubmissionFrom = null;
     this.colSubmissionTo = null;
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onPageChange(event);
+        this.tableController.onPageChange(event, this.searchTerm);
   }
 
   isSentToBox(row: AdminAdOperationRow): boolean {
@@ -246,7 +241,7 @@ export class AdsManagementComponent implements OnInit {
         this.previewLoadingAdId = null;
         const url = link?.trim();
         if (!url) {
-          this.toastService.erro("No preview link available for this ad.");
+          this.toastService.error("No preview link available for this ad.");
           return;
         }
         this.previewTitle = row.adName?.trim() || "Ad";
@@ -254,14 +249,15 @@ export class AdsManagementComponent implements OnInit {
         const pdf =
           isPdfFile(url, row.adName) ||
           (mediaType?.toLowerCase().includes("pdf") ?? false);
-        this.safePdfUrl = pdf
-          ? this.sanitizer.bypassSecurityTrustResourceUrl(url)
+        const safeUrl = url?.trim() ?? "";
+        this.safePdfUrl = pdf && (safeUrl.startsWith("http://") || safeUrl.startsWith("https://"))
+          ? this.sanitizer.bypassSecurityTrustResourceUrl(safeUrl)
           : null;
         this.previewVisible = true;
       },
       error: () => {
         this.previewLoadingAdId = null;
-        this.toastService.erro("Failed to load ad preview");
+        this.toastService.error("Failed to load ad preview");
       },
     });
   }
@@ -335,13 +331,13 @@ export class AdsManagementComponent implements OnInit {
     this.dispatchingAdId = adId;
     this.adminAdOperationsService.dispatchAdToBox(adId).subscribe({
       next: () => {
-        this.toastService.sucesso("Ad staged on box.");
+        this.toastService.success("Ad staged on box.");
         this.dispatchingAdId = null;
         this.loadApprovedClientAds();
       },
       error: () => {
         this.dispatchingAdId = null;
-        this.toastService.erro("Failed to stage ad on box");
+        this.toastService.error("Failed to stage ad on box");
       },
     });
   }
@@ -364,13 +360,13 @@ export class AdsManagementComponent implements OnInit {
     this.addingToPlaylistAdId = adId;
     this.adminAdOperationsService.addAdToPlaylist(adId).subscribe({
       next: () => {
-        this.toastService.sucesso("Ad added to screen playlist.");
+        this.toastService.success("Ad added to screen playlist.");
         this.addingToPlaylistAdId = null;
         this.loadApprovedClientAds();
       },
       error: () => {
         this.addingToPlaylistAdId = null;
-        this.toastService.erro("Failed to add ad to playlist");
+        this.toastService.error("Failed to add ad to playlist");
       },
     });
   }
@@ -410,13 +406,13 @@ export class AdsManagementComponent implements OnInit {
     this.deletingAdId = adId;
     this.adminAdOperationsService.deleteAd(adId).subscribe({
       next: () => {
-        this.toastService.sucesso("Ad deleted.");
+        this.toastService.success("Ad deleted.");
         this.deletingAdId = null;
         this.loadApprovedClientAds();
       },
       error: () => {
         this.deletingAdId = null;
-        this.toastService.erro("Failed to delete ad");
+        this.toastService.error("Failed to delete ad");
       },
     });
   }

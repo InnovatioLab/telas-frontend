@@ -10,7 +10,7 @@ import {
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { AdService } from "@app/core/service/api/ad.service";
-import { AutenticacaoService } from "@app/core/service/api/autenticacao.service";
+import { AuthenticationService } from "@app/core/service/api/authentication.service";
 import { ClientService } from "@app/core/service/api/client.service";
 import { MonitorService } from "@app/core/service/api/monitor.service";
 import { SmartPlugAdminService } from "@app/core/service/api/smart-plug-admin.service";
@@ -36,7 +36,6 @@ import { LazyTableController, LazyTableFilterState } from "@app/shared/utils/laz
 import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.utils";
 import { map } from "rxjs/operators";
 import { PdfViewerModule } from "ng2-pdf-viewer";
-import { MessageService } from "primeng/api";
 import { GalleriaModule } from "primeng/galleria";
 import { OrderListModule } from "primeng/orderlist";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
@@ -110,10 +109,9 @@ export class ManagementMonitorsComponent implements OnInit {
   constructor(
     private readonly monitorService: MonitorService,
     private readonly toastService: ToastService,
-    private readonly messageService: MessageService,
     private readonly cdr: ChangeDetectorRef,
     private readonly ngZone: NgZone,
-    private readonly autenticacaoService: AutenticacaoService,
+    private readonly autenticacaoService: AuthenticationService,
     private readonly adService: AdService,
     private readonly clientService: ClientService,
     private readonly smartPlugAdmin: SmartPlugAdminService,
@@ -135,7 +133,7 @@ export class ManagementMonitorsComponent implements OnInit {
             ),
           }))
         ),
-      () => this.toastService.erro("Error loading monitors")
+      () => this.toastService.error("Error loading monitors")
     );
   }
 
@@ -174,7 +172,7 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   loadAuthenticatedClient(): void {
-    this.clientService.clientAtual$
+    this.clientService.currentClient$
       .pipe(
         take(1),
         switchMap((client) =>
@@ -192,13 +190,11 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   loadInitialData(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
   }
 
   loadMonitors(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.load();
+        this.tableController.load(this.searchTerm);
     this.refreshAvailablePartnerAddresses();
   }
 
@@ -222,18 +218,15 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSearch();
+        this.tableController.onSearch(this.searchTerm);
   }
 
   onPageChange(event: TableLazyPageEvent): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onPageChange(event);
+        this.tableController.onPageChange(event, this.searchTerm);
   }
 
   onSort(event: { field?: string; order?: number }): void {
-    this.tableController.setSearchTerm(this.searchTerm);
-    this.tableController.onSort(event);
+        this.tableController.onSort(event, this.searchTerm);
   }
 
   openCreateMonitorModal(): void {
@@ -250,21 +243,12 @@ export class ManagementMonitorsComponent implements OnInit {
         if (newMonitor?.id && smartPlugId) {
           this.smartPlugAdmin.assign(smartPlugId, newMonitor.id).subscribe({
             next: () => {
-              this.messageService.add({
-                severity: "success",
-                summary: "Success",
-                detail: "Screen created and smart plug linked.",
-              });
+              this.toastService.success("Screen created and smart plug linked.");
               this.closeModal();
               this.loadMonitors();
             },
             error: () => {
-              this.messageService.add({
-                severity: "warn",
-                summary: "Partial success",
-                detail:
-                  "Screen was created but smart plug assignment failed. Link it from edit.",
-              });
+              this.toastService.warn("Screen was created but smart plug assignment failed. Link it from edit.");
               this.closeModal();
               this.loadMonitors();
             },
@@ -272,22 +256,13 @@ export class ManagementMonitorsComponent implements OnInit {
           return;
         }
         if (newMonitor) {
-          this.messageService.add({
-            severity: "success",
-            summary: "Success",
-            detail: "Screen created successfully!",
-          });
+          this.toastService.success("Screen created successfully!");
           this.closeModal();
           this.loadMonitors();
         }
       },
       error: () => {
-        this.messageService.add({
-          severity: "error",
-          summary: "Error",
-          detail:
-            "An error occurred while creating the screen. Please check the data and try again.",
-        });
+        this.toastService.error("An error occurred while creating the screen. Please check the data and try again.");
       },
     });
   }
@@ -349,22 +324,13 @@ export class ManagementMonitorsComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.messageService.add({
-            severity: "success",
-            summary: "Success",
-            detail: "Monitor updated successfully!",
-          });
+          this.toastService.success("Monitor updated successfully!");
           this.onEditMonitorModalClose();
           this.loadMonitors();
           this.operationLoading = false;
         },
         error: () => {
-          this.messageService.add({
-            severity: "error",
-            summary: "Error",
-            detail:
-              "Error updating monitor. Please check the data and try again.",
-          });
+          this.toastService.error("Error updating monitor. Please check the data and try again.");
           this.operationLoading = false;
         },
       });
@@ -425,28 +391,16 @@ export class ManagementMonitorsComponent implements OnInit {
       .subscribe({
         next: (success) => {
           if (success) {
-            this.messageService.add({
-              severity: "success",
-              summary: "Success",
-              detail: "Monitor deleted successfully!",
-            });
+            this.toastService.success("Monitor deleted successfully!");
             this.loadMonitors();
           } else {
-            this.messageService.add({
-              severity: "error",
-              summary: "Error",
-              detail: "Error deleting monitor.",
-            });
+            this.toastService.error("Error deleting monitor.");
           }
           this.operationLoading = false;
           this.closeDeleteConfirmModal();
         },
-        error: (error) => {
-          this.messageService.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Error deleting monitor.",
-          });
+        error: () => {
+          this.toastService.error("Error deleting monitor.");
         },
         complete: () => {
           this.operationLoading = false;
@@ -528,11 +482,7 @@ export class ManagementMonitorsComponent implements OnInit {
   }
 
   viewMonitorDetails(monitor: Monitor): void {
-    this.messageService.add({
-      severity: "info",
-      summary: "Monitor Details",
-      detail: `Monitor: ${"Monitor " + monitor.id.substring(0, 8)} | Address: ${this.getMonitorAddress(monitor)} | Details: ${this.getMonitorDetails(monitor)}`,
-    });
+    this.toastService.info(`Monitor: ${"Monitor " + monitor.id.substring(0, 8)} | Address: ${this.getMonitorAddress(monitor)} | Details: ${this.getMonitorDetails(monitor)}`);
   }
 
   loadAdvertisements(): void {
@@ -559,7 +509,7 @@ export class ManagementMonitorsComponent implements OnInit {
       },
       error: (error) => {
         
-        this.toastService.erro("Failed to load ads");
+        this.toastService.error("Failed to load ads");
         this.operationLoading = false;
       },
     });
@@ -585,7 +535,7 @@ export class ManagementMonitorsComponent implements OnInit {
         .then(async (validationResult) => {
           if (!validationResult.isValid) {
             validationResult.errors.forEach((error) => {
-              this.toastService.erro(error);
+              this.toastService.error(error);
             });
             return;
           }
@@ -600,7 +550,7 @@ export class ManagementMonitorsComponent implements OnInit {
           this.cdr.markForCheck();
         })
         .catch(() => {
-          this.toastService.erro("Error validating image file");
+          this.toastService.error("Error validating image file");
         });
     }
   }
@@ -611,14 +561,14 @@ export class ManagementMonitorsComponent implements OnInit {
 
   createAdvertisement(): void {
     if (!this.selectedFile || !this.newAd.bytes) {
-      this.toastService.erro("Please select a file");
+      this.toastService.error("Please select a file");
       return;
     }
     
     this.loadingCreateAd = true;
     
     if (!this.selectedMonitorForUpload?.id) {
-      this.toastService.erro("Screen not selected.");
+      this.toastService.error("Screen not selected.");
       this.loadingCreateAd = false;
       return;
     }
@@ -635,32 +585,14 @@ export class ManagementMonitorsComponent implements OnInit {
         next: () => {
           this.loadingCreateAd = false;
           this.closeUploadAdModal();
-          this.toastService.sucesso("Ad sent to screen.");
-          this.messageService.add({
-            severity: "success",
-            summary: "Success",
-            detail: "Ad sent to screen.",
-          });
+          this.toastService.success("Ad sent to screen.");
           this.loadMonitors();
         },
         error: (error) => {
           this.loadingCreateAd = false;
-          const raw =
-            error?.error?.message ??
-            error?.error?.data ??
-            error?.message;
-          const msg =
-            typeof raw === "string"
-              ? raw
-              : raw != null
-                ? JSON.stringify(raw)
-                : "Failed to send ad to screen.";
-          this.toastService.erro(msg);
-          this.messageService.add({
-            severity: "error",
-            summary: "Upload failed",
-            detail: msg,
-          });
+          const raw = error?.error?.message ?? error?.error?.data ?? error?.message;
+          const msg = typeof raw === "string" ? raw : raw != null ? JSON.stringify(raw) : "Failed to send ad to screen.";
+          this.toastService.error(msg);
         },
       });
   }
