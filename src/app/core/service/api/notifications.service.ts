@@ -126,19 +126,12 @@ export class NotificationsService {
   }
 
   public markAllAsRead(): void {
-    const unreadIds = this._notifications()
-      .filter((n) => !n.visualized)
-      .map((n) => n.id);
-    if (!unreadIds.length) return;
-
     this._notifications.update((notifications) =>
       notifications.map((n) => ({ ...n, visualized: true }))
     );
 
-    let params = new HttpParams();
-    unreadIds.forEach((id) => (params = params.append("ids", id)));
     this.http
-      .get<any>(this.apiUrl, { headers: this.getHeaders(), params })
+      .patch<any>(`${this.apiUrl}/mark-all-read`, null, { headers: this.getHeaders() })
       .subscribe();
   }
 
