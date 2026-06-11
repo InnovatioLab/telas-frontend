@@ -28,6 +28,7 @@ export class NotificationsService {
   private readonly _page = signal(0);
   private readonly _hasMore = signal(false);
   private readonly _loading = signal(false);
+  private _fetchSeq = 0;
 
   public readonly notifications = this._notifications.asReadonly();
   public readonly hasMore = this._hasMore.asReadonly();
@@ -50,12 +51,14 @@ export class NotificationsService {
   public fetchPage(filters: NotificationFilters, page: number): void {
     if (this._loading()) return;
     this._loading.set(true);
+    const seq = ++this._fetchSeq;
 
     const params = this.buildParams(filters, page, 10);
     this.http
       .get<any>(this.apiUrl, { headers: this.getHeaders(), params })
       .subscribe({
         next: (response) => {
+          if (seq !== this._fetchSeq) return;
           const pageData = (response?.data ?? response) as PageResponse<Notification>;
           const items: Notification[] = Array.isArray(pageData?.content) ? pageData.content : [];
           this._notifications.update((prev) => (page === 0 ? items : [...prev, ...items]));
@@ -64,6 +67,7 @@ export class NotificationsService {
           this._loading.set(false);
         },
         error: () => {
+          if (seq !== this._fetchSeq) return;
           if (page === 0) this._notifications.set([]);
           this._loading.set(false);
         },
@@ -76,9 +80,11 @@ export class NotificationsService {
   }
 
   public resetAndFetch(filters: NotificationFilters): void {
+    this._fetchSeq++;
     this._notifications.set([]);
     this._page.set(0);
     this._hasMore.set(false);
+    this._loading.set(false);
     this.fetchPage(filters, 0);
   }
 
