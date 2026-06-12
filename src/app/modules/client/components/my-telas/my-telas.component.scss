@@ -63,7 +63,14 @@ small {
   .request-ad-section.questionnaire-block {
     margin-top: 0;
     border-top: none;
-    padding-top: 0;
+    padding: 1.5rem;
+    background: var(--cor-cinza-fundo);
+    border: 1px solid var(--cor-cinza-medio);
+    border-radius: 8px;
+
+    h3 {
+      color: var(--cor-primaria);
+    }
 
     .questionnaire-intro-text {
       color: var(--cor-cinza-escuro);
@@ -75,8 +82,22 @@ small {
       font-size: 0.95rem;
     }
 
+    .p-accordionheader {
+      background: var(--cor-cinza-fundo) !important;
+      color: var(--cor-cinza-escuro) !important;
+      border-color: var(--cor-cinza-medio) !important;
+    }
+
+    .p-accordioncontent-content {
+      background: var(--cor-branca) !important;
+      color: var(--cor-cinza-escuro) !important;
+    }
+
     textarea {
       min-height: 5rem;
+      background: var(--cor-branca) !important;
+      color: var(--cor-cinza-escuro) !important;
+      border-color: var(--cor-cinza-medio) !important;
     }
   }
 }
@@ -1031,6 +1052,13 @@ body.dark-theme {
 
       ::ng-deep .questionnaire-accordion {
         .p-accordionheader {
+          background: var(--cor-card-background-dark) !important;
+          color: var(--cor-texto-clara) !important;
+          border-color: var(--cor-cinza-medio-dark) !important;
+        }
+
+        .p-accordioncontent-content {
+          background: var(--cor-primaria-dark) !important;
           color: var(--cor-texto-clara) !important;
         }
       }
