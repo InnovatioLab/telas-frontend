@@ -1,0 +1,132 @@
+<div class="box-overview-wrapper">
+  <div class="overview-toolbar">
+    <p-selectButton
+      [options]="[{ label: 'Cards', value: 'cards', icon: 'pi pi-th-large' }, { label: 'Map', value: 'map', icon: 'pi pi-map-marker' }]"
+      [(ngModel)]="viewMode"
+      optionLabel="label"
+      optionValue="value"
+      (onChange)="switchView(viewMode)"
+    />
+    <p-button
+      icon="pi pi-refresh"
+      [text]="true"
+      [rounded]="true"
+      pTooltip="Refresh"
+      (onClick)="loadBoxes()"
+      [loading]="loading"
+    />
+  </div>
+
+  @if (loading) {
+    <div class="overview-loading">
+      <p-progressSpinner strokeWidth="4" />
+    </div>
+  }
+
+  @if (!loading && viewMode === 'cards') {
+    @if (boxes.length === 0) {
+      <p class="no-data">No boxes registered.</p>
+    }
+    <div class="box-cards-grid">
+      @for (box of boxes; track box.boxId) {
+        <div class="box-card" (click)="openDrawer(box)">
+          <div class="box-card-header">
+            <span class="box-ip">{{ box.ip ?? '—' }}</span>
+            <p-tag [value]="statusLabel(box)" [severity]="statusSeverity(box)" />
+          </div>
+          <div class="box-card-body">
+            <div class="box-stat">
+              <span class="stat-label">Last seen</span>
+              <span class="stat-value">{{ lastSeenLabel(box.lastSeenAt) }}</span>
+            </div>
+            <div class="box-stat">
+              <span class="stat-label">Version</span>
+              <span class="stat-value">{{ box.reportedVersion ?? '—' }}</span>
+            </div>
+            <div class="box-stat">
+              <span class="stat-label">Monitors</span>
+              <span class="stat-value">{{ box.totalMonitors }}</span>
+            </div>
+            <div class="box-stat">
+              <span class="stat-label">Active ads</span>
+              <span class="stat-value">{{ box.totalActiveAds }}</span>
+            </div>
+          </div>
+          <div class="box-card-monitors">
+            @for (mon of box.monitors; track mon.monitorId) {
+              <div class="monitor-row">
+                <span class="monitor-partner">{{ mon.partnerName ?? '—' }}</span>
+                <span class="monitor-ads">{{ mon.activeAds }} ad{{ mon.activeAds !== 1 ? 's' : '' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading && viewMode === 'map') {
+    <div #mapContainer class="leaflet-map-container"></div>
+    @if (boxes.length === 0) {
+      <p class="no-data">No boxes with geolocation data to display.</p>
+    }
+  }
+</div>
+
+<p-dialog
+  [header]="selectedBox ? (selectedBox.ip ?? 'Box Details') : 'Box Details'"
+  [(visible)]="drawerVisible"
+  [modal]="true"
+  [style]="{ width: 'min(90vw, 440px)' }"
+  [breakpoints]="{ '960px': '95vw' }"
+  [dismissableMask]="true"
+  appendTo="body"
+  (onHide)="selectedBox = null"
+>
+  @if (selectedBox) {
+    <div class="drawer-content">
+      <div class="drawer-row">
+        <span class="drawer-label">Status</span>
+        <p-tag [value]="statusLabel(selectedBox)" [severity]="statusSeverity(selectedBox)" />
+      </div>
+      <div class="drawer-row">
+        <span class="drawer-label">MAC</span>
+        <span class="drawer-value">{{ selectedBox.mac ?? '—' }}</span>
+      </div>
+      <div class="drawer-row">
+        <span class="drawer-label">DNS</span>
+        <span class="drawer-value">{{ selectedBox.dns ?? '—' }}</span>
+      </div>
+      <div class="drawer-row">
+        <span class="drawer-label">Last heartbeat</span>
+        <span class="drawer-value">{{ selectedBox.lastSeenAt ? (selectedBox.lastSeenAt | date:'medium') : '—' }}</span>
+      </div>
+      <div class="drawer-row">
+        <span class="drawer-label">Version</span>
+        <span class="drawer-value">{{ selectedBox.reportedVersion ?? '—' }}</span>
+      </div>
+      <div class="drawer-row">
+        <span class="drawer-label">Connectivity</span>
+        <span class="drawer-value">{{ selectedBox.probeDetail ?? (selectedBox.reachable ? 'Reachable' : 'Unreachable') }}</span>
+      </div>
+
+      <p-divider />
+
+      <h4 class="drawer-section-title">Screens ({{ selectedBox.totalMonitors }})</h4>
+      @for (mon of selectedBox.monitors; track mon.monitorId) {
+        <div class="drawer-monitor">
+          <div class="drawer-monitor-header">
+            <span class="monitor-id">{{ mon.productId }}</span>
+            <p-tag [value]="mon.activeAds + ' ad' + (mon.activeAds !== 1 ? 's' : '')" severity="info" />
+          </div>
+          <div class="monitor-partner-info">
+            <span>{{ mon.partnerName ?? '—' }}</span>
+            @if (mon.street) {
+              <span class="monitor-address">{{ mon.street }}, {{ mon.city }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</p-dialog>

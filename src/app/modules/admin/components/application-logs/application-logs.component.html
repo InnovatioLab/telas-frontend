@@ -6,6 +6,8 @@
         <p-tab *ngIf="canViewSmartPlugLogs()" [value]="1">Smart plug logs</p-tab>
         <p-tab *ngIf="canViewScheduler()" [value]="2">Scheduled jobs</p-tab>
         <p-tab *ngIf="canViewBoxPingLogs()" [value]="3">Box ping logs</p-tab>
+        <p-tab *ngIf="canViewAdFlows()" [value]="4">Ad Flows</p-tab>
+        <p-tab *ngIf="canViewBoxOverview()" [value]="5">Box Overview</p-tab>
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel *ngIf="canViewLogs()" [value]="0">
@@ -20,10 +22,16 @@
         <p-tabpanel *ngIf="canViewBoxPingLogs()" [value]="3">
           <ng-container *ngTemplateOutlet="boxPingTable"></ng-container>
         </p-tabpanel>
+        <p-tabpanel *ngIf="canViewAdFlows()" [value]="4">
+          <ng-container *ngTemplateOutlet="adFlowsPanel"></ng-container>
+        </p-tabpanel>
+        <p-tabpanel *ngIf="canViewBoxOverview()" [value]="5">
+          <app-box-overview-tab />
+        </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
   } @else {
-    <p class="text-center p-4 text-muted">Sem permissão para ver logs de monitorização.</p>
+    <p class="text-center p-4 text-muted">No permission to view monitoring logs.</p>
   }
 
   <ng-template #logsFiltersAndTable>
@@ -180,7 +188,7 @@
     >
       <div class="probe-interval-toolbar">
         <div class="probe-interval-fields">
-          <label for="probeIntervalSec" class="filter-label">Intervalo da sonda (segundos)</label>
+          <label for="probeIntervalSec" class="filter-label">Probe interval (seconds)</label>
           <p-inputNumber
             inputId="probeIntervalSec"
             [(ngModel)]="probeIntervalSeconds"
@@ -194,7 +202,7 @@
         <button
           pButton
           type="button"
-          label="Guardar"
+          label="Save"
           icon="pi pi-check"
           [loading]="probeSettingsSaving"
           [disabled]="probeSettingsLoading || probeIntervalSeconds == null"
@@ -295,7 +303,7 @@
         <button
           pButton
           type="button"
-          label="Atualizar sondas"
+          label="Refresh probes"
           icon="pi pi-refresh"
           class="p-button-sm mb-3"
           (click)="loadBoxPingRows(true)"
@@ -305,8 +313,7 @@
           *ngIf="boxPingRows.length > 0 && !hasAnyBoxPingProbeResult()"
           class="text-sm mb-2 box-ping-hint"
         >
-          Ainda não há sondas gravadas na API (o job pode não ter corrido ou a migração não foi
-          aplicada). Clique em &quot;Atualizar sondas&quot; para testar agora.
+          No probe results recorded yet (job may not have run or migration not applied). Click &quot;Refresh probes&quot; to run a TCP test now.
         </p>
         <p-table
           [value]="boxPingRows"
@@ -348,8 +355,7 @@
           <ng-template pTemplate="emptymessage">
             <tr>
               <td colspan="6" class="text-center p-4">
-                Sem linhas. Use &quot;Atualizar sondas&quot; para correr TCP agora ou aguarde o job
-                agendado na API.
+                No rows. Use &quot;Refresh probes&quot; to run TCP now or wait for the scheduled API job.
               </td>
             </tr>
           </ng-template>
@@ -357,6 +363,124 @@
       </div>
     </p-card>
   </ng-template>
+
+  <ng-template #adFlowsPanel>
+    <div class="ad-flows-toolbar">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="adFlowFilterClientId"
+          placeholder="Filter by client ID"
+          class="flow-client-filter"
+        />
+      </p-iconfield>
+      <button
+        pButton
+        type="button"
+        label="Search"
+        icon="pi pi-filter"
+        class="p-button-sm"
+        (click)="loadAdFlows(0)"
+      ></button>
+    </div>
+    <p-table
+      [value]="adFlowRows"
+      [loading]="adFlowLoading"
+      styleClass="p-datatable-sm"
+      [paginator]="true"
+      [rows]="adFlowSize"
+      [totalRecords]="adFlowTotal"
+      [lazy]="true"
+      (onLazyLoad)="loadAdFlows($any($event).first / adFlowSize)"
+      responsiveLayout="scroll"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col">Client</th>
+          <th scope="col">Ad</th>
+          <th scope="col">Status</th>
+          <th scope="col">Last activity</th>
+          <th scope="col" style="width:5rem"></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.clientName }}</td>
+          <td>{{ row.adTitle || '—' }}</td>
+          <td>
+            <p-tag [value]="row.currentStatus" [severity]="flowSeverity(row.currentStatus)" />
+          </td>
+          <td class="whitespace-nowrap">{{ row.lastEventAt | date:'short' }}</td>
+          <td>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-list"
+              class="p-button-text p-button-rounded p-button-sm"
+              pTooltip="View timeline"
+              (click)="openFlowDialog(row)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center p-4">No ad flow data.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-template>
+
+  <p-dialog
+    [header]="selectedFlow ? (selectedFlow.clientName + ' — ' + (selectedFlow.adTitle || 'No title')) : 'Flow'"
+    [(visible)]="flowDialogVisible"
+    [modal]="true"
+    [style]="{ width: 'min(90vw, 560px)' }"
+    [breakpoints]="{ '960px': '95vw' }"
+    [dismissableMask]="true"
+    (onHide)="selectedFlow = null"
+  >
+    @if (selectedFlow) {
+      <div class="flow-dialog-header-row">
+        @if (selectedFlow.adPreviewUrl && selectedFlow.adMimeType?.startsWith('image/')) {
+          <img
+            [src]="selectedFlow.adPreviewUrl"
+            alt="Ad preview"
+            class="flow-ad-preview-img"
+          />
+        } @else if (selectedFlow.adPreviewUrl && selectedFlow.adMimeType?.startsWith('video/')) {
+          <video
+            [src]="selectedFlow.adPreviewUrl"
+            class="flow-ad-preview-img"
+            muted
+            preload="metadata"
+          ></video>
+        }
+        <p-tag [value]="selectedFlow.currentStatus" [severity]="flowSeverity(selectedFlow.currentStatus)" />
+      </div>
+      <p-timeline [value]="selectedFlow.events" align="left" styleClass="flow-timeline">
+        <ng-template pTemplate="marker" let-ev>
+          <span
+            class="flow-event-dot"
+            [style.background]="flowEventColor(ev.eventType)"
+          ></span>
+        </ng-template>
+        <ng-template pTemplate="content" let-ev>
+          <div class="flow-event-content">
+            <span class="flow-event-label">{{ ev.label }}</span>
+            <span class="flow-event-meta">
+              {{ ev.actorName || ev.actorType }} · {{ ev.occurredAt | date:'medium' }}
+            </span>
+            @if (ev.detail) {
+              <span class="flow-event-detail">{{ ev.detail }}</span>
+            }
+          </div>
+        </ng-template>
+      </p-timeline>
+    }
+  </p-dialog>
 
   <p-dialog
     header="Last run summary"

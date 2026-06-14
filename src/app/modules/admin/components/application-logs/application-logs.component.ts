@@ -1,6 +1,10 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { TimelineModule } from "primeng/timeline";
+import { TagModule } from "primeng/tag";
+import { IconFieldModule } from "primeng/iconfield";
+import { InputIconModule } from "primeng/inputicon";
 import {
   ApplicationLogEntry,
   MonitoringLogService,
@@ -28,6 +32,11 @@ import { TableLazyPageEvent } from "@app/shared/utils/table-lazy-pagination.util
 import { map } from "rxjs/operators";
 import { ActivatedRoute } from "@angular/router";
 import { SmartPlugLogsComponent } from "../smart-plug-logs/smart-plug-logs.component";
+import { BoxOverviewTabComponent } from "../box-overview-tab/box-overview-tab.component";
+import {
+  AdFlowSummary,
+  MonitoringAdFlowService,
+} from "@app/core/service/api/monitoring-ad-flow.service";
 interface SelectOption {
   label: string;
   value: string;
@@ -47,6 +56,11 @@ interface ApplicationLogsFilter extends LazyTableFilterState {
     PrimengModule,
     IconsModule,
     SmartPlugLogsComponent,
+    BoxOverviewTabComponent,
+    TimelineModule,
+    TagModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   templateUrl: "./application-logs.component.html",
   styleUrls: ["./application-logs.component.scss"],
@@ -58,6 +72,7 @@ export class ApplicationLogsComponent implements OnInit {
     MonitoringConnectivityProbeSettingsService
   );
   private readonly monitoringBoxConnectivityService = inject(MonitoringBoxConnectivityService);
+  private readonly monitoringAdFlowService = inject(MonitoringAdFlowService);
   private readonly toastService = inject(ToastService);
   private readonly permissions = inject(PermissionFacadeService);
   private readonly route = inject(ActivatedRoute);
@@ -75,6 +90,14 @@ export class ApplicationLogsComponent implements OnInit {
   probeSettingsSaving = false;
   boxPingRows: BoxConnectivityProbeRow[] = [];
   boxPingLoading = false;
+  adFlowRows: AdFlowSummary[] = [];
+  adFlowLoading = false;
+  adFlowTotal = 0;
+  adFlowPage = 0;
+  adFlowSize = 20;
+  adFlowFilterClientId = "";
+  selectedFlow: AdFlowSummary | null = null;
+  flowDialogVisible = false;
   filterSource = "";
   filterLevel = "";
   filterQ = "";
@@ -147,6 +170,8 @@ export class ApplicationLogsComponent implements OnInit {
       if (this.canViewSmartPlugLogs()) this.activeTab = 1;
       else if (this.canViewScheduler()) this.activeTab = 2;
       else if (this.canViewBoxPingLogs()) this.activeTab = 3;
+      else if (this.canViewAdFlows()) this.activeTab = 4;
+      else if (this.canViewBoxOverview()) this.activeTab = 5;
     }
     this.route.queryParamMap.subscribe((qp) => {
       const src = (qp.get("source") ?? "").trim();
@@ -174,13 +199,18 @@ export class ApplicationLogsComponent implements OnInit {
     if (this.canViewBoxPingLogs()) {
       this.loadBoxPingRows();
     }
+    if (this.canViewAdFlows()) {
+      this.loadAdFlows();
+    }
   }
   showLogsSection(): boolean {
     return (
       this.canViewLogs() ||
       this.canViewSmartPlugLogs() ||
       this.canViewScheduler() ||
-      this.canViewBoxPingLogs()
+      this.canViewBoxPingLogs() ||
+      this.canViewAdFlows() ||
+      this.canViewBoxOverview()
     );
   }
   canViewLogs(): boolean {
@@ -203,6 +233,12 @@ export class ApplicationLogsComponent implements OnInit {
   }
   canViewBoxPingLogs(): boolean {
     return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_BOX_PING_VIEW);
+  }
+  canViewAdFlows(): boolean {
+    return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_AD_FLOW_VIEW);
+  }
+  canViewBoxOverview(): boolean {
+    return this.permissions.hasMonitoring(MonitoringPermission.MONITORING_BOX_OVERVIEW_VIEW);
   }
   hasAnyBoxPingProbeResult(): boolean {
     return this.boxPingRows.some((r) => r.lastProbeAt != null);
@@ -366,6 +402,62 @@ export class ApplicationLogsComponent implements OnInit {
         }
       },
     });
+  }
+  loadAdFlows(page = 0): void {
+    if (!this.canViewAdFlows()) return;
+    this.adFlowLoading = true;
+    this.adFlowPage = page;
+    this.monitoringAdFlowService
+      .listFlows({
+        clientId: this.adFlowFilterClientId.trim() || undefined,
+        page,
+        size: this.adFlowSize,
+      })
+      .subscribe({
+        next: (res) => {
+          this.adFlowRows = res.content ?? [];
+          this.adFlowTotal = res.totalElements ?? 0;
+          this.adFlowLoading = false;
+        },
+        error: (err) => {
+          this.adFlowRows = [];
+          this.adFlowLoading = false;
+          if (err?.status === 403) {
+            this.toastService.error("No permission to view ad flows.");
+          }
+        },
+      });
+  }
+  flowSeverity(status: string): "success" | "info" | "warn" | "danger" | "secondary" {
+    switch (status) {
+      case "ON_AIR": return "success";
+      case "APPROVED": return "info";
+      case "PENDING_VALIDATION":
+      case "PENDING_AD": return "warn";
+      case "REJECTED": return "danger";
+      default: return "secondary";
+    }
+  }
+  openFlowDialog(row: AdFlowSummary): void {
+    this.selectedFlow = row;
+    this.flowDialogVisible = true;
+  }
+  flowEventColor(eventType: string): string {
+    switch (eventType) {
+      case "SUBMITTED": return "#6366f1";
+      case "VALIDATED": return "#22c55e";
+      case "ON_AIR": return "#22c55e";
+      case "STAGED": return "#22c55e";
+      case "REJECTED":
+      case "REJECTED_ADMIN": return "#ef4444";
+      case "REFUSED": return "#f97316";
+      case "REMOVAL_REQUESTED":
+      case "DELETION_SCHEDULED": return "#f97316";
+      case "MESSAGE": return "#3b82f6";
+      case "ERROR": return "#dc2626";
+      case "VALIDATION_ERROR": return "#f97316";
+      default: return "#94a3b8";
+    }
   }
   private loadSchedulerJobs(): void {
     this.schedulerLoading = true;

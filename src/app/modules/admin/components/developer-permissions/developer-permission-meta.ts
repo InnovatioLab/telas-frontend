@@ -27,6 +27,8 @@ export const PERMISSION_LABELS: Record<string, string> = {
   MONITORING_SMART_PLUG_TEST_READ: "Smart plug — test read",
   MONITORING_TESTING_EXECUTE: "Run monitoring tests",
   MONITORING_TESTING_VIEW: "View monitoring tests",
+  MONITORING_AD_FLOW_VIEW: "Ad workflow flows",
+  MONITORING_BOX_OVERVIEW_VIEW: "Box visual overview",
 };
 
 export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
@@ -80,6 +82,10 @@ export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
     "Execute monitoring test routines (e.g. probes or checks) from the admin testing UI.",
   MONITORING_TESTING_VIEW:
     "See monitoring test definitions and results without launching new test runs.",
+  MONITORING_AD_FLOW_VIEW:
+    "View the full lifecycle timeline (submission → validation → on-air) for each ad request — useful for diagnosing stalled or failed client flows.",
+  MONITORING_BOX_OVERVIEW_VIEW:
+    "Access the visual box overview: health status, connectivity, active ads, and screen assignments for all boxes on a single dashboard.",
 };
 
 export const EMAIL_ALERT_DESCRIPTIONS: Record<string, string> = {
